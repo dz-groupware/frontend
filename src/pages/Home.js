@@ -1,14 +1,14 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Route, Routes } from 'react-router-dom';
 
 import styled from 'styled-components';
 
-import {hover_on, menu_on, favor_on, recent_on} from '../utils/Slice'
+import {hover_on, menu_on, favor_on, recent_on, menu, favor, recent} from '../utils/Slice'
+import { GnbMenuApi, GnbFavorApi } from '../utils/API';
 
 import TB from './TB';
-import VIEW from './VIEW';
-import Test from './Test';
+import { VIEW, Test, EmpM, DeptM, CompM } from './VIEW';
 
 import MenuList from '../components/GNB/MenuList';
 import RecentList from '../components/GNB/RecentList';
@@ -179,15 +179,31 @@ export const GNBRecent = styled.div`
 `
 
 export default function Home() {
-
   const dispatch = useDispatch();
+  const emp_id = 1;
+
+  useEffect(() => {
+    GnbMenuApi(emp_id).then(function (response) {
+      dispatch(menu(response.data.data));
+    });
+    GnbFavorApi(emp_id).then(function (response) {
+      dispatch(favor(response.data.data));
+    });
+    dispatch(recent(emp_id))
+  }, [emp_id, dispatch]);
+  
+  const menuData = useSelector(state => state.gnbMenu.menu);
+  const favorData = useSelector(state => state.gnbMenu.favor);
 
   return (
     <StyledDiv>
-      <BgiDiv style={{backgroundImage : `url(${process.env.PUBLIC_URL}/img/bgi.jpg)`}}>
+      <BgiDiv style={{backgroundImage : `/img/bgi.jpg)`}}>
         <TBDiv><TB /></TBDiv>
         <ScreenDiv>
           <Routes>
+            <Route path="/회사관리" element={<CompM />} />
+            <Route path="/부서관리" element={<DeptM />} />
+            <Route path="/사원관리" element={<EmpM />} />
             <Route path="/공지사항" element={<Test />} />
             <Route path="/" element={<VIEW />} />
           </Routes>
@@ -196,27 +212,27 @@ export default function Home() {
       <GNBIcon>   
         <BiSolidGrid style={{width:'30px', height:'30px', marginLeft:'10px', marginTop:'20px'}} onClick={() => {dispatch(hover_on())}} />
         <hr />
-        <IconList />
+        <IconList value={menuData}/>
       </GNBIcon>
-      <GNBMenu className={`menu main ${useSelector(state => state.gnbMenu.menu) ? 'true' : 'false'}`}>
+      <GNBMenu className={`menu main ${useSelector(state => state.gnbSwitch.menu) ? 'true' : 'false'}`}>
         <div>
           <AiOutlineMenu style={{width:'30px', height:'30px', marginLeft:'10px', marginTop:'10px'}} onClick={() => {dispatch(menu_on())}} />
           <AiOutlineStar style={{width:'30px', height:'30px', marginLeft:'30px', marginTop:'10px'}} onClick={() => {dispatch(favor_on())}} />
           <AiOutlineFieldTime style={{width:'30px', height:'30px', marginLeft:'30px', marginTop:'10px'}} onClick={() => {dispatch(recent_on())}} />
           <hr />
         </div>
-        <MenuList />
+        <MenuList value={menuData}/>
       </GNBMenu>
-      <GNBFav className={`main ${useSelector(state => state.gnbMenu.favor) ? 'true' : 'false'}`}>
+      <GNBFav className={`main ${useSelector(state => state.gnbSwitch.favor) ? 'true' : 'false'}`}>
         <div>
           <AiOutlineMenu style={{width:'30px', height:'30px', marginLeft:'10px', marginTop:'10px'}} onClick={() => {dispatch(menu_on())}} />
           <AiOutlineStar style={{width:'30px', height:'30px', marginLeft:'30px', marginTop:'10px'}} onClick={() => {dispatch(favor_on())}} />
           <AiOutlineFieldTime style={{width:'30px', height:'30px', marginLeft:'30px', marginTop:'10px'}} onClick={() => {dispatch(recent_on())}} />
           <hr />
         </div>
-        <FavList />
+        <FavList value={favorData}/>
       </GNBFav>
-      <GNBRecent className={`main ${useSelector(state => state.gnbMenu.recent) ? 'true' : 'false'}`}>
+      <GNBRecent className={`main ${useSelector(state => state.gnbSwitch.recent) ? 'true' : 'false'}`}>
         <div>
           <AiOutlineMenu style={{width:'30px', height:'30px', marginLeft:'10px', marginTop:'10px'}} onClick={() => {dispatch(menu_on())}} />
           <AiOutlineStar style={{width:'30px', height:'30px', marginLeft:'30px', marginTop:'10px'}} onClick={() => {dispatch(favor_on())}} />

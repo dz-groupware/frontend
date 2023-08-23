@@ -2,7 +2,7 @@ import {createSlice} from '@reduxjs/toolkit';
 
 //
 export const gnbSlice = createSlice({
-    name: 'gnbMenu',
+    name: 'gnbSwitch',
     initialState: {
         hover:false,
         menu:false,
@@ -47,6 +47,47 @@ export const gnbSlice = createSlice({
         },
     }
 })
+export const menuSlice = createSlice({
+    name: 'gnbMenu',
+    initialState: {
+        menu: JSON.parse('[{"empId": "","menuId": "","parId": "","name": "","iconUrl": ""}]'),
+        favor: JSON.parse('[{"empId": "","menuId": "","parId": "","name": "","iconUrl": ""}]'),
+        recent: JSON.parse('[{"empId": "","menuId": "","parId": "","name": "","iconUrl": ""}]'),
+    },
+    reducers: {
+        menu:(state, action) => {state.menu = action.payload;},
+        favor:(state, action) => {state.favor = action.payload;},
+        recent:(state, action) => {
+            if (localStorage.getItem(action.payload)) {
+                console.log(`[recet] emp_id:${action.payload} is not null`)
+                state.recent = localStorage.getItem(action.payload)
+            } else {
+                console.log(`[recet] emp_id:${action.payload} is null`)
+                localStorage.setItem(`${action.payload}`, '[{"empId": "","menuId": "","parId": "","name": "","iconUrl": ""}]')
+            };
+        },
+    }
+})
+export const recentSlice = createSlice({
+    name: 'recent',
+    initialState: {
+        recent: JSON.parse('[{"empId": "","menuId": "","parId": "","name": "","iconUrl": ""}]'),
+    },
+    reducers: {
+        menu:(state, action) => {state.menu = action.payload;},
+        favor:(state, action) => {state.favor = action.payload;},
+        remove:(state, action) => {
+            if (localStorage.getItem(action.payload)) {
+                console.log(`[recet] emp_id:${action.payload} is not null`)
+                state.recent = localStorage.getItem(action.payload)
+            } else {
+                console.log(`[recet] emp_id:${action.payload} is null`)
+                localStorage.setItem(`${action.payload}`, '[{"empId": "","menuId": "","parId": "","name": "","iconUrl": ""}]')
+            };
+        },
+    }
+})
 
-//
 export const {hover_on, menu_on, favor_on, recent_on} = gnbSlice.actions;
+export const {menu, favor, recent} = menuSlice.actions;
+export const {remove} = recentSlice.actions;

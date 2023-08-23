@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link as defaultLink } from 'react-router-dom';
 import styled from 'styled-components';
 
 export const ListBox = styled.div`
@@ -10,29 +10,28 @@ background-color: rgb(21,21,72);
   margin-bottom: 25px;
   magin-left:10px;
 }
-
 `
 
-export default function FavList() {
-  const dummyData = JSON.parse('[{"menu_name":"/", "menu_id":"1"}, {"menu_name":"공지사항", "menu_id":"2"}]')
+const Link = styled(defaultLink)`
+color: inherit;
+text-decoration: none;
+> p {
+  margin-top: 20px;
+  margin-bottom: 32px;
+}
+`
+
+export default function FavList(props) {
     
   return (
     <ListBox>
       {
-        dummyData.map((a, i) => (
-          <Link to={a['menu_name']} key={a['menu_name']+a['menu_id']+i+'fav'}>
-          <MENU dataA={a}/>                
+        props.value.map((a, i) => (
+          <Link to={a['name']} key={a['name']+a['name']+i+'fav'}>
+              <p value={a["name"]}>{a["name"]}</p>
           </Link>
         ))
       }
     </ListBox>
-  );
-}
-export function MENU(props) {
-
-  return (
-    <div id="MENU">
-      <p value={props.dataA["menu_name"]}>{props.dataA["menu_name"]}</p>
-    </div>
   );
 }

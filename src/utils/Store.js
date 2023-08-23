@@ -1,9 +1,11 @@
 import {configureStore} from '@reduxjs/toolkit';
-import {gnbSlice} from './Slice';
+import {gnbSlice, menuSlice, recentSlice} from './Slice';
 
 const store = configureStore({
     reducer:{
-        gnbMenu:gnbSlice.reducer,
+        gnbSwitch:gnbSlice.reducer,
+        gnbMenu:menuSlice.reducer,
+        recentMenu:recentSlice.reducer,
     }
 });
 

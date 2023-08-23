@@ -54,3 +54,23 @@ export function orgTreeApi(type = "", comp_id = "", dept_id = "", emp_id = ""){
         baseURL : 'http://localhost:8080'
     });
 }
+
+export function orgEmpListApi(type = "", text = ""){  
+    console.log("type : ", type," text : ",  text)
+    if (type === 'comp'){
+        console.log('type is comp')
+        return axios({
+            url: `/Modal/org/empList?type=${type}&compId=${text}`,
+            method:'get',
+            baseURL : 'http://localhost:8080'
+        });
+    }
+    if (type === 'dept'){
+        console.log('type is dept')
+        return axios({
+            url: `/Modal/org/empList?type=${type}&deptId=${text}`,
+            method:'get',
+            baseURL : 'http://localhost:8080'
+        });
+    }
+}

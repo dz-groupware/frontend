@@ -5,11 +5,13 @@ import {LuBuilding2} from 'react-icons/lu';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 
-import {orgTreeApi} from '../../utils/API';
+import {orgTreeApi, orgEmpListApi} from '../../utils/API';
+
+import EmpList from './EmpList';
 
 export const ModalBackdrop = styled.div`
   // Modal이 떴을 때의 배경을 깔아주는 CSS를 구현
-  z-index: 1; //위치지정 요소
+  z-index: ; //위치지정 요소
   position: fixed;
   display : flex;
   justify-content : center;
@@ -110,6 +112,7 @@ export const OrgModalView = styled.div`
 export default function OrgModal(props){
   
   const [data, setData] = useState(JSON.parse('[{"id":"", "name":""}]'));
+  const [empList, setEmpList] = useState(JSON.parse('[{"id":"", "name":""}]'));
   const [open, setOpen] = useState([false]);
   const emp_id = useSelector(state => state.gnbMenu.key);
   console.log('in orgModal', open)
@@ -121,6 +124,11 @@ export default function OrgModal(props){
     }
     LoadData(emp_id);
   }, [emp_id]);  
+
+  async function loadEmpList(type, text){
+    const res = await orgEmpListApi(type, text);
+    setEmpList(res.data.data);
+  }
     return (
       <ModalBackdrop onClick={() => {props.api('org')}}>
       <OrgModalView onClick={(e) => e.stopPropagation()}>
@@ -146,11 +154,13 @@ export default function OrgModal(props){
                         const newOpen = [...open];
                         newOpen[i] = !newOpen[i];
                         return newOpen;
-                      })}}><LuBuilding2 />{a['name']}
+                      });
+                      loadEmpList('comp', a['id']);
+                      }}><LuBuilding2 />{a['name']}
                       
                     </div>
                     { open[i] && (
-                        <DeptList value={a['id']}/>
+                        <DeptList value={a['id']} api={loadEmpList}/>
                       )}
                   </div>
                 ))
@@ -158,6 +168,7 @@ export default function OrgModal(props){
               
             </div>
             <div id='empList'>
+              <EmpList value={empList}/>
             </div>
             <div id='empDetail'>
 
@@ -195,10 +206,12 @@ export default function OrgModal(props){
                   const newDeptOpen = [...deptOpen];
                   newDeptOpen[i] = !newDeptOpen[i];
                   return newDeptOpen;
-                })}} style={{marginLeft:'15px'}}><AiFillFolderOpen />{a['name']}
+                });
+                props.api('dept', a['id']);
+                }} style={{marginLeft:'15px'}}><AiFillFolderOpen />{a['name']}
               </div>
               { deptOpen[i] && (
-                  <Dept dept={a['id']} comp={props.value}/>
+                  <Dept dept={a['id']} comp={props.value} api={props.api}/>
                 )}
             </div>
           )))
@@ -232,7 +245,9 @@ export default function OrgModal(props){
                   const newDept = [...dept];
                   newDept[i] = !newDept[i];
                   return newDept;
-                })}} style={{marginLeft:'35px'}}><AiFillFolderOpen />{a['name']}
+                });
+                props.api('dept', a['id']);
+                }} style={{marginLeft:'35px'}}><AiFillFolderOpen />{a['name']}
               </div>
               { dept[i] && (
                   <Dept dept={a['id']} comp={props.comp}/>

@@ -4,8 +4,8 @@ import { Route, Routes } from 'react-router-dom';
 
 import styled from 'styled-components';
 
-import {hover_on, menu_on, favor_on, recent_on, menu, favor, recent} from '../utils/Slice'
-import { GnbMenuApi, GnbFavorApi } from '../utils/API';
+import {hover_on, menu_on, favor_on, recent_on, menu, favor, recent, profileList} from '../utils/Slice'
+import { GnbMenuApi, GnbFavorApi, GnbFavorDeleteApi, profileAPI } from '../utils/API';
 
 import TB from './TB';
 import { VIEW, Test, EmpM, DeptM, CompM } from './VIEW';
@@ -24,7 +24,7 @@ import { AiOutlineFieldTime } from "react-icons/ai";
 
 export const StyledDiv = styled.div`
 display: flex;
-background-color: black;
+background-color: white;
 color: white;
 
 width:1200px;
@@ -39,10 +39,18 @@ position: fixed;
 left: 50px;
 width: 1150px;
 height: 700px;
+> img {
+  width:100%;
+  height:100%;
+  position: absolute;
+  z-index: 1;
+}
 `;
 export const TBDiv = styled.div`
 height:80px;
 width:1150px;  
+position: relative;
+z-index: 2;
 `;
 export const ScreenDiv = styled.div`
 height:700px;
@@ -180,7 +188,11 @@ export const GNBRecent = styled.div`
 
 export default function Home() {
   const dispatch = useDispatch();
-  const emp_id = 1;
+
+  const menuData = useSelector(state => state.gnbMenu.menu);
+  const favorData = useSelector(state => state.gnbMenu.favor);
+
+  const emp_id = useSelector(state => state.gnbMenu.key);
 
   useEffect(() => {
     GnbMenuApi(emp_id).then(function (response) {
@@ -189,15 +201,16 @@ export default function Home() {
     GnbFavorApi(emp_id).then(function (response) {
       dispatch(favor(response.data.data));
     });
-    dispatch(recent(emp_id))
+    dispatch(recent(emp_id));
+    profileAPI(emp_id).then(function (response) {
+      dispatch(profileList(response.data.data));
+    });
   }, [emp_id, dispatch]);
-  
-  const menuData = useSelector(state => state.gnbMenu.menu);
-  const favorData = useSelector(state => state.gnbMenu.favor);
 
   return (
     <StyledDiv>
-      <BgiDiv style={{backgroundImage : `/img/bgi.jpg)`}}>
+      <BgiDiv >
+        <img src={`/img/bgi.jpg`} alt='bgi'/>
         <TBDiv><TB /></TBDiv>
         <ScreenDiv>
           <Routes>
@@ -216,27 +229,21 @@ export default function Home() {
       </GNBIcon>
       <GNBMenu className={`menu main ${useSelector(state => state.gnbSwitch.menu) ? 'true' : 'false'}`}>
         <div>
-          <AiOutlineMenu style={{width:'30px', height:'30px', marginLeft:'10px', marginTop:'10px'}} onClick={() => {dispatch(menu_on())}} />
-          <AiOutlineStar style={{width:'30px', height:'30px', marginLeft:'30px', marginTop:'10px'}} onClick={() => {dispatch(favor_on())}} />
-          <AiOutlineFieldTime style={{width:'30px', height:'30px', marginLeft:'30px', marginTop:'10px'}} onClick={() => {dispatch(recent_on())}} />
+          <GnbTop />
           <hr />
         </div>
         <MenuList value={menuData}/>
       </GNBMenu>
       <GNBFav className={`main ${useSelector(state => state.gnbSwitch.favor) ? 'true' : 'false'}`}>
         <div>
-          <AiOutlineMenu style={{width:'30px', height:'30px', marginLeft:'10px', marginTop:'10px'}} onClick={() => {dispatch(menu_on())}} />
-          <AiOutlineStar style={{width:'30px', height:'30px', marginLeft:'30px', marginTop:'10px'}} onClick={() => {dispatch(favor_on())}} />
-          <AiOutlineFieldTime style={{width:'30px', height:'30px', marginLeft:'30px', marginTop:'10px'}} onClick={() => {dispatch(recent_on())}} />
+          <GnbTop />
           <hr />
         </div>
-        <FavList value={favorData}/>
+        <FavList value={favorData} deleteApi={GnbFavorDeleteApi} favorApi={GnbFavorApi}/>
       </GNBFav>
       <GNBRecent className={`main ${useSelector(state => state.gnbSwitch.recent) ? 'true' : 'false'}`}>
         <div>
-          <AiOutlineMenu style={{width:'30px', height:'30px', marginLeft:'10px', marginTop:'10px'}} onClick={() => {dispatch(menu_on())}} />
-          <AiOutlineStar style={{width:'30px', height:'30px', marginLeft:'30px', marginTop:'10px'}} onClick={() => {dispatch(favor_on())}} />
-          <AiOutlineFieldTime style={{width:'30px', height:'30px', marginLeft:'30px', marginTop:'10px'}} onClick={() => {dispatch(recent_on())}} />
+          <GnbTop />
         <hr />
         </div>
         <div>최근기록</div><div>x</div>
@@ -247,4 +254,25 @@ export default function Home() {
 
     </StyledDiv>
   );
+}
+
+export const Top = styled.div`
+display: flex;
+> * {
+  width: 30px;
+  height: 30px;
+  margin-left: 15px;
+  margin-right: 15px;
+  margin-top: 14px;
+} 
+`
+export function GnbTop(){
+  const dispatch = useDispatch();
+  return (
+    <Top>
+      <AiOutlineMenu onClick={() => {dispatch(menu_on())}} />
+      <AiOutlineStar onClick={() => {dispatch(favor_on())}} />
+      <AiOutlineFieldTime onClick={() => {dispatch(recent_on())}} />
+    </Top>
+  )
 }

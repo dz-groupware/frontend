@@ -1,3 +1,4 @@
+import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 
 export const StyledProfile = styled.div`
@@ -24,17 +25,22 @@ color: black;
 `
 
 export default function Profile() {
+  const datas = useSelector(state => state.gnbMenu.profileList);
+  const emp_id = useSelector(state => state.gnbMenu.key);
 
-  const dummyData = JSON.parse('{"p_img":"사원1", "emp_name":"사원1", "comp_name":"회사A", "dept_name":"부서A"}');
-
-  return (
-    <StyledProfile>
-      <img src={'/img/'+dummyData['p_img']+'.png'} alt='p_img' />
-      <div>
-          <div id="profile_name">{dummyData['emp_name']}</div>
-          <div>{dummyData['comp_name']} || {dummyData['dept_name']}</div>
-      </div>
-    </StyledProfile>
-  );
+  for(let data of datas) {
+    if (data['empId'] === emp_id) {
+      return(
+      <StyledProfile>
+        <img src={'/img/'+data['pimg']+'.png'} alt='p_img' />
+        <div>
+          <div id="profile_name">{data['name']}</div>
+          <div>{data['compName']} || {data['deptName']}</div>
+        </div>
+      </StyledProfile>
+      )
+    }
+  }
+  return null;
 }
   

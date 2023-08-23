@@ -1,3 +1,4 @@
+import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 
 export const StyledModal = styled.div`
@@ -7,30 +8,41 @@ margin:0;
 
 > table {
   width: 450px;
-
-  > .tHeader {
-    background-color: rgb(230,230,250);
-    text-align : center;
-    font-weight: bold;
+  > tbody {
+    #tHeader {
+      background-color: rgb(230,230,250);
+      text-align : center;
+      font-weight: bold;
+    } 
+    > tr {
+      > nth:child(0) {
+        {width: 150px;
+      }
+      > nth:child(1) {
+        {width: 200px;
+      }
+      > nth:child(2) {
+        {width: 100px;
+      }
+    }
   }
 }
-
 `
 export default function PosiList() {
-  const dummyData = JSON.parse('[{"emp_id":"1", "comp_name":"회사A", "dept_name":"부서A"}, {"emp_id":"4", "comp_name":"회사A", "dept_name":"부서B"}]')
-  const emp_id=1;
+  const datas = useSelector(state => state.gnbMenu.profileList);
+  const emp_id = useSelector(state => state.gnbMenu.key);
 
   return (
     <StyledModal>
       <table>
         <tbody>
-        <tr className='tHeader'>
-          <td style={{width:'150px'}}>회사명</td><td style={{width:'200px'}}>부서명(관리부서)</td><td style={{width:'100px'}}>상태</td>
+        <tr id='tHeader'>
+          <td>회사명</td><td>부서명(관리부서)</td><td>상태</td>
         </tr>
           {
-            dummyData.map((a, i) => (
+            datas.map((a, i) => (
               <tr key={i}>
-              <td><input type='radio' name='a' value={a['emp_id']}/>&nbsp;{a['comp_name']}</td><td>&nbsp;&nbsp;{a['dept_name']}</td><td>{emp_id === a['emp_id'] && <Using />}</td>
+              <td><input type='radio' name='a' value={a['empId']}/>&nbsp;{a['compName']}</td><td>&nbsp;&nbsp;{a['deptName']}</td><td>{emp_id === a['empId'] && <Using />}</td>
             </tr>
             ))                   
           }
@@ -39,6 +51,7 @@ export default function PosiList() {
     </StyledModal>
   );
 }
+
 export function Using(){
   return (
       <div style={{color: 'rgb(40,175,20)', display:'flex', justifyContent:'center'}}>

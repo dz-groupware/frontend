@@ -1,13 +1,19 @@
+import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 
 import styled from 'styled-components';
+import { AiOutlineSearch, AiOutlineBell, AiOutlineMore, AiOutlineDeploymentUnit } from "react-icons/ai";
+
+import {profile, search, alert, org, set} from '../utils/Slice';
 
 import Profile from '../components/TB/Profile'
 import FavorList from '../components/TB/FavorList'
-import {ProfileModal, SearchModal, AlertModal, OrgModal, SetModal} from '../components/TB/Modal';
 
-import { AiOutlineSearch, AiOutlineBell, AiOutlineMore, AiOutlineDeploymentUnit } from "react-icons/ai";
-import { useState } from 'react';
+import ProfileModal from '../components/TB/ProfileModal';
+import SearchModal from '../components/TB/SearchModal';
+import AlertModal from '../components/TB/AlertModal';
+import OrgModal from '../components/TB/OrgModal';
+import SetModal from '../components/TB/SetModal';
 
 export const StyledTB = styled.div`
 display: flex;
@@ -52,8 +58,32 @@ right:0px;
 `
 
 export default function TB() {
-  const [open, setOpen] = useState([false, false, false, false, false]);
-
+  const dispatch = useDispatch();
+  const profileOpen = useSelector(state => state.modalSwitch.profile);
+  const searchOpen = useSelector(state => state.modalSwitch.search);
+  const alertOpen = useSelector(state => state.modalSwitch.alert);
+  const orgOpen = useSelector(state => state.modalSwitch.org);
+  const setOpen = useSelector(state => state.modalSwitch.set);
+  
+  // modal을 키고 끄는 메서드
+  function ModalSwitch(type){
+    if(type === 'profile'){
+      dispatch(profile());
+    }
+    if(type === 'search'){
+      dispatch(search());
+    }
+    if(type === 'alert'){
+      dispatch(alert());
+    }
+    if(type === 'org'){
+      dispatch(org());
+    }
+    if(type === 'set'){
+      dispatch(set());
+    }
+  }
+  
   return (
     <StyledTB>
       <div id='logo'>
@@ -66,21 +96,21 @@ export default function TB() {
         <FavorList/>
       </div>
 
-      <div id='prf' onClick={() => {setOpen([true, false, false, false, false])}}>        
+      <div id='prf' onClick={() => {ModalSwitch('profile')}}>        
         <Profile />
-        {open[0] && <ProfileModal open={open} setOpen={setOpen}/>}
+        {profileOpen && <ProfileModal api={ModalSwitch}/>}
       </div>
 
       <IconDiv >
-        <AiOutlineSearch onClick={() => {console.log('click');setOpen([false, true, false, false, false])}}/>
-        <AiOutlineBell onClick={() => {console.log('click');setOpen([false, false, true, false, false])}}/>
-        <AiOutlineDeploymentUnit onClick={() => {console.log('click');setOpen([false, false, false, true, false])}}/>
-        <AiOutlineMore onClick={() => {console.log('click');setOpen([false, false, false, false, true])}}/>
+        <AiOutlineSearch onClick={() => {ModalSwitch('search')}}/>
+        <AiOutlineBell onClick={() => {ModalSwitch('alert')}}/>
+        <AiOutlineDeploymentUnit onClick={() => {ModalSwitch('org')}}/>
+        <AiOutlineMore onClick={() => {ModalSwitch('set')}}/>
       </IconDiv>
-      {open[1] && <SearchModal  open={open} setOpen={setOpen}/>}
-      {open[2] && <AlertModal  open={open} setOpen={setOpen}/>}
-      {open[3] && <OrgModal open={open} setOpen={setOpen} />}
-      {open[4] && <SetModal  open={open} setOpen={setOpen}/>}
+      {searchOpen && <SearchModal api={ModalSwitch} />}
+      {alertOpen && <AlertModal api={ModalSwitch}/>}
+      {orgOpen && <OrgModal api={ModalSwitch}/>}
+      {setOpen && <SetModal api={ModalSwitch}/>}
     </StyledTB>
   );
 }

@@ -22,7 +22,6 @@ background-color: white;
 }
 `
 
-
 export default function EmpList(props){
 
     console.log(props.value);
@@ -30,7 +29,7 @@ export default function EmpList(props){
         <div style={{overflow: "scroll", height: "95%" }}>
         {
             props.value.map ((a, i) => (
-                <EmpItem >
+                <EmpItem onClick={()=>{props.api(a)}}>
                     <div>
                         <img src={'/img/'+a['pimg']+'.png'} alt='p_img' />
                     </div>

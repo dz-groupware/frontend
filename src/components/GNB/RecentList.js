@@ -1,19 +1,44 @@
+import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 
 export default function RecentList() {
-  const dummyData = JSON.parse('[{"menu_name":"/", "menu_id":"1"}, {"menu_name":"공지사항", "menu_id":"2"}]')
+  
+  const recentData = useSelector(state => state.gnbMenu.recent);
 
+  console.log('recent list : ', recentData, typeof(recentData));
+if (typeof(recentData) === 'string') {
   return (
     <>
       {
-        dummyData.map((a, i) => (
-          <Link to={a['menu_name']} key={'recent'+i}>
-          <RecentItem value={a['menu_name']} />
+        JSON.parse(recentData).map((a, i) => (
+          <div style={{display:'flex'}}>
+          <Link to={a['name']} key={a['menuId']+'recent'+i}>
+          <RecentItem value={a['name']} />
           </Link>
+          <span style={{position: 'absolute', right: '10px', marginTop: '15px'}}>X</span>
+          </div>
         ))
       }
     </>
   );
+}
+else {
+  return (
+    <>
+      {
+        recentData.map((a, i) => (
+          <div style={{display:'flex'}}>
+          <Link to={a['name']} key={a['menuId']+'recent'+i}>
+          <RecentItem value={a['name']} />
+          </Link>
+          <span style={{position: 'absolute', right: '10px', marginTop: '15px'}}>X</span>
+          </div>
+        ))
+      }
+    </>
+  );
+}
+  
     
 }
   

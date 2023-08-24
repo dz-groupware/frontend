@@ -20,6 +20,9 @@ import { AiOutlineMenu } from "react-icons/ai";
 import { AiOutlineStar } from "react-icons/ai";
 import { AiOutlineFieldTime } from "react-icons/ai";
 
+import Sys from '../components/GNBForm/Sys';
+import ImageTest from '../components/GNBForm/ImageTest';
+
 //styled-component
 
 export const StyledDiv = styled.div`
@@ -218,6 +221,8 @@ export default function Home() {
         <TBDiv><TB /></TBDiv>
         <ScreenDiv>
           <Routes>
+            <Route path="/test" element={<ImageTest />} />
+            <Route path="/시스템" element={<Sys />} />
             <Route path="/회사관리" element={<CompM />} />
             <Route path="/부서관리" element={<DeptM />} />
             <Route path="/사원관리" element={<EmpM />} />
@@ -250,9 +255,9 @@ export default function Home() {
           <GnbTop />
         <hr />
         </div>
-        <div>최근기록</div><div>x</div>
+        <div>최근기록<span>x</span></div>
         <div>
-          <RecentList />
+          <RecentList/>
         </div>
       </GNBRecent>
 

@@ -74,3 +74,15 @@ export function orgEmpListApi(type = "", text = ""){
         });
     }
 }
+
+
+export function menuDetailApi(dept_id){  
+    console.log("dept_id : ", dept_id)
+    return axios({
+        url: `/Modal/org/empList?deptId=${dept_id}`,
+        method:'get',
+        baseURL : 'http://localhost:8080'
+    });
+    
+}
+

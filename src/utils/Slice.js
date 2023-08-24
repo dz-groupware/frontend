@@ -78,9 +78,7 @@ export const recentSlice = createSlice({
         recent: JSON.parse('[{"empId": "","menuId": "","parId": "","name": "","iconUrl": ""}]'),
     },
     reducers: {
-        menu:(state, action) => {state.menu = action.payload;},
-        favor:(state, action) => {state.favor = action.payload;},
-        remove:(state, action) => {
+        load:(state, action) => {
             if (localStorage.getItem(action.payload)) {
                 console.log(`[recet] emp_id:${action.payload} is not null`)
                 state.recent = localStorage.getItem(action.payload)
@@ -89,6 +87,8 @@ export const recentSlice = createSlice({
                 localStorage.setItem(`${action.payload}`, '[{"empId": "","menuId": "","parId": "","name": "","iconUrl": ""}]')
             };
         },
+        add:(state, action) => { state.recent = state.recent + action.payload },
+        remove:(state, action) => {},
     }
 })
 export const modalSlice = createSlice({
@@ -111,6 +111,6 @@ export const modalSlice = createSlice({
 
 export const {hover_on, menu_on, favor_on, recent_on} = gnbSlice.actions;
 export const {menu, favor, recent, profileList, key} = menuSlice.actions;
-export const {remove} = recentSlice.actions;
+export const {load} = recentSlice.actions;
 export const {profile, search, alert, org, set} = modalSlice.actions;
 

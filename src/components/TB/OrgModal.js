@@ -115,6 +115,10 @@ export default function OrgModal(props){
   const [empList, setEmpList] = useState(JSON.parse('[{"id":"", "name":""}]'));
   const [open, setOpen] = useState([false]);
   const emp_id = useSelector(state => state.gnbMenu.key);
+
+  const [detail, setDetail] = useState();
+  const [detailOpen, setDetailOpen] = useState();
+
   console.log('in orgModal', open)
   useEffect(() => {
     async function LoadData(emp_id){
@@ -128,6 +132,12 @@ export default function OrgModal(props){
   async function loadEmpList(type, text){
     const res = await orgEmpListApi(type, text);
     setEmpList(res.data.data);
+  }
+
+  function EmpDetailHandler(detailData){
+    console.log('in handler : ', detailData);
+    setDetail(detailData);
+    setDetailOpen(!detailOpen);
   }
     return (
       <ModalBackdrop onClick={() => {props.api('org')}}>
@@ -168,10 +178,10 @@ export default function OrgModal(props){
               
             </div>
             <div id='empList'>
-              <EmpList value={empList}/>
+              <EmpList value={empList} api={EmpDetailHandler}/>
             </div>
             <div id='empDetail'>
-
+              {detailOpen && <EmpDetail list={detail}/>}
           </div>
         </div>
         </div>
@@ -257,4 +267,27 @@ export default function OrgModal(props){
         }
       </>
     )
+  }
+
+  export function EmpDetail(props) {
+
+    console.log('emp detail : ', props.list)
+    return (
+      <div>
+            <div style={{display: 'flex'}}>
+                <img src={'/img/'+props.list['pimg']+'.png'} alt='p_img'  style={{width:'50px', height:'50px'}}/>
+                <div>
+                <p>{props.list['name']}</p>
+                <p>{props.list['loginId']}</p>
+                </div>
+                
+            </div>
+            <hr />
+            <table>
+                <tr>
+                    <td style={{backgroundColor:'grey'}}>전화번호</td><td>{props.list['number']}</td>
+                </tr>
+            </table>
+      </div>
+  )
   }

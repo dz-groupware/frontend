@@ -1,25 +1,72 @@
-import logo from './logo.svg';
-import './App.css';
+import CompanyMgmtPage from "./pages/CompanyMgmtPage";
+import React from 'react';
+import { Provider } from 'react-redux';
+import { createSlice, configureStore } from '@reduxjs/toolkit';
 
-function App() {
+
+
+
+
+const companySlice = createSlice({
+  name: 'company',
+  initialState: {
+    info: {
+      code: '',
+      enabledYn: '',
+      name: '',
+      abbr: '',
+      businessType: '',
+      repName: '',
+      repIdNum: '',
+      repTel: '',
+      businessNum: '',
+      corpType: '',
+      corpNum: '',
+      establishmentDate: '',
+      openingDate: '',
+      closingDate: '',
+      address: ''
+    },
+    isVisible: false
+  },
+  reducers: {
+    updateInfo: (state, action) => {
+      state.info = action.payload;
+    },showForm: (state) => {
+      state.isVisible = true;
+    },
+    hideForm: (state) => {
+      state.isVisible = false;
+    },
+    
+  }
+});
+
+const store = configureStore({
+  reducer: {
+    company: companySlice.reducer,
+  }
+});
+
+
+export default function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Provider store={store}>
+      
+        <div className="App">
+        <CompanyMgmtPage />
+        {/* <BrowserRouter>
+                <Routes>
+                    <Route path="/" element={<CompanyMgmtPage />} /> 
+                    <Route path="/companyMgmtForm" element={<CompanyMgmtForm />} />
+                </Routes>
+            </BrowserRouter> */}
+        </div>
+      
+    </Provider>
   );
 }
 
-export default App;
+
+
+export const { updateInfo, showForm, hideForm } = companySlice.actions;

@@ -3,6 +3,7 @@ import { AiOutlineStar, AiOutlineInfoCircle, AiOutlineSearch, AiFillCaretDown, A
 import { MdOutlineRefresh } from 'react-icons/md';
 
 import axios from 'axios';
+import { useState } from 'react';
 
 export const Module = styled.div`
 background-color: white;
@@ -48,7 +49,7 @@ margin:5px;
 width: 50%;
 color: black;
 height: 550px;
-> table > tbody{
+> form > table > tbody{
     border-collapse: collapse;
     >tr {
       border: 1px solid gray;
@@ -65,12 +66,19 @@ height: 550px;
         display: flex;
       }
     }
+    > tr > td > #DnDBox {
+      width: 400px;
+      height: 300px;
+      background-color: yellow;
+    }
 
 }
 
 `;
 
 export default function Sys(){
+  const [isDragging, setIsDragging] = useState(false);
+  const [iconFile, setIconFile] = useState();
     const data = JSON.parse(`
     [{"menu_id":"3","par_id":"3","menu_name":"부서관리","icon_url":null},{"menu_id":"2","par_id":"2","menu_name":"사원관리","icon_url":null},{"menu_id":"3","par_id":"3","menu_name":"부서관리","icon_url":null},{"menu_id":"2","par_id":"2","menu_name":"사원관리","icon_url":null},{"menu_id":"1","par_id":"1","menu_name":"공지사항","icon_url":null}, {"menu_id":"1","par_id":"1","menu_name":"공지사항","icon_url":null}, {"menu_id":"3","par_id":"3","menu_name":"부서관리","icon_url":null}, {"menu_id":"3","par_id":"3","menu_name":"부서관리","icon_url":null}, {"menu_id":"2","par_id":"2","menu_name":"사원관리","icon_url":null},{"menu_id":"1","par_id":"1","menu_name":"공지사항","icon_url":null},{"menu_id":"2","par_id":"2","menu_name":"사원관리","icon_url":null},{"menu_id":"3","par_id":"3","menu_name":"부서관리","icon_url":null},{"menu_id":"4","par_id":"4","menu_name":"회사관리","icon_url":null},{"menu_id":"2","par_id":"2","menu_name":"사원관리","icon_url":null},{"menu_id":"3","par_id":"3","menu_name":"부서관리","icon_url":null},{"menu_id":"","par_id":"","menu_name":"","icon_url":""},{"menu_id":"3","par_id":"3","menu_name":"부서관리","icon_url":null},{"menu_id":"3","par_id":"3","menu_name":"부서관리","icon_url":null},{"menu_id":"3","par_id":"3","menu_name":"부서관리","icon_url":null},{"menu_id":"2","par_id":"2","menu_name":"사원관리","icon_url":null},{"menu_id":"3","par_id":"3","menu_name":"부서관리","icon_url":null}]
     `);
@@ -84,10 +92,28 @@ export default function Sys(){
 //        const name =  e.target.name.value;
 //        const enabledYN =  e.target.enabledYN.value;
 //        const sortOrder =  e.target.sortOrder.value;
-        const id = 24;
+        const id = 207;
 
 //        console.log(id, name, enabledYN, sortOrder)
 
+        // 이미지 데이터 보내기
+        try {
+            await axios({
+                url: `/setting/menu/img`,
+                method:'post',
+                baseURL : 'http://localhost:8080',
+                headers: { 'Content-Type': 'multipart/form-data' },
+                data:{
+                    //id : id,
+                    iconFile:  iconFile
+                }
+            });
+            console.log(iconFile);
+            console.log('successed sending img...');
+        } catch (error) {
+            console.log('failed sending img...');
+        }
+        
         // form 데이터 보내기 
         try {
             await axios({
@@ -105,27 +131,30 @@ export default function Sys(){
         } catch (error) {
             console.log('failed sending Data...');
         }
-        
-
-        // 이미지 데이터 보내기
-        try {
-            await axios({
-                url: `/setting/menu/img`,
-                method:'post',
-                baseURL : 'http://localhost:8080',
-                headers: { 'Content-Type': 'multipart/form-data' },
-                data:{
-                    id : id,
-                    iconFile:  e.target.iconFile.files[0]
-                }
-            });
-            console.log('successed sending img...');
-        } catch (error) {
-            console.log('failed sending img...');
-        }
-
-
     }
+  const onDragEnter = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(true);
+  };
+  const onDragLeave = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+  };
+  const onDragOver = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.dataTransfer.files) {
+      setIsDragging(true);
+    }
+  };
+  const onDrop = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIconFile(e.dataTransfer.files[0]);
+    setIsDragging(false);
+  };
     return (
         <Module>
             <Nav>
@@ -159,9 +188,13 @@ export default function Sys(){
                         <tr><td>사용여부</td><td id='enabledYN'><input type='radio' value='1' name='enabledYN'/>사용<input type='radio' value='0'  name='enabledYN' />미사용</td></tr>
                         <tr><td>정렬</td><td><input type='number' id='sortOrder' /><AiOutlineCaretUp /><AiFillCaretDown /></td></tr>
                         <tr><td>아이콘(48*44)<MdOutlineRefresh /></td>
-                        <input type='file' id="iconFile"/>
-                        <td className='flex'>
-                        <hr/></td></tr>
+                        <td style={{display: 'block'}}>
+                        <input type='file' id="iconFile" onChange={(e) => {console.log(e.target.files[0]);setIconFile(e.target.files[0])}}/>
+                        <hr/>
+                        <div id="DnDBox" onDragEnter={onDragEnter} onDragLeave={onDragLeave} onDragOver={onDragOver} onDrop={onDrop} isDragging={isDragging}>
+                          이미지 가져오기
+                        </div>
+                        </td></tr>
                       </tbody>
                     </table>
                     <button type='submit'>저장</button>
@@ -220,3 +253,4 @@ font-size: medium;
       </MenuItem>
     );
   }     
+

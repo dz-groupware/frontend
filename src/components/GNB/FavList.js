@@ -5,7 +5,8 @@ import styled from 'styled-components';
 import {favor, recent} from '../../utils/Slice';
 
 export const ListBox = styled.div`
-background-color: rgb(21,21,72);
+background-color: rgb(45,49,62);
+height: 100%;
 
 > div {
   font-size: 20px;

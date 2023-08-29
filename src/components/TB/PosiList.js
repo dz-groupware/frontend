@@ -32,6 +32,7 @@ export default function PosiList() {
   const datas = useSelector(state => state.gnbMenu.profileList);
   const emp_id = useSelector(state => state.gnbMenu.key);
 
+  console.log(datas)
   return (
     <StyledModal>
       <table>

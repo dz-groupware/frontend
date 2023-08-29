@@ -7,7 +7,7 @@ export default function IconList(props) {
       {
         props.value.map((a, i) => (
           <Link to={a['name']} key={'icon'+i}>
-          <img src={`/img/${a['iconUrl']}.png`} alt={a['name']}/>
+          <img src={a['iconUrl']} alt={a['name']}/>
           </Link>
         ))
       }

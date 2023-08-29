@@ -2,7 +2,33 @@ import styled from 'styled-components';
 import PosiList from './PosiList'
 import { useSelector } from 'react-redux';
 
-export const ModalBackdrop = styled.div`
+export default function ProfileModal(props) {
+  const data = useSelector(state => state.gnbMenu.profileList)[0];
+
+  return(
+    <ModalBackdrop onClick={() => {props.api('profile')}}>
+      <ModalView onClick={(e) => e.stopPropagation()}>
+        <br />
+        <div>
+          <img src={data['imageUrl']} alt='p_img' />
+          <div>
+            <div id="profile_name">{data['name']} / {data['loginId']}</div>
+            <div>{data['nameTree']}</div>
+            <p>최근접속: 2023-07-12-22:30 | {data['lastIp']}(현재: {data['lastIp']})</p>
+          </div>
+        </div>
+        <div id='tableName'><div> • 회사정보</div></div>
+        <PosiList />
+        <br />
+        <div id='modal_btn'>
+          <ExitBtn onClick={() => {props.api('profile')}}>취소</ExitBtn>
+          <DoneBtn onClick={() => {props.api('profile')}}>확인</DoneBtn>
+        </div>
+      </ModalView>
+    </ModalBackdrop>
+  )
+}
+  export const ModalBackdrop = styled.div`
   // Modal이 떴을 때의 배경을 깔아주는 CSS를 구현
   z-index: 1; //위치지정 요소
   position: fixed;
@@ -15,6 +41,8 @@ export const ModalBackdrop = styled.div`
   left : 0;
   right : 0;
   bottom : 0;
+  width:100%;
+  height:100%;
 `;
 export const ModalView = styled.div`
   // Modal창 CSS를 구현합니다.
@@ -29,7 +57,7 @@ export const ModalView = styled.div`
   heigth: 200px;
   color: black;
   background-color: #ffffff;
-
+  z-index:2;
   > div {
     display: flex;
 
@@ -108,37 +136,3 @@ width: 100px;
 height: 40px;
 align-items : center;
 `;
-
-
-export default function ProfileModal(props) {
-    const datas = useSelector(state => state.gnbMenu.profileList);
-    const emp_id = useSelector(state => state.gnbMenu.key);
-  
-    for(let data of datas) {
-      if (data['empId'] === emp_id) {
-        return(
-          <ModalBackdrop onClick={() => {props.api('profile')}}>
-            <ModalView onClick={(e) => e.stopPropagation()}>
-              <br />
-              <div>
-                <img src={'/img/'+data['pimg']+'.png'} alt='p_img' />
-                <div>
-                  <div id="profile_name">{data['name']}</div>
-                  <div>{data['compName']} || {data['deptName']}</div>
-                  <p>최근접속: 2023-07-12-22:30 | 1.254.217.5(현재: 1.254.217.5)</p>
-                </div>
-              </div>
-              <div id='tableName'><div> • 회사정보</div></div>
-              <PosiList />
-              <br />
-              <div id='modal_btn'>
-                <ExitBtn onClick={() => {props.api('profile')}}>취소</ExitBtn>
-                <DoneBtn onClick={() => {props.api('profile')}}>확인</DoneBtn>
-              </div>
-            </ModalView>
-          </ModalBackdrop>
-        )
-      }
-    }
-    return null;
-  }

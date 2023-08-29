@@ -7,7 +7,6 @@ import { AiOutlineSearch, AiOutlineBell, AiOutlineMore, AiOutlineDeploymentUnit 
 import {profile, search, alert, org, set} from '../utils/Slice';
 
 import Profile from '../components/TB/Profile'
-import FavorList from '../components/TB/FavorList'
 
 import ProfileModal from '../components/TB/ProfileModal';
 import SearchModal from '../components/TB/SearchModal';
@@ -17,39 +16,42 @@ import SetModal from '../components/TB/SetModal';
 
 export const StyledTB = styled.div`
 display: flex;
+justify-content: space-between;
 position: relative;
 color: white;
 height:100%;
 width:100%;
 
 > #logo {
-  margin-left: 10px;
+  margin-left: 20px;
+  > a {
+    text-decoration: none; 
+    > h1 {
+      color: rgb(45,49,62);
+    }
+  }
 }
 
-> .favorDiv {
+> div {
   display: flex;
-  width: 600px;
-}
-
-> Profile {
-  display: flex;
-  width:200px;
-}
-
-> #prf {
-  width: 250px;
-}
-> .iconDiv {
-  display: flex;
-  justify-content: space-between;
-  padding-top: 10px;
+  > Profile {
+    position:relative;
+    display: flex;
+    width:200px;
+  }
+  
+  > #prf {
+    di
+    width: 250px;
+  }
+ 
 }
 `
 export const IconDiv = styled.div`
 padding-top: 30px;
 width:180px;
 position: relative;
-right:0px;
+right:50px;
 > * {
   width:30px;
   height:30px;
@@ -92,25 +94,23 @@ export default function TB() {
         </Link>
       </div>
 
-      <div className='favorDiv'>
-        <FavorList/>
-      </div>
+      <div>
+        <div id='prf' onClick={() => {ModalSwitch('profile')}}>        
+          <Profile />
+          {profileOpen && <ProfileModal api={ModalSwitch}/>}
+        </div>
 
-      <div id='prf' onClick={() => {ModalSwitch('profile')}}>        
-        <Profile />
-        {profileOpen && <ProfileModal api={ModalSwitch}/>}
+        <IconDiv >
+          <AiOutlineSearch onClick={() => {ModalSwitch('search')}}/>
+          <AiOutlineBell onClick={() => {ModalSwitch('alert')}}/>
+          <AiOutlineDeploymentUnit onClick={() => {ModalSwitch('org')}}/>
+          <AiOutlineMore onClick={() => {ModalSwitch('set')}}/>
+        </IconDiv>
+        {searchOpen && <SearchModal api={ModalSwitch} />}
+        {alertOpen && <AlertModal api={ModalSwitch}/>}
+        {orgOpen && <OrgModal api={ModalSwitch}/>}
+        {setOpen && <SetModal api={ModalSwitch}/>}
       </div>
-
-      <IconDiv >
-        <AiOutlineSearch onClick={() => {ModalSwitch('search')}}/>
-        <AiOutlineBell onClick={() => {ModalSwitch('alert')}}/>
-        <AiOutlineDeploymentUnit onClick={() => {ModalSwitch('org')}}/>
-        <AiOutlineMore onClick={() => {ModalSwitch('set')}}/>
-      </IconDiv>
-      {searchOpen && <SearchModal api={ModalSwitch} />}
-      {alertOpen && <AlertModal api={ModalSwitch}/>}
-      {orgOpen && <OrgModal api={ModalSwitch}/>}
-      {setOpen && <SetModal api={ModalSwitch}/>}
     </StyledTB>
   );
 }

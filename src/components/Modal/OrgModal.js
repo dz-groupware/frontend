@@ -33,7 +33,6 @@ export default function OrgModal(props){
     const [open, setOpen] = useState([false]);
     const emp_id = useSelector(state => state.gnbMenu.key);
   
-    console.log('in orgModal',emp_id)
     useEffect(() => {
       async function LoadData(emp_id){
         const res = await orgTreeApi('comp', "","",emp_id);
@@ -93,7 +92,6 @@ export default function OrgModal(props){
 export function DeptList(props) {
     const [data, setData] = useState(['[{"id":"", "name":""}]']);
     const [open, setOpen] = useState([false]);
-    console.log('in deptList')
   
     useEffect(() => {
       async function LoadData(){
@@ -158,7 +156,7 @@ export function EmpList(){
             dummyData.map ((a, i) => (
                 <EmpItem >
                     <div>
-                        <img src={'/img/'+a['p_img']+'.png'} alt='p_img' />
+                        <img src={a['p_img']} alt='p_img' />
                     </div>
                     <div>
                         <div id='title'>
@@ -180,7 +178,7 @@ export function EmpList(){
     return (
         <div>
             <div>
-                <img src={'/img/'+dummyData[0]['p_img']+'.png'} alt='p_img'  style={{width:'50px', height:'50px'}}/>
+                <img src={dummyData[0]['p_img']} alt='p_img'  style={{width:'50px', height:'50px'}}/>
                 <hr />
             </div>
             <table>

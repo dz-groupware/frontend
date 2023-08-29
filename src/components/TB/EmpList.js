@@ -1,5 +1,30 @@
 import styled from 'styled-components';
+import { IoCallOutline } from 'react-icons/io5';
 
+export default function EmpList(props){
+
+    return (
+        <ListDiv>
+        {
+            props.value.map ((a, i) => (
+                <EmpItem onClick={()=>{props.api(a)}}>
+                    <div>
+                        <img src={a['imageUrl']} alt='p_img' />
+                    </div>
+                    <div>
+                        <div id='title'>
+                            {a['name']} / {a['loginId']} / {a['position']}
+                        </div>
+                        <div>{a['nameTree']}</div>
+                        <IoCallOutline /><span>{a['number']}</span>
+                    </div>
+                </EmpItem>
+            ))
+
+        }
+        </ListDiv>
+    )
+}
 
 const EmpItem=styled.div`
 display: flex;
@@ -21,29 +46,14 @@ background-color: white;
     color: gray;
 }
 `
-
-export default function EmpList(props){
-
-    console.log(props.value);
-    return (
-        <div style={{overflow: "scroll", height: "95%" }}>
-        {
-            props.value.map ((a, i) => (
-                <EmpItem onClick={()=>{props.api(a)}}>
-                    <div>
-                        <img src={'/img/'+a['pimg']+'.png'} alt='p_img' />
-                    </div>
-                    <div>
-                        <div id='title'>
-                            {a['name']} / {a['loginId']}
-                        </div>
-                        <div>{a['tree_path']}</div>
-                        <span>{a['number']}</span>
-                    </div>
-                </EmpItem>
-            ))
-
-        }
-        </div>
-    )
+export const ListDiv = styled.div`
+width: 450px;
+height: 100%;
+margin: 5px;
+overflow: scroll;
+height: 100%;
+background-color: rgb(240, 245, 248);
+::-webkit-scrollbar {
+    display: none;
 }
+`;

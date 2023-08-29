@@ -86,3 +86,22 @@ export function menuDetailApi(dept_id){
     
 }
 
+export function searchOrg(type, text){  
+    console.log("dept_id : ", type, text)
+    if (type === 'dept') {
+        return axios({
+            url: `/Modal/org/search?type=${type}&text=%25${text}%25`,
+            method:'get',
+            baseURL : 'http://localhost:8080'
+        });
+    }
+    if (type ==='emp') {
+        return axios({
+            url: `/Modal/org/search?type=${type}&text=%25${text}%25`,
+            method:'get',
+            baseURL : 'http://localhost:8080'
+        });
+    }
+    
+    
+}

@@ -2,8 +2,9 @@ import { Link as defaultLink } from 'react-router-dom';
 import styled from 'styled-components';
 
 export const ListBox = styled.div`
-background-color: rgb(21,21,72);
-color: white;
+background-color: rgb(45,49,62);
+height: 100%;
+
 > div {
   font-size: 20px;
   margin-top: 25px;

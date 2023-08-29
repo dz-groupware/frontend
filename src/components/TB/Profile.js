@@ -25,22 +25,16 @@ color: black;
 `
 
 export default function Profile() {
-  const datas = useSelector(state => state.gnbMenu.profileList);
-  const emp_id = useSelector(state => state.gnbMenu.key);
+  const data = useSelector(state => state.gnbMenu.profileList[0]);
 
-  for(let data of datas) {
-    if (data['empId'] === emp_id) {
-      return(
-      <StyledProfile>
-        <img src={'/img/'+data['pimg']+'.png'} alt='p_img' />
-        <div>
-          <div id="profile_name">{data['name']}</div>
-          <div>{data['compName']} || {data['deptName']}</div>
-        </div>
-      </StyledProfile>
-      )
-    }
-  }
-  return null;
+  return (
+    <StyledProfile>
+      <img src={data['imageUrl']} alt='profileImg' />
+      <div>
+        <div id="profile_name">{data['name']}</div>
+        
+      </div>
+    </StyledProfile>
+  )
 }
   

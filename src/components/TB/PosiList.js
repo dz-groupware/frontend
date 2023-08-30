@@ -8,6 +8,7 @@ margin:0;
 
 > table {
   width: 450px;
+  font-size: x-small;
   > tbody {
     #tHeader {
       background-color: rgb(230,230,250);
@@ -43,7 +44,7 @@ export default function PosiList() {
           {
             datas.map((a, i) => (
               <tr key={i}>
-              <td><input type='radio' name='a' value={a['empId']}/>&nbsp;{a['compName']}</td><td>&nbsp;&nbsp;{a['deptName']}</td><td>{emp_id === a['empId'] && <Using />}</td>
+              <td><input type='radio' name='a' value={a['id']}/>&nbsp;{a['compName']}</td><td>&nbsp;&nbsp;{a['nameTree']}</td><td>{emp_id === a['id'] && <Using />}</td>
             </tr>
             ))                   
           }

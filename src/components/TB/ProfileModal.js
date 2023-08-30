@@ -5,6 +5,7 @@ import { useSelector } from 'react-redux';
 export default function ProfileModal(props) {
   const data = useSelector(state => state.gnbMenu.profileList)[0];
 
+  console.log('in profile : ', data);
   return(
     <ModalBackdrop onClick={() => {props.api('profile')}}>
       <ModalView onClick={(e) => e.stopPropagation()}>
@@ -14,7 +15,7 @@ export default function ProfileModal(props) {
           <div>
             <div id="profile_name">{data['name']} / {data['loginId']}</div>
             <div>{data['nameTree']}</div>
-            <p>최근접속: 2023-07-12-22:30 | {data['lastIp']}(현재: {data['lastIp']})</p>
+            <p>접속 IP : {data['lastIp']}(현재: {data['lastIp']})</p>
           </div>
         </div>
         <div id='tableName'><div> • 회사정보</div></div>

@@ -75,7 +75,7 @@ export default function OrgModal(props){
           </div>
           <div id='content' className="flex">
             <div id='deptList'>
-            {
+            { false &&
               data.map((a, i) => (
                 <div key={a['name']+a['id']}>
                   <div onClick={(i) => {}}><LuBuilding2 />{a['name']}</div>

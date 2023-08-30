@@ -18,10 +18,82 @@ import { BiSolidGrid } from "react-icons/bi";
 import { AiOutlineMenu } from "react-icons/ai";
 import { AiOutlineStar } from "react-icons/ai";
 
-import Sys from '../components/GNBForm/Sys';
-import ImageTest from '../components/GNBForm/ImageTest';
-//styled-component
+import Sys from './Sys';
 
+export default function Home() {
+  const dispatch = useDispatch();
+
+  const menuData = useSelector(state => state.gnbMenu.menu);
+  const favorData = useSelector(state => state.gnbMenu.favor);
+
+  const emp_id = useSelector(state => state.gnbMenu.key);
+
+  const [menuOn, setMenuOn] = useState([false, false]);
+
+  useEffect(() => {
+    GnbMenuApi(emp_id).then(function (response) {
+      dispatch(menu(response.data.data));
+    });
+    GnbFavorApi(emp_id).then(function (response) {
+      dispatch(favor(response.data.data));
+    });
+    profileAPI(emp_id).then(function (response) {
+      dispatch(profileList(response.data.data));
+    });
+  }, [emp_id, dispatch]);
+
+  return (
+    <StyledDiv>
+      <BgiDiv >
+        <img src={`/img/white.jpg`} alt='bgi' id='bgi'/>
+        <TBDiv><TB /></TBDiv>
+        <ScreenDiv>
+          <Routes>
+            <Route path="/메뉴설정" element={<Sys />} />
+            <Route path="/회사관리" element={<CompM />} />
+            <Route path="/부서관리" element={<DeptM />} />
+            <Route path="/사원관리" element={<EmpM />} />
+            <Route path="/공지사항" element={<Test />} />
+            <Route path="/" element={<VIEW />} />
+          </Routes>
+        </ScreenDiv>
+      </BgiDiv>
+      <GNBIcon>   
+        <BiSolidGrid onClick={() => {
+          if (menuOn[0] || menuOn[1]) {
+            setMenuOn([false, false])
+          } else {
+            setMenuOn([true, false])
+          }}} />
+        <hr />
+        <IconList value={menuData}/>
+      </GNBIcon>
+      <GNBMenu className={`menu main ${menuOn[0]} ? 'true' : 'false'}`}>
+        <div>
+          <Top>
+            <AiOutlineMenu onClick={() => {setMenuOn([true, false])}} />
+            <AiOutlineStar onClick={() => {setMenuOn([false, true])}} />
+          </Top>
+          <hr />
+        </div>
+        <MenuList value={menuData}/>
+      </GNBMenu>
+      <GNBFav className={`main ${menuOn[1]} ? 'true' : 'false'}`}>
+        <div>
+          <Top>
+            <AiOutlineMenu onClick={() => {setMenuOn([true, false])}} />
+            <AiOutlineStar onClick={() => {setMenuOn([false, true])}} />
+          </Top>
+          <hr />
+        </div>
+        <FavList value={favorData} deleteApi={GnbFavorDeleteApi} favorApi={GnbFavorApi}/>
+      </GNBFav>
+
+    </StyledDiv>
+  );
+}
+
+//styled-component
 export const StyledDiv = styled.div`
 display: flex;
 background-color: white;
@@ -164,81 +236,6 @@ overflow: hidden;
     margin-bottom: 10px;
   }
 `
-
-export default function Home() {
-  const dispatch = useDispatch();
-
-  const menuData = useSelector(state => state.gnbMenu.menu);
-  const favorData = useSelector(state => state.gnbMenu.favor);
-
-  const emp_id = useSelector(state => state.gnbMenu.key);
-
-  const [menuOn, setMenuOn] = useState([false, false]);
-
-  useEffect(() => {
-    GnbMenuApi(emp_id).then(function (response) {
-      dispatch(menu(response.data.data));
-    });
-    GnbFavorApi(emp_id).then(function (response) {
-      dispatch(favor(response.data.data));
-    });
-    profileAPI(emp_id).then(function (response) {
-      dispatch(profileList(response.data.data));
-    });
-  }, [emp_id, dispatch]);
-
-  return (
-    <StyledDiv>
-      <BgiDiv >
-        <img src={`/img/white.jpg`} alt='bgi' id='bgi'/>
-        <TBDiv><TB /></TBDiv>
-        <ScreenDiv>
-          <Routes>
-            <Route path="/test" element={<ImageTest />} />
-            <Route path="/시스템" element={<Sys />} />
-            <Route path="/회사관리" element={<CompM />} />
-            <Route path="/부서관리" element={<DeptM />} />
-            <Route path="/사원관리" element={<EmpM />} />
-            <Route path="/공지사항" element={<Test />} />
-            <Route path="/" element={<VIEW />} />
-
-          </Routes>
-        </ScreenDiv>
-      </BgiDiv>
-      <GNBIcon>   
-        <BiSolidGrid onClick={() => {
-          if (menuOn[0] || menuOn[1]) {
-            setMenuOn([false, false])
-          } else {
-            setMenuOn([true, false])
-          }}} />
-        <hr />
-        <IconList value={menuData}/>
-      </GNBIcon>
-      <GNBMenu className={`menu main ${menuOn[0]} ? 'true' : 'false'}`}>
-        <div>
-          <Top>
-            <AiOutlineMenu onClick={() => {setMenuOn([true, false])}} />
-            <AiOutlineStar onClick={() => {setMenuOn([false, true])}} />
-          </Top>
-          <hr />
-        </div>
-        <MenuList value={menuData}/>
-      </GNBMenu>
-      <GNBFav className={`main ${menuOn[1]} ? 'true' : 'false'}`}>
-        <div>
-          <Top>
-            <AiOutlineMenu onClick={() => {setMenuOn([true, false])}} />
-            <AiOutlineStar onClick={() => {setMenuOn([false, true])}} />
-          </Top>
-          <hr />
-        </div>
-        <FavList value={favorData} deleteApi={GnbFavorDeleteApi} favorApi={GnbFavorApi}/>
-      </GNBFav>
-
-    </StyledDiv>
-  );
-}
 
 export const Top = styled.div`
 display: flex;

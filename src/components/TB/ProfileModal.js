@@ -1,13 +1,13 @@
 import styled from 'styled-components';
-import PosiList from './PosiList'
 import { useSelector } from 'react-redux';
+
+import PosiList from './PosiList';
 
 export default function ProfileModal(props) {
   const data = useSelector(state => state.gnbMenu.profileList)[0];
 
-  console.log('in profile : ', data);
   return(
-    <ModalBackdrop onClick={() => {props.api('profile')}}>
+    <ModalBackdrop onClick={() => {props.api('profile');}}>
       <ModalView onClick={(e) => e.stopPropagation()}>
         <br />
         <div>
@@ -22,14 +22,15 @@ export default function ProfileModal(props) {
         <PosiList />
         <br />
         <div id='modal_btn'>
-          <ExitBtn onClick={() => {props.api('profile')}}>취소</ExitBtn>
-          <DoneBtn onClick={() => {props.api('profile')}}>확인</DoneBtn>
+          <ExitBtn onClick={() => {props.api('profile');}}>취소</ExitBtn>
+          <DoneBtn onClick={() => {props.api('profile');}}>확인</DoneBtn>
         </div>
       </ModalView>
     </ModalBackdrop>
-  )
+  );
 }
-  export const ModalBackdrop = styled.div`
+
+export const ModalBackdrop = styled.div`
   // Modal이 떴을 때의 배경을 깔아주는 CSS를 구현
   z-index: 1; //위치지정 요소
   position: fixed;

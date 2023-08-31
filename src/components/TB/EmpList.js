@@ -1,8 +1,9 @@
 import styled from 'styled-components';
+
 import { IoCallOutline } from 'react-icons/io5';
 
-export default function EmpList(props){
 
+export default function EmpList(props){
     return (
         <ListDiv>
         {
@@ -20,10 +21,9 @@ export default function EmpList(props){
                     </div>
                 </EmpItem>
             ))
-
         }
         </ListDiv>
-    )
+    );
 }
 
 const EmpItem=styled.div`
@@ -45,7 +45,7 @@ background-color: white;
     > span {
     color: gray;
 }
-`
+`;
 export const ListDiv = styled.div`
 width: 450px;
 height: 100%;

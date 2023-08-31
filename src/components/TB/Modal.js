@@ -1,5 +1,45 @@
 import styled from 'styled-components';
 
+
+export function SearchModal(props){
+    return (
+    <ModalBackdrop onClick={() => {props.api('search')}}>
+        <ModalView onClick={(e) => e.stopPropagation()}>
+        <br />
+        <div>
+            <h2>준비중입니다</h2>
+        </div>
+        </ModalView>
+    </ModalBackdrop>
+    );
+}
+
+export function SetModal(props){
+    return (
+      <ModalBackdrop onClick={() => {props.api('set')}}>
+      <ModalView onClick={(e) => e.stopPropagation()}>
+        <br />
+        <div>
+          <h2>준비중입니다</h2>
+        </div>
+      </ModalView>
+    </ModalBackdrop>
+    );
+}
+
+export function AlertModal(props){
+    return (
+      <ModalBackdrop onClick={() => {props.api('alert')}}>
+      <ModalView onClick={(e) => e.stopPropagation()}>
+        <br />
+        <div>
+          <h2>준비중입니다</h2>
+        </div>
+      </ModalView>
+    </ModalBackdrop>
+    );
+}
+
 export const ModalBackdrop = styled.div`
   // Modal이 떴을 때의 배경을 깔아주는 CSS를 구현
   z-index: 1; //위치지정 요소
@@ -73,17 +113,3 @@ export const ModalView = styled.div`
   }
 
 `;
-export default function SetModal(props){
-    
-    return (
-      <ModalBackdrop onClick={() => {props.api('set')}}>
-      <ModalView onClick={(e) => e.stopPropagation()}>
-        <br />
-        <div>
-          <h2>준비중입니다</h2>
-        </div>
-      </ModalView>
-    </ModalBackdrop>
-  
-    )
-  }

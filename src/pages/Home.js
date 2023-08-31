@@ -4,11 +4,12 @@ import { Route, Routes } from 'react-router-dom';
 
 import styled from 'styled-components';
 
-import { menu, favor, profileList } from '../utils/Slice'
+import { menu, favor, profileList } from '../utils/Slice';
 import { GnbMenuApi, GnbFavorApi, GnbFavorDeleteApi, profileAPI } from '../utils/API';
 
 import TB from './TB';
 import { VIEW, Test, EmpM, DeptM, CompM } from './VIEW';
+import Sys from './Sys';
 
 import MenuList from '../components/GNB/MenuList';
 import IconList from '../components/GNB/IconList';
@@ -18,17 +19,15 @@ import { BiSolidGrid } from "react-icons/bi";
 import { AiOutlineMenu } from "react-icons/ai";
 import { AiOutlineStar } from "react-icons/ai";
 
-import Sys from './Sys';
 
 export default function Home() {
+
+  const [menuOn, setMenuOn] = useState([false, false]);
   const dispatch = useDispatch();
 
   const menuData = useSelector(state => state.gnbMenu.menu);
   const favorData = useSelector(state => state.gnbMenu.favor);
-
   const emp_id = useSelector(state => state.gnbMenu.key);
-
-  const [menuOn, setMenuOn] = useState([false, false]);
 
   useEffect(() => {
     GnbMenuApi(emp_id).then(function (response) {
@@ -43,11 +42,11 @@ export default function Home() {
   }, [emp_id, dispatch]);
 
   return (
-    <StyledDiv>
-      <BgiDiv >
+    <Container>
+      <BgiArea>
         <img src={`/img/white.jpg`} alt='bgi' id='bgi'/>
-        <TBDiv><TB /></TBDiv>
-        <ScreenDiv>
+        <TBArea><TB /></TBArea>
+        <ScreenArea>
           <Routes>
             <Route path="/메뉴설정" element={<Sys />} />
             <Route path="/회사관리" element={<CompM />} />
@@ -56,45 +55,40 @@ export default function Home() {
             <Route path="/공지사항" element={<Test />} />
             <Route path="/" element={<VIEW />} />
           </Routes>
-        </ScreenDiv>
-      </BgiDiv>
-      <GNBIcon>   
+        </ScreenArea>
+      </BgiArea>
+      <GNBIconArea>   
         <BiSolidGrid onClick={() => {
           if (menuOn[0] || menuOn[1]) {
-            setMenuOn([false, false])
+            setMenuOn([false, false]);
           } else {
-            setMenuOn([true, false])
-          }}} />
+            setMenuOn([true, false]);
+          }
+        }}/>
         <hr />
         <IconList value={menuData}/>
-      </GNBIcon>
-      <GNBMenu className={`menu main ${menuOn[0]} ? 'true' : 'false'}`}>
-        <div>
-          <Top>
-            <AiOutlineMenu onClick={() => {setMenuOn([true, false])}} />
-            <AiOutlineStar onClick={() => {setMenuOn([false, true])}} />
-          </Top>
-          <hr />
-        </div>
+      </GNBIconArea>
+      <GNBMenuArea className={`menu main ${menuOn[0]} ? 'true' : 'false'}`}>
+        <TopIconArea>
+          <AiOutlineMenu onClick={() => {setMenuOn([true, false]);}} />
+          <AiOutlineStar onClick={() => {setMenuOn([false, true]);}} />
+        </TopIconArea>
+        <hr />
         <MenuList value={menuData}/>
-      </GNBMenu>
-      <GNBFav className={`main ${menuOn[1]} ? 'true' : 'false'}`}>
-        <div>
-          <Top>
-            <AiOutlineMenu onClick={() => {setMenuOn([true, false])}} />
-            <AiOutlineStar onClick={() => {setMenuOn([false, true])}} />
-          </Top>
-          <hr />
-        </div>
+      </GNBMenuArea>
+      <GNBFavArea className={`main ${menuOn[1]} ? 'true' : 'false'}`}>
+        <TopIconArea>
+          <AiOutlineMenu onClick={() => {setMenuOn([true, false]);}} />
+          <AiOutlineStar onClick={() => {setMenuOn([false, true]);}} />
+        </TopIconArea>
+        <hr />
         <FavList value={favorData} deleteApi={GnbFavorDeleteApi} favorApi={GnbFavorApi}/>
-      </GNBFav>
-
-    </StyledDiv>
+      </GNBFavArea>
+    </Container>
   );
 }
 
-//styled-component
-export const StyledDiv = styled.div`
+export const Container = styled.div`
 display: flex;
 background-color: white;
 color: white;
@@ -104,8 +98,8 @@ height:100%;
 margin: 0;
 background-color: rgb(240, 245, 248);
 
-` 
-export const BgiDiv = styled.div`
+`;
+export const BgiArea = styled.div`
 margin: 0px;
 padding: 0px;
 position: fixed;
@@ -123,19 +117,19 @@ background-color: rgb(240,245,248);
   display: none;
 }
 `;
-export const TBDiv = styled.div`
+export const TBArea = styled.div`
 height:80px;
 width:100%;  
 position: relative;
 z-index: 0;
 `;
-export const ScreenDiv = styled.div`
+export const ScreenArea = styled.div`
 height: 100%;
 width: 100%;
 position: relative;
 z-index: -1;
 `;
-export const GNBIcon = styled.div`
+export const GNBIconArea = styled.div`
 display:block;
 width:50px;
 height: 100%;
@@ -160,7 +154,7 @@ overflow : scroll;
   }
 } 
 `;
-export const GNBMenu = styled.div`
+export const GNBMenuArea = styled.div`
 padding-top: 10px;
 padding-left: 10px;
 position: absolute;
@@ -192,17 +186,8 @@ overflow: hidden;
   margin-top: 7px;
   text-decoration: none;
 }
-
-> div > img {
-  width: 30px;
-  height: 30px;
-  margin-left: 10px;
-  margin-right: 20px;
-  margin-bottom: 10px;
-}
-
 `;
-export const GNBFav = styled.div`
+export const GNBFavArea = styled.div`
 padding-top: 10px;
 padding-left: 10px;
 position: absolute;
@@ -235,9 +220,8 @@ overflow: hidden;
     margin-right: 20px;
     margin-bottom: 10px;
   }
-`
-
-export const Top = styled.div`
+`;
+export const TopIconArea = styled.div`
 display: flex;
 
 > * {
@@ -248,4 +232,4 @@ display: flex;
   margin-top: 9px;
   margin-bottom: 5px;
 } 
-`
+`;

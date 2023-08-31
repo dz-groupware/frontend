@@ -14,7 +14,8 @@ export const menuSlice = createSlice({
         profileList:(state, action) => {state.profileList = action.payload;},
         key:(state, action) => {state.key = action.payload;},
     }
-})
+});
+
 export const recentSlice = createSlice({
     name: 'recent',
     initialState: {
@@ -23,17 +24,16 @@ export const recentSlice = createSlice({
     reducers: {
         load:(state, action) => {
             if (localStorage.getItem(action.payload)) {
-                console.log(`[recet] emp_id:${action.payload} is not null`)
                 state.recent = localStorage.getItem(action.payload)
             } else {
-                console.log(`[recet] emp_id:${action.payload} is null`)
                 localStorage.setItem(`${action.payload}`, '[{"empId": "","menuId": "","parId": "","name": "","iconUrl": ""}]')
             };
         },
         add:(state, action) => { state.recent = state.recent + action.payload },
         remove:(state, action) => {},
     }
-})
+});
+
 export const modalSlice = createSlice({
     name: 'modalSwitch',
     initialState: {
@@ -50,7 +50,7 @@ export const modalSlice = createSlice({
         org:(state) => {state.org = !state.org;},
         set:(state) => {state.set = !state.set;},
     }
-})
+});
 
 export const {menu, favor, recent, profileList, key} = menuSlice.actions;
 export const {load} = recentSlice.actions;

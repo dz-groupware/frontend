@@ -1,37 +1,10 @@
 import { useDispatch } from 'react-redux';
 import { Link as defaultLink } from 'react-router-dom';
+
 import styled from 'styled-components';
 
 import {favor, recent} from '../../utils/Slice';
 
-export const ListBox = styled.div`
-background-color: rgb(45,49,62);
-height: 100%;
-
-> div {
-  font-size: 20px;
-  margin-top: 25px;
-  margin-bottom: 25px;
-  magin-left:10px;
-}
-`
-
-const Link = styled(defaultLink)`
-color: inherit;
-text-decoration: none;
-display: flex;
-
-> p {
-  margin-top: 20px;
-  margin-bottom: 32px;
-}
-
-> span {
-  margin-top: 20px;
-  position: absolute;
-  right: 10px;
-}
-`
 
 export default function FavList(props) {
   const dispatch = useDispatch();
@@ -47,3 +20,24 @@ export default function FavList(props) {
     </ListBox>
   );
 }
+
+export const ListBox = styled.div`
+background-color: rgb(45,49,62);
+height: 100%;
+`;
+const Link = styled(defaultLink)`
+color: inherit;
+text-decoration: none;
+display: flex;
+
+> p {
+  margin-top: 20px;
+  margin-bottom: 32px;
+}
+
+> span {
+  margin-top: 20px;
+  position: absolute;
+  right: 10px;
+}
+`;

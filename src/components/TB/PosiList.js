@@ -1,7 +1,39 @@
 import { useSelector } from 'react-redux';
+
 import styled from 'styled-components';
 
-export const StyledModal = styled.div`
+export default function PosiList() {
+  const datas = useSelector(state => state.gnbMenu.profileList);
+  const emp_id = useSelector(state => state.gnbMenu.key);
+
+  return (
+    <ModalArea>
+      <table>
+        <tbody>
+        <tr id='tHeader'>
+          <td>회사명</td><td>부서명(관리부서)</td><td>상태</td>
+        </tr>
+          {
+            datas.map((a, i) => (
+              <tr key={i}>
+              <td><input type='radio' name='a' value={a['id']}/>&nbsp;{a['compName']}</td><td>&nbsp;&nbsp;{a['nameTree']}</td><td>{emp_id === a['id'] && <Using />}</td>
+            </tr>
+            ))                   
+          }
+        </tbody>
+      </table>
+    </ModalArea>
+  );
+}
+
+export function Using(){
+  return (
+      <div style={{color: 'rgb(40,175,20)', display:'flex', justifyContent:'center'}}>
+          <img src={`${process.env.PUBLIC_URL}/img/use.PNG`} alt='useing' style={{width:'15px', height:'15px', marginTop:'5px'}}/>사용중
+      </div>
+  );
+}
+export const ModalArea = styled.div`
 width:450px;
 height:100px;
 margin:0;
@@ -28,36 +60,4 @@ margin:0;
     }
   }
 }
-`
-export default function PosiList() {
-  const datas = useSelector(state => state.gnbMenu.profileList);
-  const emp_id = useSelector(state => state.gnbMenu.key);
-
-  console.log(datas)
-  return (
-    <StyledModal>
-      <table>
-        <tbody>
-        <tr id='tHeader'>
-          <td>회사명</td><td>부서명(관리부서)</td><td>상태</td>
-        </tr>
-          {
-            datas.map((a, i) => (
-              <tr key={i}>
-              <td><input type='radio' name='a' value={a['id']}/>&nbsp;{a['compName']}</td><td>&nbsp;&nbsp;{a['nameTree']}</td><td>{emp_id === a['id'] && <Using />}</td>
-            </tr>
-            ))                   
-          }
-        </tbody>
-      </table>
-    </StyledModal>
-  );
-}
-
-export function Using(){
-  return (
-      <div style={{color: 'rgb(40,175,20)', display:'flex', justifyContent:'center'}}>
-          <img src={`${process.env.PUBLIC_URL}/img/use.PNG`} alt='useing' style={{width:'15px', height:'15px', marginTop:'5px'}}/>사용중
-      </div>
-  )
-}
+`;

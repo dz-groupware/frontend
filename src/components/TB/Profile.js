@@ -1,7 +1,20 @@
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 
-export const StyledProfile = styled.div`
+export default function Profile() {
+  const data = useSelector(state => state.gnbMenu.profileList[0]);
+
+  return (
+    <ProfileArea>
+      <img src={data['imageUrl']} alt='profileImg' />
+      <div>
+        <div id="profile_name">{data['name']}</div>
+      </div>
+    </ProfileArea>
+  );
+}
+
+export const ProfileArea = styled.div`
 display: flex;
 width: 200px;
 height: 100%;
@@ -22,19 +35,4 @@ color: black;
     margin: 5px;
   }
 }
-`
-
-export default function Profile() {
-  const data = useSelector(state => state.gnbMenu.profileList[0]);
-
-  return (
-    <StyledProfile>
-      <img src={data['imageUrl']} alt='profileImg' />
-      <div>
-        <div id="profile_name">{data['name']}</div>
-        
-      </div>
-    </StyledProfile>
-  )
-}
-  
+`;

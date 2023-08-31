@@ -14,12 +14,12 @@ export default function CompanyMgmtHeader() {
     return (
         <div>
             <Container>
-                <Leftdiv>
+                <MgmtNameArea>
                     <span style={{ fontSize:'15px', fontWeight:'900', margin: '10px' }}>회사관리</span>
                     <FiMonitor style={{ margin: '10px' }} />
                     <GoVideo style={{ margin: '10px' }}/>
-                </Leftdiv>
-                <Rightdiv>
+                </MgmtNameArea>
+                <FavArea>
                     <AiOutlineQuestionCircle style={{ margin: '10px' }} />
                     <GoChecklist style={{ margin: '10px' }}/>
                     <AiOutlineStar 
@@ -29,7 +29,7 @@ export default function CompanyMgmtHeader() {
                         }} 
                         onClick={handleStarClick} // 클릭 이벤트 핸들러 추가
                     />
-                </Rightdiv>
+                </FavArea>
             </Container>
         </div>
     );
@@ -44,12 +44,12 @@ const Container = styled.div`
     
 `;
 
-const Leftdiv = styled.div`
+const MgmtNameArea = styled.div`
     display: flex;
    
 `;
 
-const Rightdiv = styled.div`
+const FavArea = styled.div`
     display: flex;
     
 `;

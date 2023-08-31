@@ -2,36 +2,45 @@ import styled from "styled-components";
 import { BsDot } from "react-icons/bs";
 import { RxCross1 } from "react-icons/rx";
 import { hideForm } from "../../App";
-import { useDispatch } from "react-redux";
-import { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { axiosInstance } from "../../utils/axiosInstance";
 
 
 
-export default function CompanyMgmtInfo({ handleSubmit, initialData  }) {
+export default function CompanyMgmtInfo({ handleSubmit, isCodeDisabled, codeForForm,formData }) {
     const dispatch = useDispatch();
-    const [isFromDB, setIsFromDB] = useState(!!initialData);  // initialData가 있으면 true, 없으면 false
-    const handleDelete = () => {
-        if (isFromDB) {
-             // API 호출을 통해 해당 데이터의 isDeleted 필드를 true로 설정합니다.
-        // 예: axios.post('/api/company/delete', { id: data.id });
-        // 이 API는 데이터를 삭제하는 대신 isDeleted를 true로 설정해야 합니다.
+    const getReduxForm = useSelector(state => state.company.info);
+
+    const handleDelete = async (e) => {
+        if (isCodeDisabled) {
+            try {
+                console.log("getReduxForm:", getReduxForm);
+               await axiosInstance.put(`/api/v1/companies/del/${codeForForm}`,{...getReduxForm});
+               alert("회사 데이터가 삭제되었습니다.");
+               window.location.reload();
+                dispatch(hideForm());
+                } catch (error) {
+                  console.error("Error fetching company data:", error);
+                }
+
         } else {
             alert("작성중이던 내용이 삭제되었습니다.");
             dispatch(hideForm());
+            window.location.reload();
         }
     };
 
     return (
         <Container>
-            <Leftdiv>
+            <InfoArea>
                 <span><BsDot />기본정보</span>
-            </Leftdiv>
-            <Rightdiv>
+            </InfoArea>
+            <ButtonArea>
                 <StyledButton onClick={handleSubmit} type="button">저장</StyledButton>
 
                 <StyledButton onClick={handleDelete}>삭제</StyledButton>
                 <RxCross1 style = {{cursor : "pointer"}} onClick={() => dispatch(hideForm())} />
-            </Rightdiv>
+            </ButtonArea>
         </Container>
     );
 }
@@ -47,7 +56,7 @@ const Container = styled.div`
     height: 40px;
 `;
 
-const Leftdiv = styled.div`
+const InfoArea = styled.div`
     display: flex;
     & > span {
         font-size: 15px;
@@ -59,7 +68,7 @@ const Leftdiv = styled.div`
     }
 `;
 
-const Rightdiv = styled.div`
+const ButtonArea = styled.div`
     display: flex;
     align-items:center;
 `;

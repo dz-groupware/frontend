@@ -12,10 +12,9 @@ export default function CompanyMgmtMain() {
         <div>
             <Container>
                 <StyledCompanyMgmtAside />
-               
-                <Rightdiv>
+                <FormArea>
                     <CompanyMgmtForm/>
-                </Rightdiv>
+                </FormArea>
                 
             </Container>
         </div>
@@ -33,6 +32,6 @@ const StyledCompanyMgmtAside = styled(CompanyMgmtAside)`
   flex:0.3;
 `;
 
-const Rightdiv = styled.div`
+const FormArea = styled.div`
   flex:1.7;
 `;

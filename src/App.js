@@ -6,41 +6,62 @@ import { createSlice, configureStore } from '@reduxjs/toolkit';
 
 
 
+const initialState = {
+  info: {
+    code: '',
+    enabledYn: '',
+    name: '',
+    abbr: '',
+    businessType: '',
+    repName: '',
+    repIdNum: '',
+    repTel: '',
+    businessNum: '',
+    corpType: '',
+    corpNum: '',
+    establishmentDate: '',
+    openingDate: '',
+    closingDate: '',
+    address: '',
+    deletedYn: false
+  },
+  codeForForm: null,
+  isVisible: false,
+  searchList: JSON.parse('[{"":""}]')
+};
+
 
 const companySlice = createSlice({
   name: 'company',
-  initialState: {
-    info: {
-      code: '',
-      enabledYn: '',
-      name: '',
-      abbr: '',
-      businessType: '',
-      repName: '',
-      repIdNum: '',
-      repTel: '',
-      businessNum: '',
-      corpType: '',
-      corpNum: '',
-      establishmentDate: '',
-      openingDate: '',
-      closingDate: '',
-      address: ''
-    },
-    isVisible: false
-  },
+  initialState ,
   reducers: {
+    searchInfo: (state, action) => {
+      state.searchList = action.payload;
+      state.isSearchExecuted = true; 
+    },
     updateInfo: (state, action) => {
       state.info = action.payload;
-    },showForm: (state) => {
+    },
+    showForm: (state, action) => {
       state.isVisible = true;
+      state.codeForForm = action.payload ? action.payload.code : null;
+      state.info = action.payload && action.payload.info
+      ? { ...state.info, ...action.payload.info }
+      : { ...initialState.info };
     },
     hideForm: (state) => {
       state.isVisible = false;
+      state.codeForForm = null;
     },
     
-  }
+  },
 });
+
+
+
+
+
+
 
 const store = configureStore({
   reducer: {
@@ -55,12 +76,7 @@ export default function App() {
       
         <div className="App">
         <CompanyMgmtPage />
-        {/* <BrowserRouter>
-                <Routes>
-                    <Route path="/" element={<CompanyMgmtPage />} /> 
-                    <Route path="/companyMgmtForm" element={<CompanyMgmtForm />} />
-                </Routes>
-            </BrowserRouter> */}
+       
         </div>
       
     </Provider>
@@ -69,4 +85,4 @@ export default function App() {
 
 
 
-export const { updateInfo, showForm, hideForm } = companySlice.actions;
+export const { searchInfo, updateInfo, showForm, hideForm } = companySlice.actions;

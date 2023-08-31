@@ -1,30 +1,63 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import { FiSearch } from "react-icons/fi";
+import { axiosInstance } from "../../utils/axiosInstance";
+import { useDispatch } from "react-redux";
+import { searchInfo } from "../../App";
+
 
 
 export default function CompanyMgmtNav() {
+    const dispatch = useDispatch();
+    const [searchValue, setSearchValue] = useState("");
+    const [selectedOption, setSelectedOption] = useState("");
+
+    const handleSearch = async () => {
+        try {
+            // searchValue와 selectedOption이 빈 문자열일 경우 *로 처리
+            const actualSearchValue = searchValue === "" ? "%25%25" : `%25${searchValue}%25`;
+            const actualSelectedOption = selectedOption === "" ? 2 : `${selectedOption}`;
+
+            const response = await axiosInstance.get(`/api/v1/companies/search?name=${actualSearchValue}&enabledYn=${actualSelectedOption}`);
+
+            
+            // 응답 데이터 처리
+            console.log("API Response:", response.data);
+            dispatch(searchInfo(response.data));
+        } catch (error) {
+            console.error("API Error:", error);
+        }
+        
+    };
+
     return (
         <div>
             <Container>
-                <Leftdiv>
-                    <span style={{ fontSize:'15px', fontWeight:'900', margin: '10px' }}>회사</span>
-                    <input style={{ margin: '10px' }} />
-                    <span style={{ fontSize:'15px', fontWeight:'900', margin: '10px' }}>사용여부</span>
-                    <select style={{ margin: '10px' }} > 
-                    <option>전체</option>
-                    <option>사용</option>
-                    <option>미사용</option>
+                <SearchArea>
+                    <span style={{ fontSize: '15px', fontWeight: '900', margin: '10px' }}>회사</span>
+                    <input
+                        style={{ margin: '10px' }}
+                        value={searchValue}
+                        onChange={(e) => setSearchValue(e.target.value)} />
+                    <span style={{ fontSize: '15px', fontWeight: '900', margin: '10px' }}>사용여부</span>
+                    <select
+                        style={{ margin: '10px' }}
+                        value={selectedOption}
+                        onChange={(e) => setSelectedOption(e.target.value)}
+                    >
+                        <option value="2">전체</option>
+                        <option value="1">사용</option>
+                        <option value="0">미사용</option>
 
                     </select>
-                   
-                </Leftdiv>
-                <Rightdiv>
-                    <SearchButton><FiSearch style={{color: "lightgrey"}}/></SearchButton>
-                </Rightdiv>
+
+                </SearchArea>
+                <ButtonArea onClick={handleSearch}>
+                    <SearchButton><FiSearch style={{ color: "lightgrey" }} /></SearchButton>
+                </ButtonArea>
 
             </Container>
-           
+
         </div>
     );
 }
@@ -38,12 +71,12 @@ const Container = styled.div`
     
 `;
 
-const Leftdiv = styled.div`
+const SearchArea = styled.div`
     display: flex;
     align-items:center;
 `;
 
-const Rightdiv = styled.div`
+const ButtonArea = styled.div`
     display: flex;
     
     padding:10px;

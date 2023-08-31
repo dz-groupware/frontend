@@ -1,42 +1,61 @@
 import styled from 'styled-components';
 import { AiOutlinePlusCircle } from "react-icons/ai";
-import { useDispatch } from 'react-redux';
-import { showForm } from '../../App';
+import { useDispatch, useSelector } from 'react-redux';
+import { resetInfo, showForm } from '../../App';
 import { useEffect, useState } from 'react';
-import axios from 'axios';
+import { axiosInstance } from '../../utils/axiosInstance';
 
 
 
 
 export default function CompanyMgmtAside({ onShowForm }) {
-  const dispatch = useDispatch();
-  const [companyDataList, setCompanyDataList] = useState(null);
+  const dispatch = useDispatch(); 
+  const [companyDataList, setCompanyDataList] = useState([]);
+  const [sortType, setSortType] = useState("default");
+  const searchedDataList = useSelector(state => state.company.searchList);
+  const isSearchExecuted = useSelector(state => state.company.isSearchExecuted);
+
+
+
   useEffect(() => {
-    async function fetchData() {
-      try {
-        const response = await axios.get('/api/companyData'); // 적절한 API endpoint로 수정해야 합니다.
-        setCompanyDataList(response.data);
-      } catch (error) {
-        console.error("Error fetching company data:", error);
-      }
-    }
-
     fetchData();
-  }, []); 
+  }, [searchedDataList]);
 
+
+  
+  async function fetchData() {
+    try {
+
+      const response = await axiosInstance.get('/api/v1/companies/?deletedYn=false');
+      setCompanyDataList(response.data);
+
+    } catch (error) {
+      console.error("Error fetching company data:", error);
+    }
+  };
   if (!companyDataList) {
     return <div>Loading...</div>;
-  }
+  };
 
+  function renderCompanyDataList(dataList) { //dataList는 배열
+    let sortedDataList = Object.keys(dataList).map(key => dataList[key]);
+    
+   
+    // sortType에 따라서 정렬
+    if (sortType === "sortcode") {
+      sortedDataList = sortedDataList.sort((a, b) => a.code.localeCompare(b.code));
+    } else if (sortType === "sortname") {
+      sortedDataList = sortedDataList.sort((a, b) => a.name.localeCompare(b.name));
+    }
+   
+    
+    const elements = dataList.map((data, index) => {
+     
  
-  function renderCompanyDataList(dataList) {
-    const elements = [];
-    Object.keys(dataList).forEach(key => {
-      const data = dataList[key];
-      const CorpTypeStyled = data.corpType === "1" ? CorpType1 : CorpType2;
-      const CorpTypeName = data.corpType === "1" ? "개인" : "법인";
-      const element = (
-        <Wrapper2 key={key} onClick={() => handleCompanyClick(data)}>
+      const CorpTypeStyled = data.corpType === 1 ? CorpType1 : CorpType2;
+      const CorpTypeName = data.corpType === 1 ? "개인" : "법인";
+      return (
+        <Wrapper key={index} onClick={() => handleCompanyClick(data)}>
           <CompanyInfo>
             <div>{data.code}</div>
             <div style={{ marginTop: '5px' }}>{data.name}</div>
@@ -45,41 +64,51 @@ export default function CompanyMgmtAside({ onShowForm }) {
             <div>{data.repName}</div>
             <CorpTypeStyled>{CorpTypeName}</CorpTypeStyled>
           </PersonInfo>
-        </Wrapper2>
+        </Wrapper>
       );
-      elements.push(element);
     });
-
+  
     return elements;
   }
 
-  function handleCompanyClick(company) {
-    dispatch(showForm());
+  async function handleCompanyClick(company) {
+    try {
+      // 회사 정보를 가져옵니다.
+      const response = await axiosInstance.get(`/api/v1/companies/${company.code}`);
+      const fetchedCompanyData = response.data;
+      
+      // 가져온 회사 정보와 코드를 함께 showForm 액션에 전달합니다.
+      dispatch(showForm({ info: fetchedCompanyData }));
+
+
+    } catch (error) {
+      console.error("Error fetching company data by code:", error);
+    }
   }
 
   return (
     <Container>
-      <TopFixedWrapper>
-        <Wrapper1>
+      <NumberOfCompaniesArea>
+        <NumberArea>
           <Element>
-            <span style={{ margin: "5px" , fontWeight: 600}}>회사</span>
-            <span style={{ color: "#308EFC" , fontWeight: 600}}>{Object.keys(companyDataList).length}</span>
-            <span  style={{ margin: "5px" , fontWeight: 600}}>건</span>
+            <span style={{ margin: "5px", fontWeight: 600 }}>회사</span>
+            <span style={{ color: "#308EFC", fontWeight: 600 }}>  {isSearchExecuted ? Object.keys(searchedDataList).length : Object.keys(companyDataList).length}</span>
+            <span style={{ margin: "5px", fontWeight: 600 }}>건</span>
           </Element>
-          <SelectBox>
-            <option>정렬순</option>
-            <option>코드순</option>
-            <option>회사명순</option>
+          <SelectBox onChange={e => setSortType(e.target.value)}>
+            <option value="default">정렬순</option>
+            <option value="sortcode">코드순</option>
+            <option value="sortname">회사명순</option>
           </SelectBox>
-        </Wrapper1>
-      </TopFixedWrapper>
+        </NumberArea>
+      </NumberOfCompaniesArea>
 
 
-      <MiddleFixedWrapper>
-        {renderCompanyDataList(companyDataList)}
-      </MiddleFixedWrapper>
+      <CompanyListArea>
+      {isSearchExecuted ? renderCompanyDataList(searchedDataList) : renderCompanyDataList(companyDataList)}
+      </CompanyListArea>
 
-      <BottomFixedWrapper>
+      <CompanyAddArea>
 
         <FullWidthButton onClick={() => dispatch(showForm())}>
 
@@ -87,7 +116,7 @@ export default function CompanyMgmtAside({ onShowForm }) {
 
         </FullWidthButton>
 
-      </BottomFixedWrapper>
+      </CompanyAddArea>
 
 
     </Container>
@@ -109,7 +138,7 @@ border : 1.5px solid #CCCCCC;
 `;
 
 
-const Wrapper1 = styled.div`
+const NumberArea = styled.div`
   display: flex;
   width: 100%;
   margin:10px;
@@ -124,7 +153,7 @@ const SelectBox = styled.select`
   background:none;
   
 }
-width: 65px;
+width: 80px;
 border : none;
 background:none;
 cursor: pointer;
@@ -138,7 +167,7 @@ const Element = styled.div`
   
 `;
 
-const Wrapper2 = styled.div`
+const Wrapper = styled.div`
   display: flex;
   justify-content: space-between;  // 양 끝에 내용을 배치
   cursor: pointer;
@@ -163,7 +192,7 @@ const PersonInfo = styled.div`
 
 
 
-const TopFixedWrapper = styled.div`
+const NumberOfCompaniesArea = styled.div`
   position: sticky;
   height: 50px;
   display:flex;
@@ -174,7 +203,7 @@ const TopFixedWrapper = styled.div`
   top: 0;
 `;
 
-const MiddleFixedWrapper = styled.div`
+const CompanyListArea = styled.div`
 position: relative; 
 border: 1px solid #CCCCCC;
 padding: 10px;
@@ -214,7 +243,7 @@ const CorpType2 = styled.div`
   padding-right: 10px;
 `;
 
-const BottomFixedWrapper = styled.div`
+const CompanyAddArea = styled.div`
 display:flex;
 justify-content:center;
 position: absoulte;
@@ -239,5 +268,3 @@ const FullWidthButton = styled.button`
     color: white;
   }
 `;
-
-

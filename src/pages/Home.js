@@ -19,7 +19,6 @@ import { BiSolidGrid } from "react-icons/bi";
 import { AiOutlineMenu } from "react-icons/ai";
 import { AiOutlineStar } from "react-icons/ai";
 
-
 export default function Home() {
 
   const [menuOn, setMenuOn] = useState([false, false]);

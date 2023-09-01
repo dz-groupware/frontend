@@ -23,7 +23,7 @@ export default function LoginForm() {
 
     // 로그인 요청
     try {
-      const response = await axiosInstance.post('/api/v1/login', {
+      const response = await axiosInstance.post('/login', {
         loginId: loginValue.loginId,
         loginPw: loginValue.password,
       });

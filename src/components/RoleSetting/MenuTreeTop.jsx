@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 
-export default function MenuTreeSection() {
+export default function MenuTreeTop() {
   const [selectedKey, setSelectedKey] = useState(null);
 
   const handleItemClick = (key) => {
@@ -62,8 +62,6 @@ export default function MenuTreeSection() {
 }
 
 const Container = styled.div`
-  flex:1;
-
 
 `;
 

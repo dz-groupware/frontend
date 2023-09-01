@@ -10,9 +10,9 @@ import { axiosInstance } from '../../utils/axiosInstance';
 
 export default function CompanyMgmtForm() {
     const dispatch = useDispatch();
-    const reduxInfo = useSelector(state => state.company.info);
-    const isVisible = useSelector(state => state.company.isVisible);
-    const codeForForm = useSelector(state => state.company.codeForForm);
+    const reduxInfo = useSelector(state => state.companyMgmt.info);
+    const isVisible = useSelector(state => state.companyMgmt.isVisible);
+    const codeForForm = useSelector(state => state.companyMgmt.codeForForm);
     const [info, setInfo] = useState(reduxInfo);
   
     // const formData = createFormData(codeForForm);  

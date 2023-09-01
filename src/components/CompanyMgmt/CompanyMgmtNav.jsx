@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { FiSearch } from "react-icons/fi";
 import { axiosInstance } from "../../utils/axiosInstance";
 import { useDispatch } from "react-redux";
-import { searchInfo } from "../../App";
+import { hideForm, searchInfo } from "../../App";
 
 
 
@@ -14,6 +14,7 @@ export default function CompanyMgmtNav() {
 
     const handleSearch = async () => {
         try {
+            dispatch(hideForm());
             // searchValue와 selectedOption이 빈 문자열일 경우 *로 처리
             const actualSearchValue = searchValue === "" ? "%25%25" : `%25${searchValue}%25`;
             const actualSelectedOption = selectedOption === "" ? 2 : `${selectedOption}`;

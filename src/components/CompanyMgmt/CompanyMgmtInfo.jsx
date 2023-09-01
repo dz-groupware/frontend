@@ -9,7 +9,7 @@ import { axiosInstance } from "../../utils/axiosInstance";
 
 export default function CompanyMgmtInfo({ handleSubmit, isCodeDisabled, codeForForm,formData }) {
     const dispatch = useDispatch();
-    const getReduxForm = useSelector(state => state.company.info);
+    const getReduxForm = useSelector(state => state.companyMgmt.info);
 
     const handleDelete = async (e) => {
         if (isCodeDisabled) {

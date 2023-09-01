@@ -2,6 +2,7 @@ import CompanyMgmtPage from "./pages/CompanyMgmtPage";
 import React from 'react';
 import { Provider } from 'react-redux';
 import { createSlice, configureStore } from '@reduxjs/toolkit';
+import EmployMgmtPage from "./pages/EmployMgmtPage";
 
 
 
@@ -31,8 +32,8 @@ const initialState = {
 };
 
 
-const companySlice = createSlice({
-  name: 'company',
+const companyMgmtSlice = createSlice({
+  name: 'companyMgmt',
   initialState ,
   reducers: {
     searchInfo: (state, action) => {
@@ -44,10 +45,16 @@ const companySlice = createSlice({
     },
     showForm: (state, action) => {
       state.isVisible = true;
-      state.codeForForm = action.payload ? action.payload.code : null;
+      console.log( state.codeForForm);
+
       state.info = action.payload && action.payload.info
       ? { ...state.info, ...action.payload.info }
       : { ...initialState.info };
+      
+      state.codeForForm = action.payload ? action.payload.code : null;
+
+      console.log( state.codeForForm);
+     
     },
     hideForm: (state) => {
       state.isVisible = false;
@@ -65,7 +72,8 @@ const companySlice = createSlice({
 
 const store = configureStore({
   reducer: {
-    company: companySlice.reducer,
+    companyMgmt: companyMgmtSlice.reducer,
+
   }
 });
 
@@ -85,4 +93,4 @@ export default function App() {
 
 
 
-export const { searchInfo, updateInfo, showForm, hideForm } = companySlice.actions;
+export const { searchInfo, updateInfo, showForm, hideForm } = companyMgmtSlice.actions;

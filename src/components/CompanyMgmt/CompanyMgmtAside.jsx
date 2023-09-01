@@ -12,8 +12,8 @@ export default function CompanyMgmtAside({ onShowForm }) {
   const dispatch = useDispatch(); 
   const [companyDataList, setCompanyDataList] = useState([]);
   const [sortType, setSortType] = useState("default");
-  const searchedDataList = useSelector(state => state.company.searchList);
-  const isSearchExecuted = useSelector(state => state.company.isSearchExecuted);
+  const searchedDataList = useSelector(state => state.companyMgmt.searchList);
+  const isSearchExecuted = useSelector(state => state.companyMgmt.isSearchExecuted);
 
 
 
@@ -71,14 +71,18 @@ export default function CompanyMgmtAside({ onShowForm }) {
     return elements;
   }
 
-  async function handleCompanyClick(company) {
+  async function handleCompanyClick(companyMgmt) {
     try {
       // 회사 정보를 가져옵니다.
-      const response = await axiosInstance.get(`/api/v1/companies/${company.code}`);
+      const response = await axiosInstance.get(`/api/v1/companies/${companyMgmt.code}`);
       const fetchedCompanyData = response.data;
       
+     
+  
       // 가져온 회사 정보와 코드를 함께 showForm 액션에 전달합니다.
-      dispatch(showForm({ info: fetchedCompanyData }));
+      dispatch(showForm({ info: fetchedCompanyData,code: fetchedCompanyData.code }));
+      
+     
 
 
     } catch (error) {

@@ -4,43 +4,42 @@ import Line from '../Commons/Line';
 import { getAuthGroup, getCountAuthGroup } from '../../api/company';
 import InfiniteScroll from 'react-infinite-scroller';
 import { useInfiniteQuery, useQuery, useQueryClient } from '@tanstack/react-query';
+import AuthGroupItem from './AuthGroupItem';
 
-export default function AuthGroupSection() {
+export default function AuthGroupSection({ activeAuthId, setActiveAuthId, setSelectedAuthId}) {
   const rangeOptions = ['전체', '부서', '사원'];  // 필터 옵션을 배열로 정의
   const orderOptions = [
     { label: '필터', value: 'none' },
-    { label: '오래된순', value: 'authCompanyIdAsc' },
-    { label: '최신순', value: 'authCompanyIdDesc' },
+    { label: '오래된순', value: 'authDashboardIdAsc' },
+    { label: '최신순', value: 'authDashboardIdDesc' },
     { label: '권한명순', value: 'authNameAsc' },
     { label: '권한명역순', value: 'authNameDesc'},
     // ... 다른 옵션들
   ];
   
-  const [activeId, setActiveId] = useState(null);
   const [rangeOp, setRangeOp] = useState(rangeOptions[0]);
   const [orderBy, setOrderBy] = useState(orderOptions[0].value);
-
   const [searchTerm, setSearchTerm] = useState('');
   const [groupCount, setGroupCount] = useState(0); // 데이터받아서 쓸것
   
   const companyId=1;
+  const pageSize = 10;
   const queryClient = useQueryClient();
   const {
     data: countData,
     isLoading: isLoadingCount,
     isError: isErrorCount,
   } = useQuery(['authGroupCount', companyId, orderBy], getCountAuthGroup, {
-    staleTime: 300000,
   });
-  
+
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, isError } = useInfiniteQuery(
     ['authSummaries'],
-    ({ pageParam }) => getAuthGroup({ queryKey: ['authSummaries',companyId , ,pageParam ,orderBy]  }),  // <--- 수정
+    ({ pageParam = 0 }) => getAuthGroup({ queryKey: ['authSummaries',companyId , pageSize ,pageParam ,orderBy]  }),  // <--- 수정
     {
       getNextPageParam: (lastPage) => {//lastPage는 배열로 넘어온다.만약에 data{}로넘어온다면 data. 으로 조회
         const lastAuthSummary = lastPage[lastPage.length - 1];
         if (!lastAuthSummary) return undefined;
-        return lastAuthSummary.id; //해당데이터의 식별자
+        return lastAuthSummary.id;  
       },
     }
   );
@@ -55,9 +54,10 @@ export default function AuthGroupSection() {
     }
   }, [countData, isLoadingCount, isErrorCount]);
 
+  
   useEffect(() => {
-  queryClient.removeQueries('authSummaries');
-}, [orderBy, searchTerm, queryClient]);
+    queryClient.removeQueries('authSummaries');
+  }, [orderBy, searchTerm]);
 
   if (isLoading) return <div>로딩중입니다...</div>;
   if (isError) return <div>Error occurred</div>;
@@ -65,7 +65,7 @@ export default function AuthGroupSection() {
 
   
   return (
-    <SidebarContainer>
+    <Container>
       <StyledSelect onChange={e => setRangeOp(e.target.value)}>
         {rangeOptions.map((option, index) => (
           <option key={index} value={option}>
@@ -102,27 +102,29 @@ export default function AuthGroupSection() {
           {data.pages.map((items, i) => (
             <div key={i}>
               {items.map(item => (
-                <Company 
+                <AuthGroupItem 
                   key={item.id}
-                  companyId={companyId}  
-                  onClick={() => setActiveId(item.id)} 
-                  isActive={activeId === item.id}
+                  item={item}
+                  onClick={() => { 
+                    setActiveAuthId(item.id); 
+                }}
+                  isActive={activeAuthId === item.id}
                 >
-                  <p>회사 이름: {item.companyName}</p>
-                  <p>권한 이름: {item.authName}</p>
-                </Company>
+                </AuthGroupItem>
               ))}
             </div>
           ))}
           </InfiniteScroll>
           {isFetchingNextPage && <div>로딩중입니다...</div>}
+          {!hasNextPage && <div>더 이상 로드할 페이지가 없습니다.</div>}
         </GroupList>
-    </SidebarContainer>
+    </Container>
   );
 }
 
-const SidebarContainer = styled.div`
+const Container = styled.div`
   margin-top: 20px;
+  margin-left: 20px;
   width: 300px;
   border: 1px solid #ccc;
   height: 100%;
@@ -155,25 +157,3 @@ const GroupList = styled.div`
   overflow-y: auto; 
 `;
 
-const Company = styled.div`
-  border: 1px solid #ccc;
-  border-width: ${props => props.isActive ? '2px' : '1px'};
-  border-radius: 5px;
-  padding: 10px;
-  margin: 5px 0;
-  height: 100px;
-  transition: background-color 0.2s ease, border-color 0.2s ease;  // 부드럽게 색이 변경되도록
-  &:hover {
-    border-width: 2px;
-    background-color: #d0cece84;  // 마우스 오버시 배경색 변경
-    border-color: #d0cece84;          // 마우스 오버시 테두리 색 변경
-  }
-
-  &:active {
-    border-width: 2px;
-    background-color: #5dc3fb;  // 클릭시 배경색 변경
-    border-color: #5dc3fb;  
-  }
-  background-color: ${props => props.isActive ? 'rgba(93, 195, 251, 0.7)' : 'transparent'};
-  border-color: ${props => props.isActive ? 'rgba(121, 125, 241, 0.7)' : '#ccc'};
-`;

@@ -1,36 +1,42 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import AuthGroupSection from './AuthGroupSection';
 import MenuTreeTop from './MenuTreeTop';
 import UserListSection from './UserListSection';
-import { styled } from 'styled-components';
+import styled  from 'styled-components';
 import MenuTreeMain from './MenuTreeMain';
+import SelectedAuthMenu from './SelectedAuthMenu';
+import Line from '../Commons/Line';
 
 export default function RoleSettingMain() {
   //여기서 Company누를 때 일어나는 상황 정하기
-  const [selectedCompanyId, setSelectedCompanyId] = useState(null);
-  const handleCompanyClick = (id) => {
-    // setSelectedCompanyId(id);
-  };
+  const [activeAuthId, setActiveAuthId] = useState(null);
+  //companyId는 리덕스로
   return (
     <Container>
-        <AuthGroupSection onCompanyClick={handleCompanyClick}/>
+        <AuthGroupSection 
+          setActiveAuthId={setActiveAuthId} 
+          activeAuthId={activeAuthId}
+        />
         <MenuTreeSection>
           <MenuTreeTop />
-          <MenuTreeMain companyId={1}/>
+          <Line color="black"/>
+          <h2> 메뉴명 </h2>
+          {activeAuthId ? <SelectedAuthMenu activeAuthId={activeAuthId} companyId={1}/> : <MenuTreeMain activeAuthId={activeAuthId} companyId={1}/>}
+          {/* <MenuTreeMain activeAuthId={activeAuthId} companyId={1}/> */}
         </MenuTreeSection>
         <UserListSection/>
     </Container>
   );
-}
+};
 
 
 const Container = styled.div`
   display: flex;
-  flex-direction: row;
   height: 100%;
   gap: 30px;
 `;
 const MenuTreeSection = styled.div`
-  flex: 1;
+  flex-grow: 0;
+  width: 600px;
 `;
 

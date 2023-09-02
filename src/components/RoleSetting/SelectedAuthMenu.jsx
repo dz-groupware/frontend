@@ -1,13 +1,17 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { styled } from 'styled-components'
-import { getGnbList, getLnbList } from '../../api/company';
-import MenuItem from './MenuItem';
 import { useFetchData } from '../../hooks/useFetchData';
+import { getAuthGroupMenuList } from '../../api/company';
+import MenuItem from './MenuItem';
 
-export default function MenuTreeMain({ companyId }) {
-  const { data, isLoading, error } = useFetchData( getGnbList, {paths:{companyId}});
-  const [selectedKey, setSelectedKey] = useState(null);
-
+export default function SelectedAuthMenu({ companyId,activeAuthId }) {
+  
+  const { data, isLoading, error } = useFetchData(getAuthGroupMenuList,{
+    paths: {
+      companyId:1,
+      authId: activeAuthId,
+    }
+  });
   if (isLoading) return <div>로딩중입니다!...</div>;
   if (error) return <div>{error}</div>;
   if (!data) return null;
@@ -22,10 +26,11 @@ export default function MenuTreeMain({ companyId }) {
         />
       ))}
     </Container>
-  );
+  )
 }
 
 const Container = styled.div`
-  min-width: 300px;
+  display: flex;
+  height: 100%;
+  gap: 30px;
 `;
-

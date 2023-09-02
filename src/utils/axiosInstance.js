@@ -8,6 +8,7 @@ export const axiosInstance = axios.create({
 
 axiosInstance.defaults.timeout = 5000;
 
+
 //요청 인터셉터
 axiosInstance.interceptors.request.use(
     (config) => {

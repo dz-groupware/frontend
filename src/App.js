@@ -3,6 +3,10 @@ import React from 'react';
 import { Provider } from 'react-redux';
 import { createSlice, configureStore } from '@reduxjs/toolkit';
 import EmployMgmtPage from "./pages/EmployMgmtPage";
+import { Route, Routes } from 'react-router-dom';
+import GlobalStyle from './GlobalStyle';
+import LoginPage from './pages/LoginPage';
+import RoleSettingPage from './pages/RoleSettingPage';
 
 
 
@@ -88,6 +92,14 @@ export default function App() {
         </div>
       
     </Provider>
+    <>
+      <GlobalStyle/>
+      <Routes>
+        <Route path='/' element={<div>ㅎㅇ</div>}/>
+        <Route path='/login' element={<LoginPage/>} />
+        <Route path='/roleSetting' element={<RoleSettingPage/>} />
+      </Routes>
+    </>
   );
 }
 

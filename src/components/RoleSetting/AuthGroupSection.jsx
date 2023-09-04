@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import Line from '../Commons/Line';
-import { getAuthGroup, getCountAuthGroup } from '../../api/company';
+import { getAuthGroup, getCountAuthGroup } from '../../api/authgroup';
 import InfiniteScroll from 'react-infinite-scroller';
 import { useInfiniteQuery, useQuery, useQueryClient } from '@tanstack/react-query';
 import AuthGroupItem from './AuthGroupItem';
 
-export default function AuthGroupSection({ activeAuthId, setActiveAuthId, setSelectedAuthId}) {
+export default function AuthGroupSection({ companyId, activeAuthId, setActiveAuthId, setSelectedAuthId}) {
   const rangeOptions = ['전체', '부서', '사원'];  // 필터 옵션을 배열로 정의
   const orderOptions = [
     { label: '필터', value: 'none' },
@@ -22,7 +22,6 @@ export default function AuthGroupSection({ activeAuthId, setActiveAuthId, setSel
   const [searchTerm, setSearchTerm] = useState('');
   const [groupCount, setGroupCount] = useState(0); // 데이터받아서 쓸것
   
-  const companyId=1;
   const pageSize = 10;
   const queryClient = useQueryClient();
   const {
@@ -95,6 +94,7 @@ export default function AuthGroupSection({ activeAuthId, setActiveAuthId, setSel
       <Line color="#C9C9C9" height={"1px"} top={"5px"}/>
       <GroupList>
         <InfiniteScroll
+            style={{ border: '1px solid #a9a9a9', height: '100%', overflowY: 'auto' }}
             loadMore={() => fetchNextPage()}
             hasMore={hasNextPage}
             useWindow={false}
@@ -126,8 +126,8 @@ const Container = styled.div`
   margin-top: 20px;
   margin-left: 20px;
   width: 300px;
-  border: 1px solid #ccc;
   height: 100%;
+  border: 1px solid #ccc;
   padding: 20px;
 `;
 const StyledSelect = styled.select`
@@ -139,21 +139,23 @@ const StyledSelect = styled.select`
 const SearchBar = styled.div`
   display: flex;
   gap: 10px;
-  margin-bottom: 10px;
+  margin-bottom: 20px;
   height: 30px;
 `;
+
 const StyledInput = styled.input`
   flex:1;
 `;
-const GroupCountFilter = styled.div`
-  display: flex;
-  justify-content: space-between
-`;
+
 const GroupList = styled.div`
   display: flex;
   flex-direction: column;
   flex: 1;
-  height: calc(100vh - 300px); 
+  height: 600px;
   overflow-y: auto; 
 `;
 
+const GroupCountFilter = styled.div`
+  display: flex;
+  justify-content: space-between
+`;

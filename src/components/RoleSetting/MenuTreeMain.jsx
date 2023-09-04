@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { styled } from 'styled-components'
-import { getGnbList, getLnbList } from '../../api/company';
+import { getGnbList, getLnbList } from '../../api/authgroup';
 import MenuItem from './MenuItem';
 import { useFetchData } from '../../hooks/useFetchData';
 
@@ -16,9 +16,10 @@ export default function MenuTreeMain({ companyId }) {
     <Container>
       {data.map((item, index) => (
         <MenuItem 
-          key={item.id} 
+          key={item.menuId} 
           item={item} 
           companyId={companyId}  // MenuItem에 companyId 전달
+          childNodeYn={item.childNodeYn}
         />
       ))}
     </Container>

@@ -25,6 +25,6 @@ export default function RoleSettingPage() {
 const Container = styled.div`
   display: flex;
   flex-direction: column;
-  height: 100%;
-  border: 1px solid black;
+  height: 1200px; //높이 바꿔
+  border: 1px solid blue;
 `;

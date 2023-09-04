@@ -1,17 +1,18 @@
 import React, { useState } from 'react'
 import { styled } from 'styled-components'
 import { useFetchData } from '../../hooks/useFetchData';
-import { getAuthGroupMenuList } from '../../api/company';
+import { getAuthGroup, getGnbListOfAuth, getGnbListOfAuthWithAll } from '../../api/authgroup';
 import MenuItem from './MenuItem';
 
 export default function SelectedAuthMenu({ companyId,activeAuthId }) {
   
-  const { data, isLoading, error } = useFetchData(getAuthGroupMenuList,{
+  const { data, isLoading, error } = useFetchData(getGnbListOfAuth,{
     paths: {
-      companyId:1,
+      companyId,
       authId: activeAuthId,
-    }
+    },
   });
+
   if (isLoading) return <div>로딩중입니다!...</div>;
   if (error) return <div>{error}</div>;
   if (!data) return null;
@@ -20,7 +21,7 @@ export default function SelectedAuthMenu({ companyId,activeAuthId }) {
     <Container>
       {data.map((item, index) => (
         <MenuItem 
-          key={item.id} 
+          key={item.menuId} 
           item={item} 
           companyId={companyId}  // MenuItem에 companyId 전달
         />

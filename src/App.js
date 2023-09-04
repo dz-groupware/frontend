@@ -13,7 +13,7 @@ function App() {
       <QueryClientProvider client={queryClient}>
         <GlobalStyle/>
         <Routes>
-          <Route path='/' element={<div>ㅎㅇ</div>}/>
+          <Route path='/' element={<LoginPage/>}/>
           <Route path='/login' element={<LoginPage/>} />
           <Route path='/roleSetting' element={<RoleSettingPage/>} />
         </Routes>

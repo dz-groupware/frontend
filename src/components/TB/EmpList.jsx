@@ -31,7 +31,7 @@ display: flex;
 border : 1px solid black;
 margin: 5px;
 background-color: white;
-
+z-index: 2;
 > div > img {
     margin: 20px;
     width: 50px;

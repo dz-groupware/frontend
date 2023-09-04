@@ -9,6 +9,7 @@ export default function Profile() {
       <img src={data['imageUrl']} alt='profileImg' />
       <div>
         <div id="profile_name">{data['name']}</div>
+        <p>{data['compName']} / {data['nameTree']}</p>
       </div>
     </ProfileArea>
   );
@@ -16,7 +17,7 @@ export default function Profile() {
 
 export const ProfileArea = styled.div`
 display: flex;
-width: 200px;
+width: 300px;
 height: 100%;
 color: black;
 
@@ -25,6 +26,7 @@ color: black;
   margin-right: 10px;
   width: 50px;
   height: 50px;
+  border-radius: 100%;
 }
 
 > div {
@@ -34,5 +36,13 @@ color: black;
   > div {
     margin: 5px;
   }
+  > p {
+    margin: 0;
+    margin-left: 7px;
+    padding: 0;
+    font-size: small;
+    color: gray;
+  }
 }
+
 `;

@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 
 import styled from 'styled-components';
 
-import {AiOutlineSearch, AiFillFolderOpen} from 'react-icons/ai';
+import { AiOutlineSearch, AiOutlineTeam } from "react-icons/ai";
 import {LuBuilding2} from 'react-icons/lu';
 
 import {orgTreeApi, orgEmpListApi, searchOrg} from '../../utils/API';
@@ -12,9 +12,9 @@ import EmpList from './EmpList';
 
 export default function OrgModal(props){
   
-  const [data, setData] = useState(JSON.parse('[{"id":"", "name":""}]'));
-  const [empList, setEmpList] = useState(JSON.parse('[{"id":"", "name":""}]'));
-  const emp_id = useSelector(state => state.gnbMenu.key);
+  const [data, setData] = useState(JSON.parse('[]'));
+  const [empList, setEmpList] = useState(JSON.parse('[]'));
+  const empId = useSelector(state => state.gnbMenu.empId);
 
   const [searchOption, setSearchOption] = useState("");
   const [searchText, setSearchText] = useState("");
@@ -23,11 +23,11 @@ export default function OrgModal(props){
 
   useEffect(() => {
     async function LoadData(emp_id){
-      const res = await orgTreeApi('comp', "","",emp_id);
+      const res = await orgTreeApi('comp', "","",empId);
       setData(res.data.data);
     }
-    LoadData(emp_id);
-  }, [emp_id]);  
+    LoadData(empId);
+  }, [empId]);  
 
   async function loadEmpList(type, text){
     const res = await orgEmpListApi(type, text);
@@ -40,7 +40,17 @@ export default function OrgModal(props){
   }
 
   function searchHandler(){
+    setData(JSON.parse('[]'));
+    setEmpList(JSON.parse('[]'));
     searchOrg(searchOption, searchText).then(res => {
+      if(searchOption === 'all'){
+        if (res.data.data[0].data.length !== 0) {
+          setData(res.data.data[0].data)
+        }
+        if (res.data.data[1].data.length !== 1) {
+          setEmpList(res.data.data[1].data)
+        }
+      }
       if(searchOption === 'dept'){
         setData(res.data.data);
       }
@@ -61,21 +71,18 @@ export default function OrgModal(props){
       <div>
         <div id='search'>
           <div>
-            <select value={searchOption} onChange={(e)=>setSearchOption(e.target.value)} ><option value='all'>전체</option><option value='dept'>부서명</option><option value='emp'>사원명</option></select>
+            <select value={searchOption} onChange={(e)=>{setSearchOption(e.target.value)}} ><option value='all'>전체</option><option value='dept'>부서명</option><option value='emp'>사원명</option></select>
             <input type="text" placeholder="검색" value={searchText} onChange={(e)=>setSearchText(e.target.value)}/>
           </div>
           <AiOutlineSearch onClick={() => {searchHandler()}}/>
         </div>
         <div id='content' className="flex">
           <div id='deptList'>
-          { false &&
+          {
             data.map((a, i) => (
-              <div key={a['name']+a['id']}>
-                <div onClick={(i) => {}}><LuBuilding2 />{a['name']}</div>
-                <DeptList value={a['id']} api={loadEmpList}/>
-              </div>
-              ))
-            }
+              <CompList comp={a} loadEmpList={loadEmpList} key={a['name']+a['id']}/>
+            ))
+          }
           </div>
             <EmpList value={empList} api={EmpDetailHandler}/>
           <div id='empDetail'>
@@ -88,42 +95,58 @@ export default function OrgModal(props){
   );
 }
 
-export function DeptList(props) {
-  const [data, setData] = useState(['[{"id":"", "name":""}]']);
-  const [deptOpen, setDeptOpen] = useState([false]);
+export function CompList(props) {
+  const [open, setOpen] = useState(false);
+  const [subItem, setSubItem] = useState([]);
 
-  useEffect(() => {
-    async function LoadData(){
-      const res = await orgTreeApi('Dept1', props.value,"","");
-      setData(res.data.data);
+  function handleCompItem(compId) {
+    if(subItem.length === 0) {
+      orgTreeApi('Dept1', compId,"","").then(res => setSubItem(res.data.data));
     }
-    LoadData();
-  }, [props.value]);
+    setOpen(!open);
+    props.loadEmpList('comp', props.comp['id']);
+  }
 
   return (
-    <>
-      {data.length > 0 && (
-        data.map((a, i) => (
-          <div key={a['name']+a['id']} >
-            <div onClick={() => {
-              setDeptOpen(deptOpen => {
-                const newDeptOpen = [...deptOpen];
-                newDeptOpen[i] = !newDeptOpen[i];
-                return newDeptOpen;
-              });
-              props.api('dept', a['id']);
-              }} style={{marginLeft:'15px'}}><AiFillFolderOpen />{a['name']}
-            </div>
-            { deptOpen[i] && (
-                <Dept dept={a['id']} comp={props.value} api={props.api}/>
-              )}
-          </div>
-        )))
-      }
-    </>
+    <Dept>
+      <div className="title"  style={{display: 'flex', margin: '10px'}}>
+        <div onClick={() => {handleCompItem(props.comp['id'])}}><LuBuilding2 />{props.comp['name']}</div>
+        </div>
+        {
+          open && subItem.map((a, i) => (
+            <DeptTree dept={a} compId={props.comp['id']} loadEmpList={props.loadEmpList} key={a['name']+a['id']}/>
+          ))
+        }
+    </Dept>
   );
 }
-  
+
+export function DeptTree(props) {
+  const [open, setOpen] = useState(false);
+  const [subItem, setSubItem] = useState([]);
+
+  function handleDeptItem(compId, deptId) {
+    if(subItem.length === 0) {
+      orgTreeApi('Dept2', compId, deptId,"").then(res => setSubItem(res.data.data));
+      props.loadEmpList('dept', deptId )
+    }
+    setOpen(!open);
+  }
+  return (
+    <Dept>
+    <div style={{display: 'flex', margin: '10px', width:'100%', height:'20px'}}>
+      <div onClick={() => {handleDeptItem(props.compId, props.dept['id'])}}><AiOutlineTeam />{props.dept['name']}</div>
+    </div>
+      {
+        open && subItem.map((a, i) => (
+          <DeptTree dept={a} compId={props.compId} loadEmpList={props.loadEmpList} key={a['name']+a['id']}/>
+        ))
+      }
+  </Dept>
+  );
+}
+
+/*
 export function Dept(props) {
   const [data, setData] = useState(['[{"id":"", "name":""}]']);
   const [dept, setDept] = useState([false]);
@@ -159,7 +182,7 @@ export function Dept(props) {
     </>
   );
 }
-
+*/
 export function EmpDetail(props) {
   return (
     <DetailEmp>
@@ -168,23 +191,25 @@ export function EmpDetail(props) {
         <p>{props.list['name']} / {props.list['position']}</p>
       </div>
       <table>
-        <tr>
-          <td>소속부서</td><td>{props.list['nameTree']}</td>
-        </tr>
-        <tr>
-          <td>전화번호</td><td>{props.list['number']}</td>
-        </tr>
-        <tr>
-          <td>개인메일</td><td>{props.list['email']}</td>
-        </tr>
-      </table>
+          <tbody>
+            <tr>
+              <td>소속부서</td><td>{props.list['nameTree']}</td>
+            </tr>
+            <tr>
+              <td>전화번호</td><td>{props.list['number']}</td>
+            </tr>
+            <tr>
+              <td>개인메일</td><td>{props.list['email']}</td>
+            </tr>
+          </tbody>
+        </table>
     </DetailEmp>
   );
 }
 
 export const ModalBackdrop = styled.div`
   // Modal이 떴을 때의 배경을 깔아주는 CSS를 구현
-  z-index: ; //위치지정 요소
+  z-index: 1; //위치지정 요소
   position: fixed;
   display : flex;
   justify-content : center;
@@ -300,6 +325,8 @@ export const DetailEmp = styled.div`
 }
 > table {
   margin: 10px;
+  > tbody {
+  margin: 10px;
   border-collapse: collapse;
   border-top: 3px solid black;
 
@@ -313,5 +340,10 @@ export const DetailEmp = styled.div`
     border-bottom: 1px solid rgb(192, 185, 237);
   }
 }
+}
 
-`
+`;
+export const Dept = styled.div`
+margin-left: 15px;
+
+`;

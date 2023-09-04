@@ -1,10 +1,15 @@
-import Header from '../Commons/Header';
+
+import MgmtHeader from '../Commons/MgmtHeader';
+import NotificationInfo from '../Commons/NotificationInfo';
+
+
 
 export default function CompanyMgmtHeader() {
   return (
-    <>
-      <Header title="회사" />
-    </>
-  );
-}
+    <div>
+      <MgmtHeader title="회사"/>
+      <NotificationInfo/>
 
+      </div >
+    );
+  }

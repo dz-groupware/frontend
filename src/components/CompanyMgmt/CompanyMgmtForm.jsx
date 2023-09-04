@@ -1,24 +1,31 @@
-// import axios from 'axios';
 import React, { useEffect, useState } from 'react';
-import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
 import CompanyMgmtInfo from './CompanyMgmtInfo';
-import { hideForm, updateInfo } from '../../App';
+import { companyActions} from '../../App';
 import { axiosInstance } from '../../utils/axiosInstance';
+import {
+    Container,
+    InputContainer,
+    HalfInputContainer,
+    Label,
+    Input,
+    DoubleInputContainer,
+    PrefixSelect,
+    FormInput
+} from '../Commons/StyledForm';
 
 //회사코드 입력값 로직 짜야함
 
 export default function CompanyMgmtForm() {
     const dispatch = useDispatch();
-    const reduxInfo = useSelector(state => state.companyMgmt.info);
+    const reduxComapnyInfo = useSelector(state => state.companyMgmt.companyInfo);
     const isVisible = useSelector(state => state.companyMgmt.isVisible);
-    const codeForForm = useSelector(state => state.companyMgmt.codeForForm);
-    const [info, setInfo] = useState(reduxInfo);
-  
-    // const formData = createFormData(codeForForm);  
+    const idForForm = useSelector(state => state.companyMgmt.idForForm);
+    const [info, setInfo] = useState(reduxComapnyInfo);
+
     useEffect(() => {
-        setInfo(reduxInfo);
-    }, [reduxInfo, isVisible]);
+        setInfo(reduxComapnyInfo);
+    }, [reduxComapnyInfo, isVisible]);
 
     if (!isVisible) return null;
 
@@ -27,12 +34,12 @@ export default function CompanyMgmtForm() {
     const handleChange = (e) => {
         const { name, value } = e.target;
         const finalValue = name === "enabledYn" ? Number(value) : value;
-    
+
         setInfo(prev => ({
             ...prev,
             [name]: finalValue,
         }));
-        
+
     };
 
 
@@ -40,7 +47,7 @@ export default function CompanyMgmtForm() {
         const { name, value } = e.target;
         let formattedValue = value.replace(/\D/g, '');
 
-      
+
         if (name === "repTel1") {
             setInfo(prev => ({
                 ...prev,
@@ -95,13 +102,13 @@ export default function CompanyMgmtForm() {
     };
 
     const handleUpdate = async (e) => {
-        
 
-        if (codeForForm) {
+
+        if (idForForm) {
             try {
-                await axiosInstance.put(`/api/v1/companies/${codeForForm}`, { ...info });
+                await axiosInstance.put(`/companies/${idForForm}`, { ...info });
                 alert("회사 데이터가 수정되었습니다.");
-                dispatch(hideForm());
+                dispatch(companyActions.hideForm());
                 window.location.reload();
             } catch (error) {
                 console.error("Error fetching company data:", error);
@@ -109,16 +116,16 @@ export default function CompanyMgmtForm() {
 
         } else {
             try {
-                await axiosInstance.post(`/api/v1/companies/${info.code}`, { ...info });
+                await axiosInstance.post(`/companies/${info.code}`, { ...info });
                 alert("회사 데이터가 저장되었습니다.");
-                dispatch(hideForm());
+                dispatch(companyActions.hideForm());
                 window.location.reload();
             } catch (error) {
                 console.error("Error fetching company data:", error);
             }
         }
 
-        
+
     };
 
 
@@ -219,11 +226,11 @@ export default function CompanyMgmtForm() {
             return;
         }
 
-        
-        dispatch(updateInfo(info));
+
+        dispatch(companyActions.updateInfo(info));
         console.log(info);
         handleUpdate(e);
-      
+
 
 
 
@@ -233,24 +240,24 @@ export default function CompanyMgmtForm() {
     return (
         <Container>
 
-            <CompanyMgmtInfo handleSubmit={handleSubmit} isCodeDisabled={!!codeForForm} codeForForm={codeForForm} />
+            <CompanyMgmtInfo handleSubmit={handleSubmit} isCodeDisabled={!!idForForm} idForForm={idForForm} />
 
             <HalfInputContainer>
-                <FormInput label="회사코드" name="code" maxLength={6} value={codeForForm || info.code || ''} disabled={!!codeForForm} onChange={handleChange} />
+                <FormInput label="회사코드" name="code" maxLength={6} value={info.code || ''} disabled={!!idForForm} onChange={handleChange} />
                 <InputContainer>
                     <Label>사용여부</Label>
                     <label>
-                        <Input type="radio" name="enabledYn" value="1" checked={info.enabledYn === 1 } onChange={handleChange} />사용
+                        <Input type="radio" name="enabledYn" value="1" checked={info.enabledYn === 1} onChange={handleChange} />사용
                     </label>
                     <label>
-                        <Input type="radio" name="enabledYn" value="0" checked={info.enabledYn === 0 } onChange={handleChange} />미사용
+                        <Input type="radio" name="enabledYn" value="0" checked={info.enabledYn === 0} onChange={handleChange} />미사용
                     </label>
                 </InputContainer>
             </HalfInputContainer>
 
             <FormInput label="회사명" name="name" value={info.name || ''} onChange={handleChange} />
             {/* <FormInput label="산하회사" name="name" value={info.name || ''} onChange={handleChange} /> */}
-            
+
 
             <FormInput label="회사약칭" name="abbr" value={info.abbr || ''} onChange={handleChange} />
             <FormInput label="업태" name="businessType" value={info.businessType || ''} onChange={handleChange} />
@@ -281,7 +288,7 @@ export default function CompanyMgmtForm() {
 
             <HalfInputContainer>
                 <HalfInputContainer>
-                    <FormInput label="사업자번호" name="businessNum" value={info.businessNum || ''} onChange={handleCombinedChange} placeholder="___-__-_____" maxLength={12}/>
+                    <FormInput label="사업자번호" name="businessNum" value={info.businessNum || ''} onChange={handleCombinedChange} placeholder="___-__-_____" maxLength={12} />
                 </HalfInputContainer>
                 <HalfInputContainer>
                     <Label>법인번호</Label>
@@ -311,63 +318,3 @@ export default function CompanyMgmtForm() {
         </Container>
     );
 }
-
-
-const Container = styled.div`
-    max-width: 95%;
-    min-width: 95%;
-    width: 100%;
-    margin: 0 auto;  // 중앙 정렬
-    display: flex;
-    flex-direction: column;
-    align-items: center;  // 자식 요소 중앙 정렬
-`;
-
-const InputContainer = styled.div`
-    display: flex;
-    border-bottom: 1px solid lightgrey;
-    width: 100%;
-`;
-
-const HalfInputContainer = styled.div`
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
-    border-bottom: none;
-`;
-
-const Label = styled.div`
-    width: 150px;
-    padding: 5px 10px;
-    background-color: #f0f0f0;
-    font-weight: bold;
-    text-align: right;
-`;
-
-const Input = styled.input`
-    flex: 1;
-    margin: 5px;
-    border: 1px solid lightgrey;
-`;
-
-const DoubleInputContainer = styled.div`
-    display: flex;
-    align-items: center;
-    width: 100%;
-    border-bottom: none;
-`;
-
-const PrefixSelect = styled.select`
-    flex: 0.3;
-    margin: 5px;
-    border: 1px solid lightgrey;
-`;
-
-
-
-const FormInput = ({ label, name, value, type = "text", maxLength,onChange, disabled, placeholder }) => (
-    <InputContainer>
-        <Label>{label}</Label>
-        <Input name={name} type={type} value={value} maxLength={maxLength} onChange={onChange} disabled={disabled} placeholder={placeholder} />
-    </InputContainer>
-);

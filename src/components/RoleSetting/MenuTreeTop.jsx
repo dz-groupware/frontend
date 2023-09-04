@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 
-export default function MenuTreeSection() {
+export default function MenuTreeTop() {
   const [selectedKey, setSelectedKey] = useState(null);
 
   const handleItemClick = (key) => {
@@ -30,41 +30,12 @@ export default function MenuTreeSection() {
           <button>🔍</button>
         </Element>
       </Wrapper2>
-      <Wrapper3>
-        <h3>메뉴명</h3>
-        <MenuTree>
-          <MenuItem onClick={() => handleItemClick('1')}>
-            - 임직원 업무 관리
-            {selectedKey === '1' && (
-              <>
-                <Line />
-                <MenuItem onClick={() => handleItemClick('2')}>-- 마이페이지</MenuItem>
-                {selectedKey === '2' && (
-                  <>
-                    <Line />
-                    <MenuItem onClick={() => handleItemClick('3')}>--- 내 정보 관리</MenuItem>
-                    {selectedKey === '3' && (
-                      <>
-                        <Line />
-                        <MenuItem>---- 개인 인사 정보 조회</MenuItem>
-                      </>
-                    )}
-                  </>
-                )}
-              </>
-            )}
-          </MenuItem>
-          {/* 다른 메뉴 아이템들... */}
-        </MenuTree>
-      </Wrapper3>
     </Container>
   );
 }
 
 const Container = styled.div`
   flex:1;
-
-
 `;
 
 const Wrapper1 = styled.div`
@@ -103,10 +74,3 @@ const Line = styled.div`
   height: 10px;
 `;
 
-const MenuTree = styled.div`
-  /* 메뉴 트리 스타일링 */
-`;
-
-const MenuItem = styled.div`
-  cursor: pointer;
-`;

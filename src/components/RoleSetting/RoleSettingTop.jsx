@@ -2,7 +2,7 @@ import React from 'react'
 import { styled } from 'styled-components';
 import { MdDisplaySettings, MdSmartDisplay, MdOutlineMapsUgc } from 'react-icons/md'
 import { PiCalendarCheck, PiStarBold } from 'react-icons/pi'
-export default function RoleSettingHeadSection() {
+export default function RoleSettingTop() {
   return (
     <Container>
       <LeftWrapper>

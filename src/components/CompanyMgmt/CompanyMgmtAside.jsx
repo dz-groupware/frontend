@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import { AiOutlinePlusCircle } from "react-icons/ai";
 import { useDispatch, useSelector } from 'react-redux';
-import { resetInfo, showForm } from '../../App';
+import { companyActions} from '../../App';
 import { useEffect, useState } from 'react';
 import { axiosInstance } from '../../utils/axiosInstance';
 
@@ -12,21 +12,21 @@ export default function CompanyMgmtAside({ onShowForm }) {
   const dispatch = useDispatch(); 
   const [companyDataList, setCompanyDataList] = useState([]);
   const [sortType, setSortType] = useState("default");
-  const searchedDataList = useSelector(state => state.companyMgmt.searchList);
+  const searchedCompanyDataList = useSelector(state => state.companyMgmt.searchList);
   const isSearchExecuted = useSelector(state => state.companyMgmt.isSearchExecuted);
 
 
 
   useEffect(() => {
     fetchData();
-  }, [searchedDataList]);
+  }, [searchedCompanyDataList]);
 
 
   
   async function fetchData() {
     try {
 
-      const response = await axiosInstance.get('/api/v1/companies/?deletedYn=false');
+      const response = await axiosInstance.get('/companies/');
       setCompanyDataList(response.data);
 
     } catch (error) {
@@ -49,7 +49,7 @@ export default function CompanyMgmtAside({ onShowForm }) {
     }
    
     
-    const elements = dataList.map((data, index) => {
+    const elements = sortedDataList.map((data, index) => {
      
  
       const CorpTypeStyled = data.corpType === 1 ? CorpType1 : CorpType2;
@@ -74,15 +74,15 @@ export default function CompanyMgmtAside({ onShowForm }) {
   async function handleCompanyClick(companyMgmt) {
     try {
       // 회사 정보를 가져옵니다.
-      const response = await axiosInstance.get(`/api/v1/companies/${companyMgmt.code}`);
+      const response = await axiosInstance.get(`/companies/${companyMgmt.id}`);
       const fetchedCompanyData = response.data;
       
      
-  
       // 가져온 회사 정보와 코드를 함께 showForm 액션에 전달합니다.
-      dispatch(showForm({ info: fetchedCompanyData,code: fetchedCompanyData.code }));
+      dispatch(companyActions.showForm({ companyInfo: fetchedCompanyData, id: fetchedCompanyData.id}));
       
-     
+      console.log("fetchdata:",fetchedCompanyData);
+
 
 
     } catch (error) {
@@ -96,10 +96,10 @@ export default function CompanyMgmtAside({ onShowForm }) {
         <NumberArea>
           <Element>
             <span style={{ margin: "5px", fontWeight: 600 }}>회사</span>
-            <span style={{ color: "#308EFC", fontWeight: 600 }}>  {isSearchExecuted ? Object.keys(searchedDataList).length : Object.keys(companyDataList).length}</span>
+            <span style={{ color: "#308EFC", fontWeight: 600 }}>  {isSearchExecuted ? Object.keys(searchedCompanyDataList).length : Object.keys(companyDataList).length}</span>
             <span style={{ margin: "5px", fontWeight: 600 }}>건</span>
           </Element>
-          <SelectBox onChange={e => setSortType(e.target.value)}>
+          <SelectBox onChange={e => setSortType(e.target.value)}>  
             <option value="default">정렬순</option>
             <option value="sortcode">코드순</option>
             <option value="sortname">회사명순</option>
@@ -109,12 +109,12 @@ export default function CompanyMgmtAside({ onShowForm }) {
 
 
       <CompanyListArea>
-      {isSearchExecuted ? renderCompanyDataList(searchedDataList) : renderCompanyDataList(companyDataList)}
+      {isSearchExecuted ? renderCompanyDataList(searchedCompanyDataList) : renderCompanyDataList(companyDataList)}
       </CompanyListArea>
 
       <CompanyAddArea>
 
-        <FullWidthButton onClick={() => dispatch(showForm())}>
+        <FullWidthButton onClick={() => dispatch(companyActions.showForm())}>
 
           <AiOutlinePlusCircle />추가
 
@@ -211,7 +211,7 @@ const CompanyListArea = styled.div`
 position: relative; 
 border: 1px solid #CCCCCC;
 padding: 10px;
-height: calc(400px - 50px); 
+height: calc(360px - 50px); 
 overflow-y: auto;
 background-color: #F5F5F5;
 border: none; // 이 부분을 추가

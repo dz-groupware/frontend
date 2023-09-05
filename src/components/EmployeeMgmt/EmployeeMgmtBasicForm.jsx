@@ -4,8 +4,6 @@ import {
     HalfInputContainer,
     Label,
     Input,
-    DoubleInputContainer,
-    PrefixSelect,
     FormInput
 } from '../Commons/StyledForm';
 
@@ -14,7 +12,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 
 
-export default function EmployeeMgmtForm() {
+export default function EmployeeMgmtBasicForm() {
     const dispatch = useDispatch();
     const reduxEmployeeInfo = useSelector(state => state.employeeMgmt.employeeInfo);
     const isVisible = useSelector(state => state.companyMgmt.isVisible);
@@ -46,7 +44,7 @@ return (
 
             <HalfInputContainer>
                 <FormInput label="이름" name="name" value={info.name || ''} onChange={handleChange} />
-                <FormInput label="주민등록번호" name="empIdNum" value={info.empIdNum || ''} onChange={handleChange} />
+                <FormInput label="주민등록번호" name="IdNum" value={info.IdNum || ''} onChange={handleChange} />
             </HalfInputContainer>
 
             <HalfInputContainer>

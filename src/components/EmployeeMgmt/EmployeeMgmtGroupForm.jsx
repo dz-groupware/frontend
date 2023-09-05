@@ -19,7 +19,7 @@ import { axiosInstance } from '../../utils/axiosInstance';
 import { styled } from 'styled-components';
 
 
-export default function EmployeeMgmtForm() {
+export default function EmployeeMgmtGroupForm() {
     const dispatch = useDispatch();
     const reduxCompanyInfo = useSelector(state => state.companyMgmt.companyInfo);
     const isVisible = useSelector(state => state.companyMgmt.isVisible);

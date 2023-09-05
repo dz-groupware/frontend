@@ -1,0 +1,63 @@
+import { useSelector } from 'react-redux';
+
+import styled from 'styled-components';
+
+export default function PosiList() {
+  const datas = useSelector(state => state.gnbMenu.profileList);
+  const emp_id = useSelector(state => state.gnbMenu.key);
+
+  return (
+    <ModalArea>
+      <table>
+        <tbody>
+        <tr id='tHeader'>
+          <td>회사명</td><td>부서명(관리부서)</td><td>상태</td>
+        </tr>
+          {
+            datas.map((a, i) => (
+              <tr key={i}>
+              <td><input type='radio' name='a' value={a['id']}/>&nbsp;{a['compName']}</td><td>&nbsp;&nbsp;{a['nameTree']}</td><td>{emp_id === a['id'] && <Using />}</td>
+            </tr>
+            ))                   
+          }
+        </tbody>
+      </table>
+    </ModalArea>
+  );
+}
+
+export function Using(){
+  return (
+      <div style={{color: 'rgb(40,175,20)', display:'flex', justifyContent:'center'}}>
+          <img src={`${process.env.PUBLIC_URL}/img/use.PNG`} alt='useing' style={{width:'15px', height:'15px', marginTop:'5px'}}/>사용중
+      </div>
+  );
+}
+export const ModalArea = styled.div`
+width:450px;
+height:100px;
+margin:0;
+
+> table {
+  width: 450px;
+  font-size: x-small;
+  > tbody {
+    #tHeader {
+      background-color: rgb(230,230,250);
+      text-align : center;
+      font-weight: bold;
+    } 
+    > tr {
+      > nth:child(0) {
+        {width: 150px;
+      }
+      > nth:child(1) {
+        {width: 200px;
+      }
+      > nth:child(2) {
+        {width: 100px;
+      }
+    }
+  }
+}
+`;

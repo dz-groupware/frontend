@@ -2,12 +2,16 @@ import CompanyMgmtPage from "./pages/CompanyMgmtPage";
 import React from 'react';
 import { Provider } from 'react-redux';
 import { createSlice, configureStore } from '@reduxjs/toolkit';
-import EmployeeMgmtPage from "./pages/EmployeeMgmtPage";
-import EmployeeMgmtAside from "./components/EmployeeMgmt/EmployeeMgmtAside";
-import EmployeeMgmtForm from "./components/EmployeeMgmt/EmployeeMgmtBasicForm";
-import MgmtMain from "./components/Commons/MgmtMain";
-import EmployeeMgmtHeader from "./components/EmployeeMgmt/EmployeeMgmtHeadr";
-import EmployeeMgmtNav from "./components/EmployeeMgmt/EmployeeMgmtNav";
+
+import EmployMgmtPage from "./pages/EmployMgmtPage";
+import { Route, Routes } from 'react-router-dom';
+import GlobalStyle from './GlobalStyle';
+import LoginPage from './pages/LoginPage';
+import RoleSettingPage from './pages/RoleSettingPage';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+
+const queryClient = new QueryClient();
 
 
 const companyMgmtInitialState = {
@@ -107,15 +111,24 @@ const store = configureStore({
 export default function App() {
   return (
     <Provider store={store}>
-
-      <div className="App">
-        <EmployeeMgmtPage />
- 
-
-      </div>
-
+        <div className="App">
+        <CompanyMgmtPage />
+        </div>
     </Provider>
+    // <>
+    //   <QueryClientProvider client={queryClient}>
+    //     <GlobalStyle/>
+    //     <Routes>
+    //       <Route path='/' element={<LoginPage/>}/>
+    //       <Route path='/login' element={<LoginPage/>} />
+    //       <Route path='/roleSetting' element={<RoleSettingPage/>} />
+    //     </Routes>
+    //     <ReactQueryDevtools/>
+    //   </QueryClientProvider>
+    // </>
   );
 }
+
 export const companyActions = companyMgmtSlice.actions;
 export const employeeActions = employeeMgmtSlice.actions;
+

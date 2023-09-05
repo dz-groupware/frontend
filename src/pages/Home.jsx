@@ -8,8 +8,8 @@ import { menu, favor, profileList } from '../utils/Slice';
 import { GnbMenuApi, GnbFavorApi, GnbFavorDeleteApi, profileAPI } from '../utils/API';
 
 import TB from './TB';
-import { VIEW, Test, EmpM, DeptM, CompM } from './VIEW';
-import Sys from './Sys';
+import { LNB, Module } from './LNB';
+import { Main } from './VIEW';
 
 import MenuList from '../components/GNB/MenuList';
 import IconList from '../components/GNB/IconList';
@@ -19,6 +19,7 @@ import { BiSolidGrid } from "react-icons/bi";
 import { AiOutlineMenu } from "react-icons/ai";
 import { AiOutlineStar } from "react-icons/ai";
 
+
 export default function Home() {
 
   const [menuOn, setMenuOn] = useState([false, false]);
@@ -26,35 +27,32 @@ export default function Home() {
 
   const menuData = useSelector(state => state.gnbMenu.menu);
   const favorData = useSelector(state => state.gnbMenu.favor);
-  const emp_id = useSelector(state => state.gnbMenu.key);
+  const empId = useSelector(state => state.gnbMenu.empId);
 
   useEffect(() => {
-    GnbMenuApi(emp_id).then(function (response) {
+    GnbMenuApi(empId).then(function (response) {
       dispatch(menu(response.data.data));
     });
-    GnbFavorApi(emp_id).then(function (response) {
+    GnbFavorApi(empId).then(function (response) {
       dispatch(favor(response.data.data));
     });
-    profileAPI(emp_id).then(function (response) {
+    profileAPI(empId).then(function (response) {
       dispatch(profileList(response.data.data));
     });
-  }, [emp_id, dispatch]);
+  }, [empId, dispatch]);
 
   return (
     <Container>
       <BgiArea>
-        <img src={`/img/white.jpg`} alt='bgi' id='bgi'/>
         <TBArea><TB /></TBArea>
-        <ScreenArea>
-          <Routes>
-            <Route path="/메뉴설정" element={<Sys />} />
-            <Route path="/회사관리" element={<CompM />} />
-            <Route path="/부서관리" element={<DeptM />} />
-            <Route path="/사원관리" element={<EmpM />} />
-            <Route path="/공지사항" element={<Test />} />
-            <Route path="/" element={<VIEW />} />
-          </Routes>
-        </ScreenArea>
+        <div style={{position: 'relative', zIndex:'-1', height: '100%'}}>
+        <Routes>
+          <Route path='/' element={<Main />} />
+          <Route path='/:param' element={<LNB />}>
+            <Route path=':menuName' element={<Module />} />
+          </Route> 
+        </Routes>
+        </div>
       </BgiArea>
       <GNBIconArea>   
         <BiSolidGrid onClick={() => {
@@ -122,12 +120,7 @@ width:100%;
 position: relative;
 z-index: 0;
 `;
-export const ScreenArea = styled.div`
-height: 100%;
-width: 100%;
-position: relative;
-z-index: -1;
-`;
+
 export const GNBIconArea = styled.div`
 display:block;
 width:50px;

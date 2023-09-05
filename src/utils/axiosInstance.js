@@ -4,9 +4,9 @@ export const axiosInstance = axios.create({
   baseURL: "http://localhost:8010/api/v1",
   headers: { "Content-Type": "application/json" },
   withCredentials: true,
+  timeout: 10000,
 });
 
-axiosInstance.defaults.timeout = 5000;
 
 //요청 인터셉터
 axiosInstance.interceptors.request.use(

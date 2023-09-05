@@ -7,7 +7,7 @@ export default function MenuList(props) {
     <ListArea>
       {
         props.value.map((a, i) => (
-          <Link to={a['name']} key={'name'+i}>
+          <Link to={{pathname: a['name']}} state= {{ menuId: a['id'] }} key={'name'+i}>
               <p value={a["name"]}>{a["name"]}</p>
           </Link>
         ))

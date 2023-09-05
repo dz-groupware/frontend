@@ -5,16 +5,26 @@ import styled from 'styled-components';
 import { AiOutlinePaperClip } from 'react-icons/ai';
 import { MdOutlineRefresh } from 'react-icons/md';
 
-import { saveMenuAPI } from '../../utils/API';
+import { saveMenuAPI, saveIconAPI } from '../../utils/API';
 import IconImageList from './IconImageList';
-
+import MenuTree from './MenuTree';
 
 export function GnbDetail(props) {
   const [isDragging, setIsDragging] = useState(false);
   const [data, setData] = useState([]);
-  const [iconFile, setIconFile] = useState([]);
+  const [iconUrl, setIconUrl] = useState("");
+  const [newIcon, setNewIcon] = useState("");
+  const [newIconFile, setNewIconFile] = useState("");
+  const [saveIconFile, setSaveIconFile] = useState("");
   const [inputValue, setInputValue] = useState("");
   
+  const readImage = (image) => {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      setNewIconFile(String(e.target?.result));
+    };
+    reader.readAsDataURL(image);
+  }
   const onDragEnter = (e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -35,8 +45,11 @@ export function GnbDetail(props) {
   const onDrop = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    setIconFile(e.dataTransfer.files[0]);
+    setIconUrl('http://localhost:8010/api/v1/image/'+e.dataTransfer.files[0]['name']);
     setIsDragging(false);
+    setNewIcon('http://localhost:8010/api/v1/image/'+e.dataTransfer.files[0]['name']);
+    readImage(e.dataTransfer.files[0]);
+    setSaveIconFile(e.dataTransfer.files[0]);
   };
   const loadData = async (e) => {
     e.preventDefault();
@@ -44,8 +57,10 @@ export function GnbDetail(props) {
 
     // 추가 요청
     if (props.on === 1) {
+      console.log(formData.get('iconUrl'));
       try {
-        await saveMenuAPI(formData, data, '1');
+        formData.set('iconUrl', 'http://localhost:8010/api/v1/image/'+formData.get('iconUrl'));
+        await saveMenuAPI(formData, data, '1', props.compId);
         console.log('insert done ...');
       } catch (error) {
         console.log('failed sending Data...');
@@ -54,11 +69,21 @@ export function GnbDetail(props) {
     // 수정 요청
     if (props.on === 2) {
       try {
-        await saveMenuAPI(formData, data, '2');
+        formData.set('iconUrl', 'http://localhost:8010/api/v1/image/'+formData.get('iconUrl'));
+        await saveMenuAPI(formData, data, '2', props.compId);
         console.log('update doen ...');
       } catch (error) {
         console.log('failed sending Data...');
       }
+    }
+
+    if (newIcon !== "") {
+
+      let formData = new FormData();
+      formData.append('iconFile', saveIconFile)
+      // 이미지 저장 요청 api
+      saveIconAPI(formData);
+      console.log('saveIconAPI');
     }
   }
 
@@ -67,7 +92,7 @@ export function GnbDetail(props) {
       setData(JSON.parse('[{"name":"", "sortOrder":""}]'));
     } else {
     setData(props.value);
-    setIconFile(props.value['iconUrl']);
+    setIconUrl(props.value['iconUrl']);
     }
   }, [props.value]);
   
@@ -90,15 +115,15 @@ export function GnbDetail(props) {
             <td style={{display: 'block'}}>
               <div id="DnDBox" onDragEnter={onDragEnter} onDragLeave={onDragLeave} onDragOver={onDragOver} onDrop={onDrop} isDragging={isDragging}>
                 <div style={{display: 'flex' }}>
-                  <textarea name='iconUrl' value={iconFile} onDragEnter={onDragEnter} onDragLeave={onDragLeave} onDragOver={onDragOver} onDrop={onDrop} isDragging={isDragging}
+                  <textarea name='iconUrl' value={iconUrl ? iconUrl.slice(35) : ""} onDragEnter={onDragEnter} onDragLeave={onDragLeave} onDragOver={onDragOver} onDrop={onDrop} isDragging={isDragging}
                   style={{border: '1px solid rgb(171,172,178)', width:'calc(100% - 25px)', height:'25px', color:'rgb(171,172,178)', fontWeight: 'bold', fontSize: 'small', paddingTop: '4px'}}></textarea>
                   <label htmlFor="iconFile" className='iconFileInput'>
                     <AiOutlinePaperClip/>
-                    <input type='file' id="iconFile" onChange={(e) => {setIconFile(e.target.files[0])}} style={{display: 'none'}}/>
+                    <input type='file' id="iconFile" onChange={(e) => {console.log(e.target.files[0]['name']);setIconUrl(e.target.files[0]['name']);}} style={{display: 'none'}}/>
                   </label>
                 </div>
                 <hr/>
-                <IconImageList />
+                <IconImageList newIcon={newIcon} newIconFile={newIconFile} iconUrl={iconUrl} setIconUrl={setIconUrl}/>
               </div>
             </td></tr>
           </tbody>
@@ -110,6 +135,8 @@ export function GnbDetail(props) {
 
 export function MenuDetail(props) {
 
+  const [value, setValue] = useState();
+  const [modalOn, setModalOn] = useState(false);
   const loadData = async (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
@@ -117,7 +144,7 @@ export function MenuDetail(props) {
     // 추가 요청
     if (props.on === 1) {
       try {
-        await saveMenuAPI(formData, props.value, '3');
+        await saveMenuAPI(formData, props.value, '3', props.compId);
         console.log('insert done ...');
       } catch (error) {
         console.log('failed sending Data...');
@@ -126,12 +153,17 @@ export function MenuDetail(props) {
     // 수정 요청
     if (props.on === 2) {
       try {
-        await saveMenuAPI(formData, props.value, '4');
+        await saveMenuAPI(formData, props.value, '4', props.compId);
         console.log('update doen ...');
       } catch (error) {
           console.log('failed sending Data...');
       }
     }
+  }
+
+  function seletedMenu(menu) {
+    setValue(menu);
+    setModalOn(false);
   }
 
   return (
@@ -143,7 +175,7 @@ export function MenuDetail(props) {
         </div>
         <table>
           <tbody>
-            <tr><td>상위메뉴</td><td><select><option>알림설정</option></select></td></tr>
+            <tr><td>상위메뉴</td><td><div value={value} onClick={() => {setModalOn(true)}}>메뉴 선택</div></td></tr>
             <tr><td>메뉴명</td><td><input name='name' type='text'placeholder={props.value['name']}/></td></tr>
             <tr><td>사용여부</td><td><div>
               <input className='radio' type='radio' value='1' name='enabledYN'/>사용
@@ -153,6 +185,7 @@ export function MenuDetail(props) {
         </table>
       
       </form>
+      {modalOn && <MenuTree selectMenu={seletedMenu}/>}
     </DetailDiv>
   );
 

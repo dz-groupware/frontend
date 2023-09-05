@@ -3,16 +3,16 @@ import { Link as defaultLink } from 'react-router-dom';
 
 import styled from 'styled-components';
 
-import {favor, recent} from '../../utils/Slice';
-
+import {favor} from '../../utils/Slice';
 
 export default function FavList(props) {
   const dispatch = useDispatch();
+  const param = '즐겨찾기'
   return (
     <ListBox>
       {
         props.value.map((a, i) => (
-          <Link to={a['name']} key={a['name']+a['name']+i+'fav'} onClick={() => {dispatch(recent())}}>
+          <Link to={{pathname: param+'/'+a['name']}} state= {{ menuId: a['id'] }} key={a['name']+a['name']+i+'fav'}>
               <p value={a["name"]}>{a["name"]}</p><span onClick={() => {props.deleteApi(a['empId'], a['menuId']).then(props.favorApi(a['empId']).then(res => dispatch(favor(res.data.data))))}}>X</span>
           </Link>
         ))

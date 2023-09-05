@@ -50,6 +50,7 @@ export const ModalView = styled.div`
   // Modal창 CSS를 구현합니다.
   display: flex;
   position: relative;
+  z-index: 2;
   top:-150px;
   right:-200px;
   align-items: center;
@@ -59,7 +60,7 @@ export const ModalView = styled.div`
   heigth: 200px;
   color: black;
   background-color: #ffffff;
-  z-index:2;
+
   > div {
     display: flex;
 

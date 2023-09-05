@@ -89,24 +89,21 @@ const store = configureStore({
 export default function App() {
   return (
     <Provider store={store}>
-      
         <div className="App">
         <CompanyMgmtPage />
-       
         </div>
-      
     </Provider>
-    <>
-      <QueryClientProvider client={queryClient}>
-        <GlobalStyle/>
-        <Routes>
-          <Route path='/' element={<LoginPage/>}/>
-          <Route path='/login' element={<LoginPage/>} />
-          <Route path='/roleSetting' element={<RoleSettingPage/>} />
-        </Routes>
-        <ReactQueryDevtools/>
-      </QueryClientProvider>
-    </>
+    // <>
+    //   <QueryClientProvider client={queryClient}>
+    //     <GlobalStyle/>
+    //     <Routes>
+    //       <Route path='/' element={<LoginPage/>}/>
+    //       <Route path='/login' element={<LoginPage/>} />
+    //       <Route path='/roleSetting' element={<RoleSettingPage/>} />
+    //     </Routes>
+    //     <ReactQueryDevtools/>
+    //   </QueryClientProvider>
+    // </>
   );
 }
 

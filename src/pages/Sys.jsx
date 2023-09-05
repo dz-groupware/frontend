@@ -17,8 +17,10 @@ export default function Sys(){
   const [detail, setDetail] = useState([false, false]);
   const [favor, setFavor] = useState(false);
 
-  const empId = useSelector(state => state.gnbMenu.key);
+  const empId = useSelector(state => state.gnbMenu.empId);
+  const compId = useSelector(state => state.gnbMenu.compId);
   const menuId = 8;  // 현재 페이지 id 가져오기 (나중에)
+
     useEffect(() => {
       // gnb 리스트 가져오기
       GnbApi().then(res => {setGnbList(res.data.data)});
@@ -97,7 +99,7 @@ export default function Sys(){
             <select name="gnbName">
               {
                 gnbList.map((a, i) => (
-                  <option key={i} id='gnbName' value={a['name']}>{a['name']}</option>
+                  <option key={a['name']+a['id']} id='gnbName' value={a['name']}>{a['name']}</option>
                   ))
               }
             </select><select><option>전체</option></select>
@@ -106,7 +108,7 @@ export default function Sys(){
             <br />
             <div>
               <span>메뉴목록</span>
-              <select name="filter">
+              <select name="filter" sytle={{zIndex: -2}}>
                 <option value="all">필터</option>
                 <option value='admin'>관리자 메뉴</option>
                 <option value='general'>사용자메뉴</option>
@@ -115,13 +117,13 @@ export default function Sys(){
           </SearchTree>
           <div>{
             result.map((a, i) => (
-              <div onClick={() => {menuDetailHandler('menuDetail', a)}}>{a['name']}</div>
+              <div onClick={() => {menuDetailHandler('menuDetail', a)}} key={a['name']+a['id']}>{a['name']}</div>
               ))
             }
           </div>
         </MenuTree>
-        { detail[0] && <GnbDetail value={menuDetail} api={detailOff} on={detail[0]}/>}
-        { detail[1] && <MenuDetail value={menuDetail} api={detailOff} on={detail[1]}/>}
+        { detail[0] && <GnbDetail value={menuDetail} api={detailOff} on={detail[0]} compId={compId}/>}
+        { detail[1] && <MenuDetail value={menuDetail} api={detailOff} on={detail[1]} compId={compId}/>}
       </FormArea>
     </Module>
   );

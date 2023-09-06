@@ -3,11 +3,9 @@ import React from 'react';
 import { Provider } from 'react-redux';
 import { createSlice, configureStore } from '@reduxjs/toolkit';
 
-import EmployMgmtPage from "./pages/EmployMgmtPage";
+
 import { Route, Routes } from 'react-router-dom';
-import GlobalStyle from './GlobalStyle';
-import LoginPage from './pages/LoginPage';
-import RoleSettingPage from './pages/RoleSettingPage';
+
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 

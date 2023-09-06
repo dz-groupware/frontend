@@ -18,7 +18,7 @@ export default function CompanyMgmtNav() {
             const actualSearchValue = searchValue === "" ? "%25%25" : `%25${searchValue}%25`;
             const actualSelectedOption = selectedOption === "" ? 2 : `${selectedOption}`;
 
-            const response = await axiosInstance.get(`/companies/search?name=${actualSearchValue}&enabledYn=${actualSelectedOption}`);
+            const response = await axiosInstance.get(`/companies/company-list?name=${actualSearchValue}&enabledYn=${actualSelectedOption}`);
 
             
             // 응답 데이터 처리

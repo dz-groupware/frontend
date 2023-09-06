@@ -19,6 +19,7 @@ import FavList from '../components/GNB/FavList';
 import { BiSolidGrid } from "react-icons/bi";
 import { AiOutlineMenu } from "react-icons/ai";
 import { AiOutlineStar } from "react-icons/ai";
+import LoginPage from './LoginPage';
 
 
 export default function Home() {
@@ -31,15 +32,15 @@ export default function Home() {
   const empId = useSelector(state => state.gnbMenu.empId);
 
   useEffect(() => {
-    GnbMenuApi(empId).then(function (response) {
-      dispatch(menu(response.data.data));
-    });
-    GnbFavorApi(empId).then(function (response) {
-      dispatch(favor(response.data.data));
-    });
-    profileAPI(empId).then(function (response) {
-      dispatch(profileList(response.data.data));
-    });
+    // GnbMenuApi(empId).then(function (response) {
+    //   dispatch(menu(response.data.data));
+    // });
+    // GnbFavorApi(empId).then(function (response) {
+    //   dispatch(favor(response.data.data));
+    // });
+    // profileAPI(empId).then(function (response) {
+    //   dispatch(profileList(response.data.data));
+    // });
   }, [empId, dispatch]);
 
   return (
@@ -146,7 +147,7 @@ overflow : scroll;
     height:30px;
     margin:10px;
   }
-} 
+ 
 `;
 export const GNBMenuArea = styled.div`
 padding-top: 10px;

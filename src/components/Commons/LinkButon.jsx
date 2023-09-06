@@ -25,7 +25,7 @@ const Container = styled.button`
   border: none;
   background: none;
   padding: 0;
-  cursor: ${props => props.cursor || 'pointer'};
+  /* cursor: ${props => props.cursor || 'pointer'}; */
   line-height: 1;
   text-decoration: underline;
   text-decoration-color: ${props => props.selected? "#0B85EE" : "black"};

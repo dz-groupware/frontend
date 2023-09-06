@@ -3,7 +3,7 @@ import { axiosInstance } from '../utils/axiosInstance';
 /**
  * 수정해야함
  */
-export const getAuthGroup = ({ queryKey }) => {
+export const getAuthGroupApi = ({ queryKey }) => {
   const [_ , companyId=1, pageSize=5, lastId, orderBy] = queryKey; //배열로구분
   
   return axiosInstance.get(`/auth-group/companies/${companyId}/auth`, {
@@ -17,7 +17,7 @@ export const getAuthGroup = ({ queryKey }) => {
   });
 };
 
-export const getCountAuthGroup = async ({ queryKey }) => {
+export const getCountAuthGroupApi = async ({ queryKey }) => {
   try {
     const [_ , companyId, orderBy] = queryKey;
     const response = await axiosInstance.get(`/auth-group/companies/${companyId}/auth/count`, {
@@ -32,7 +32,7 @@ export const getCountAuthGroup = async ({ queryKey }) => {
 
 }
 
-export const getGnbList = async ({ params, paths }) => {
+export const getGnbListApi = async ({ params, paths }) => {
   try {
     const {companyId} = paths;
     const response = await axiosInstance.get(`/auth-group/companies/${companyId}/gnb-list`);
@@ -43,7 +43,7 @@ export const getGnbList = async ({ params, paths }) => {
 }
 };
 
-export const getLnbList = async ({ paths }) => {
+export const getLnbListApi = async ({ paths }) => {
   const { companyId, parId } = paths;
   return axiosInstance.get(`/auth-group/companies/${companyId}/gnb/${parId}/lnb-list`)
     .then(response => {
@@ -51,7 +51,7 @@ export const getLnbList = async ({ paths }) => {
     });
 };
 
-export const getGnbListOfAuth = async ({ paths }) => {
+export const getGnbListOfAuthApi = async ({ paths }) => {
   const { companyId, authId } = paths
   return axiosInstance.get(`/auth-group/companies/${companyId}/auth/${authId}/gnb`)
   .then(response => {
@@ -59,7 +59,7 @@ export const getGnbListOfAuth = async ({ paths }) => {
   });
 };
 
-export const getGnbListOfAuthWithAll = async ({ paths }) => {
+export const getGnbListOfAuthWithAllApi = async ({ paths }) => {
   const { companyId, authId} = paths
   return axiosInstance.get(`/auth-group/companies/${companyId}/auth/${authId}/gnb-all`)
   .then(response => {
@@ -67,7 +67,7 @@ export const getGnbListOfAuthWithAll = async ({ paths }) => {
   })
 }
 
-export const getUserListOfAuth = async ({ paths }) => {
+export const getUserListOfAuthApi = async ({ paths }) => {
   const { authId } = paths
   return axiosInstance.get(`/auth-group/auth/${authId}`)
   .then(response => {

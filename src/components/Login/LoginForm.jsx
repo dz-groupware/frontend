@@ -4,6 +4,7 @@ import SignInput from './SignInput';
 import { emailValidation, passwordValidation } from '../../utils/validation';
 import SignButton from './SignButton';
 import { axiosInstance } from '../../utils/axiosInstance';
+import { useNavigate } from 'react-router-dom';
 
 export default function LoginForm() {
   const [loginValue, setLoginValue] = useState({
@@ -13,6 +14,7 @@ export default function LoginForm() {
   const [isValid, setIsValid] = useState(false); //버튼용
   const [inputValid, setInputValid] = useState(false);
   // const loginAction = useLoginMutation(loginValue);
+  const navigate = useNavigate();
 
   const handleInputChange = (e) => {
     setLoginValue({...loginValue, [e.target.name]: e.target.value})
@@ -20,13 +22,13 @@ export default function LoginForm() {
 
   const handleLoginAction = async (e) => {
     e.preventDefault();
-
-    // 로그인 요청
     try {
       const response = await axiosInstance.post('/login', {
         loginId: loginValue.loginId,
         loginPw: loginValue.password,
-      });
+      }, { withCredentials: true }).then(
+        navigate('/'),
+      );
 
       // 응답 처리 (예: 로그인 성공 시 액션 수행)
       console.log(response.data);

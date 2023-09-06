@@ -7,7 +7,7 @@ import { useState, useEffect } from 'react';
   @prop {object} paths - pathVaraible
   @rpop {boolean} shouldFetch - API 호출을 할지 말지 결정. 
 */
-export const useFetchData = (apiFunction, { params = {}, paths = {} ,shouldFetch = true} = {}) => {
+export const useFetchData = (apiFunction, { params = {}, paths = {} , shouldFetch = true} = {}) => {
   const [data, setData] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);

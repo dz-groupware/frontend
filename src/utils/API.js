@@ -1,216 +1,238 @@
 import axios from 'axios';
+import { axiosInstance } from './axiosInstance';
 
-const baseUrl = 'http://localhost:8010';
-
-export function GnbMenuApi(emp_id){    
-    if (emp_id !== undefined){
-        return axios({
-            url: `/api/v1/menu/gnb?empId=${emp_id}`,
-            method:'get',
-            baseURL : baseUrl,
-        });
+export function GnbMenuApi(empId){    
+    if (empId !== undefined){
+        return axiosInstance.get(
+            `/menu/gnb`,{
+                params: {
+                    empId
+                }
+            }
+        )
     }
 }
 
-export function GnbFavorApi(emp_id){  
-    if (emp_id !== undefined){
-        return axios({
-            url: `/api/v1/menu/favor?empId=${emp_id}`,
-            method:'get',
-            baseURL : baseUrl,
-        });
+export function GnbFavorApi(empId){  
+    if (empId !== undefined){
+        return axiosInstance.get(
+            `/menu/favor`,{
+                params: {
+                    empId
+                }
+            }
+        )
     }
 }
         
-export function GnbFavorDeleteApi(emp_id, menu_id){  
-    if (emp_id !== undefined && menu_id !== undefined && emp_id !== null && menu_id !== null){
-        return axios({
-            url: `/api/v1/menu/favor?empId=${emp_id}&menuId=${menu_id}`,
-            method:'delete',
-            baseURL : baseUrl,
-        });
-    } 
-    return Promise.reject(new Error("Invalid parameters"));
+export function GnbFavorDeleteApi(empId, menuId){  
+    if (empId !== undefined && menuId !== undefined && empId !== null && menuId !== null){
+        return axiosInstance.delete(
+            `/menu/favor`,{
+                params: {
+                    empId,
+                    menuId
+                }
+            }
+        )
+    }
 }
 
-export function profileAPI(emp_id){  
-    if (emp_id !== undefined && emp_id !== null){
-        return axios({
-            url: `/api/v1/modal/profile?empId=${emp_id}`,
-            method:'get',
-            baseURL : baseUrl,
-        });
+export function profileAPI(empId){  
+    if (empId !== undefined && empId !== null){
+        return axiosInstance.get(
+            `/modal/profile`,{
+                params: {
+                    empId,
+                }
+            }
+        )
     } else {
         return Promise.reject(new Error("Invalid parameters"));
     }
 }
         
-export function orgTreeApi(type = "", comp_id = "", dept_id = "", emp_id = ""){  
-    return axios({
-        url: `/api/v1/modal/org/tree?type=${type}&compId=${comp_id}&deptId=${dept_id}&empId=${emp_id}`,
-        method:'get',
-        baseURL : baseUrl,
-    });
+export function orgTreeApi(type = "", compId = "", deptId = "", empId = ""){  
+    return axiosInstance.get(
+        `/modal/org/tree`,{
+            params: {
+                type,
+                compId,
+                deptId,
+                empId,
+            }
+        }
+    )
 }
 
 export function orgEmpListApi(type = "", text = ""){  
     if (type === 'comp'){
-        return axios({
-            url: `/api/v1/modal/org/empList?type=${type}&compId=${text}`,
-            method:'get',
-            baseURL : baseUrl,
-        });
+        return axiosInstance.get(
+            `/modal/org/empList`,{
+                params: {
+                    type,
+                    compId: text
+                }
+            }
+        )
     }
     if (type === 'dept'){
-        return axios({
-            url: `/api/v1/modal/org/empList?type=${type}&deptId=${text}`,
-            method:'get',
-            baseURL : baseUrl,
-        });
+        return axiosInstance.get(
+            `/modal/org/empList`,{
+                params: {
+                    type,
+                    deptId: text
+                }
+            }
+        )
     }
 }
 
-export function menuDetailApi(dept_id){  
-    return axios({
-        url: `/api/v1/modal/org/empList?deptId=${dept_id}`,
-        method:'get',
-        baseURL : baseUrl,
-    });
+export function menuDetailApi(deptId){  
+    return axiosInstance.get(
+        `/modal/org/empList`,{
+            params: {
+                deptId
+            }
+        }
+    )
     
 }
 
 export function searchOrg(type, text){  
     if (type === 'all') {
-        return axios({
-            url: `/api/v1/modal/org/search?type=${type}&text=%25${text}%25`,
-            method:'get',
-            baseURL : baseUrl,
-        });
-    }
-    if (type === 'dept') {
-        return axios({
-            url: `/api/v1/modal/org/search?type=${type}&text=%25${text}%25`,
-            method:'get',
-            baseURL : baseUrl,
-        });
-    }
-    if (type ==='emp') {
-        return axios({
-            url: `/api/v1/modal/org/search?type=${type}&text=%25${text}%25`,
-            method:'get',
-            baseURL : baseUrl,
-        });
+        return axiosInstance.get(
+            `/modal/org/search`,{
+                params: {
+                    type,
+                    text: `%25${text}%25`,
+                }
+            }
+        )
     }
 }
 
 export function GnbApi(){
-    return axios({
-      url: `/api/v1/setting/menu/gnb`,
-      method:'get',
-      baseURL : baseUrl,
-    })
+    return axiosInstance.get(
+        `/setting/menu/gnb`
+    )
 }
 
 export function FavorApi(type, empId, menuId){
     if (empId !== undefined && empId !== null){
         if (type === 'load') {
-            return axios({
-            url: `/api/v1/setting/favor?empId=${empId}&menuId=${menuId}`,
-            method:'get',
-            baseURL : baseUrl,
-            });
+            return axiosInstance.get(
+                `/setting/favor`,{
+                    params: {
+                        empId,
+                        menuId
+                    }
+                }
+            )
         }
         if (type === 'off') {
-            return axios({
-                url: `/api/v1/setting/favor?empId=${empId}&menuId=${menuId}`,
-                method:'delete',
-                baseURL : baseUrl,
-            });
+            return axiosInstance.delete(
+                `/setting/favor`,{
+                    params: {
+                        empId,
+                        menuId
+                    }
+                }
+            )
         }
         if (type === 'on') {
-            return axios({
-                url: `/api/v1/setting/favor?empId=${empId}&menuId=${menuId}`,
-                method:'post',
-                baseURL : baseUrl,
-                data : {
-                empId: empId,
-                menuId: menuId
+            return axiosInstance.post(
+                `/setting/favor`,{
+                    data: {
+                        empId,
+                        menuId
+                    }
                 }
-            });
+            )
         }
         return JSON.parse('[{"":""}]');
     }
 }
 
 export function searchAPI(formData) {
-    return axios({
-        url: `/api/v1/setting/menu/search?gnbName=${formData.get("gnbName")}%25&name=%25${formData.get("name")}%25`,
-        method:'get',
-        baseURL : baseUrl,
-    });
+    return axiosInstance.get(
+        `/setting/menu/search`,{
+            params: {
+                gnbName: `${formData.get("gnbName")}%25`,
+                name: `%25${formData.get("name")}%25`, 
+            }
+        }
+    )
 }
 
 export function saveMenuAPI(formData, data, type, compId) {
     if (type === '1'){
-        return axios({
-            url: `/api/v1/setting/menu?type=1`,
-            method:'post',
-            baseURL : baseUrl,
-            data:{
-                parId: data['parId'],
-                compId: compId,
-                name: formData.get('name') === "" ? data['name'] : formData.get('name'),
-              enabledYN:  formData.get('enabledYN') === null ? data['enabledYN'] : formData.get('enabledYN'),
-              sortOrder:  formData.get('sortOrder') === "" ? data['sortOrder'] : formData.get('sortOrder'),
-              iconUrl:  formData.get('iconUrl') === "" ? data['iconUrl'] : formData.get('iconUrl')
+        return axiosInstance.post(
+            `/setting/menu`,{
+                params: {
+                    type:1
+                },
+                data:{
+                    parId: data['parId'],
+                    compId: compId,
+                    name: formData.get('name') === "" ? data['name'] : formData.get('name'),
+                  enabledYN:  formData.get('enabledYN') === null ? data['enabledYN'] : formData.get('enabledYN'),
+                  sortOrder:  formData.get('sortOrder') === "" ? data['sortOrder'] : formData.get('sortOrder'),
+                  iconUrl:  formData.get('iconUrl') === "" ? data['iconUrl'] : formData.get('iconUrl')
+                }
             }
-        });
+        )
     }
     if (type === '2'){
-        
-        return axios({
-            url: `/api/v1/setting/menu?type=2`,
-            method:'post',
-            baseURL : baseUrl,
-            data:{
-              id:  data['id'],
-              parId: data['parId'],
-              compId:  compId,
-              name: formData.get('name') === "" ? data['name'] : formData.get('name'),
-              enabledYN:  formData.get('enabledYN') === null ? data['enabledYN'] : formData.get('enabledYN'),
-              sortOrder:  formData.get('sortOrder') === "" ? data['sortOrder'] : formData.get('sortOrder'),
-              iconUrl:  formData.get('iconUrl') === "" ? data['iconUrl'] : formData.get('iconUrl')
+        return axiosInstance.post(
+            `/setting/menu`,{
+                params: {
+                    type:2
+                },
+                data:{
+                    id:  data['id'],
+                    parId: data['parId'],
+                    compId:  compId,
+                    name: formData.get('name') === "" ? data['name'] : formData.get('name'),
+                    enabledYN:  formData.get('enabledYN') === null ? data['enabledYN'] : formData.get('enabledYN'),
+                    sortOrder:  formData.get('sortOrder') === "" ? data['sortOrder'] : formData.get('sortOrder'),
+                    iconUrl:  formData.get('iconUrl') === "" ? data['iconUrl'] : formData.get('iconUrl')
+                  }
             }
-        });
+        )
     }
     if (type === '3'){
-        return axios({
-            url: `/api/v1/setting/menu?type=${type}`,
-            method:'post',
-            baseURL : baseUrl,
-            data:{
-              parId: 50, // 상위메뉴 만들기 전까지 고정
-              compId:  compId,
-              name: formData.get('name') === "" ? data['name'] : formData.get('name'),
-              enabledYN:  formData.get('enabledYN') === null ? data['enabledYN'] : formData.get('enabledYN'),
-              sortOrder:  formData.get('sortOrder') === "" ? data['sortOrder'] : formData.get('sortOrder')
+        return axiosInstance.post(
+            `/setting/menu`,{
+                params: {
+                    type:3
+                },
+                data:{
+                    parId: 50, // 상위메뉴 만들기 전까지 고정
+                    compId:  compId,
+                    name: formData.get('name') === "" ? data['name'] : formData.get('name'),
+                    enabledYN:  formData.get('enabledYN') === null ? data['enabledYN'] : formData.get('enabledYN'),
+                    sortOrder:  formData.get('sortOrder') === "" ? data['sortOrder'] : formData.get('sortOrder')
+                }
             }
-        });
+        )
     }
     if (type === '4') {
-        return axios({
-            url: `/api/v1/setting/menu?type=4`,
-            method:'post',
-            baseURL : baseUrl,
-            data:{
-              id:  data['id'],
-              parId: formData.get('parId') === null ? data['parId'] : formData.get('parId'),
-              compId:  compId,
-              name: formData.get('name') === "" ? data['name'] : formData.get('name'),
-              enabledYN:  formData.get('enabledYN') === null ? data['enabledYN'] : formData.get('enabledYN'),
-              sortOrder:  formData.get('sortOrder') === "" ? data['sortOrder'] : formData.get('sortOrder')
+        return axiosInstance.post(
+            `/setting/menu`,{
+                params: {
+                    type:4
+                },
+                data:{
+                    id:  data['id'],
+                    parId: formData.get('parId') === null ? data['parId'] : formData.get('parId'),
+                    compId:  compId,
+                    name: formData.get('name') === "" ? data['name'] : formData.get('name'),
+                    enabledYN:  formData.get('enabledYN') === null ? data['enabledYN'] : formData.get('enabledYN'),
+                    sortOrder:  formData.get('sortOrder') === "" ? data['sortOrder'] : formData.get('sortOrder')
+                  }
             }
-        });
+        )
 
     }   
 }
@@ -219,7 +241,7 @@ export function saveMenuAPI(formData, data, type, compId) {
       if (iconFile !== null && iconFile !== undefined){
         try {
           await axios({
-            url: `/api/v1/setting/menu/img`,
+            url: `/setting/menu/img`,
             method:'post',
             baseURL : baseUrl,
             headers: { 'Content-Type': 'multipart/form-data' },
@@ -239,29 +261,29 @@ export function saveMenuAPI(formData, data, type, compId) {
       */
 
 export function iconListAPI(){
-    return axios({
-      url: `/api/v1/setting/menu/iconList`,
-      method:'get',
-      baseURL : baseUrl,
-    });
+    return axiosInstance.get(
+        `/setting/menu/iconList`
+    )
 }
 
 export function saveIconAPI(iconFile){
-    return axios({
-        url: `/api/v1/setting/menu/img`,
-        method:'post',
-        baseURL : baseUrl,
-        headers: { 'Content-Type': 'multipart/form-data' },
-        data : iconFile
-    });
+    return axiosInstance.post(
+        `/setting/menu/img`,{
+            headers:  { 'Content-Type': 'multipart/form-data' },
+            data : iconFile
+        }
+    )
 }
 
 export function searchMenuListAPI(menuId, compId) {
     if(menuId !== undefined && menuId !== null && compId !== undefined && compId !== null) {
-        return axios({
-            url: `/api/v1/menu/lnb?menuId=${menuId}&compId=${compId}`,
-            method:'get',
-            baseURL : baseUrl,
-        });    
+        return axiosInstance.get(
+            `/menu/lnb`,{
+                params: {
+                    menuId,
+                    compId
+                }
+            }
+        )
     }
 }

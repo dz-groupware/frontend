@@ -8,11 +8,6 @@ ${reset}
   margin: 0;
   padding: 0;
 }
-html {
-  display: flex;
-  flex-direction: column;
-}
-
 `;
 
 

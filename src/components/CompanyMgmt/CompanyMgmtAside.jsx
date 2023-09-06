@@ -19,6 +19,7 @@ export default function CompanyMgmtAside({ onShowForm }) {
 
   useEffect(() => {
     fetchData();
+    
   }, [searchedCompanyDataList]);
 
 
@@ -26,7 +27,7 @@ export default function CompanyMgmtAside({ onShowForm }) {
   async function fetchData() {
     try {
 
-      const response = await axiosInstance.get('/companies/');
+      const response = await axiosInstance.get('/companies');
       setCompanyDataList(response.data);
 
     } catch (error) {

@@ -14,7 +14,7 @@ export default function CompanyMgmtInfo({ handleSubmit, isCodeDisabled, idForFor
         if (isCodeDisabled) {
             try {
                 
-               await axiosInstance.put(`/companies/del/${idForForm}`,{...getReduxForm});
+               await axiosInstance.put(`/companies/${idForForm}`,{...getReduxForm});
                alert("회사 데이터가 삭제되었습니다.");
                window.location.reload();
                 dispatch(companyActions.hideForm());

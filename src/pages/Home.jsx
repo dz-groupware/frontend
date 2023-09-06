@@ -8,6 +8,7 @@ import { menu, favor, profileList } from '../utils/Slice';
 import { GnbMenuApi, GnbFavorApi, GnbFavorDeleteApi, profileAPI } from '../utils/API';
 
 import TB from './TB';
+import AWS from './AWS';
 import { LNB, Module } from './LNB';
 import { Main } from './VIEW';
 
@@ -48,6 +49,7 @@ export default function Home() {
         <div style={{position: 'relative', zIndex:'-1', height: '100%'}}>
         <Routes>
           <Route path='/' element={<Main />} />
+          <Route path='/s3' element={<AWS />} />
           <Route path='/:param' element={<LNB />}>
             <Route path=':menuName' element={<Module />} />
           </Route> 

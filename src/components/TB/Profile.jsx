@@ -3,11 +3,11 @@ import styled from 'styled-components';
 
 export default function Profile() {
   // const data = useSelector(state => state.gnbMenu.profileList[0]);
-  const data = useSelector(state => state.gnbMenu);
+  // const data = useSelector(state => state.gnbMenu);
 
   return (
     <ProfileArea>
-      {console.log(data)}
+      {/* {console.log(data)} */}
       {/* <img src={data['imageUrl']} alt='profileImg' />
       <div>
         <div id="profile_name">{data['name']}</div>

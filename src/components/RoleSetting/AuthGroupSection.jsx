@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import Line from '../Commons/Line';
-import { getAuthGroup, getAuthGroupApi, getCountAuthGroup, getCountAuthGroupApi } from '../../api/authgroup';
+import { getAuthGroupApi, getCountAuthGroupApi } from '../../api/authgroup';
 import InfiniteScroll from 'react-infinite-scroller';
-import { useInfiniteQuery, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
 import AuthGroupItem from './AuthGroupItem';
+import { useFetchData } from '../../hooks/useFetchData';
 
-export default function AuthGroupSection({ companyId, activeAuthId, setActiveAuthId, setSelectedAuthId}) {
+export default function AuthGroupSection({ activeAuthId, setActiveAuthId}) {
   const rangeOptions = ['전체', '부서', '사원'];  // 필터 옵션을 배열로 정의
   const orderOptions = [
     { label: '필터', value: 'none' },
@@ -20,20 +21,13 @@ export default function AuthGroupSection({ companyId, activeAuthId, setActiveAut
   const [rangeOp, setRangeOp] = useState(rangeOptions[0]);
   const [orderBy, setOrderBy] = useState(orderOptions[0].value);
   const [searchTerm, setSearchTerm] = useState('');
-  const [groupCount, setGroupCount] = useState(0); // 데이터받아서 쓸것
   
   const pageSize = 10;
   const queryClient = useQueryClient();
-  const {
-    data: countData,
-    isLoading: isLoadingCount,
-    isError: isErrorCount,
-  } = useQuery(['authGroupCount', companyId, orderBy], getCountAuthGroupApi, {
-  });
-
+  const { data: countData, isLoading: isLoadingCount, error: isErrorCount, statusCode, setShouldFetch } = useFetchData(getCountAuthGroupApi);
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, isError } = useInfiniteQuery(
     ['authSummaries'],
-    ({ pageParam = 0 }) => getAuthGroupApi({ queryKey: ['authSummaries',companyId , pageSize ,pageParam ,orderBy]  }),  // <--- 수정
+    ({ pageParam = 0 }) => getAuthGroupApi({ queryKey: ['authSummaries',pageParam]  }),  // <--- 수정
     {
       getNextPageParam: (lastPage) => {//lastPage는 배열로 넘어온다.만약에 data{}로넘어온다면 data. 으로 조회
         const lastAuthSummary = lastPage[lastPage.length - 1];
@@ -44,14 +38,8 @@ export default function AuthGroupSection({ companyId, activeAuthId, setActiveAut
   );
 
   useEffect(() => {
-    if (countData) {
-      setGroupCount(countData);
-    } else if(isLoadingCount) {
-      setGroupCount("Api 서버 요청중...");
-    } else if(isErrorCount) {
-      setGroupCount("Api 서버 에러 발생");
-    }
-  }, [countData, isLoadingCount, isErrorCount]);
+    console.log("countData:", countData);  // <--- 이 줄을 추가
+  }, [statusCode, countData, isLoadingCount, isErrorCount]);
 
   
   useEffect(() => {
@@ -82,7 +70,7 @@ export default function AuthGroupSection({ companyId, activeAuthId, setActiveAut
         <button>🔍</button>
       </SearchBar>
       <GroupCountFilter>
-        <p>그룹 개수: {groupCount}</p>
+        <p>그룹 개수: {countData}</p>
         <select value={orderBy} onChange={e => setOrderBy(e.target.value)}>
         {orderOptions.map((option, index) => (
           <option key={index} value={option.value}>

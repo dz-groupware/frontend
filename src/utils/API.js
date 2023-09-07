@@ -9,7 +9,9 @@ export function GnbMenuApi(empId){
                     empId
                 }
             }
-        )
+        ).then(response => {
+            return response.data;
+        })
     }
 }
 
@@ -21,7 +23,9 @@ export function GnbFavorApi(empId){
                     empId
                 }
             }
-        )
+        ).then(response => {
+            return response.data;
+        })
     }
 }
         
@@ -34,7 +38,9 @@ export function GnbFavorDeleteApi(empId, menuId){
                     menuId
                 }
             }
-        )
+        ).then(response => {
+            return response.data;
+        })
     }
 }
 
@@ -46,7 +52,9 @@ export function profileAPI(empId){
                     empId,
                 }
             }
-        )
+        ).then(response => {
+            return response.data;
+        })
     } else {
         return Promise.reject(new Error("Invalid parameters"));
     }
@@ -62,7 +70,9 @@ export function orgTreeApi(type = "", compId = "", deptId = "", empId = ""){
                 empId,
             }
         }
-    )
+    ).then(response => {
+            return response.data;
+        })
 }
 
 export function orgEmpListApi(type = "", text = ""){  
@@ -74,7 +84,9 @@ export function orgEmpListApi(type = "", text = ""){
                     compId: text
                 }
             }
-        )
+        ).then(response => {
+            return response.data;
+        })
     }
     if (type === 'dept'){
         return axiosInstance.get(
@@ -84,7 +96,9 @@ export function orgEmpListApi(type = "", text = ""){
                     deptId: text
                 }
             }
-        )
+        ).then(response => {
+            return response.data;
+        })
     }
 }
 
@@ -95,7 +109,9 @@ export function menuDetailApi(deptId){
                 deptId
             }
         }
-    )
+    ).then(response => {
+            return response.data;
+        })
     
 }
 
@@ -108,14 +124,18 @@ export function searchOrg(type, text){
                     text: `%25${text}%25`,
                 }
             }
-        )
+        ).then(response => {
+            return response.data;
+        })
     }
 }
 
 export function GnbApi(){
     return axiosInstance.get(
         `/setting/menu/gnb`
-    )
+    ).then(response => {
+            return response.data;
+        })
 }
 
 export function FavorApi(type, empId, menuId){
@@ -128,7 +148,9 @@ export function FavorApi(type, empId, menuId){
                         menuId
                     }
                 }
-            )
+            ).then(response => {
+            return response.data;
+        })
         }
         if (type === 'off') {
             return axiosInstance.delete(
@@ -138,7 +160,9 @@ export function FavorApi(type, empId, menuId){
                         menuId
                     }
                 }
-            )
+            ).then(response => {
+            return response.data;
+        })
         }
         if (type === 'on') {
             return axiosInstance.post(
@@ -148,7 +172,9 @@ export function FavorApi(type, empId, menuId){
                         menuId
                     }
                 }
-            )
+            ).then(response => {
+            return response.data;
+        })
         }
         return JSON.parse('[{"":""}]');
     }
@@ -162,7 +188,9 @@ export function searchAPI(formData) {
                 name: `%25${formData.get("name")}%25`, 
             }
         }
-    )
+    ).then(response => {
+            return response.data;
+        })
 }
 
 export function saveMenuAPI(formData, data, type, compId) {
@@ -181,7 +209,9 @@ export function saveMenuAPI(formData, data, type, compId) {
                   iconUrl:  formData.get('iconUrl') === "" ? data['iconUrl'] : formData.get('iconUrl')
                 }
             }
-        )
+        ).then(response => {
+            return response.data;
+        })
     }
     if (type === '2'){
         return axiosInstance.post(
@@ -199,7 +229,9 @@ export function saveMenuAPI(formData, data, type, compId) {
                     iconUrl:  formData.get('iconUrl') === "" ? data['iconUrl'] : formData.get('iconUrl')
                   }
             }
-        )
+        ).then(response => {
+            return response.data;
+        })
     }
     if (type === '3'){
         return axiosInstance.post(
@@ -215,7 +247,9 @@ export function saveMenuAPI(formData, data, type, compId) {
                     sortOrder:  formData.get('sortOrder') === "" ? data['sortOrder'] : formData.get('sortOrder')
                 }
             }
-        )
+        ).then(response => {
+            return response.data;
+        })
     }
     if (type === '4') {
         return axiosInstance.post(
@@ -232,7 +266,9 @@ export function saveMenuAPI(formData, data, type, compId) {
                     sortOrder:  formData.get('sortOrder') === "" ? data['sortOrder'] : formData.get('sortOrder')
                   }
             }
-        )
+        ).then(response => {
+            return response.data;
+        })
 
     }   
 }
@@ -263,7 +299,9 @@ export function saveMenuAPI(formData, data, type, compId) {
 export function iconListAPI(){
     return axiosInstance.get(
         `/setting/menu/iconList`
-    )
+    ).then(response => {
+            return response.data;
+        })
 }
 
 export function saveIconAPI(iconFile){
@@ -272,7 +310,9 @@ export function saveIconAPI(iconFile){
             headers:  { 'Content-Type': 'multipart/form-data' },
             data : iconFile
         }
-    )
+    ).then(response => {
+            return response.data;
+        })
 }
 
 export function searchMenuListAPI(menuId, compId) {
@@ -284,6 +324,8 @@ export function searchMenuListAPI(menuId, compId) {
                     compId
                 }
             }
-        )
+        ).then(response => {
+            return response.data;
+        })
     }
 }

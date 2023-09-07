@@ -34,6 +34,7 @@ export default function LoginForm() {
   };
 
   useEffect(()=>{
+    console.log("code,",statusCode);
     if(statusCode===200){
       navigate('/home',{state:{ menuId: "0" }});
     }

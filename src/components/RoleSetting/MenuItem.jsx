@@ -3,11 +3,11 @@ import { styled } from 'styled-components';
 import { useFetchData } from '../../hooks/useFetchData';
 import { getLnbListApi } from '../../api/authgroup';
 
-export default React.memo(function MenuItem({ item, companyId, depth=0 }) {
+export default React.memo(function MenuItem({ item, depth=0 }) {
   // const [subMenuItems, setSubMenuItems] = useState([]);
   const [expanded, setExpanded] = useState(false);
   const { data: subMenuItems, setData:setSubMenuItems, isLoading, error } = useFetchData(getLnbListApi, { 
-    paths: { companyId: 1, parId: item.menuId }
+    paths: { parId: item.menuId }
   });
   
 
@@ -44,7 +44,6 @@ export default React.memo(function MenuItem({ item, companyId, depth=0 }) {
               key={subItem.menuId}
               item={subItem}
               childNodeYn={subItem.childNodeYn}
-              companyId={companyId}
               depth={depth+1}
             />
           ))}

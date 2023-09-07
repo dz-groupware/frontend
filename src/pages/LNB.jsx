@@ -134,8 +134,10 @@ padding: 10px;
 `;
 
 const OutletArea = styled.div`
-width: 90%;
-height: 85%;
+width: 100%;
+height: 100%;
+overflow: auto;  // or overflow: scroll
+
 `
 const LnbTitle = styled.div`
 width: 100%;

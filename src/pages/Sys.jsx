@@ -132,8 +132,8 @@ export default function Sys(){
 export const Module = styled.div`
 background-color: white;
 border: 1px solid rgb(171,172,178);
-width:95%;
-height: 95%;
+width: 100%;
+height: calc(100% - 90px);
 `;
 export const Nav = styled.div`
 border-top: 5px solid rgb(20,136,247);
@@ -175,12 +175,12 @@ justify-content: center;
   padding: 10px;
   padding-left:15px;
   width: 100%;
+  height: 40px;
   background-color: rgb(214,236,248);
   border: 1px solid rgb(146,183,214);
   border-radius: 5px;
 
   color: black;
-  height: 20px;
   font-weight: bold;
 }
 `;
@@ -193,7 +193,7 @@ margin-bottom: 10px;
 `;
 export const MenuTree = styled.div`
 margin:10px;
-height:75%;
+height: calc(100% - 150px);
 background-color: white;
 width: 400px;
 border: 1px solid rgb(171,172,178);

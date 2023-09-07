@@ -23,14 +23,14 @@ color: black;
 
 > img {
   margin-top: 20px;
-  margin-right: 10px;
+  margin-right: 5px;
   width: 50px;
   height: 50px;
   border-radius: 100%;
 }
 
 > div {
-  margin-top: 15px;
+  margin-top: 20px;
   font-weight: bold;
 
   > div {
@@ -39,7 +39,7 @@ color: black;
   > p {
     margin: 0;
     margin-left: 7px;
-    padding: 0;
+    padding-top: 5px;
     font-size: small;
     color: gray;
   }

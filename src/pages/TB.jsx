@@ -98,20 +98,21 @@ width:100%;
   }
   
   > #prf {
-    di
+    display: flex;
     width: 250px;
   }
  
 }
 `;
 export const IconArea = styled.div`
-padding-top: 30px;
-width:180px;
+padding-top: 10px;
+width:220px;
 position: relative;
 right:50px;
+color: rgb(7, 10, 69);
 > * {
-  width:30px;
-  height:30px;
-  margin:5px;
+  width:35px;
+  height:35px;
+  margin:10px;
 }
 `;

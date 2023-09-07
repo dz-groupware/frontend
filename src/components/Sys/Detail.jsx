@@ -195,7 +195,7 @@ export const DetailDiv = styled.div`
 margin: 10px;
 color: black;
 weight: 610px;
-height: 75%;
+height: calc(100% - 150px);
 > form > div {
 
 > span {

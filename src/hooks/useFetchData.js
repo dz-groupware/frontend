@@ -35,7 +35,6 @@
           const response = await apiFunction({ params: stableParams, paths: stablePaths, data: stableData });
           setFetchedData(response.data);
           setStatusCode(response.status); // 상태 코드 저장
-          console.log(response);
         } catch (e) {
           setError(e);
         } finally {

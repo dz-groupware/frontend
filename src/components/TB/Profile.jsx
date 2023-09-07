@@ -2,6 +2,7 @@ import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 
 export default function Profile() {
+
   const data = useSelector(state => state.gnbMenu.profileList[0]);
 
   return (

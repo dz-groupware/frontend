@@ -21,13 +21,23 @@ axiosInstance.interceptors.request.use(
   );
   
   //응답 인터셉터
-  axiosInstance.interceptors.response.use(
-    (response) => {
-      //응답에 대한 로직
-      const res = response.data;
-      return res;
-    },
-    (err) => {
-      return Promise.reject(err);
+axiosInstance.interceptors.response.use(
+  (response) => {
+    // 응답에 대한 로직
+    const statusCode = response.status;
+    const data = response.data;
+
+    return { statusCode, data };
+  },
+  (err) => {
+    // 오류 응답의 상태 코드와 본문을 얻으려면 err.response.status와 err.response.data를 확인해야 합니다.
+    if (err.response) {
+      const errorStatusCode = err.response.status;
+      const errorData = err.response.data;
+
+      return Promise.reject({ statusCode: errorStatusCode, data: errorData });
     }
-  );
+
+    return Promise.reject(err);
+  }
+);

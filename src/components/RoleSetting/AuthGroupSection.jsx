@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import Line from '../Commons/Line';
-import { getAuthGroup, getCountAuthGroup } from '../../api/authgroup';
+import { getAuthGroup, getAuthGroupApi, getCountAuthGroup, getCountAuthGroupApi } from '../../api/authgroup';
 import InfiniteScroll from 'react-infinite-scroller';
 import { useInfiniteQuery, useQuery, useQueryClient } from '@tanstack/react-query';
 import AuthGroupItem from './AuthGroupItem';
@@ -28,12 +28,12 @@ export default function AuthGroupSection({ companyId, activeAuthId, setActiveAut
     data: countData,
     isLoading: isLoadingCount,
     isError: isErrorCount,
-  } = useQuery(['authGroupCount', companyId, orderBy], getCountAuthGroup, {
+  } = useQuery(['authGroupCount', companyId, orderBy], getCountAuthGroupApi, {
   });
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, isError } = useInfiniteQuery(
     ['authSummaries'],
-    ({ pageParam = 0 }) => getAuthGroup({ queryKey: ['authSummaries',companyId , pageSize ,pageParam ,orderBy]  }),  // <--- 수정
+    ({ pageParam = 0 }) => getAuthGroupApi({ queryKey: ['authSummaries',companyId , pageSize ,pageParam ,orderBy]  }),  // <--- 수정
     {
       getNextPageParam: (lastPage) => {//lastPage는 배열로 넘어온다.만약에 data{}로넘어온다면 data. 으로 조회
         const lastAuthSummary = lastPage[lastPage.length - 1];

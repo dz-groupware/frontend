@@ -1,4 +1,4 @@
-import CompanyMgmtNav from "../../../../dzproject/frontend/src/components/CompanyMgmt/CompanyMgmtNav";
+import CompanyMgmtNav from "../components/CompanyMgmt/CompanyMgmtNav";
 import CompanyMgmtHeader from "../components/CompanyMgmt/CompanyMgmtHeader"
 import MgmtMain from "../components/Commons/MgmtMain";
 import CompanyMgmtAside from "../components/CompanyMgmt/CompanyMgmtAside";

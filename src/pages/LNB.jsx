@@ -6,6 +6,7 @@ import { useSelector } from "react-redux";
 import styled from 'styled-components';
 import { AiFillFolder, AiFillFolderOpen, AiOutlineProfile, AiFillProfile, AiOutlineMenu } from "react-icons/ai";
 import CompanyMgmtPage from "./CompanyMgmtPage";
+import RoleSettingPage from "./RoleSettingPage";
 
 
 export function LNB() {
@@ -64,6 +65,11 @@ export function Module(){
     if (menuName === '회사관리'){
         return(
             <CompanyMgmtPage />
+        );
+    }
+    if (menuName === '권한Role설정'){
+        return(
+            <RoleSettingPage/>
         );
     }
     return null;

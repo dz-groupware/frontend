@@ -2,17 +2,15 @@ import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 
 export default function Profile() {
-  // const data = useSelector(state => state.gnbMenu.profileList[0]);
-  const data = useSelector(state => state.gnbMenu);
+  const data = useSelector(state => state.gnbMenu.profileList[0]);
 
   return (
     <ProfileArea>
-      {console.log(data)}
-      {/* <img src={data['imageUrl']} alt='profileImg' />
+      <img src={data['imageUrl']} alt='profileImg' />
       <div>
-        <div id="profile_name">{data['name']}</div>
-        <p>{data['compName']} / {data['nameTree']}</p>
-      </div> */}
+        <div id="profile_name">{data['empName']}</div>
+        <p>{data['compName']} / {data['deptName']}</p>
+      </div>
     </ProfileArea>
   );
 }

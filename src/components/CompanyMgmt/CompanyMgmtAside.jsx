@@ -135,10 +135,8 @@ export default function CompanyMgmtAside({ onShowForm }) {
 
 
 const Container = styled.div`
-position: relative;   // 추가
-width: 250px;
+position: relative;   
 max-width: 250px;  
-min-width: 250px;  
 margin-left: 20px;
 margin-top: 10px;
 border : 1.5px solid #CCCCCC;

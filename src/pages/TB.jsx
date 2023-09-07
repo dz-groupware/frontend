@@ -81,7 +81,10 @@ width:100%;
   > a {
     text-decoration: none; 
     > h1 {
+      margin-top: 20px;
       color: rgb(45,49,62);
+      font-size: xx-large;
+      font-weight: bold;
     }
   }
 }

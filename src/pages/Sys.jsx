@@ -23,7 +23,7 @@ export default function Sys(){
 
     useEffect(() => {
       // gnb 리스트 가져오기
-      GnbApi().then(res => {setGnbList(res.data.data)});
+      GnbApi().then(res => {setGnbList(res.data)});
       // 즐겨찾기 가져오기
       FavorApi('load', empId, menuId).then(res => {setFavor(res.data)});
     }, [empId, menuId]);

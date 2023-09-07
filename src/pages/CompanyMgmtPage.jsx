@@ -8,7 +8,7 @@ import CompanyMgmtForm from "../components/CompanyMgmt/CompanyMgmtForm";
 
 export default function CompanyMgmtPage() {
   return (
-    <div className="CompanyMgmtPage">
+    <div className="CompanyMgmtPage" style={{height:'120%'}}>
       <CompanyMgmtHeader/>
       <CompanyMgmtNav/>
       <MgmtMain aside={<CompanyMgmtAside />} form={<CompanyMgmtForm />} />
@@ -16,4 +16,3 @@ export default function CompanyMgmtPage() {
     </div>
   );
 }
-

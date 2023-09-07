@@ -1,15 +1,14 @@
 import React from 'react';
 import { Provider } from 'react-redux';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+//import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import LoginPage from "./pages/LoginPage";
-import CompanyMgmtPage from "./pages/CompanyMgmtPage"
 import GlobalStyle from './GlobalStyle';
 import store from './utils/Store';
 import { Route, Routes } from 'react-router-dom';
 import Home from './pages/Home';
+import { Error } from './pages/VIEW';
 
-
-const queryClient = new QueryClient();
+//const queryClient = new QueryClient();
 
 export default function App() {
   return (
@@ -19,8 +18,8 @@ export default function App() {
           <div className="App">
             <Routes>
               <Route path='/login' element={<LoginPage />} /> 
-              <Route path='/companies' element={<CompanyMgmtPage />} /> 
               <Route path='/*' element={<Home/>}/>
+              <Route path='/error' element={<Error />} />
             </Routes>
           </div>
       </Provider>

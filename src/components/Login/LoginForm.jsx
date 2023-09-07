@@ -1,42 +1,43 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import styled from 'styled-components';
 import SignInput from './SignInput';
 import { emailValidation, passwordValidation } from '../../utils/validation';
 import SignButton from './SignButton';
 import { axiosInstance } from '../../utils/axiosInstance';
 import { useNavigate } from 'react-router-dom';
+import { useFetchData } from '../../hooks/useFetchData';
+import { loginApi } from '../../api/login';
 
 export default function LoginForm() {
   const [loginValue, setLoginValue] = useState({
     loginId: "",
     password: "",
   }); 
-  const [isValid, setIsValid] = useState(false); //버튼용
   const [inputValid, setInputValid] = useState(false);
   // const loginAction = useLoginMutation(loginValue);
   const navigate = useNavigate();
+  const { data, isLoading, error, setData, setShouldFetch, statusCode } = useFetchData(loginApi,{data: {
+    loginId: loginValue.loginId,
+    loginPw: loginValue.password,
+  },shouldFetch:false});
 
   const handleInputChange = (e) => {
     setLoginValue({...loginValue, [e.target.name]: e.target.value})
+    setData({
+      loginId: loginValue.loginId,
+      loginPw: loginValue.password,
+    });
   }
 
   const handleLoginAction = async (e) => {
-    e.preventDefault();
-    try {
-      const response = await axiosInstance.post('/login', {
-        loginId: loginValue.loginId,
-        loginPw: loginValue.password,
-      }, { withCredentials: true }).then(
-        navigate('/'),
-      );
-
-      // 응답 처리 (예: 로그인 성공 시 액션 수행)
-      console.log(response.data);
-    } catch (error) {
-      // 에러 처리 (예: 로그인 실패 시 경고 메시지 표시)
-      console.error('Login failed:', error);
-    }
+    setShouldFetch(true);  // API 호출을 활성화
   };
+
+  useEffect(()=>{
+    if(statusCode===200){
+      navigate('/home',{state:{ menuId: "0" }});
+    }
+  },statusCode);
 
   return (
     <Container>

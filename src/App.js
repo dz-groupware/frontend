@@ -6,6 +6,7 @@ import CompanyMgmtPage from "./pages/CompanyMgmtPage"
 import GlobalStyle from './GlobalStyle';
 import store from './utils/Store';
 import { Route, Routes } from 'react-router-dom';
+import Home from './pages/Home';
 
 
 const queryClient = new QueryClient();
@@ -19,7 +20,7 @@ export default function App() {
             <Routes>
               <Route path='/login' element={<LoginPage />} /> 
               <Route path='/companies' element={<CompanyMgmtPage />} /> 
-              {/* <Route path='/*' element={<Home/>}/> */}
+              <Route path='/*' element={<Home/>}/>
             </Routes>
           </div>
       </Provider>

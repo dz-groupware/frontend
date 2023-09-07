@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import AuthGroupSection from './AuthGroupSection';
 import MenuTreeTop from './MenuTreeTop';
-import UserListContainer from './UserListSection';
 import styled  from 'styled-components';
 import MenuTreeMain from './MenuTreeMain';
 import SelectedAuthMenu from './SelectedAuthMenu';
@@ -11,7 +10,7 @@ import UserListSection from './UserListSection';
 export default function RoleSettingMain() {
   //여기서 Company누를 때 일어나는 상황 정하기
   const [activeAuthId, setActiveAuthId] = useState(null);
-  const [visible, setVisible] = useState(false);
+  const [visible, setVisible] = useState(true);
   const companyId = 1;
   useEffect(() => {
     if (activeAuthId !== null) {
@@ -30,13 +29,13 @@ export default function RoleSettingMain() {
             activeAuthId={activeAuthId}
           />
         </StyledAuthGroupContainer>
-        <StyledMenuTreeContainer visible={visible}>
+        <StyledMenuTreeContainer >
           <MenuTreeTop />
           <Line color="black"/>
           <h2> 메뉴명 </h2>
           {activeAuthId ? <SelectedAuthMenu companyId={companyId} activeAuthId={activeAuthId}/> : <MenuTreeMain companyId={companyId}/>}
         </StyledMenuTreeContainer>
-        <StyledUserListContainer visible={visible}>
+        <StyledUserListContainer >
           <UserListSection activeAuthId={activeAuthId}/>
         </StyledUserListContainer>
     </Container>

@@ -1,12 +1,12 @@
 import React, { useState } from 'react'
-import { getLnbList } from '../../api/authgroup';
 import { styled } from 'styled-components';
 import { useFetchData } from '../../hooks/useFetchData';
+import { getLnbListApi } from '../../api/authgroup';
 
 export default React.memo(function MenuItem({ item, companyId, depth=0 }) {
   // const [subMenuItems, setSubMenuItems] = useState([]);
   const [expanded, setExpanded] = useState(false);
-  const { data: subMenuItems, setData:setSubMenuItems, isLoading, error } = useFetchData(getLnbList, { 
+  const { data: subMenuItems, setData:setSubMenuItems, isLoading, error } = useFetchData(getLnbListApi, { 
     paths: { companyId: 1, parId: item.menuId }
   });
   
@@ -18,7 +18,7 @@ export default React.memo(function MenuItem({ item, companyId, depth=0 }) {
     }
 
     if (subMenuItems.length === 0) {
-      const fetchedSubMenuItems = await getLnbList({paths:{ companyId:1, parId: item.menuId }});
+      const fetchedSubMenuItems = await getLnbListApi({paths:{ parId: item.menuId }});
       setSubMenuItems(fetchedSubMenuItems);
     }
     setExpanded(true);

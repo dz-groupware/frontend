@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import CompanyMgmtInfo from './CompanyMgmtInfo';
-import { companyActions} from '../../App';
 import { axiosInstance } from '../../utils/axiosInstance';
 import {
     Container,
@@ -13,6 +12,7 @@ import {
     PrefixSelect,
     FormInput
 } from '../Commons/StyledForm';
+import { companyActions } from '../../utils/Slice';
 
 //회사코드 입력값 로직 짜야함
 
@@ -33,7 +33,7 @@ export default function CompanyMgmtForm() {
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        const finalValue = name === "enabledYn" ? Number(value) : value;
+        const finalValue = name === "enabledYn" ?  value === "true"  : value;
 
         setInfo(prev => ({
             ...prev,
@@ -247,10 +247,10 @@ export default function CompanyMgmtForm() {
                 <InputContainer>
                     <Label>사용여부</Label>
                     <label>
-                        <Input type="radio" name="enabledYn" value="1" checked={info.enabledYn === 1} onChange={handleChange} />사용
+                        <Input type="radio" name="enabledYn" value="true" checked={info.enabledYn === true} onChange={handleChange} />사용
                     </label>
                     <label>
-                        <Input type="radio" name="enabledYn" value="0" checked={info.enabledYn === 0} onChange={handleChange} />미사용
+                        <Input type="radio" name="enabledYn" value="false" checked={info.enabledYn === false} onChange={handleChange} />미사용
                     </label>
                 </InputContainer>
             </HalfInputContainer>

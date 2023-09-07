@@ -1,20 +1,20 @@
-import { companyActions, hideForm } from "../../App";
 import { useDispatch, useSelector } from "react-redux";
 import { axiosInstance } from "../../utils/axiosInstance";
 
 import MgmtInfo from "../Commons/MgmtInfo";
+import { companyActions } from "../../utils/Slice";
 
 
 
 export default function CompanyMgmtInfo({ handleSubmit, isCodeDisabled, idForForm,formData }) {
     const dispatch = useDispatch();
-    const getReduxForm = useSelector(state => state.companyMgmt.comoanyInfo);
+    const getReduxForm = useSelector(state => state.companyMgmt.companyInfo);
 
     const handleDelete = async (e) => {
         if (isCodeDisabled) {
             try {
-                
-               await axiosInstance.put(`/companies/${idForForm}`,{...getReduxForm});
+               await axiosInstance.delete(`/companies/${idForForm}`,{...getReduxForm});
+              
                alert("회사 데이터가 삭제되었습니다.");
                window.location.reload();
                 dispatch(companyActions.hideForm());

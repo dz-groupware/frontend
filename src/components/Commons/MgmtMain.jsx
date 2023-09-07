@@ -28,9 +28,10 @@ const Container = styled.div`
 `;
 
 const AsideArea = styled.div`
-  flex: 0.3;
+  width: 250px;
+  min-width: 250px;
 `;
 
 const FormArea = styled.div`
-  flex: 1.7;
+  width: 100%;
 `;

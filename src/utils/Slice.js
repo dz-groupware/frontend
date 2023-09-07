@@ -50,7 +50,7 @@ const companyMgmtInitialState = {
     searchList: JSON.parse('[{"":""}]')
   }
   
-export const menuSlice = createSlice({
+export const  menuSlice = createSlice({
     name: 'gnbMenu',
     initialState: {
         menu: JSON.parse('[{"empId": "","menuId": "","parId": "","name": "","iconUrl": ""}]'),

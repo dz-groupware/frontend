@@ -1,12 +1,12 @@
 import React, { useState } from 'react'
 import { styled } from 'styled-components'
 import { useFetchData } from '../../hooks/useFetchData';
-import { getAuthGroup, getGnbListOfAuth, getGnbListOfAuthWithAll } from '../../api/authgroup';
+import { getGnbListOfAuthWithAllApi } from '../../api/authgroup';
 import MenuItem from './MenuItem';
 
 export default function SelectedAuthMenu({ companyId,activeAuthId }) {
   
-  const { data, isLoading, error } = useFetchData(getGnbListOfAuth,{
+  const { data, isLoading, error } = useFetchData(getGnbListOfAuthWithAllApi,{
     paths: {
       companyId,
       authId: activeAuthId,

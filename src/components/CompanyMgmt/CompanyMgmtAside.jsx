@@ -1,9 +1,9 @@
 import styled from 'styled-components';
 import { AiOutlinePlusCircle } from "react-icons/ai";
 import { useDispatch, useSelector } from 'react-redux';
-import { companyActions} from '../../App';
 import { useEffect, useState } from 'react';
 import { axiosInstance } from '../../utils/axiosInstance';
+import { companyActions } from '../../utils/Slice';
 
 
 
@@ -59,7 +59,7 @@ export default function CompanyMgmtAside({ onShowForm }) {
         <Wrapper key={index} onClick={() => handleCompanyClick(data)}>
           <CompanyInfo>
             <div>{data.code}</div>
-            <div style={{ marginTop: '5px' }}>{data.name}</div>
+            <div>{data.name}</div>
           </CompanyInfo>
           <PersonInfo>
             <div>{data.repName}</div>
@@ -75,10 +75,12 @@ export default function CompanyMgmtAside({ onShowForm }) {
   async function handleCompanyClick(companyMgmt) {
     try {
       // 회사 정보를 가져옵니다.
+      console.log(companyMgmt.id);
       const response = await axiosInstance.get(`/companies/${companyMgmt.id}`);
+      console.log(response);
       const fetchedCompanyData = response.data;
       
-     
+     console.log(fetchedCompanyData);
       // 가져온 회사 정보와 코드를 함께 showForm 액션에 전달합니다.
       dispatch(companyActions.showForm({ companyInfo: fetchedCompanyData, id: fetchedCompanyData.id}));
       
@@ -133,10 +135,8 @@ export default function CompanyMgmtAside({ onShowForm }) {
 
 
 const Container = styled.div`
-position: relative;   // 추가
-width: 250px;
+position: relative;   
 max-width: 250px;  
-min-width: 250px;  
 margin-left: 20px;
 margin-top: 10px;
 border : 1.5px solid #CCCCCC;
@@ -184,14 +184,22 @@ const Wrapper = styled.div`
 
 const CompanyInfo = styled.div`
   display: flex;
-  flex-direction: column;  // 세로로 내용 배치
-  align-items: flex-start;  // 왼쪽 정렬
+  flex-direction: column;
+  align-items: flex-start;
+
+  & > div + div {
+    margin-top: 10px;
+  }
 `;
 
 const PersonInfo = styled.div`
   display: flex;
-  flex-direction: column;  // 세로로 내용 배치
-  align-items: flex-end;  // 오른쪽 정렬
+  flex-direction: column;
+  align-items: flex-end;
+
+  & > div + div {
+    margin-top: 10px;
+  }
 `;
 
 
@@ -203,7 +211,7 @@ const NumberOfCompaniesArea = styled.div`
   display:flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom:1px solid #CCCCCC;
+  border-bottom:1.5px solid #CCCCCC;
   background-color: #F5F5F5;
   top: 0;
 `;

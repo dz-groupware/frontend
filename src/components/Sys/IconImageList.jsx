@@ -11,7 +11,7 @@ export default function IconImageList(props){
   console.log(props.newIcon, " : ", props.iconUrl);
   useEffect(() => {
     iconListAPI().then(res => {
-      setIcon(res.data.data);
+      setIcon(res.data);
     })
   }, []);
   

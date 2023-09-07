@@ -4,9 +4,9 @@ import { axiosInstance } from '../utils/axiosInstance';
  * 수정해야함
  */
 export const getAuthGroupApi = ({ queryKey }) => {
-  const [_ , companyId=1, pageSize=5, lastId, orderBy] = queryKey; //배열로구분
+  const [_ , , pageSize=5, lastId, orderBy] = queryKey; //배열로구분
   
-  return axiosInstance.get(`/auth-group/companies/${companyId}/auth`, {
+  return axiosInstance.get(`/auth-group/companies/auth/list`, {
     params: {
       lastId: lastId,
       pageSize: pageSize || 1,
@@ -17,14 +17,9 @@ export const getAuthGroupApi = ({ queryKey }) => {
   });
 };
 
-export const getCountAuthGroupApi = async ({ queryKey }) => {
+export const getCountAuthGroupApi = async () => {
   try {
-    const [_ , companyId, orderBy] = queryKey;
-    const response = await axiosInstance.get(`/auth-group/companies/${companyId}/auth/count`, {
-      params: {
-        orderBy
-      }
-    });
+    const response = await axiosInstance.get(`/auth-group/companies/auth/count`);
     return response.data.data;
   } catch (error) {
     throw new Error('count를 받아올 수가 없습니다.');
@@ -32,10 +27,9 @@ export const getCountAuthGroupApi = async ({ queryKey }) => {
 
 }
 
-export const getGnbListApi = async ({ params, paths }) => {
+export const getGnbListApi = async () => {
   try {
-    const {companyId} = paths;
-    const response = await axiosInstance.get(`/auth-group/companies/${companyId}/gnb-list`);
+    const response = await axiosInstance.get(`/auth-group/companies/gnb-list`);
     return response.data.data;
   } catch (error) {
     console.error(error);  // 상세 에러 정보 출력
@@ -52,16 +46,16 @@ export const getLnbListApi = async ({ paths }) => {
 };
 
 export const getGnbListOfAuthApi = async ({ paths }) => {
-  const { companyId, authId } = paths
-  return axiosInstance.get(`/auth-group/companies/${companyId}/auth/${authId}/gnb`)
+  const { authId } = paths
+  return axiosInstance.get(`/auth-group/companies/auth/${authId}/gnb`)
   .then(response => {
     return response.data.data;
   });
 };
 
 export const getGnbListOfAuthWithAllApi = async ({ paths }) => {
-  const { companyId, authId} = paths
-  return axiosInstance.get(`/auth-group/companies/${companyId}/auth/${authId}/gnb-all`)
+  const {authId} = paths
+  return axiosInstance.get(`/auth-group/companies/auth/${authId}/gnb-all`)
   .then(response => {
     return response.data.data;
   })

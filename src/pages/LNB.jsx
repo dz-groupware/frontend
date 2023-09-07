@@ -1,25 +1,31 @@
 import { Outlet, useLocation, useNavigate, useParams } from "react-router-dom";
-import Sys from './Sys';
+
 import { useEffect, useState } from "react";
 import { searchMenuListAPI } from '../utils/API';
 import { useSelector } from "react-redux";
 import styled from 'styled-components';
 import { AiFillFolder, AiFillFolderOpen, AiOutlineProfile, AiFillProfile, AiOutlineMenu } from "react-icons/ai";
-import CompanyMgmtPage from "./CompanyMgmtPage";
-import RoleSettingPage from "./RoleSettingPage";
 
 
-export function LNB() {
+
+export default function LNB() {
     const { param } = useParams();
     const location = useLocation();
-    // const menuId = location.state.menuId;
-    const menuId = location.state.menuId;
+    const menuId = location.state?.menuId ?? undefined;
     const [data, setData] = useState(JSON.parse('[{"name":""}]'));
     const compId = useSelector(state => state.gnbMenu.compId);
-    console.log("menuId",menuId);
+
+    const navigator = useNavigate();
+
+    console.log('menuId : ', menuId);
     useEffect(() => {
-        if(menuId !== undefined && menuId !== null && compId !== undefined && compId !== null){
-            searchMenuListAPI(menuId, compId).then(res => setData(res.data));
+        if(menuId !== undefined && compId !== undefined && compId !== null){
+            searchMenuListAPI(menuId, compId).then(res => {
+              console.log(res.data);
+              setData(res.data);
+            })
+        } else {
+          //navigator('/error');
         }
         // 지금은 이동한 메뉴(GNB)에 맞는 LNB 리스트를 저장하고 있음.
         // 즐겨찾기에서 눌렀을 경우 즐겨찾기 리스트를 저장하도록 수정할 예정
@@ -29,52 +35,33 @@ export function LNB() {
 //    const data = JSON.parse('[{"name":"조직관리"}, {"naem":"메뉴설정"}]');
 
     return (
-        <div style={{backgroundColor:'white', width:'100%', height:'100%', color:'black'}}>
+        <LnbArea>
             <LnbTitle><AiOutlineMenu style={{margin: '5px', marginRight:'10px'}} />
             {param}
             </LnbTitle>
-            <div style={{display:'flex', width:'100%', height:'100%'}}>
+            <div style={{display: 'flex', width: '100%', height:'100%'}}>
                 <LNBList>
+                  <div style={{width:'200px'}}>
                     {
                         data.map((a, i) => {
                             if (a['id'] !== a['parId']) {
                                 return (
-                                    <MenuTree menu={a} param={param} compId={compId} gnbId={menuId}/>                                    
+                                    <MenuTree menu={a} param={param} compId={compId} gnbId={menuId} key={a['name']+a['id']}/>                                    
                                 )
                             }
                             return null;
                         })
                     }
+                  </div>
                 </LNBList>
                 <OutletArea>
-                    <Outlet />
+                  <Outlet />
                 </OutletArea>
-            </div>
-        </div>
+                </div>
+        </LnbArea>
     );
 }
 
-export function Module(){
-    const { menuName } = useParams();
-
-    if (menuName === '메뉴설정'){
-        return(
-            <Sys />
-        );
-    }    
-    if (menuName === '회사관리'){
-        return(
-            <CompanyMgmtPage />
-        );
-    }
-    if (menuName === '권한Role설정'){
-        return(
-            <RoleSettingPage/>
-        );
-    }
-    return null;
-
-} 
 
 export function MenuTree(props){
     const [open, setOpen] = useState(false);
@@ -122,23 +109,34 @@ export function MenuTree(props){
     )
 }
 
+const LnbArea = styled.div`
+width: 100%;
+height: 100%;
+background-color: white;
+`;
+
+const OutletArea = styled.div`
+position: fixed;
+top: 130px;
+left: 250px;
+width: calc(100% - 250px);
+height: calc(100% - 50px);
+`;
+
+
 const Menu = styled.div`
 margin-left: 15px;
 `;
 
 const LNBList = styled.div`
-width: 200px;
+width: 200px !important;
 height: 100%;
-backgroundColor: rgb(250,247,250);
+background-color: white;
+color: black;
 padding: 10px;
+
 `;
 
-const OutletArea = styled.div`
-width: 100%;
-height: 100%;
-overflow: auto;  // or overflow: scroll
-
-`
 const LnbTitle = styled.div`
 width: 100%;
 height: 50px;

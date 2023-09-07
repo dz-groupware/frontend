@@ -25,10 +25,11 @@ export const HalfInputContainer = styled.div`
 
 export const Label = styled.div`
     width: 170px;
-    padding: 5px 10px;
+    padding: 10px 10px;
     background-color: #F9F9F9;
     font-weight: bold;
     text-align: right;
+    height:40px;
 `;
 
 export const Input = styled.input`

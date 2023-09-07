@@ -8,7 +8,9 @@ import { menu, favor, profileList } from '../utils/Slice';
 import { GnbMenuApi, GnbFavorApi, GnbFavorDeleteApi, profileAPI } from '../utils/API';
 
 import TB from './TB';
-import { LNB, Module } from './LNB';
+import AWS from './AWS';
+import LNB from './LNB';
+import Module from './Module';
 import { Main } from './VIEW';
 
 import MenuList from '../components/GNB/MenuList';
@@ -29,13 +31,14 @@ export default function Home() {
   const empId = useSelector(state => state.gnbMenu.empId);
 
   useEffect(() => {
-    GnbMenuApi(empId).then(function (response) {
+
+    GnbMenuApi(empId).then(response => {
       dispatch(menu(response.data));
     });
-    GnbFavorApi(empId).then(function (response) {
+    GnbFavorApi(empId).then(response => {
       dispatch(favor(response.data));
     });
-    profileAPI(empId).then(function (response) {
+    profileAPI(empId).then(response => {
       dispatch(profileList(response.data));
     });
   }, [empId, dispatch]);
@@ -43,17 +46,18 @@ export default function Home() {
   return (
     <Container>
       <BgiArea>
-        <TBArea><TB /></TBArea>
-        <div style={{position: 'relative', zIndex:'-1', height: '100%'}}>
-        <Routes>
-          <Route path='/' element={<Main />} />
-          <Route path='/:param' element={<LNB />}>
-            <Route path=':menuName' element={<Module />} />
-          </Route> 
-        </Routes>
-        </div>
+        <TBArea id='tb'><TB /></TBArea>
+        <RouteArea id='route'>
+          <Routes>
+            <Route path='/' element={<Main />} />
+            <Route path='/s3' element={<AWS />} />
+            <Route path='/:param' element={<LNB />}>
+              <Route path=':menuName' element={<Module />} />
+            </Route> 
+          </Routes>
+        </RouteArea>
       </BgiArea>
-      <GNBIconArea>   
+      <GNBIconArea id='gnbIcon'>   
         <BiSolidGrid onClick={() => {
           if (menuOn[0] || menuOn[1]) {
             setMenuOn([false, false]);
@@ -64,7 +68,7 @@ export default function Home() {
         <hr />
         <IconList value={menuData}/>
       </GNBIconArea>
-      <GNBMenuArea className={`menu main ${menuOn[0]} ? 'true' : 'false'}`}>
+      <GNBMenuArea id='gnbMenu' className={`menu main ${menuOn[0]} ? 'true' : 'false'}`}>
         <TopIconArea>
           <AiOutlineMenu onClick={() => {setMenuOn([true, false]);}} />
           <AiOutlineStar onClick={() => {setMenuOn([false, true]);}} />
@@ -72,7 +76,7 @@ export default function Home() {
         <hr />
         <MenuList value={menuData}/>
       </GNBMenuArea>
-      <GNBFavArea className={`main ${menuOn[1]} ? 'true' : 'false'}`}>
+      <GNBFavArea id='gnbFav' className={`main ${menuOn[1]} ? 'true' : 'false'}`}>
         <TopIconArea>
           <AiOutlineMenu onClick={() => {setMenuOn([true, false]);}} />
           <AiOutlineStar onClick={() => {setMenuOn([false, true]);}} />
@@ -83,26 +87,31 @@ export default function Home() {
     </Container>
   );
 }
+export const RouteArea = styled.div`
+color: black;
+height: calc(100% - 80px);
+width: 100%;
+`;
 
 export const Container = styled.div`
+position: absolute;
 display: flex;
-background-color: white;
 color: white;
-
-width:100%;
-height:100%;
+width: 100%;
+height: 100%;
 margin: 0;
-background-color: rgb(240, 245, 248);
-
 `;
+
 export const BgiArea = styled.div`
 margin: 0px;
 padding: 0px;
 position: fixed;
 left: 50px;
+top: 0px;
 width: 100%;
 height: 100%;
 background-color: rgb(240,245,248);
+
 > img {
   width:100%;
   height:100%;

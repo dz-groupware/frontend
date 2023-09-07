@@ -4,7 +4,7 @@ import styled from 'styled-components';
 
 export default function PosiList() {
   const datas = useSelector(state => state.gnbMenu.profileList);
-  const emp_id = useSelector(state => state.gnbMenu.key);
+  const empId = useSelector(state => state.gnbMenu.key);
 
   return (
     <ModalArea>
@@ -16,7 +16,7 @@ export default function PosiList() {
           {
             datas.map((a, i) => (
               <tr key={i}>
-              <td><input type='radio' name='a' value={a['id']}/>&nbsp;{a['compName']}</td><td>&nbsp;&nbsp;{a['nameTree']}</td><td>{emp_id === a['id'] && <Using />}</td>
+              <td><input type='radio' name='a' value={a['empId']}/>&nbsp;{a['compName']}</td><td>&nbsp;&nbsp;{a['deptName']}</td><td>{empId === a['empId'] && <Using />}</td>
             </tr>
             ))                   
           }

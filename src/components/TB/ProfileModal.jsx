@@ -13,9 +13,9 @@ export default function ProfileModal(props) {
         <div>
           <img src={data['imageUrl']} alt='p_img' />
           <div>
-            <div id="profile_name">{data['name']} / {data['loginId']}</div>
-            <div>{data['nameTree']}</div>
-            <p>접속 IP : {data['lastIp']}(현재: {data['lastIp']})</p>
+            <div id="profile_name">{data['empName']}</div>
+            <div>{data['compName']} / {data['deptName']}</div>
+            <p>최근접속 : {data['lastAccess']} || {data['lastIp']}(현재: {data['lastIp']})</p>
           </div>
         </div>
         <div id='tableName'><div> • 회사정보</div></div>

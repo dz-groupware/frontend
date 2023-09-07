@@ -8,8 +8,8 @@ export default function Profile() {
     <ProfileArea>
       <img src={data['imageUrl']} alt='profileImg' />
       <div>
-        <div id="profile_name">{data['name']}</div>
-        <p>{data['compName']} / {data['nameTree']}</p>
+        <div id="profile_name">{data['empName']}</div>
+        <p>{data['compName']} / {data['deptName']}</p>
       </div>
     </ProfileArea>
   );

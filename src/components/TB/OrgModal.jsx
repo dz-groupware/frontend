@@ -24,14 +24,14 @@ export default function OrgModal(props){
   useEffect(() => {
     async function LoadData(emp_id){
       const res = await orgTreeApi('comp', "","",empId);
-      setData(res.data.data);
+      setData(res.data);
     }
     LoadData(empId);
   }, [empId]);  
 
   async function loadEmpList(type, text){
     const res = await orgEmpListApi(type, text);
-    setEmpList(res.data.data);
+    setEmpList(res.data);
   }
 
   function EmpDetailHandler(detailData){
@@ -101,7 +101,7 @@ export function CompList(props) {
 
   function handleCompItem(compId) {
     if(subItem.length === 0) {
-      orgTreeApi('Dept1', compId,"","").then(res => setSubItem(res.data.data));
+      orgTreeApi('Dept1', compId,"","").then(res => setSubItem(res.data));
     }
     setOpen(!open);
     props.loadEmpList('comp', props.comp['id']);
@@ -127,7 +127,7 @@ export function DeptTree(props) {
 
   function handleDeptItem(compId, deptId) {
     if(subItem.length === 0) {
-      orgTreeApi('Dept2', compId, deptId,"").then(res => setSubItem(res.data.data));
+      orgTreeApi('Dept2', compId, deptId,"").then(res => setSubItem(res.data));
       props.loadEmpList('dept', deptId )
     }
     setOpen(!open);

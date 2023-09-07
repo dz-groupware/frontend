@@ -8,7 +8,7 @@ import Home from './pages/Home';
 import store from './utils/Store';
 import { Route, Routes } from 'react-router-dom';
 
-const queryClient = new QueryClient();
+//const queryClient = new QueryClient();
 
 export default function App() {
   return (

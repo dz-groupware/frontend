@@ -11,12 +11,13 @@ export function LNB() {
     const { param } = useParams();
     const location = useLocation();
     const menuId = location.state.menuId;
+//const menuId=8;
     const [data, setData] = useState(JSON.parse('[{"name":""}]'));
     const compId = useSelector(state => state.gnbMenu.compId);
 
     useEffect(() => {
         if(menuId !== undefined && menuId !== null && compId !== undefined && compId !== null){
-            searchMenuListAPI(menuId, compId).then(res => setData(res.data.data));
+            searchMenuListAPI(menuId, compId).then(res => setData(res.data));
         }
         // 지금은 이동한 메뉴(GNB)에 맞는 LNB 리스트를 저장하고 있음.
         // 즐겨찾기에서 눌렀을 경우 즐겨찾기 리스트를 저장하도록 수정할 예정
@@ -36,7 +37,7 @@ export function LNB() {
                         data.map((a, i) => {
                             if (a['id'] !== a['parId']) {
                                 return (
-                                    <MenuTree menu={a} param={param} compId={compId} gnbId={menuId}/>                                    
+                                    <MenuTree menu={a} param={param} compId={compId} gnbId={menuId} key={a['name']+a['id']}/>                                    
                                 )
                             }
                             return null;
@@ -82,7 +83,7 @@ export function MenuTree(props){
 
     function handleMenuItem() {
         if(subItem.length === 0) {
-            searchMenuListAPI(props.menu['id'], props.compId).then(res => setSubItem(res.data.data));
+            searchMenuListAPI(props.menu['id'], props.compId).then(res => setSubItem(res.data));
         }
         setOpen(!open);
         // menuId를 넘기지 않고 gnbId를 넘긴다. LNB() 컴포넌트는 GNB 메뉴 ID가 필요함.

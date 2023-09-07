@@ -143,10 +143,8 @@ export function FavorApi(type, empId, menuId){
         if (type === 'on') {
             return axiosInstance.post(
                 `/setting/favor`,{
-                    data: {
                         empId,
                         menuId
-                    }
                 }
             )
         }

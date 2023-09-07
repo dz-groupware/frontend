@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { axiosInstance } from "../../utils/axiosInstance";
 import { useDispatch } from "react-redux";
-import { companyActions} from "../../App";
 import MgmtNav from "../Commons/MgmtNav";
+import { companyActions } from "../../utils/Slice";
 
 
 
@@ -18,7 +18,7 @@ export default function CompanyMgmtNav() {
             const actualSearchValue = searchValue === "" ? "%25%25" : `%25${searchValue}%25`;
             const actualSelectedOption = selectedOption === "" ? 2 : `${selectedOption}`;
 
-            const response = await axiosInstance.get(`/companies/company-list?name=${actualSearchValue}&enabledYn=${actualSelectedOption}`);
+            const response = await axiosInstance.get(`/companies/company-list?name=${actualSearchValue}&enabledType=${actualSelectedOption}`);
 
             
             // 응답 데이터 처리

@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import Line from '../Commons/Line';
-import { getAuthGroupApi, getCountAuthGroupApi } from '../../api/authgroup';
-import InfiniteScroll from 'react-infinite-scroller';
-import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
-import AuthGroupItem from './AuthGroupItem';
 import { useFetchData } from '../../hooks/useFetchData';
+import { useInfiniteFetchData } from '../../hooks/useInfiniteFetchData';
+import { getAuthGroupApi, getCountAuthGroupApi } from '../../api/authgroup';
+import AuthGroupList from './AuthGroupList';
 
 export default function AuthGroupSection({ activeAuthId, setActiveAuthId}) {
   const rangeOptions = ['전체', '부서', '사원'];  // 필터 옵션을 배열로 정의
@@ -15,42 +14,16 @@ export default function AuthGroupSection({ activeAuthId, setActiveAuthId}) {
     { label: '최신순', value: 'authDashboardIdDesc' },
     { label: '권한명순', value: 'authNameAsc' },
     { label: '권한명역순', value: 'authNameDesc'},
-    // ... 다른 옵션들
   ];
-  
   const [rangeOp, setRangeOp] = useState(rangeOptions[0]);
   const [orderBy, setOrderBy] = useState(orderOptions[0].value);
-  const [searchTerm, setSearchTerm] = useState('');
-  
-  const pageSize = 10;
-  const queryClient = useQueryClient();
-  const { data: countData, isLoading: isLoadingCount, error: isErrorCount, statusCode, setShouldFetch } = useFetchData(getCountAuthGroupApi);
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, isError } = useInfiniteQuery(
-    ['authSummaries'],
-    ({ pageParam = 0 }) => getAuthGroupApi({ queryKey: ['authSummaries',pageParam]  }),  // <--- 수정
-    {
-      getNextPageParam: (lastPage) => {//lastPage는 배열로 넘어온다.만약에 data{}로넘어온다면 data. 으로 조회
-        const lastAuthSummary = lastPage[lastPage.length - 1];
-        if (!lastAuthSummary) return undefined;
-        return lastAuthSummary.id;  
-      },
-    }
-  );
-
+  const [searchTerm, setSearchTerm] = useState(null);
+  const { data: countData, isLoading: isLoadingCount, error: isErrorCount, statusCode} = useFetchData(getCountAuthGroupApi);
+ 
   useEffect(() => {
     console.log("countData:", countData);  // <--- 이 줄을 추가
-  }, [statusCode, countData, isLoadingCount, isErrorCount]);
+  }, [statusCode, countData, isLoadingCount, isErrorCount ]);
 
-  
-  useEffect(() => {
-    queryClient.removeQueries('authSummaries');
-  }, [orderBy, searchTerm]);
-
-  if (isLoading) return <div>로딩중입니다...</div>;
-  if (isError) return <div>Error occurred</div>;
-  if (!data) return null;
-
-  
   return (
     <Container>
       <StyledSelect onChange={e => setRangeOp(e.target.value)}>
@@ -80,32 +53,10 @@ export default function AuthGroupSection({ activeAuthId, setActiveAuthId}) {
       </select>
       </GroupCountFilter>
       <Line color="#C9C9C9" height={"1px"} top={"5px"}/>
-      <GroupList>
-        <InfiniteScroll
-            style={{ border: '1px solid #a9a9a9', height: '100%', overflowY: 'auto' }}
-            loadMore={() => fetchNextPage()}
-            hasMore={hasNextPage}
-            useWindow={false}
-        >
-          {data.pages.map((items, i) => (
-            <div key={i}>
-              {items.map(item => (
-                <AuthGroupItem 
-                  key={item.id}
-                  item={item}
-                  onClick={() => { 
-                    setActiveAuthId(item.id); 
-                }}
-                  isActive={activeAuthId === item.id}
-                >
-                </AuthGroupItem>
-              ))}
-            </div>
-          ))}
-          </InfiniteScroll>
-          {isFetchingNextPage && <div>로딩중입니다...</div>}
-          {!hasNextPage && <div>더 이상 로드할 페이지가 없습니다.</div>}
-        </GroupList>
+      <AuthGroupList 
+        activeAuthId={activeAuthId} 
+        setActiveAuthId={setActiveAuthId} 
+      />
     </Container>
   );
 }
@@ -114,8 +65,11 @@ const Container = styled.div`
   margin-top: 20px;
   margin-left: 20px;
   width: 300px;
-  height: 100%;
-  border: 1px solid #ccc;
+  height: 90%;
+  border-top: 2px solid #747474;
+  border-left: 1px solid #ccc;
+  border-right: 1px solid #ccc;
+  border-bottom: 1px solid #ccc;
   padding: 20px;
 `;
 const StyledSelect = styled.select`
@@ -135,13 +89,7 @@ const StyledInput = styled.input`
   flex:1;
 `;
 
-const GroupList = styled.div`
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  height: 600px;
-  overflow-y: auto; 
-`;
+
 
 const GroupCountFilter = styled.div`
   display: flex;

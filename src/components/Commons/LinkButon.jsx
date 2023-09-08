@@ -16,18 +16,40 @@ export default function LinkButon(props) {
 
 const Container = styled.button`
   width: fit-content;
-  position: relative;
-  color: ${props=> props.selected? "#0B85EE" : "black"};
-  font-size: 30px;
+  color: ${props=> props.selected? "#5398ff" : "black"};
+  font-size: 1.2rem;
   font-weight: bold;
   letter-spacing: 4px;
   word-spacing: 4px;
-  border: none;
   background: none;
-  padding: 0;
+  padding: 0.1rem 1.2rem 0.5rem;
   /* cursor: ${props => props.cursor || 'pointer'}; */
   line-height: 1;
-  text-decoration: underline;
-  text-decoration-color: ${props => props.selected? "#0B85EE" : "black"};
-  text-decoration-thickness: 2px;
+  position: relative;
+  border-top: none;
+  border-right: none;
+  border-left: none;
+  border-bottom: 0.2rem solid #5398ff;
+  letter-spacing: normal;  // 글자 간격을 기본값으로 설정
+  word-spacing: normal;    // 단어 간격을 기본값으로 설정
+
+  &::before {
+    left: 0;  
+    content: '';
+    position: absolute;
+    top: 0;  
+    height: 80%;
+    width: 1px;
+    background-color: #ccc;  
+  }
+
+  &::after {
+    right: 0; 
+    content: '';
+    position: absolute;
+    top: 0;  
+    height: 80%;
+    width: 1px;
+    background-color: #ccc; //  
+  }
 `;

@@ -3,15 +3,15 @@ import styled from 'styled-components';
 
 export default function Profile() {
 
-  const data = useSelector(state => state.gnbMenu.profileList[0]);
+  // const data = useSelector(state => state.gnbMenu.profileList[0]);
 
   return (
     <ProfileArea>
-      <img src={data['imageUrl']} alt='profileImg' />
+      {/* <img src={data['imageUrl']} alt='profileImg' />
       <div>
         <div id="profile_name">{data['empName']}</div>
         <p>{data['compName']} / {data['deptName']}</p>
-      </div>
+      </div> */}
     </ProfileArea>
   );
 }

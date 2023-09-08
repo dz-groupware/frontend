@@ -1,50 +1,63 @@
-  import { useMemo } from 'react';
-  import { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 
-  /** 
-    @prop {func} apiFunction - 사용할 api
-    @prop {object} params - queryParameter
-    @prop {object} paths - pathVaraible
-    @prop {object} data - request body
-    @prop {boolean} shouldFetch - API 호출을 할지 말지 결정. 
-  */
-  export const useFetchData = (apiFunction, { params = {}, paths = {}, data = {}, shouldFetch = true } = {}) => {
-    const [fetchedData, setFetchedData] = useState(null);
-    const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState(null);
-    const [shouldFetchState, setShouldFetch] = useState(shouldFetch);  // shouldFetch를 상태로 관리
-    const [statusCode, setStatusCode] = useState(null);
+/** 
+  @prop {func} apiFunction - 사용할 api
+  @prop {object} params - queryParameter
+  @prop {object} paths - pathVaraible
+  @prop {object} data - request body
+  @prop {boolean} shouldFetch - API 호출을 할지 말지 결정. 
+*/
+export const useFetchData = (apiFunction, { params = {}, paths = {}, data = {}, shouldFetch = true } = {}) => {
+  const [fetchedData, setFetchedData] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [shouldFetchState, setShouldFetch] = useState(shouldFetch); 
+  const [statusCode, setStatusCode] = useState(null);
 
-    const paramsString = JSON.stringify(params);
-    const pathsString = JSON.stringify(paths);
-    const dataString = JSON.stringify(data);
+  const [currentParams, setParams] = useState(params); 
+  const [currentPaths, setPaths] = useState(paths); 
+  const [currentData, setData] = useState(data); 
 
-    const stableParams = useMemo(() => params, [paramsString]);
-    const stablePaths = useMemo(() => paths, [pathsString]);
-    const stableData = useMemo(() => data, [dataString]);
+  useEffect(() => {
+    if (JSON.stringify(params) !== JSON.stringify(currentParams)) {
+      setParams(params);
+    }
+    if (JSON.stringify(paths) !== JSON.stringify(currentPaths)) {
+      setPaths(paths);
+    }
+    if (JSON.stringify(data) !== JSON.stringify(currentData)) {
+      setData(data);
+    }
+  }, [params, paths, data]);
 
-    useEffect(() => {
-      const fetchData = async () => {
-        setIsLoading(true);
+  useEffect(() => {
+    if (shouldFetch !== shouldFetchState) {
+      setShouldFetch(shouldFetch);
+    }
+  }, [shouldFetch]);
 
-        if (!shouldFetchState) { // shouldFetchState를 사용
-          setIsLoading(false);
-          return;
-        }
-        try {
-          const response = await apiFunction({ params: stableParams, paths: stablePaths, data: stableData });
-          setFetchedData(response.data);
-          setStatusCode(response.status); // 상태 코드 저장
-        } catch (e) {
-          setError(e);
-        } finally {
-          setIsLoading(false);
-          setShouldFetch(false);
-        }
-      };
-      
-      fetchData();
-    }, [apiFunction, stableParams, stablePaths, stableData, shouldFetchState]); 
+  useEffect(() => {
+    const fetchData = async () => {
+      setIsLoading(true);
 
-    return { data: fetchedData, setData: setFetchedData, isLoading, error, setShouldFetch, statusCode};  // setShouldFetch를 반환
-  };
+      if (!shouldFetchState) {
+        setIsLoading(false);
+        return;
+      }
+      try {
+        const response = await apiFunction({ params: currentParams, paths: currentPaths, data: currentData });
+        setFetchedData(response.data);
+        setStatusCode(response.status);
+      } catch (e) {
+        setError(e);
+      } finally {
+        setIsLoading(false);
+        setShouldFetch(false);
+      }
+    };
+    
+    fetchData();
+  }, [apiFunction, currentParams, currentPaths, currentData, shouldFetchState]); 
+
+  return { data: fetchedData, setData: setFetchedData, isLoading, error, setShouldFetch, statusCode};  
+};

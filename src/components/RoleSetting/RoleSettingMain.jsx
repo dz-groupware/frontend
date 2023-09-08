@@ -36,7 +36,7 @@ export default function RoleSettingMain() {
           {activeAuthId ? <SelectedAuthMenu activeAuthId={activeAuthId}/> : <div style={{ height: '100%' }} />}
         </StyledMenuTreeContainer>
         <StyledUserListContainer $visible={visible}>
-          <UserListSection activeAuthId={activeAuthId}/>
+          <UserListSection authId={activeAuthId}/>
         </StyledUserListContainer>
     </Container>
   );
@@ -45,19 +45,22 @@ export default function RoleSettingMain() {
 
 const Container = styled.div`
   display: flex;
-  height: 100%;
+  height: 80%;
   gap: 30px;
 `;
 const StyledAuthGroupContainer = styled.div`
   width: 400px;
+  height: 100%;
 `;
 
 const StyledMenuTreeContainer = styled.div`
   width: 800px;
+  height: 100%;
   visibility: ${props => props.$visible ? 'visible' : 'hidden'};
 `;
 
 const StyledUserListContainer = styled.div`
   width: 400px;
+  height: 100%;
   visibility: ${props => props.$visible ? 'visible' : 'hidden'};
 `

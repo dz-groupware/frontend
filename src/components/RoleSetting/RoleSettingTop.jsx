@@ -31,6 +31,7 @@ const Container = styled.div`
   display: flex;
   justify-content: space-between;
   flex-direction: row;
+  padding: 0 0.5rem;
 `;
 
 const LeftWrapper = styled.div`

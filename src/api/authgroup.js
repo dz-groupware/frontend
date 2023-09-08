@@ -3,16 +3,17 @@ import { axiosInstance } from '../utils/axiosInstance';
 /**
  * 수정해야함
  */
-export const getAuthGroupApi = ({ queryKey }) => {
-  const [_ ,lastId] = queryKey; //배열로구분
-  
+export const getAuthGroupApi = ({ params }) => {
+  const { lastId, pageSize, orderBy, searchTerm } = params; 
   return axiosInstance.get(`/auth-group/companies/auth/list`, {
     params: {
-      lastId: lastId,
-      pageSize: 1,
+      lastId,
+      pageSize,
+      orderBy,
+      searchTerm
     }
   }).then(response => {
-    return response.data.data;
+    return response.data;
   });
 };
 
@@ -60,12 +61,16 @@ export const getGnbListOfAuthWithAllApi = async ({ paths }) => {
 }
 
 export const getUserListOfAuthApi = async ({ paths }) => {
-  const { authId } = paths
+  const { authId } = paths;
+    // authId가 null이거나 undefined인지 확인
+    if (authId === null || authId === undefined) {
+      throw new Error("authId is not defined");
+    }
+  
   return axiosInstance.get(`/auth-group/auth/${authId}`)
   .then(response => {
     return response.data;
   }).catch(error => {
-    console.error('API 호출 중 오류 발생:', error);
     throw error;  // 혹은 적절한 오류 응답을 반환하세요.
   });
 }

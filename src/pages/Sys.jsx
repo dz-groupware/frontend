@@ -205,6 +205,7 @@ height: 100px;
 background-color: rgb(240,245,248);
 border-bottom: 1px solid rgb(171,172,178);
 color: black;
+min-width: 400px;
 > select {
   width:170px;
   height:25px;

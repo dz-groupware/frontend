@@ -8,6 +8,7 @@ import { MdOutlineRefresh } from 'react-icons/md';
 import { saveMenuAPI, saveIconAPI } from '../../utils/API';
 import IconImageList from './IconImageList';
 import MenuTree from './MenuTree';
+import { axiosInstance } from '../../utils/axiosInstance';
 
 export function GnbDetail(props) {
   const [isDragging, setIsDragging] = useState(false);
@@ -17,7 +18,7 @@ export function GnbDetail(props) {
   const [newIconFile, setNewIconFile] = useState("");
   const [saveIconFile, setSaveIconFile] = useState("");
   const [inputValue, setInputValue] = useState("");
-  
+  const path = 'https://dz-test-image.s3.ap-northeast-2.amazonaws.com/';
   const readImage = (image) => {
     const reader = new FileReader();
     reader.onload = function(e) {
@@ -45,9 +46,9 @@ export function GnbDetail(props) {
   const onDrop = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    setIconUrl('http://localhost:8010/api/v1/image/'+e.dataTransfer.files[0]['name']);
+    setIconUrl(path+e.dataTransfer.files[0]['name']);
     setIsDragging(false);
-    setNewIcon('http://localhost:8010/api/v1/image/'+e.dataTransfer.files[0]['name']);
+    setNewIcon(path+e.dataTransfer.files[0]['name']);
     readImage(e.dataTransfer.files[0]);
     setSaveIconFile(e.dataTransfer.files[0]);
   };
@@ -59,7 +60,7 @@ export function GnbDetail(props) {
     if (props.on === 1) {
       console.log(formData.get('iconUrl'));
       try {
-        formData.set('iconUrl', 'http://localhost:8010/api/v1/image/'+formData.get('iconUrl'));
+        formData.set('iconUrl', path+formData.get('iconUrl'));
         await saveMenuAPI(formData, data, '1', props.compId);
         console.log('insert done ...');
       } catch (error) {
@@ -69,7 +70,7 @@ export function GnbDetail(props) {
     // 수정 요청
     if (props.on === 2) {
       try {
-        formData.set('iconUrl', 'http://localhost:8010/api/v1/image/'+formData.get('iconUrl'));
+        formData.set('iconUrl', path+formData.get('iconUrl'));
         await saveMenuAPI(formData, data, '2', props.compId);
         console.log('update doen ...');
       } catch (error) {
@@ -78,12 +79,14 @@ export function GnbDetail(props) {
     }
 
     if (newIcon !== "") {
-
       let formData = new FormData();
-      formData.append('iconFile', saveIconFile)
-      // 이미지 저장 요청 api
-      saveIconAPI(formData);
-      console.log('saveIconAPI');
+      formData.append('images', saveIconFile);
+
+      axiosInstance.post(
+        `/s3/img`, formData, {
+          headers: { 'Content-Type': 'multipart/form-data' },
+        }
+      ).then(setNewIcon(""));
     }
   }
 
@@ -96,6 +99,7 @@ export function GnbDetail(props) {
     }
   }, [props.value]);
   
+  console.log('iconUrl : ', iconUrl);
   return (
     props.on &&
     <DetailDiv>
@@ -113,12 +117,12 @@ export function GnbDetail(props) {
             <tr><td>정렬</td><td><input type='number' name='sortOrder' placeholder={data['sortOrder']} /></td></tr>
             <tr><td>아이콘(48*44)<MdOutlineRefresh /></td>
             <td style={{display: 'block'}}>
-              <div id="DnDBox" onDragEnter={onDragEnter} onDragLeave={onDragLeave} onDragOver={onDragOver} onDrop={onDrop} isDragging={isDragging}>
-                <div style={{display: 'flex' }}>
-                  <textarea name='iconUrl' value={iconUrl ? iconUrl.slice(35) : ""} onDragEnter={onDragEnter} onDragLeave={onDragLeave} onDragOver={onDragOver} onDrop={onDrop} isDragging={isDragging}
-                  style={{border: '1px solid rgb(171,172,178)', width:'calc(100% - 25px)', height:'25px', color:'rgb(171,172,178)', fontWeight: 'bold', fontSize: 'small', paddingTop: '4px'}}></textarea>
+              <div id="DnDBox" onDragEnter={onDragEnter} onDragLeave={onDragLeave} onDragOver={onDragOver} onDrop={onDrop} isDragging={isDragging} style={{width:'100%', height:'100%'}}>
+                <div style={{display: 'flex', margin: '5px', width:'100%'}}>
+                  <textarea name='iconUrl' value={iconUrl.length < path.length ? iconUrl : iconUrl.slice(path.length)} onDragEnter={onDragEnter} onDragLeave={onDragLeave} onDragOver={onDragOver} onDrop={onDrop} isDragging={isDragging}
+                  style={{border: '1px solid rgb(171,172,178)', width:'calc(100% - 30px)', height:'25px', color:'rgb(171,172,178)', fontWeight: 'bold', fontSize: 'small', paddingTop: '4px'}}></textarea>
                   <label htmlFor="iconFile" className='iconFileInput'>
-                    <AiOutlinePaperClip/>
+                    <AiOutlinePaperClip style={{width: '30px', height:'30px'}}/>
                     <input type='file' id="iconFile" onChange={(e) => {console.log(e.target.files[0]['name']);setIconUrl(e.target.files[0]['name']);}} style={{display: 'none'}}/>
                   </label>
                 </div>
@@ -194,25 +198,28 @@ export function MenuDetail(props) {
 export const DetailDiv = styled.div`
 margin: 10px;
 color: black;
-weight: 610px;
-height: calc(100% - 150px);
+min-width: 450px;
+width: calc(100% - 900px);
+height: calc(100% - 151px);
 > form > div {
 
-> span {
-  font-weight: bold;
-  margin-bottom: 10px;
+  > span {
+    font-weight: bold;
+    margin-bottom: 10px;
+    }
+    > div > * {
+      margin: 5px;
+      height: 20px;
+    }
   }
-  > div > * {
-    margin: 5px;
-  }
-}
-> form {
-  height: 100%;
-> table {
-  border-top: 2px solid black;
-  border-collapse: collapse;
-  height: 95%;
-  
+  > form {
+    height: 100%;
+  > table {
+    border-top: 2px solid black;
+    border-collapse: collapse;
+    height: calc(100% - 30px);
+    width: 100%;
+    
   > tbody{
     > tr {  
       border-bottom: 1px solid rgb(171,172,178);
@@ -224,7 +231,7 @@ height: calc(100% - 150px);
         width:150px;
         }
         > td:nth-child(2) {
-          width:400px;
+          width: calc(100% - 20px);
           margin: 10px;
           display: flex;
           > input {

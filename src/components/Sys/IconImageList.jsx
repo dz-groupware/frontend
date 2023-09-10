@@ -6,14 +6,17 @@ import { iconListAPI } from '../../utils/API';
 
 
 export default function IconImageList(props){
-  const [icon, setIcon] = useState([]);
+  const [icon, setIcon] = useState([""]);
 
-  console.log(props.newIcon, " : ", props.iconUrl);
+  const path = 'https://dz-test-image.s3.ap-northeast-2.amazonaws.com/';
+
   useEffect(() => {
     iconListAPI().then(res => {
-      setIcon(res.data);
+      console.log(res);
+      setIcon(res);
     })
   }, []);
+  console.log('in iconlist : ', props.newIcon, props.iconUrl);
   
   return(
     <IconDiv>
@@ -24,8 +27,8 @@ export default function IconImageList(props){
       }
       {
       icon.map((a, i) => (
-        <div onClick={() => {props.setIconUrl(a)}}>
-          {a === props.iconUrl ? <img src={a} alt='i' key={i} id='clicked'/> : <img src={a} alt='i' key={i}/>}
+        <div onClick={() => {props.setIconUrl(a['key'])}}>
+          { a['key'] === props.iconUrl ? <img src={path+a['key']} alt='i' key={i} id='clicked'/> :<img src={path+a['key']} alt='i' key={i}/>}
         </div>
       ))
       }      
@@ -38,7 +41,8 @@ overflow: scroll;
 ::-webkit-scrollbar {
   display: none;
 }
-height: 100%;
+width: 100%;
+min-height: 300px;
 > div  {
   width: 50px;
   height: 50px;

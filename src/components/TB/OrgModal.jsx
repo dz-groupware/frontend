@@ -16,21 +16,21 @@ export default function OrgModal(props){
   const [empList, setEmpList] = useState(JSON.parse('[]'));
   const empId = useSelector(state => state.gnbMenu.empId);
 
-  const [searchOption, setSearchOption] = useState("");
+  const [searchOption, setSearchOption] = useState("all", "");
   const [searchText, setSearchText] = useState("");
   const [detail, setDetail] = useState();
   const [detailOpen, setDetailOpen] = useState();
 
   useEffect(() => {
     async function LoadData(emp_id){
-      const res = await orgTreeApi('comp', "","",empId);
+      const res = await orgTreeApi('basic', "","", "");
       setData(res.data);
     }
     LoadData(empId);
   }, [empId]);  
 
-  async function loadEmpList(type, text){
-    const res = await orgEmpListApi(type, text);
+  async function loadEmpList(type, compId, deptId){
+    const res = await orgEmpListApi(type, compId, deptId);
     setEmpList(res.data);
   }
 
@@ -44,11 +44,11 @@ export default function OrgModal(props){
     setEmpList(JSON.parse('[]'));
     searchOrg(searchOption, searchText).then(res => {
       if(searchOption === 'all'){
-        if (res.data.data[0].data.length !== 0) {
-          setData(res.data.data[0].data)
+        if (res.data.Tree !== 0) {
+          setData(res.data.Tree)
         }
-        if (res.data.data[1].data.length !== 1) {
-          setEmpList(res.data.data[1].data)
+        if (res.data.List !== 1) {
+          setEmpList(res.data.List)
         }
       }
       if(searchOption === 'dept'){
@@ -101,22 +101,22 @@ export function CompList(props) {
 
   function handleCompItem(compId) {
     if(subItem.length === 0) {
-      orgTreeApi('Dept1', compId,"","").then(res => setSubItem(res.data));
+      orgTreeApi('comp', compId,"","").then(res => setSubItem(res.data));
     }
     setOpen(!open);
-    props.loadEmpList('comp', props.comp['id']);
+    props.loadEmpList('comp', compId, "");
   }
 
   return (
-    <Dept>
-      <div className="title"  style={{display: 'flex', margin: '10px'}}>
-        <div onClick={() => {handleCompItem(props.comp['id'])}}><LuBuilding2 />{props.comp['name']}</div>
-        </div>
-        {
-          open && subItem.map((a, i) => (
-            <DeptTree dept={a} compId={props.comp['id']} loadEmpList={props.loadEmpList} key={a['name']+a['id']}/>
-          ))
-        }
+    <Dept key={props.comp['name']+props.comp['id']}>
+      <div className="title"  style={{display: 'flex', margin: '10px'}} onClick={() => {handleCompItem(props.comp['id'])}}>
+        <div  ><LuBuilding2 />{props.comp['name']}</div>
+      </div>
+      {
+        open && subItem.map((a, i) => (
+          <DeptTree dept={a} compId={props.comp['id']} loadEmpList={props.loadEmpList} key={a['name']+a['id']}/>
+        ))
+      }
     </Dept>
   );
 }
@@ -127,13 +127,13 @@ export function DeptTree(props) {
 
   function handleDeptItem(compId, deptId) {
     if(subItem.length === 0) {
-      orgTreeApi('Dept2', compId, deptId,"").then(res => setSubItem(res.data));
-      props.loadEmpList('dept', deptId )
+      orgTreeApi('dept', compId, deptId,"").then(res => setSubItem(res.data));
+      props.loadEmpList('dept', compId, deptId);
     }
     setOpen(!open);
   }
   return (
-    <Dept>
+    <Dept key={props.dept['name']+props.dept['id']}>
     <div style={{display: 'flex', margin: '10px', width:'100%', height:'20px'}}>
       <div onClick={() => {handleDeptItem(props.compId, props.dept['id'])}}><AiOutlineTeam />{props.dept['name']}</div>
     </div>
@@ -146,54 +146,17 @@ export function DeptTree(props) {
   );
 }
 
-/*
-export function Dept(props) {
-  const [data, setData] = useState(['[{"id":"", "name":""}]']);
-  const [dept, setDept] = useState([false]);
-
-  useEffect(() => {
-    async function LoadData(){
-      const res = await orgTreeApi('Dept2', props.comp,props.dept,"");
-      setData(res.data.data);
-    }
-    LoadData();
-  }, [props]);
-
-  return (
-    <>
-      {data.length > 0 && (
-        data.map((a, i) => (
-          <div key={a['name']+a['id']} >
-            <div onClick={() => {
-              setDept(deptOpen => {
-                const newDept = [...dept];
-                newDept[i] = !newDept[i];
-                return newDept;
-              });
-              props.api('dept', a['id']);
-              }} style={{marginLeft:'35px'}}><AiFillFolderOpen />{a['name']}
-            </div>
-            { dept[i] && (
-                <Dept dept={a['id']} comp={props.comp}/>
-              )}
-          </div>
-        )))
-      }
-    </>
-  );
-}
-*/
 export function EmpDetail(props) {
   return (
     <DetailEmp>
       <div>
         <img src={props.list['imageUrl']} alt='p_img'/>
-        <p>{props.list['name']} / {props.list['position']}</p>
+        <p>{props.list['empName']} / {props.list['position']}</p>
       </div>
       <table>
           <tbody>
             <tr>
-              <td>소속부서</td><td>{props.list['nameTree']}</td>
+              <td>소속부서</td><td>{props.list['compName']} &#62; {props.list['deptName']}</td>
             </tr>
             <tr>
               <td>전화번호</td><td>{props.list['number']}</td>

@@ -65,27 +65,17 @@ export function orgTreeApi(type = "", compId = "", deptId = "", empId = ""){
     )
 }
 
-export function orgEmpListApi(type = "", text = ""){  
-    if (type === 'comp'){
-        return axiosInstance.get(
-            `/modal/org/empList`,{
-                params: {
-                    type,
-                    compId: text
-                }
-            }
-        )
+export function orgEmpListApi(type = "", compId = "", deptId=""){  
+  return axiosInstance.get(
+    `/modal/org/empList`,{
+      params: {
+        type,
+        compId: compId,
+        deptId: deptId
+      }
     }
-    if (type === 'dept'){
-        return axiosInstance.get(
-            `/modal/org/empList`,{
-                params: {
-                    type,
-                    deptId: text
-                }
-            }
-        )
-    }
+  )
+    
 }
 
 export function menuDetailApi(deptId){  
@@ -100,16 +90,14 @@ export function menuDetailApi(deptId){
 }
 
 export function searchOrg(type, text){  
-    if (type === 'all') {
-        return axiosInstance.get(
-            `/modal/org/search`,{
-                params: {
-                    type,
-                    text: `%25${text}%25`,
-                }
-            }
-        )
+  return axiosInstance.get(
+    `/modal/org/search`,{
+      params: {
+        type,
+        text: `%${text}%`
+      }
     }
+  )
 }
 
 export function GnbApi(){
@@ -183,19 +171,20 @@ export function saveMenuAPI(formData, data, type, compId) {
     }
     if (type === '2'){
         return axiosInstance.post(
-            `/setting/menu`,{
-                params: {
-                    type:2
-                },
-                data:{
-                    id:  data['id'],
-                    parId: data['parId'],
-                    compId:  compId,
-                    name: formData.get('name') === "" ? data['name'] : formData.get('name'),
-                    enabledYN:  formData.get('enabledYN') === null ? data['enabledYN'] : formData.get('enabledYN'),
-                    sortOrder:  formData.get('sortOrder') === "" ? data['sortOrder'] : formData.get('sortOrder'),
-                    iconUrl:  formData.get('iconUrl') === "" ? data['iconUrl'] : formData.get('iconUrl')
-                  }
+            `/setting/menu`,
+            {
+              id:  data['id'],
+              parId: data['parId'],
+              compId:  compId,
+              name: formData.get('name') === "" ? data['name'] : formData.get('name'),
+              enabledYN:  formData.get('enabledYN') === null ? data['enabledYN'] : formData.get('enabledYN'),
+              sortOrder:  formData.get('sortOrder') === "" ? data['sortOrder'] : formData.get('sortOrder'),
+              iconUrl:  formData.get('iconUrl') === "" ? data['iconUrl'] : formData.get('iconUrl')
+            },
+            {
+              params: {
+                  type:2
+              },
             }
         )
     }
@@ -260,7 +249,7 @@ export function saveMenuAPI(formData, data, type, compId) {
 
 export function iconListAPI(){
     return axiosInstance.get(
-        `/setting/menu/iconList`
+        `/s3/imgList`
     )
 }
 
@@ -284,4 +273,10 @@ export function searchMenuListAPI(menuId, compId) {
             }
         )
     }
+}
+
+export function basicInfoApi(empId){
+  if(empId !== undefined && empId !== null){
+    return axiosInstance.get(`/home`);
+  }
 }

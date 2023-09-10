@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Route, Routes } from 'react-router-dom';
+import { Route, Routes, useNavigate } from 'react-router-dom';
 
 import styled from 'styled-components';
 
 import { menu, favor, profileList } from '../utils/Slice';
-import { GnbMenuApi, GnbFavorApi, GnbFavorDeleteApi, profileAPI } from '../utils/API';
+import { GnbFavorApi, GnbFavorDeleteApi, basicInfoApi } from '../utils/API';
 
 import TB from './TB';
 import AWS from './AWS';
@@ -30,18 +30,33 @@ export default function Home() {
   const favorData = useSelector(state => state.gnbMenu.favor);
   const empId = useSelector(state => state.gnbMenu.empId);
 
-  useEffect(() => {
+  const navigate = useNavigate();
 
-    GnbMenuApi(empId).then(response => {
-      dispatch(menu(response.data));
-    });
-    GnbFavorApi(empId).then(response => {
-      dispatch(favor(response.data));
-    });
-    profileAPI(empId).then(response => {
-      dispatch(profileList(response.data));
-    });
-  }, [empId, dispatch]);
+  useEffect(() => {
+    const basicInfo = async() => {
+      try{
+        await basicInfoApi(empId).then(response => {
+          if(response.status === 403 || response.status === 401){
+            navigate('./login');
+          }
+          dispatch(profileList(response.data.profile));
+          dispatch(menu(response.data.menu));
+          dispatch(favor(response.data.favor));            
+        });
+
+      } catch (error) {
+        if(error.response && error.response.status === 403){
+          navigate('/login');
+        }
+        if(error.response && error.response.status === 401){
+          navigate('/login');
+        }
+      }
+    }
+    
+    basicInfo();
+
+  }, [empId, dispatch, navigate]);
 
   return (
     <Container>
@@ -88,7 +103,7 @@ export default function Home() {
   );
 }
 export const RouteArea = styled.div`
-color: black;
+color: rgb(66,71,84);
 height: calc(100% - 80px);
 width: 100%;
 `;
@@ -96,7 +111,7 @@ width: 100%;
 export const Container = styled.div`
 position: absolute;
 display: flex;
-color: white;
+color: rgb(181,194,200);
 width: 100%;
 height: 100%;
 margin: 0;
@@ -126,33 +141,41 @@ export const TBArea = styled.div`
 height:80px;
 width:100%;  
 position: relative;
-z-index: 0;
+z-index: 1;
+color:rgb(66,71,84);
+background-color:rgb(181,194,200);
 `;
 
 export const GNBIconArea = styled.div`
 display:block;
 width:50px;
 height: 100%;
-background-color:rgb(45,49,62);
-color:rgb(192, 185, 237);
+background-color:rgb(66,71,84);
+color:rgb(181,194,200);
 position : absolute;
 overflow : scroll;
 &::-webkit-scrollbar{
   display: none;
 }
+
 > svg {
   width:35px;
   height:35px;
+  margin: 7px;  
   margin-top: 15px;
-  margin-left: 10px;  
 }
-  img {
+
+> a {
+  text-decoration: none;
+
+  > img {
     position: relative;
     width:30px;
     height:30px;
     margin:10px;
+    margin-top: 20px;
   }
- 
+}
 `;
 export const GNBMenuArea = styled.div`
 padding-top: 10px;
@@ -161,8 +184,8 @@ position: absolute;
 margin-left: 50px;
 width: 200px;
 height: 100%;
-background-color: rgb(45,49,62);
-color:rgb(192, 185, 237);
+background-color: rgb(66,71,84);
+color:rgb(181,194,200);
 cursor: pointer;
 
 overflow: hidden;
@@ -180,11 +203,12 @@ overflow: hidden;
   opacity:1;
 }
 
-> div ul a li {
-  color:rgb(192, 185, 237);
+> a {
+  color:rgb(181,194,200);
   list-style: none;
-  margin-top: 7px;
+  margin-top: 20px;
   text-decoration: none;
+  font-size: x-large;
 }
 `;
 export const GNBFavArea = styled.div`
@@ -194,8 +218,8 @@ position: absolute;
 margin-left: 50px;
 width: 200px;
 height: 100%;
-background-color: rgb(45,49,62);
-color:rgb(192, 185, 237);
+background-color: rgb(66,71,84);
+color:rgb(181,194,200);
 cursor: pointer;
 
 overflow: hidden;
@@ -230,6 +254,6 @@ display: flex;
   margin-left: 40px;
   margin-right: 10px;
   margin-top: 9px;
-  margin-bottom: 5px;
+  margin-bottom: 10px;
 } 
 `;

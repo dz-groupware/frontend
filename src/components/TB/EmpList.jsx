@@ -8,15 +8,15 @@ export default function EmpList(props){
         <ListDiv>
         {
             props.value.map ((a, i) => (
-                <EmpItem onClick={()=>{props.api(a)}}>
+                <EmpItem onClick={()=>{props.api(a)}} key={a['name']+a['id']}>
                     <div>
                         <img src={a['imageUrl']} alt='p_img' />
                     </div>
                     <div>
                         <div id='title'>
-                            {a['name']} / {a['loginId']} / {a['position']}
+                            {a['empName']} / {a['position']}
                         </div>
-                        <div>{a['nameTree']}</div>
+                        <div>{a['compName']} / {a['deptName']}</div>
                         <IoCallOutline /><span>{a['number']}</span>
                     </div>
                 </EmpItem>
@@ -38,12 +38,13 @@ z-index: 2;
     heigth: 50px;
 }
 > div {
-    > # title {
+    > #title {
         font-weight: border;
     }
 
     > span {
     color: gray;
+    }
 }
 `;
 export const ListDiv = styled.div`

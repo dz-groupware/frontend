@@ -17,14 +17,17 @@ export default function MenuList(props) {
 }
 
 export const ListArea = styled.div`
-background-color: rgb(45,49,62);
 height: 100%;
 `;
 const Link = styled(defaultLink)`
-color: inherit;
+color:rgb(181,194,200);
+list-style: none;
 text-decoration: none;
+font-size: x-large;
+
 > p {
+  margin: 10px;
   margin-top: 20px;
-  margin-bottom: 32px;
+  margin-bottom: 39px;
 }
 `;

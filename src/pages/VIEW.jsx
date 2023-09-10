@@ -41,7 +41,23 @@ export function Error(){
     </div>
   )
 }
+export function Error404(){
+  const navigate = useNavigate();
 
+  useEffect(() => {
+    setTimeout(() => navigate('/'), 3000);
+  }, []);
+
+  // 우선은 main 페이지로 이동하도록 했는데, 
+  // 로그인 하지 않은 상태에서 main 페이지로 이동하면 안되므로, 
+  // main 페이지 이동시 토큰이 없다면 login 페이지로 이동하는걸 추가하면 될 듯.
+  return(
+    <div style={{display:'block', backgroundColor:'white', color:'black'}}>
+      <div style={{fontSize: 'xx-large', margin: '20px'}}>없는 페이지 입니다.</div>
+      <div style={{fontSize: 'large', margin: '30px'}}> 잠시 후 메인 페이지로 이동합니다 ..</div>
+    </div>
+  )
+}
 const MainArea = styled.div`
 position: relative;
 background-image: url('/img/mainBgi.jpg');

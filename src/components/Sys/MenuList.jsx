@@ -60,4 +60,8 @@ font-size: medium;
 > #menuitemname {
   padding-top: 5%;
 }
+
+> img {
+  border-radius: 10px;
+}
 `;

@@ -72,7 +72,9 @@ export const TBArea = styled.div`
 display: flex;
 justify-content: space-between;
 position: relative;
-color: white;
+background-color: white;
+color: rgb(66,71,84);
+
 height:100%;
 width:100%;
 

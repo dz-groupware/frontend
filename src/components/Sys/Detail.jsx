@@ -58,7 +58,6 @@ export function GnbDetail(props) {
 
     // 추가 요청
     if (props.on === 1) {
-      console.log(formData.get('iconUrl'));
       try {
         formData.set('iconUrl', path+formData.get('iconUrl'));
         await saveMenuAPI(formData, data, '1', props.compId);
@@ -99,7 +98,6 @@ export function GnbDetail(props) {
     }
   }, [props.value]);
   
-  console.log('iconUrl : ', iconUrl);
   return (
     props.on &&
     <DetailDiv>
@@ -119,11 +117,11 @@ export function GnbDetail(props) {
             <td style={{display: 'block'}}>
               <div id="DnDBox" onDragEnter={onDragEnter} onDragLeave={onDragLeave} onDragOver={onDragOver} onDrop={onDrop} isDragging={isDragging} style={{width:'100%', height:'100%'}}>
                 <div style={{display: 'flex', margin: '5px', width:'100%'}}>
-                  <textarea name='iconUrl' value={iconUrl.length < path.length ? iconUrl : iconUrl.slice(path.length)} onDragEnter={onDragEnter} onDragLeave={onDragLeave} onDragOver={onDragOver} onDrop={onDrop} isDragging={isDragging}
-                  style={{border: '1px solid rgb(171,172,178)', width:'calc(100% - 30px)', height:'25px', color:'rgb(171,172,178)', fontWeight: 'bold', fontSize: 'small', paddingTop: '4px'}}></textarea>
+                  <textarea name='iconUrl' value={iconUrl === undefined || iconUrl === "" ? iconUrl : iconUrl.slice(path.length)} onDragEnter={onDragEnter} onDragLeave={onDragLeave} onDragOver={onDragOver} onDrop={onDrop} isDragging={isDragging}
+                  style={{border: '1px solid rgb(171,172,178)', width:'calc(100% - 30px)', height:'25px', color:'rgb(171,172,178)', fontWeight: 'bold', fontSize: 'small', paddingTop: '4px'}}  onChange={() => {}} ></textarea>
                   <label htmlFor="iconFile" className='iconFileInput'>
                     <AiOutlinePaperClip style={{width: '30px', height:'30px'}}/>
-                    <input type='file' id="iconFile" onChange={(e) => {console.log(e.target.files[0]['name']);setIconUrl(e.target.files[0]['name']);}} style={{display: 'none'}}/>
+                    <input type='file' id="iconFile" onChange={(e) => setIconUrl(e.target.files[0]['name'])} style={{display: 'none'}}/>
                   </label>
                 </div>
                 <hr/>
@@ -199,7 +197,7 @@ export const DetailDiv = styled.div`
 margin: 10px;
 color: black;
 min-width: 450px;
-width: calc(100% - 900px);
+width: calc(100% - 700px);
 height: calc(100% - 151px);
 > form > div {
 

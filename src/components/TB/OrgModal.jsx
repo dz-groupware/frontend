@@ -8,7 +8,8 @@ import {LuBuilding2} from 'react-icons/lu';
 
 import {orgTreeApi, orgEmpListApi, searchOrg} from '../../utils/API';
 
-import EmpList from './EmpList';
+import EmpList from './OrgModal/EmpList';
+import EmpDetail from './OrgModal/EmpDetail';
 
 export default function OrgModal(props){
   
@@ -60,40 +61,45 @@ export default function OrgModal(props){
     });
   }
 
+  const modalOff = () => {
+    props.setOrgModal(false);
+  }
   return (
-    <ModalBackdrop onClick={() => {props.api('org')}}>
-    <OrgModalView onClick={(e) => e.stopPropagation()}>
-      <div id="nav">
-        <h3>조직도</h3>
-        <div onClick={() => {props.api('org')}}>X</div>
-      </div>
-      <hr style={{width: '965px'}}/>
+    <ModalBackdrop onClick={modalOff}>
+      <OrgModalView onClick={(e) => e.stopPropagation()}>
+        <div id="nav">
+          <h3>조직도</h3>
+          <div onClick={modalOff}>X</div>
+        </div>
       <div>
         <div id='search'>
           <div>
-            <select value={searchOption} onChange={(e)=>{setSearchOption(e.target.value)}} ><option value='all'>전체</option><option value='dept'>부서명</option><option value='emp'>사원명</option></select>
+            <select value={searchOption} onChange={(e)=>{setSearchOption(e.target.value)}} >
+              <option value='all'>전체</option>
+              <option value='dept'>부서명</option>
+              <option value='emp'>사원명</option>
+            </select>
             <input type="text" placeholder="검색" value={searchText} onChange={(e)=>setSearchText(e.target.value)}/>
           </div>
           <AiOutlineSearch onClick={() => {searchHandler()}}/>
         </div>
         <div id='content' className="flex">
-          <div id='deptList'>
+          <DeptList>
           {
             data.map((a, i) => (
               <CompList comp={a} loadEmpList={loadEmpList} key={a['name']+a['id']}/>
             ))
           }
-          </div>
-            <EmpList value={empList} api={EmpDetailHandler}/>
-          <div id='empDetail'>
-            {detailOpen && <EmpDetail list={detail}/>}
-        </div>
+          </DeptList>
+          <EmpList value={empList} api={EmpDetailHandler}/>
+          {detailOpen ? <EmpDetail list={detail}/> : <Empty></Empty>}
       </div>
       </div>
     </OrgModalView>
   </ModalBackdrop>
   );
 }
+
 
 export function CompList(props) {
   const [open, setOpen] = useState(false);
@@ -146,30 +152,6 @@ export function DeptTree(props) {
   );
 }
 
-export function EmpDetail(props) {
-  return (
-    <DetailEmp>
-      <div>
-        <img src={props.list['imageUrl']} alt='p_img'/>
-        <p>{props.list['empName']} / {props.list['position']}</p>
-      </div>
-      <table>
-          <tbody>
-            <tr>
-              <td>소속부서</td><td>{props.list['compName']} &#62; {props.list['deptName']}</td>
-            </tr>
-            <tr>
-              <td>전화번호</td><td>{props.list['number']}</td>
-            </tr>
-            <tr>
-              <td>개인메일</td><td>{props.list['email']}</td>
-            </tr>
-          </tbody>
-        </table>
-    </DetailEmp>
-  );
-}
-
 export const ModalBackdrop = styled.div`
   // Modal이 떴을 때의 배경을 깔아주는 CSS를 구현
   z-index: 1; //위치지정 요소
@@ -197,14 +179,21 @@ export const OrgModalView = styled.div`
   height: 550px;
   color: black;
   background-color: #ffffff;
+  padding: 20px;
 
   > #nav {
     display: flex;
     justify-content: space-between;
     width: 100%;
-    > * {
-      margin: 20px;
-      margin-bottom: 0px;
+
+    > h3 {
+      font-size: x-large;
+      font-weight: bold;
+    }
+
+    > div {
+      font-size: x-large;
+      font-weight: bold;
     }
   }
 
@@ -216,30 +205,32 @@ export const OrgModalView = styled.div`
   > div > #search {
     display: flex;
     justify-content: space-between;
-    width: 99%;
+    width: 100%;
     border: 1px solid gray;  
-    height: 40px;
+    margin-top: 20px;
+    margin-bottom: 10px;
+    height: 50px;
 
     > div {
       > select {
-        width: 100px;
+        width: 200px;
         height: 25px;
-        margin: 5px;
+        margin: 10px;
       }
   
       > input {
-        height: 20px;
+        height: 25px;
         width: 600px;
-        margin: 5px;
+        margin: 10px;
       }
     }
 
     > svg {
-      width: 17px;
-      height: 17px;
+      width: 25px;
+      height: 25px;
       border: 1px solid gray;
       border-radius: 5px;
-      margin: 5px;
+      margin: 10px;
       padding: 5px;
     }
 }
@@ -250,63 +241,21 @@ export const OrgModalView = styled.div`
     height: 400px;
     width: 100%;
 
-    > #deptList {
-      margin-top : 5px;
-      width: 250px;
-      height: 100%;
-      border : 1px gray solid;
-    }
 
-    > #empDetail {
-      margin-top : 5px;
-      width: 250px;
-      height: 100%;
-      border : 1px gray solid;
-    }
   }
 `;
-export const DetailEmp = styled.div`
-> div {
-  margin: 10px;
-  text-align: center;
-  background-color:rgb(240, 245, 248);
-  border: 1px solid rgb(192, 185, 237);
-  border-radius: 5px;
-  > img {
-    width: 100px;
-    height: 100px;
-    margin-top: 20px;
-    border-radius: 100%;
-  }
-
-  > p {
-    margin: 10px;
-    font-weight: bold;
-    font-size: large;
-  }
-
-}
-> table {
-  margin: 10px;
-  > tbody {
-  margin: 10px;
-  border-collapse: collapse;
-  border-top: 3px solid black;
-
-  > tr :nth-child(1) {
-    margin: 5px;
-    background-color: rgb(240, 245, 248);
-    border-bottom: 1px solid rgb(192, 185, 237);
-  }
-
-  > tr :nth-child(2) {
-    border-bottom: 1px solid rgb(192, 185, 237);
-  }
-}
-}
-
+const DeptList = styled.div`
+margin-top : 5px;
+width: 250px;
+height: 100%;
+border : 1px gray solid;
 `;
 export const Dept = styled.div`
 margin-left: 15px;
 
+`;
+const Empty = styled.div`
+margin-top : 5px;
+width: 250px;
+height: 100%;
 `;

@@ -12,15 +12,13 @@ export default function IconImageList(props){
 
   useEffect(() => {
     iconListAPI().then(res => {
-      console.log(res);
       setIcon(res);
     })
   }, []);
-  console.log('in iconlist : ', props.newIcon, props.iconUrl);
-  
+
   return(
     <IconDiv>
-      { props.newIcon !== "" &&
+      { props.newIcon.length !== 0 &&
         <div onClick={() => {props.setIconUrl(props.newIcon)}} style={{width: '50px', height:'50px'}}>
           {props.newIcon === props.iconUrl ? <img src={props.newIconFile} alt='i' key='new' id='clicked'/> : <img src={props.newIconFile} alt='i' key='new'/>}
         </div>
@@ -38,11 +36,11 @@ export default function IconImageList(props){
 
 export const IconDiv = styled.div`
 overflow: scroll;
-::-webkit-scrollbar {
+&::-webkit-scrollbar {
   display: none;
 }
 width: 100%;
-min-height: 300px;
+max-height: 300px;
 > div  {
   width: 50px;
   height: 50px;

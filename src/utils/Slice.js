@@ -56,14 +56,14 @@ export const  menuSlice = createSlice({
         menu: JSON.parse('[{"empId": "","menuId": "","parId": "","name": "","iconUrl": ""}]'),
         favor: JSON.parse('[{"empId": "","menuId": "","parId": "","name": "","iconUrl": ""}]'),
         profileList: JSON.parse('[{"empId": "","menuId": "","parId": "","name": "","iconUrl": ""}]'),
-        empId: 12,
-        compId: 1,
+        empId: "",
+        compId: "",
     },
     reducers: {
         menu:(state, action) => {state.menu = action.payload;},
         favor:(state, action) => {state.favor = action.payload;},
         profileList:(state, action) => {state.profileList = action.payload;},
-        empId:(state, action) => {state.empId = action.payload;},
+        newEmpId:(state, action) => {state.empId = action.payload;},
         compId:(state, action) => {state.compId = action.payload;},
     }
 });
@@ -140,7 +140,7 @@ export const modalSlice = createSlice({
   
   
 
-export const {menu, favor, recent, profileList, empId, compId} = menuSlice.actions;
+export const {menu, favor, recent, profileList, newEmpId, compId} = menuSlice.actions;
 export const {load} = recentSlice.actions;
 export const {profile, search, alert, org, set} = modalSlice.actions;
 export const companyActions = companyMgmtSlice.actions;

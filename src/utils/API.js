@@ -280,3 +280,16 @@ export function basicInfoApi(empId){
     return axiosInstance.get(`/home`);
   }
 }
+
+
+
+export function changeEmpApi(empId) {
+  if(empId !== undefined && empId) {
+      return axiosInstance.post(
+          `/user/re-login`,
+          {
+            empId,
+          }
+      )
+  }
+}

@@ -1,44 +1,48 @@
+import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import { Outlet, useLocation, useNavigate, useParams } from "react-router-dom";
 
-import { useEffect, useState } from "react";
-import { searchMenuListAPI } from '../utils/API';
-import { useSelector } from "react-redux";
 import styled from 'styled-components';
 import { AiFillFolder, AiFillFolderOpen, AiOutlineProfile, AiFillProfile, AiOutlineMenu } from "react-icons/ai";
 
-
+import { searchMenuListAPI } from '../utils/API';
 
 export default function LNB() {
-    const { param } = useParams();
-    const [data, setData] = useState(JSON.parse('[{"name":""}]'));
-    const compId = useSelector(state => state.gnbMenu.compId);
-    const location = useLocation();
-    const [lnbOpen, setLnbOpen] = useState(true);
+  const { param } = useParams();
+  const [data, setData] = useState(JSON.parse('[{"name":""}]'));
+  const compId = useSelector(state => state.gnbMenu.compId);
+  const location = useLocation();
+  const [lnbOpen, setLnbOpen] = useState(true);
 
-    const [gnbId, setGnbId] = useState('');
-    const navigate = useNavigate();
+  const [gnbId, setGnbId] = useState('');
+  const navigate = useNavigate();
 
-
-    useEffect(() => {
-      if (location.state === null) {
-        // 부적절한 이동 시도
-        navigate('./error');
+  useEffect(() => {
+    if (location.state === null) {
+      // 부적절한 이동 시도
+      navigate('./error');
+    } else {
+      const menuId = location.state.menuId;
+      console.log('menuId : ',menuId, compId);
+      if(menuId !== undefined && compId !== undefined && compId !== null){
+        searchMenuListAPI(menuId, compId).then(res => {
+          if(res.status === 401 || res.status === 403) {
+            navigate('/login');
+          }
+        }).then(res => {
+          if (res !== undefined){
+            setData(res.data);
+          }
+        });
+        setGnbId(menuId);
       } else {
-        const menuId = location.state.menuId;
-        console.log('menuId : ',menuId);
-        if(menuId !== undefined && compId !== undefined && compId !== null){
-            searchMenuListAPI(menuId, compId).then(res => {
-              setData(res.data);
-            })
-            setGnbId(menuId);
-        } else {
-          navigate('./error404');
-        }
+        navigate('./error404');
+      }
         // 지금은 이동한 메뉴(GNB)에 맞는 LNB 리스트를 저장하고 있음.
         // 즐겨찾기에서 눌렀을 경우 즐겨찾기 리스트를 저장하도록 수정할 예정
         // 현재는 이름만 즐겨찾기로 바뀌어 있음.
-      }
-    }, [compId, location]);
+    }
+  }, [compId, location]);
 
 //    const data = JSON.parse('[{"name":"조직관리"}, {"naem":"메뉴설정"}]');
 

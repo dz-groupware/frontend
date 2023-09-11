@@ -27,7 +27,7 @@ font-size: x-large;
 
 > p {
   margin: 10px;
-  margin-top: 20px;
-  margin-bottom: 39px;
+  margin-top: 22px;
+  margin-bottom: 37px;
 }
 `;

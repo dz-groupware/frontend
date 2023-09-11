@@ -2,8 +2,8 @@ import styled from 'styled-components';
 
 import { IoCallOutline } from 'react-icons/io5';
 
-
 export default function EmpList(props){
+  console.log(props.value);
     return (
         <ListDiv>
         {
@@ -12,12 +12,14 @@ export default function EmpList(props){
                     <div>
                         <img src={a['imageUrl']} alt='p_img' />
                     </div>
-                    <div>
-                        <div id='title'>
-                            {a['empName']} / {a['position']}
+                    <div className='info'>
+                        <div>
+                            <div id='title'>{a['empName']} / {a['position']}</div> <div> | {a['loginId']}</div>
                         </div>
-                        <div>{a['compName']} / {a['deptName']}</div>
-                        <IoCallOutline /><span>{a['number']}</span>
+                        <p>{a['compName']} / {a['deptName']}</p>
+                        <div className='number'>
+                          <IoCallOutline /><span>{a['number']}</span>
+                        </div>
                     </div>
                 </EmpItem>
             ))
@@ -35,16 +37,44 @@ z-index: 2;
 > div > img {
     margin: 20px;
     width: 50px;
-    heigth: 50px;
+    height: 50px;
 }
-> div {
+
+> .info {
+  font-weight: 100;
+
+  > * {
+    margin: 10px;
+    margin-left: 0px;
+  }
+
+  > div {
+    display: flex;
+
+    > * {
+      margin: 5px;
+    }
     > #title {
-        font-weight: border;
+      font-size: large;
+      font-weight: 600;
     }
 
-    > span {
+  }
+  > p {
+    margin-left: 10px;
     color: gray;
-    }
+    font-size: small;
+    font-weight: 500;
+  }
+
+  > .number {
+    color: gray;
+    display: flex;
+    > svg {
+      width: 20px;
+      height: 20px;
+    }    
+  }
 }
 `;
 export const ListDiv = styled.div`
@@ -54,7 +84,7 @@ margin: 5px;
 overflow: scroll;
 height: 100%;
 background-color: rgb(240, 245, 248);
-::-webkit-scrollbar {
+&::-webkit-scrollbar {
     display: none;
 }
 `;

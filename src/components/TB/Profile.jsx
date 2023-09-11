@@ -1,18 +1,20 @@
-import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 
-export default function Profile() {
-  const data = useSelector(state => state.gnbMenu.profileList[0]);
+export default function Profile(props) {
 
-  return (
-    <ProfileArea>
-      <img src={data['imageUrl']} alt='profileImg' />
-      <div>
-        <div id="profile_name">{data['empName']}</div>
-        <p>{data['compName']} / {data['deptName']}</p>
-      </div>
-    </ProfileArea>
-  );
+  for (let profile of props.profile) {
+    if (profile['empId'] === props.empId) {
+      return (
+        <ProfileArea>
+          <img src={profile['imageUrl']} alt='profileImg' />
+          <div>
+            <div id="profile_name">{profile['empName']}</div>
+            <p>{profile['compName']} / {profile['deptName']}</p>
+          </div>
+        </ProfileArea>
+      );
+    }
+  }
 }
 
 export const ProfileArea = styled.div`
@@ -36,6 +38,7 @@ color: black;
   > div {
     margin: 5px;
   }
+
   > p {
     margin: 0;
     margin-left: 7px;
@@ -44,5 +47,4 @@ color: black;
     color: gray;
   }
 }
-
 `;

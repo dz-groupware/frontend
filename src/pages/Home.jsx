@@ -5,11 +5,10 @@ import { Route, Routes, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
 import { menu, favor, profileList } from '../utils/Slice';
-import { basicInfoApi } from '../utils/API';
+import { basicInfoApi } from '../api/gnb';
 
-import GNB from './GNB';
 import TB from './TB';
-import AWS from './AWS';
+import GNB from './GNB';
 import LNB from './LNB';
 import Module from './Module';
 import { Main } from './VIEW';
@@ -22,7 +21,6 @@ export default function Home() {
   const empId = useSelector(state => state.gnbMenu.empId);
 
   useEffect(() => {
-    console.log('render home : ', empId);
     const basicInfo = async() => {
       try{
         await basicInfoApi(empId).then(response => {
@@ -55,7 +53,6 @@ export default function Home() {
         <RouteArea id='route'>
           <Routes>
             <Route path='/' element={<Main />} />
-            <Route path='/s3' element={<AWS />} />
             <Route path='/:param' element={<LNB />}>
               <Route path=':menuName' element={<Module />} />
             </Route> 

@@ -5,7 +5,7 @@ import styled from 'styled-components';
 
 import {favor} from '../../utils/Slice';
 
-import { GnbFavorDeleteApi, GnbFavorApi, } from '../../utils/API';
+import { GnbFavorDeleteApi, GnbFavorApi, } from '../../api/gnb';
 
 export function MenuList(props) {
   return (

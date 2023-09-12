@@ -6,7 +6,7 @@ import styled from 'styled-components';
 import { AiOutlineSearch, AiOutlineTeam } from "react-icons/ai";
 import {LuBuilding2} from 'react-icons/lu';
 
-import {orgTreeApi, orgEmpListApi, searchOrg} from '../../utils/API';
+import {orgTreeApi, orgEmpListApi, searchOrg} from '../../api/modal';
 
 import EmpList from './OrgModal/EmpList';
 import EmpDetail from './OrgModal/EmpDetail';

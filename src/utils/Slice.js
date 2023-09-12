@@ -49,23 +49,37 @@ const companyMgmtInitialState = {
     isVisible: false,
     searchList: JSON.parse('[{"":""}]')
   }
-  
-export const  menuSlice = createSlice({
-    name: 'gnbMenu',
-    initialState: {
-        menu: JSON.parse('[{"empId": "","menuId": "","parId": "","name": "","iconUrl": ""}]'),
-        favor: JSON.parse('[{"empId": "","menuId": "","parId": "","name": "","iconUrl": ""}]'),
-        profileList: JSON.parse('[{"empId": "","menuId": "","parId": "","name": "","iconUrl": ""}]'),
-        empId: "",
-        compId: "",
-    },
-    reducers: {
-        menu:(state, action) => {state.menu = action.payload;},
-        favor:(state, action) => {state.favor = action.payload;},
-        profileList:(state, action) => {state.profileList = action.payload;},
-        newEmpId:(state, action) => {state.empId = action.payload;},
-        compId:(state, action) => {state.compId = action.payload;},
+
+function getIdFormLocal(k, d){
+  try {
+    const value = localStorage.getItem(k);
+    console.log('in init : ', k, d, value);
+    if (value !== null){
+      return JSON.parse(value);
     }
+    return d;
+  } catch (error) {
+    return d;
+  }
+}
+
+const initialState = {
+  menu: JSON.parse('[{"empId": "","menuId": "","parId": "","name": "","iconUrl": ""}]'),
+  favor: JSON.parse('[{"empId": "","menuId": "","parId": "","name": "","iconUrl": ""}]'),
+  profileList: JSON.parse('[{"empId": "","menuId": "","parId": "","name": "","iconUrl": ""}]'),
+  empId: getIdFormLocal('empId', ""),
+  compId: getIdFormLocal('compId', ""),
+}
+export const  menuSlice = createSlice({
+  name: 'gnbMenu',
+  initialState,
+  reducers: {
+    menu:(state, action) => {state.menu = action.payload;},
+    favor:(state, action) => {state.favor = action.payload;},
+    profileList:(state, action) => {state.profileList = action.payload;},
+    newEmpId:(state, action) => {state.empId = action.payload;},
+    newCompId:(state, action) => {state.compId = action.payload;},
+  }
 });
 
 export const recentSlice = createSlice({
@@ -140,7 +154,7 @@ export const modalSlice = createSlice({
   
   
 
-export const {menu, favor, recent, profileList, newEmpId, compId} = menuSlice.actions;
+export const {menu, favor, recent, profileList, newEmpId, newCompId} = menuSlice.actions;
 export const {load} = recentSlice.actions;
 export const {profile, search, alert, org, set} = modalSlice.actions;
 export const companyActions = companyMgmtSlice.actions;

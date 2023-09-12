@@ -5,7 +5,7 @@ import styled from 'styled-components';
 import { AiOutlinePaperClip } from 'react-icons/ai';
 import { MdOutlineRefresh } from 'react-icons/md';
 
-import { saveMenuAPI, saveIconAPI } from '../../utils/API';
+import { saveMenuAPI } from '../../api/menu';
 import IconImageList from './IconImageList';
 import MenuTree from './MenuTree';
 import { axiosInstance } from '../../utils/axiosInstance';

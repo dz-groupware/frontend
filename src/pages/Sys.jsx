@@ -5,7 +5,7 @@ import styled from 'styled-components';
 
 import { AiOutlineStar, AiOutlineInfoCircle, AiOutlineSearch, AiFillStar } from 'react-icons/ai';
 
-import {GnbApi, FavorApi, searchAPI} from '../utils/API';
+import {GnbApi, FavorApi, searchAPI} from '../api/menu';
 
 import MenuList from '../components/Sys/MenuList';
 import { GnbDetail, MenuDetail } from '../components/Sys/Detail';

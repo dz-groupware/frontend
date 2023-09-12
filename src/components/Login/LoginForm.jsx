@@ -10,7 +10,7 @@ import { loginApi } from '../../api/login';
 import { useDispatch } from 'react-redux';
 
 // 추가 (김현주)
-import { newEmpId, compId } from '../../utils/Slice';
+import { newEmpId, newCompId } from '../../utils/Slice';
 
 export default function LoginForm() {
   const [loginValue, setLoginValue] = useState({
@@ -43,9 +43,11 @@ export default function LoginForm() {
   useEffect(()=>{
     if(statusCode===200){
       // 추가(김현주) : 로그인 시 empId, compId를 리덕스 슬라이스에 저장해야 함.
-      dispatch(newEmpId(data.data['empId']))
-      dispatch(compId(data.data['compId']))
-      navigate('/home',{state:{ menuId: "0" }});
+      dispatch(newEmpId(data.data['empId']));
+      dispatch(newCompId(data.data['compId']));
+      localStorage.setItem('empId', data.data['empId']);
+      localStorage.setItem('compId', data.data['compId']);
+      navigate('/',{state:{ menuId: "0" }});
     }
   },statusCode);
 

@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 
 import styled from 'styled-components';
 
-import { iconListAPI } from '../../utils/API';
+import { iconListAPI } from '../../api/menu';
 
 
 export default function IconImageList(props){

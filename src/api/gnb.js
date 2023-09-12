@@ -1,54 +1,33 @@
 import { axiosInstance } from '../utils/axiosInstance';
 
-export function GnbMenuApi(empId){    
-    if (empId !== undefined){
-        return axiosInstance.get(
-            `/menu/gnb`,{
-                params: {
-                    empId
-                }
-            }
-        )
-    }
+export function GnbMenuApi(){    
+  return axiosInstance.get(
+    `/menu/gnb`
+  )
 }
 
-export function GnbFavorApi(empId){  
-    if (empId !== undefined){
-        return axiosInstance.get(
-            `/menu/favor`,{
-                params: {
-                    empId
-                }
-            }
-        )
-    }
+export function GnbFavorApi(){  
+  return axiosInstance.get(
+    `/menu/favor`
+  )
 }
 
-export function GnbFavorDeleteApi(empId, menuId){  
-  if (empId !== undefined && menuId !== undefined && empId !== null && menuId !== null){
-      return axiosInstance.delete(
-          `/menu/favor`,{
-              params: {
-                  empId,
-                  menuId
-              }
-          }
-      )
+export function GnbFavorDeleteApi(menuId){  
+  if (menuId !== undefined && menuId !== null){
+    return axiosInstance.delete(
+      `/menu/favor`,{
+        params: {
+          menuId
+        }
+      }
+    )
   }
 }
 
-export function profileAPI(empId){  
-  if (empId !== undefined && empId !== null){
-      return axiosInstance.get(
-          `/modal/profile`,{
-              params: {
-                  empId,
-              }
-          }
-      )
-  } else {
-      return Promise.reject(new Error("Invalid parameters"));
-  }
+export function profileAPI(){  
+  return axiosInstance.get(
+    `/modal/profile`
+  )
 }
 
 

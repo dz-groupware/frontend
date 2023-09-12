@@ -29,13 +29,12 @@ export default function LNB() {
         searchMenuListAPI(menuId, compId).then(res => {
           if(res.status === 401 || res.status === 403) {
             navigate('/login');
-          }
-        }).then(res => {
-          if (res !== undefined){
+          } else {
             setData(res.data);
           }
         });
         setGnbId(menuId);
+        
       } else {
         navigate('./error404');
       }
@@ -46,31 +45,29 @@ export default function LNB() {
   }, [compId, location, navigate]);
 //    const data = JSON.parse('[{"name":"조직관리"}, {"naem":"메뉴설정"}]');
   return (
-    <LnbArea>
+    <Content>
       <LnbTitle>
         <AiOutlineMenu onClick={() => {setLnbOpen(!lnbOpen)}}/>
         <p>{param}</p>
       </LnbTitle>
-      <div style={{display: 'flex', width: '100%', height:'100%'}}>
+      <LnbArea>
         <LNBList className={`lnb ${lnbOpen} ? 'true' : 'false'`}>
-          <div style={{width:'200px'}}>
-            {
-              data.map((a, i) => {
-                if (a['id'] !== a['parId']) {
-                  return (
-                    <MenuTree menu={a} param={param} compId={compId} gnbId={gnbId} key={a['name']+a['id']}/>                                    
-                  )
-                }
-                return null;
-              })
-            }
-          </div>
+          {
+            data.map((a, i) => {
+              if (a['id'] !== a['parId']) {
+                return (
+                  <MenuTree menu={a} param={param} compId={compId} gnbId={gnbId} key={a['name']+a['id']}/>                                    
+                )
+              }
+              return null;
+            })
+          }
         </LNBList>
         <OutletArea className={`outlet ${lnbOpen} ? 'true' : 'false'`}>
           <Outlet />
         </OutletArea>
-      </div>
-    </LnbArea>
+      </LnbArea>
+    </Content>
   );
 }
 
@@ -121,7 +118,7 @@ export function MenuTree(props){
   )
 }
 
-const LnbArea = styled.div`
+const Content = styled.div`
 width: 100%;
 height: 100%;
 background-color: white;
@@ -143,13 +140,12 @@ height: calc(100% - 50px);
 }
 `;
 const LNBList = styled.div`
-width: 200px !important;
+width: 200px;
 height: 100%;
 background-color: white;
 color: black;
 padding: 10px;
 position: absolute;
-z-index: 1;
 &.true {
   left:0px;
   opacity:1;
@@ -179,6 +175,11 @@ display:flex;
   margin-top:15px;
 }
 `
+const LnbArea = styled.div`
+display: flex;
+width: 100%;
+height: 100%;
+`;
 const Menu = styled.div`
 margin-left: 15px;
 `;

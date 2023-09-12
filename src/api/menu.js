@@ -44,8 +44,8 @@ export function searchAPI(formData) {
     return axiosInstance.get(
         `/setting/menu/search`,{
             params: {
-                gnbName: `${formData.get("gnbName")}%25`,
-                name: `%25${formData.get("name")}%25`, 
+                gnbName: `${formData.get("gnbName")}%`,
+                name: `%${formData.get("name")}%`, 
             }
         }
     )
@@ -55,20 +55,9 @@ export function searchAPI(formData) {
 
 export function saveMenuAPI(formData, data, type, compId) {
   if (type === '1'){
+    const menu = formData;
       return axiosInstance.post(
-          `/setting/menu`,{
-              params: {
-                  type:1
-              },
-              data:{
-                  parId: data['parId'],
-                  compId: compId,
-                  name: formData.get('name') === "" ? data['name'] : formData.get('name'),
-                enabledYN:  formData.get('enabledYN') === null ? data['enabledYN'] : formData.get('enabledYN'),
-                sortOrder:  formData.get('sortOrder') === "" ? data['sortOrder'] : formData.get('sortOrder'),
-                iconUrl:  formData.get('iconUrl') === "" ? data['iconUrl'] : formData.get('iconUrl')
-              }
-          }
+          `/setting/menu?type=${type}`, menu
       )
   }
   if (type === '2'){
@@ -91,36 +80,16 @@ export function saveMenuAPI(formData, data, type, compId) {
       )
   }
   if (type === '3'){
+    const menu = formData;
       return axiosInstance.post(
-          `/setting/menu`,{
-              params: {
-                  type:3
-              },
-              data:{
-                  parId: 50, // 상위메뉴 만들기 전까지 고정
-                  compId:  compId,
-                  name: formData.get('name') === "" ? data['name'] : formData.get('name'),
-                  enabledYN:  formData.get('enabledYN') === null ? data['enabledYN'] : formData.get('enabledYN'),
-                  sortOrder:  formData.get('sortOrder') === "" ? data['sortOrder'] : formData.get('sortOrder')
-              }
-          }
+          `/setting/menu?type=${type}`,menu
       )
   }
   if (type === '4') {
+    const menu = formData;
       return axiosInstance.post(
-          `/setting/menu`,{
-              params: {
-                  type:4
-              },
-              data:{
-                  id:  data['id'],
-                  parId: formData.get('parId') === null ? data['parId'] : formData.get('parId'),
-                  compId:  compId,
-                  name: formData.get('name') === "" ? data['name'] : formData.get('name'),
-                  enabledYN:  formData.get('enabledYN') === null ? data['enabledYN'] : formData.get('enabledYN'),
-                  sortOrder:  formData.get('sortOrder') === "" ? data['sortOrder'] : formData.get('sortOrder')
-                }
-          }
+          `/setting/menu?type=${type}`, menu
+          
       )
 
   }   
@@ -138,5 +107,32 @@ export function saveIconAPI(iconFile){
           headers:  { 'Content-Type': 'multipart/form-data' },
           data : iconFile
       }
+  )
+}
+
+export function GnbListApi(){
+  return axiosInstance.get(
+    `menu/gnb/admin`
+  )
+}
+
+export function LnbListApi(menuId){
+  return axiosInstance.get(
+    `menu/lnb/admin`, {
+      params: {
+        menuId,
+      }
+    }
+  )
+}
+
+// 임시로 만든 delete 요청 현재 menu delete 기능 없음.
+export function deleteMenuApi(){
+  return axiosInstance.delete(
+    `setting/menu`, {
+      params: {
+        menuId: 48,
+      }
+    }
   )
 }

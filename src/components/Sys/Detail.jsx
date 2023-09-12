@@ -5,7 +5,7 @@ import styled from 'styled-components';
 import { AiOutlinePaperClip } from 'react-icons/ai';
 import { MdOutlineRefresh } from 'react-icons/md';
 
-import { saveMenuAPI } from '../../api/menu';
+import { saveMenuAPI, deleteMenuApi } from '../../api/menu';
 import IconImageList from './IconImageList';
 import MenuTree from './MenuTree';
 import { axiosInstance } from '../../utils/axiosInstance';
@@ -18,7 +18,9 @@ export function GnbDetail(props) {
   const [newIconFile, setNewIconFile] = useState("");
   const [saveIconFile, setSaveIconFile] = useState("");
   const [inputValue, setInputValue] = useState("");
+
   const path = 'https://dz-test-image.s3.ap-northeast-2.amazonaws.com/';
+
   const readImage = (image) => {
     const reader = new FileReader();
     reader.onload = function(e) {
@@ -56,6 +58,7 @@ export function GnbDetail(props) {
     e.preventDefault();
     const formData = new FormData(e.target);
 
+    console.log(props.on);
     // 추가 요청
     if (props.on === 1) {
       try {
@@ -102,31 +105,54 @@ export function GnbDetail(props) {
     props.on &&
     <DetailDiv>
       <form onSubmit={loadData}>
-        <div style={{display: 'flex', justifyContent:'space-between'}}> 
-        <span>•대메뉴 정보</span><div style={{display: 'flex'}}><button type='submit'>저장</button> <hr /> <span onClick={props.api}>X</span></div>
-        </div>
+        <DetailTitle> 
+          <span>•대메뉴 정보</span>
+          <div>
+            <button type='submit'>저장</button>
+            <hr /> 
+            <span onClick={props.api}>X</span>
+          </div>
+        </DetailTitle>
         <table>
           <tbody>
-            <tr><td>메뉴명</td><td><input type='text' name='name' placeholder={data['name']} value={inputValue}
-            onChange={(e) => {setInputValue(e.target.value);}}/> </td></tr>
-            <tr><td>사용여부</td><td><div>
-              <input className='radio' type='radio' value='1' name='enabledYN'/>사용
-              <input className='radio'  type='radio' value='0' name='enabledYN'/>미사용</div></td></tr>
-            <tr><td>정렬</td><td><input type='number' name='sortOrder' placeholder={data['sortOrder']} /></td></tr>
-            <tr><td>아이콘(48*44)<MdOutlineRefresh /></td>
+            <tr>
+              <td>메뉴명</td>
+              <td>
+                <input type='text' name='name' placeholder={data['name']} value={inputValue} onChange={(e) => {
+                  setInputValue(e.target.value);
+                  }}/>
+              </td>
+            </tr>
+            <tr>
+              <td>사용여부</td>
+              <td>
+                <div>
+                  <input className='radio' type='radio' value='1' name='enabledYN' checked/>사용
+                  <input className='radio'  type='radio' value='0' name='enabledYN'/>미사용
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>정렬</td>
+              <td>
+                <input type='number' name='sortOrder' placeholder={data['sortOrder']} />
+              </td>
+            </tr>
+            <tr>
+              <td>아이콘(48*44)<MdOutlineRefresh /></td>
             <td style={{display: 'block'}}>
-              <div id="DnDBox" onDragEnter={onDragEnter} onDragLeave={onDragLeave} onDragOver={onDragOver} onDrop={onDrop} isDragging={isDragging} style={{width:'100%', height:'100%'}}>
-                <div style={{display: 'flex', margin: '5px', width:'100%'}}>
-                  <textarea name='iconUrl' value={iconUrl === undefined || iconUrl === "" ? iconUrl : iconUrl.slice(path.length)} onDragEnter={onDragEnter} onDragLeave={onDragLeave} onDragOver={onDragOver} onDrop={onDrop} isDragging={isDragging}
-                  style={{border: '1px solid rgb(171,172,178)', width:'calc(100% - 30px)', height:'25px', color:'rgb(171,172,178)', fontWeight: 'bold', fontSize: 'small', paddingTop: '4px'}}  onChange={() => {}} ></textarea>
+              <DnDBox onDragEnter={onDragEnter} onDragLeave={onDragLeave} onDragOver={onDragOver} onDrop={onDrop} isDragging={isDragging}>
+                <div>
+                  <textarea name='iconUrl' onDragEnter={onDragEnter} onDragLeave={onDragLeave} onDragOver={onDragOver} onDrop={onDrop} isDragging={isDragging}
+                   value={iconUrl === undefined || iconUrl === "" || iconUrl.length < path.length ? iconUrl : iconUrl.slice(path.length)} onChange={() => {}} ></textarea>
                   <label htmlFor="iconFile" className='iconFileInput'>
-                    <AiOutlinePaperClip style={{width: '30px', height:'30px'}}/>
-                    <input type='file' id="iconFile" onChange={(e) => setIconUrl(e.target.files[0]['name'])} style={{display: 'none'}}/>
+                    <AiOutlinePaperClip/>
+                    <input type='file' id="iconFile" onChange={(e) => setIconUrl(e.target.files[0]['name'])}/>
                   </label>
                 </div>
                 <hr/>
                 <IconImageList newIcon={newIcon} newIconFile={newIconFile} iconUrl={iconUrl} setIconUrl={setIconUrl}/>
-              </div>
+              </DnDBox>
             </td></tr>
           </tbody>
         </table>  
@@ -154,6 +180,11 @@ export function MenuDetail(props) {
     }
     // 수정 요청
     if (props.on === 2) {
+      console.log('formData : ', formData);
+      console.log('props.value : ', props.value);
+      console.log('type : 4');
+      console.log('props.compId : ', props.compId);
+
       try {
         await saveMenuAPI(formData, props.value, '4', props.compId);
         console.log('update doen ...');
@@ -163,31 +194,53 @@ export function MenuDetail(props) {
     }
   }
 
-  function seletedMenu(menu) {
-    setValue(menu);
-    setModalOn(false);
-  }
-
   return (
     props.on &&
     <DetailDiv>
       <form onSubmit={loadData}>
-        <div style={{display: 'flex', justifyContent:'space-between'}}> 
-          <span>•메뉴 정보</span><div style={{display: 'flex'}}><button type='submit'>저장</button> <hr /> <span onClick={props.api}>X</span></div>
-        </div>
+        <DetailTitle> 
+          <span>•메뉴 정보</span>
+          <div>
+            <button type='submit'>저장</button>
+            <hr /> 
+            <span onClick={props.api}>X</span>
+          </div>
+        </DetailTitle>
         <table>
           <tbody>
-            <tr><td>상위메뉴</td><td><div value={value} onClick={() => {setModalOn(true)}}>메뉴 선택</div></td></tr>
-            <tr><td>메뉴명</td><td><input name='name' type='text'placeholder={props.value['name']}/></td></tr>
-            <tr><td>사용여부</td><td><div>
-              <input className='radio' type='radio' value='1' name='enabledYN'/>사용
-              <input className='radio'  type='radio' value='0'  name='enabledYN'/>미사용</div></td></tr>
-            <tr><td>정렬</td><td><input type='number' name='sortOrder' placeholder={props.value['sortOrder']}/></td></tr>
+            <tr>
+              <td>상위메뉴</td>
+              <td>
+                <textarea value={value === undefined ? "" : value['name']} onClick={() => {setModalOn(true)}}></textarea>
+                <textarea name='parId' value={value === undefined ? "" : value['id']} style={{display: 'none'}}></textarea>
+                <textarea name='id' value={props.value === undefined ? "" : props.value['id']} style={{display: 'none'}}></textarea>
+              </td>
+            </tr>
+            <tr>
+              <td>메뉴명</td>
+              <td>
+                <input name='name' type='text'placeholder={props.value['name']}/>
+              </td>
+            </tr>
+            <tr>
+              <td>사용여부</td>
+              <td>
+                <div>
+                  <input className='radio' type='radio' value='1' name='enabledYN'/>사용
+                  <input className='radio'  type='radio' value='0'  name='enabledYN'/>미사용
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>정렬</td>
+              <td>
+                <input type='number' name='sortOrder' placeholder={props.value['sortOrder']}/>
+              </td>             
+            </tr>
           </tbody>
         </table>
-      
       </form>
-      {modalOn && <MenuTree selectMenu={seletedMenu}/>}
+      {modalOn && <MenuTree setModalOn={setModalOn} setValue={setValue} />}
     </DetailDiv>
   );
 
@@ -250,26 +303,60 @@ height: calc(100% - 151px);
 
         }
       }
-      > tr > td > #DnDBox {
-        width: 400px;
-        height: 300px;
-        
-        > div {
-          display: flex;
-          flex-direction: row;
-          flex-wrap: wrap;
-          > img {
-            width: 40px;
-            height: 40px;
-            padding : 5px;
-            margin: 5px;
-            border: 1px solid rgb(171,172,178);
-          }
-        }
-      }
+
       > :nth-child(4) {
         height: 100%;
       }
+    }
+  }
+}
+`;
+
+export const DetailTitle = styled.div`
+display: flex;
+justify-content: space-between;
+> div {
+  display: flex;
+}
+`;
+
+const DnDBox = styled.div`
+width: 400px;
+height: 200px;
+        
+> div {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  margin: 5px;
+  width: 100%;
+
+  > img {
+    width: 40px;
+    height: 40px;
+    padding : 5px;
+    margin: 5px;
+    border: 1px solid rgb(171,172,178);
+  }
+
+  > textarea {
+    border: 1px solid rgb(171,172,178);
+    width: calc(100% - 30px);
+    height: 25px;
+    color: rgb(171,172,178);
+    font-weight: bold;
+    font-size: small;
+    padding-top: 4px;  
+  }
+
+  > label {
+    > svg {
+    width: 30px;
+    height: 30px;
+    }
+
+    > input {
+      display: none;
     }
   }
 }

@@ -24,7 +24,7 @@ export default function EmpDetail(props) {
   );
 }
 
-export const DetailEmp = styled.div`
+const DetailEmp = styled.div`
 margin-top : 5px;
 width: 250px;
 height: 100%;

@@ -22,8 +22,6 @@ export default function TB() {
   const profile = useSelector(state => state.gnbMenu.profileList);
   const empId = useSelector(state => state.gnbMenu.empId);
 
-  console.log(profileModal)
-
   return (
     <TBArea>
         <Link to='/'>

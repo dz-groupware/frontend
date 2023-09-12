@@ -53,7 +53,6 @@ const companyMgmtInitialState = {
 function getIdFormLocal(k, d){
   try {
     const value = localStorage.getItem(k);
-    console.log('in init : ', k, d, value);
     if (value !== null){
       return JSON.parse(value);
     }

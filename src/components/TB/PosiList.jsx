@@ -21,15 +21,12 @@ export default function PosiList(props) {
 
   const handleAnotherEmp = () => {
     changeEmpApi(radioEmpId).then(res => {
-      console.log('chage : ', res.data['empId'], res.data['compId']);
       dispatch(newEmpId(res.data['empId']));
       dispatch(newCompId(res.data['compId']));
       localStorage.setItem('empId', res.data['empId']);
       localStorage.setItem('compId', res.data['compId']);
     }).then(props.modalOff);
   }
-
-  console.log("radioEmpId : ", radioEmpId);
 
   return (
     <ModalArea>

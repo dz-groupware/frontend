@@ -56,7 +56,7 @@ export default function Sys(){
       const formData = new FormData(document.getElementById('searchForm'));
       
       searchAPI(formData).then(res => {
-        setResult(res.data.data);
+        setResult(res.data);
       });
     }
 
@@ -75,6 +75,7 @@ export default function Sys(){
     }
   }
 
+  console.log(result);
   return (
     <Module>
       <Nav>

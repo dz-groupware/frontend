@@ -51,6 +51,7 @@ export const Select = styled.select`
     width: 100%;
     margin: 5px;
     border: 1px solid lightgrey;
+    height:30px;
 `;
 
 export const DoubleInputContainer = styled.div`

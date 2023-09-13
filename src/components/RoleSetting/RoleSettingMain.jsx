@@ -11,31 +11,31 @@ export default function RoleSettingMain() {
   //여기서 Company누를 때 일어나는 상황 정하기
   const [activeAuthId, setActiveAuthId] = useState(null);
   const [visible, setVisible] = useState(true);
-  const companyId = 1;
   useEffect(() => {
+    console.log("RoleSettingMain컴포넌트의 activeAuthId" , activeAuthId);
     if (activeAuthId !== null) {
       setVisible(true);
     } else {
       setVisible(false);
     }
   }, [activeAuthId]);
-  //companyId는 리덕스로
+  
   return (
     <Container>
         <StyledAuthGroupContainer>
           <AuthGroupSection 
-            companyId={companyId}
             setActiveAuthId={setActiveAuthId} 
             activeAuthId={activeAuthId}
           />
         </StyledAuthGroupContainer>
-        <StyledMenuTreeContainer >
+        <StyledMenuTreeContainer $visible={visible} >
           <MenuTreeTop />
           <Line color="black"/>
           <h2> 메뉴명 </h2>
-          {activeAuthId ? <SelectedAuthMenu companyId={companyId} activeAuthId={activeAuthId}/> : <MenuTreeMain companyId={companyId}/>}
+          {/* <MenuTreeMain /> */}
+          {activeAuthId ? <SelectedAuthMenu activeAuthId={activeAuthId}/> : <div style={{ height: '100%' }} />}
         </StyledMenuTreeContainer>
-        <StyledUserListContainer >
+        <StyledUserListContainer $visible={visible}>
           <UserListSection activeAuthId={activeAuthId}/>
         </StyledUserListContainer>
     </Container>
@@ -54,9 +54,10 @@ const StyledAuthGroupContainer = styled.div`
 
 const StyledMenuTreeContainer = styled.div`
   width: 800px;
-  visibility: ${props => props.visible ? 'visible' : 'hidden'};
+  visibility: ${props => props.$visible ? 'visible' : 'hidden'};
 `;
 
 const StyledUserListContainer = styled.div`
-    visibility: ${props => props.visible ? 'visible' : 'hidden'};
+  width: 400px;
+  visibility: ${props => props.$visible ? 'visible' : 'hidden'};
 `

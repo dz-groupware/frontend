@@ -3,6 +3,7 @@ import { axiosInstance } from "../../utils/axiosInstance";
 import { useDispatch } from "react-redux";
 import MgmtNav from "../Commons/MgmtNav";
 import { companyActions } from "../../utils/Slice";
+import { findCompanyMgmtList } from "../../api/companymgmt";
 
 
 
@@ -12,22 +13,18 @@ export default function CompanyMgmtNav() {
     const [selectedOption, setSelectedOption] = useState("");
 
     const handleSearch = async () => {
-        try {
-            dispatch(companyActions.hideForm());
-            // searchValue와 selectedOption이 빈 문자열일 경우 *로 처리
-            const actualSearchValue = searchValue === "" ? "%25%25" : `%25${searchValue}%25`;
-            const actualSelectedOption = selectedOption === "" ? 2 : `${selectedOption}`;
-
-            const response = await axiosInstance.get(`/companies/company-list?name=${actualSearchValue}&enabledType=${actualSelectedOption}`);
-
-            
-            // 응답 데이터 처리
-            console.log("API Response:", response.data);
-            dispatch(companyActions.searchInfo(response.data));
-        } catch (error) {
-            console.error("API Error:", error);
-          }
-        };
+      try {
+          dispatch(companyActions.hideForm());
+  
+          const responseData = await findCompanyMgmtList(searchValue, selectedOption);
+              
+          // 응답 데이터 처리
+          console.log("API Response:", responseData);
+          dispatch(companyActions.searchInfo(responseData));
+      } catch (error) {
+          console.error("API Error:", error);
+      }
+  };
       
         // MgmtNav에 전달할 children 요소들을 정의
         const searchFields = (

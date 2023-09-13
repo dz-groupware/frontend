@@ -4,6 +4,7 @@ import styled from 'styled-components';
 export default function Profile() {
   // const data = useSelector(state => state.gnbMenu.profileList[0]);
 
+
   return (
     <ProfileArea>
       {/* <img src={data['imageUrl']} alt='profileImg' />

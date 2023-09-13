@@ -3,6 +3,7 @@ import {createSlice} from '@reduxjs/toolkit';
 const companyMgmtInitialState = {
     companyInfo: {
       id: '',
+      parId:'',
       code: '',
       enabledYn: '',
       name: '',
@@ -133,6 +134,9 @@ export const modalSlice = createSlice({
         hideForm: (state) => {
           state.isVisible = false;
           state.idForForm = null;
+        },
+        resetState: (state) => {
+          return initialState;
         }
       }
     });

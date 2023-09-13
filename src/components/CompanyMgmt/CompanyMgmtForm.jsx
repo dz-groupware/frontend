@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import CompanyMgmtInfo from './CompanyMgmtInfo';
-import { axiosInstance } from '../../utils/axiosInstance';
 import {
     Container,
     InputContainer,
@@ -10,30 +9,46 @@ import {
     Input,
     DoubleInputContainer,
     PrefixSelect,
-    FormInput
+    FormInput,
+    Select
 } from '../Commons/StyledForm';
 import { companyActions } from '../../utils/Slice';
+import { addCompanyMgmt, getAllCompanyMgmtParList, modifyCompanyMgmt } from '../../api/companymgmt';
 
 //회사코드 입력값 로직 짜야함
 
 export default function CompanyMgmtForm() {
     const dispatch = useDispatch();
-    const reduxComapnyInfo = useSelector(state => state.companyMgmt.companyInfo);
+    const reduxCompanyInfo = useSelector(state => state.companyMgmt.companyInfo);
     const isVisible = useSelector(state => state.companyMgmt.isVisible);
     const idForForm = useSelector(state => state.companyMgmt.idForForm);
-    const [info, setInfo] = useState(reduxComapnyInfo);
+    const [companyOptions, setCompanyOptions] = useState([]); // 회사 옵션을 담을 상태
+    const [info, setInfo] = useState(reduxCompanyInfo);
+
+    const fetchCompanyOptions = async () => {
+        try {
+            const companyList = await getAllCompanyMgmtParList();
+            setCompanyOptions(companyList);
+        } catch (error) {
+            console.error("Error fetching company data:", error);
+        }
+    };
+  
+    useEffect(() => {
+        setInfo(reduxCompanyInfo);
+    }, [reduxCompanyInfo, isVisible]);
 
     useEffect(() => {
-        setInfo(reduxComapnyInfo);
-    }, [reduxComapnyInfo, isVisible]);
-
+        fetchCompanyOptions();
+    }, []);
+    
     if (!isVisible) return null;
 
 
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        const finalValue = name === "enabledYn" ?  value === "true"  : value;
+        const finalValue = name === "enabledYn" ? value === "true" : value;
 
         setInfo(prev => ({
             ...prev,
@@ -102,30 +117,28 @@ export default function CompanyMgmtForm() {
     };
 
     const handleUpdate = async (e) => {
-
-
         if (idForForm) {
             try {
-                await axiosInstance.put(`/companies/${idForForm}`, { ...info });
+                await modifyCompanyMgmt(info);
                 alert("회사 데이터가 수정되었습니다.");
                 dispatch(companyActions.hideForm());
                 window.location.reload();
             } catch (error) {
-                console.error("Error fetching company data:", error);
+                console.error("Error updating company data:", error);
             }
+    
 
+            
         } else {
             try {
-                await axiosInstance.post(`/companies/${info.code}`, { ...info });
+                await addCompanyMgmt(info);
                 alert("회사 데이터가 저장되었습니다.");
                 dispatch(companyActions.hideForm());
                 window.location.reload();
-            } catch (error) {
-                console.error("Error fetching company data:", error);
+            }catch (error) {
+                console.error("Error adding company data:", error);
             }
         }
-
-
     };
 
 
@@ -176,17 +189,19 @@ export default function CompanyMgmtForm() {
 
     const handleSubmit = async (e) => {
         const requiredFields = [
-            'code', 'name',
+            'code', 'name','enabledYn',
             'repName', 'repIdNum', 'repTel',
             'businessNum', 'corpNum', 'establishmentDate',
             'openingDate', 'address'
         ]; // 필수 입력 필드 목록
 
 
-
         const isEmptyField = requiredFields.some(field => {
             const value = info[field];
-            return !value || value === 'direct' || value.trim() === '';
+            if (field === "enabledYn") {
+                return value !== true && value !== false;
+            }
+            return !value || value === 'direct' || value === null;
         });
 
         const [prefix, repTel2] = info.repTel.split('-');
@@ -228,8 +243,9 @@ export default function CompanyMgmtForm() {
 
 
         dispatch(companyActions.updateInfo(info));
-        console.log(info);
+     
         handleUpdate(e);
+        console.log(info);
 
 
 
@@ -241,6 +257,15 @@ export default function CompanyMgmtForm() {
         <Container>
 
             <CompanyMgmtInfo handleSubmit={handleSubmit} isCodeDisabled={!!idForForm} idForForm={idForForm} />
+            <InputContainer>
+                <Label>소속회사</Label>
+                <Select name="parId" value={info.parId ||''} onChange={handleChange}>
+                    <option value="">없음</option>
+                    {companyOptions.map((company, index) => (
+                        <option key={company.id} value={company.id}>{company.name}</option>
+                    ))}
+                </Select>
+            </InputContainer>
 
             <HalfInputContainer>
                 <FormInput label="회사코드" name="code" maxLength={6} value={info.code || ''} disabled={!!idForForm} onChange={handleChange} />
@@ -256,7 +281,6 @@ export default function CompanyMgmtForm() {
             </HalfInputContainer>
 
             <FormInput label="회사명" name="name" value={info.name || ''} onChange={handleChange} />
-            {/* <FormInput label="산하회사" name="name" value={info.name || ''} onChange={handleChange} /> */}
 
 
             <FormInput label="회사약칭" name="abbr" value={info.abbr || ''} onChange={handleChange} />

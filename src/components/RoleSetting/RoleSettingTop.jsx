@@ -1,8 +1,11 @@
-import React from 'react'
-import { styled } from 'styled-components';
+import React, { useState } from 'react'
+import styled from 'styled-components';
 import { MdDisplaySettings, MdSmartDisplay, MdOutlineMapsUgc } from 'react-icons/md'
 import { PiCalendarCheck, PiStarBold } from 'react-icons/pi'
+import AuthCreateModal from './AuthCreateModal';
 export default function RoleSettingTop() {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  
   return (
     <Container>
       <LeftWrapper>
@@ -18,12 +21,13 @@ export default function RoleSettingTop() {
         </IconWrapper>
       </LeftWrapper>
       <RightWrapper>
-        <StyledButton>추가</StyledButton>
+        <StyledButton onClick={() => setIsModalOpen(true)}>추가</StyledButton>
         <StyledButton>변경이력</StyledButton>
         <VerticalLine/>
         <PiCalendarCheck fontSize={26} color='C9C9C9'/>
         <PiStarBold fontSize={26} color='C9C9C9'/>
       </RightWrapper>
+      <AuthCreateModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </Container>
   )
 }
@@ -72,6 +76,7 @@ const StyledButton = styled.button`
   border-radius: 5px;
 
 `
+
 const VerticalLine = styled.div`
   height: 20px; 
   width: 1px;

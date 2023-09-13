@@ -1,16 +1,12 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { styled } from 'styled-components'
-import { useFetchData } from '../../hooks/useFetchData';
-import { getGnbListOfAuthWithAllApi } from '../../api/authgroup';
+import { getGnbListApi } from '../../api/authgroup';
 import MenuItem from './MenuItem';
+import { useFetchData } from '../../hooks/useFetchData';
 
-export default function SelectedAuthMenu({ activeAuthId }) {
-  
-  const { data, isLoading, error } = useFetchData(getGnbListOfAuthWithAllApi,{
-    paths: {
-      authId: activeAuthId,
-    },
-  });
+export default function MenuOfCompany() {
+  const { data, isLoading, error } = useFetchData( getGnbListApi);
+
   if (isLoading) return <div>로딩중입니다!...</div>;
   if (error) return <div>{error}</div>;
   if (!data) return null;
@@ -21,12 +17,14 @@ export default function SelectedAuthMenu({ activeAuthId }) {
         <MenuItem 
           key={item.menuId} 
           item={item} 
+          childNodeYn={item.childNodeYn}
         />
       ))}
     </Container>
-  )
+  );
 }
 
 const Container = styled.div`
-  height: 100%;
+  min-width: 300px;
 `;
+

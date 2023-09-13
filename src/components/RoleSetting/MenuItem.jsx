@@ -1,15 +1,13 @@
 import React, { useState } from 'react'
-import { styled } from 'styled-components';
+import styled from 'styled-components';
 import { useFetchData } from '../../hooks/useFetchData';
-import { getLnbListApi } from '../../api/authgroup';
+import { FiPlus, FiMinus } from 'react-icons/fi'
 
-export default React.memo(function MenuItem({ item, depth=0 }) {
-  // const [subMenuItems, setSubMenuItems] = useState([]);
+export default function MenuItem({ item, depth=1 ,hasMenu, fetchApi, paths}) {
   const [expanded, setExpanded] = useState(false);
-  const { data: subMenuItems, setData:setSubMenuItems, isLoading, error } = useFetchData(getLnbListApi, { 
-    paths: { parId: item.menuId }
+  const { data: subMenuItems, setData:setSubMenuItems, isLoading, error } = useFetchData(fetchApi, { 
+    paths: { ...paths }
   });
-  
 
   const toggleSubMenu = async () => {
     if (expanded) {
@@ -18,50 +16,89 @@ export default React.memo(function MenuItem({ item, depth=0 }) {
     }
 
     if (subMenuItems.length === 0) {
-      const fetchedSubMenuItems = await getLnbListApi({paths:{ parId: item.menuId }});
+      const fetchedSubMenuItems = await fetchApi({paths:{ ...paths }});
       setSubMenuItems(fetchedSubMenuItems);
     }
     setExpanded(true);
   };
 
   return (
-    <Container>
-      <StyledMenu $depth={depth} $childNodeYn={item.childNodeYn}>
-        {item.childNodeYn ? (
-          <button onClick={toggleSubMenu} >
-            {expanded ? '-' : '+'}
-          </button>
-        ) : (
-          <span style={{ width: '1em', display: 'inline-block' }}></span>
+    <>
+      <StyledRow as="tr" $depth={depth} $childNodeYn={item.childNodeYn} $hasMenu={hasMenu}>
+        <td>
+          {item.childNodeYn ? (
+            <div style={{ width: '1em' }}></div>
+          ) : (
+            <div style={{ width: '1em' }}>
+              <StyledButton onClick={toggleSubMenu}>
+                {expanded ? <FiMinus/> : <FiPlus/>}
+              </StyledButton>
+            </div>
           )}
-        <div>{item.menuId} - {item.menuName}</div>
-      </StyledMenu>
-
-      {expanded && subMenuItems.length > 0 ? (
-        <div>
+          <div>
+            {item.menuId}
+          </div>
+          <div>
+            {item.menuName}
+          </div>
+        </td>
+        <td>{item.enabledYn ? 'O' : 'X'}</td>
+      </StyledRow>
+      {expanded && subMenuItems.length > 0 && (
+        <>
           {subMenuItems.map((subItem, subIndex) => (
             <MenuItem
               key={subItem.menuId}
               item={subItem}
-              childNodeYn={subItem.childNodeYn}
               depth={depth+1}
+              hasMenu={hasMenu}
+              fetchApi={fetchApi}
+              paths={{...paths, parId: subItem.menuId}}
             />
           ))}
-        </div>
-      ) : null}
-    </Container>
+        </>
+      )}
+    </>
   );
-})
+}
 
-const Container = styled.div`
-  width: 100%;
-  display: block;
+const StyledRow = styled.tr`
+  height: 2rem;
+  background-color: ${({ $depth, $childNodeYn }) => 
+    $depth === 1 ? 'skyblue' : ($childNodeYn ? 'yellow' : 'white')};
+  color: ${({ $hasMenu }) => ($hasMenu ? 'red' : 'black')};
+  
+  td {
+    height: 2rem;
+    vertical-align: middle;
+    border-bottom: 1px solid #ccc;
+    &:first-child {
+      width: 100%; // 75%로 설정하거나 원하는 비율로 조절하세요
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      border-left: 1px solid #ccc;
+      border-right: 1px dashed #ccc;
+      padding-left: ${({ $depth }) => `${$depth * 20}px`}; // 여기를 수정했습니다
+    }
+
+    &:last-child {
+      width: 13%; // 25%로 설정하거나 원하는 비율로 조절하세요
+      text-align: center;
+      border-left: none;
+      border-right: 1px solid #ccc;
+    }
+  }
+  
 `;
 
-const StyledMenu = styled.div`
-  padding-left: ${({ $depth }) => `${$depth * 20}px`};
-  background-color: ${({ $depth ,$childNodeYn }) => ($depth == 0 ? 'skyblue' : ($childNodeYn ? 'yellow' : 'white'))};
-  border-bottom: 1px solid black;
+
+
+const StyledButton = styled.button`
+  background-color: white;
+  border: 1px solid #ccc;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `;
-
-

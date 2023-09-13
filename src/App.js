@@ -23,17 +23,6 @@ export default function App() {
       </Provider>
     </>
 
-    // <>
-    //   <QueryClientProvider client={queryClient}>
-    //     <GlobalStyle/>
-    //     <Routes>
-    //       <Route path='/' element={<LoginPage/>}/>
-    //       <Route path='/login' element={<LoginPage/>} />
-    //       <Route path='/roleSetting' element={<RoleSettingPage/>} />
-    //     </Routes>
-    //     <ReactQueryDevtools/>
-    //   </QueryClientProvider>
-    // </>
   );
 }
 

@@ -1,4 +1,5 @@
 import {createSlice} from '@reduxjs/toolkit';
+import { fetchAuthMappedMenuByThunk } from './thunk';
 //jane
 const companyMgmtInitialState = {
     companyInfo: {
@@ -137,8 +138,45 @@ export const modalSlice = createSlice({
       }
     });
   }
-  
-  
+
+/** @author subo */
+export const authMappedMenuSlice = createSlice({
+  name: 'authMappedMenu',
+  initialState: {
+    data: [],
+    isLoading: false,
+    error: null,
+  },
+  reducers: {
+    startLoading: (state) => {
+      state.isLoading = true;
+    },
+    hasError: (state, action) => {
+      state.isLoading = false;
+      state.error = action.payload;
+    },
+    authMappedMenuReceived: (state, action) => {
+      state.isLoading = false;
+      state.data = action.payload;
+    },
+  },  
+  extraReducers: (builder) => {
+    builder
+      .addCase(fetchAuthMappedMenuByThunk.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(fetchAuthMappedMenuByThunk.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.data = action.payload;
+      })
+      .addCase(fetchAuthMappedMenuByThunk.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.error.message;
+      });
+  },
+});
+
+
 
 export const {menu, favor, recent, profileList, empId, compId} = menuSlice.actions;
 export const {load} = recentSlice.actions;

@@ -16,6 +16,10 @@ export default function RoleSettingPage() {
           onClick={(e)=>e.preventDefault()}
           name="권한그룹"
           selected={true}
+          padding={"0.1rem 1.2rem 0.5rem"}
+          showBorderBottom={true}
+          showBorderLeft={true}
+          showBorderRight={true}
         />
       </div>
       <Line left={"1.2rem"}/>

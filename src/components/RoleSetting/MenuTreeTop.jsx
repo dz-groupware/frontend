@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
+import LinkButon from '../Commons/LinkButon';
+import ActionButton from '../Commons/ActionButton';
 
 export default function MenuTreeTop() {
   const [selectedKey, setSelectedKey] = useState(null);
@@ -10,13 +12,19 @@ export default function MenuTreeTop() {
 
   return (
     <Container>
-      <Wrapper1>
-        <Button selected>전체</Button>
-        <Button>사용자 메뉴</Button>
-        <Button>관리자 메뉴</Button>
-        <Button>수정</Button>
-      </Wrapper1>
-      <Wrapper2>
+      <HeaderWrapper>
+        <LinkButon 
+            cursor="none"
+            onClick={(e)=>e.preventDefault()}
+            name="전체"
+            padding="0 1.2rem"
+            selected={true}
+            showBorderLeft={true}
+            showBorderRight={true}
+        />
+        <ActionButton width={'3rem'}fontWeight={400} fontSize={'1.0rem'} name={'수정'}/>
+      </HeaderWrapper>
+      <SearchWrapper>
         <Element>
           <span>대메뉴</span>
           <select>
@@ -29,28 +37,24 @@ export default function MenuTreeTop() {
           <input placeholder="메뉴명을 입력하세요" />
           <button>🔍</button>
         </Element>
-      </Wrapper2>
+      </SearchWrapper>
     </Container>
   );
 }
 
 const Container = styled.div`
   flex:1;
+  padding-top: 0.8rem;
 `;
 
-const Wrapper1 = styled.div`
+const HeaderWrapper = styled.div`
   display: flex;
   justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.6rem;
 `;
 
-const Button = styled.button`
-  background: ${(props) => (props.selected ? 'blue' : 'none')};
-  color: ${(props) => (props.selected ? 'white' : 'black')};
-  border: none;
-  cursor: pointer;
-`;
-
-const Wrapper2 = styled.div`
+const SearchWrapper = styled.div`
   display: flex;
   border: 1px solid lightgrey;
 `;
@@ -60,17 +64,5 @@ const Element = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-`;
-
-const Wrapper3 = styled.div`
-  border-top: 1px solid black;
-  border-left: 1px solid lightgrey;
-  border-right: 1px solid lightgrey;
-  border-bottom: 1px solid lightgrey;
-`;
-
-const Line = styled.div`
-  border-left: 1px solid black;
-  height: 10px;
 `;
 

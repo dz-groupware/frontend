@@ -4,16 +4,19 @@ import { axiosInstance } from '../utils/axiosInstance';
  * 수정해야함
  */
 export const getAuthGroupApi = ({ params }) => {
-  const { lastId, pageSize, orderBy, searchTerm } = params; 
+  const { lastId,lastAuthName, pageSize, orderBy, searchTerm } = params; 
   return axiosInstance.get(`/auth-group/companies/auth/list`, {
     params: {
       lastId,
+      lastAuthName,
       pageSize,
       orderBy,
       searchTerm
     }
   }).then(response => {
     return response.data;
+  }).catch(error => {
+    throw error;
   });
 };
 
@@ -41,7 +44,10 @@ export const getLnbListApi = async ({ paths }) => {
   return axiosInstance.get(`/auth-group/companies/gnb/${parId}/lnb-list`)
     .then(response => {
       return response.data;
-    });
+    }).catch(error => {
+      console.error('getLnbListApi 에러:', error);
+      throw new Error(`Auth group data could not be retrieved. ${error.message}`);
+    });;
 };
 
 export const getGnbListOfAuthApi = async ({ paths }) => {
@@ -49,6 +55,20 @@ export const getGnbListOfAuthApi = async ({ paths }) => {
   return axiosInstance.get(`/auth-group/companies/auth/${authId}/gnb`)
   .then(response => {
     return response.data;
+  }).catch(error => {
+    console.error('getGnbListOfAuthApi 에러:', error);
+    throw new Error(`Auth group data could not be retrieved. ${error.message}`);
+  });
+};
+
+export const getLnbListOfAuthApi = async ({ paths }) => {
+  const { authId,parId } = paths
+  return axiosInstance.get(`/auth-group/companies/auth/${authId}/gnb/${parId}`)
+  .then(response => {
+    return response.data;
+  }).catch(error => {
+    console.error('getLnbListOfAuthApi 에러:', error);
+    throw new Error(`Auth group data could not be retrieved. ${error.message}`);
   });
 };
 
@@ -57,15 +77,28 @@ export const getGnbListOfAuthWithAllApi = async ({ paths }) => {
   return axiosInstance.get(`/auth-group/companies/auth/${authId}/gnb-all`)
   .then(response => {
     return response.data;
-  })
+  }).catch(error => {
+    console.error('getGnbListOfAuthWithAllApi 에러:', error);
+    throw new Error(`Auth group data could not be retrieved. ${error.message}`);
+  });
+}
+export const getLnbListOfAuthWithAllApi = async ({ paths }) => {
+  const {authId, parId} = paths
+  return axiosInstance.get(`/auth-group/companies/auth/${authId}/gnb-all/${parId}`)
+  .then(response => {
+    return response.data;
+  }).catch(error => {
+    console.error('getLnbListOfAuthWithAllApi 에러:', error);
+    throw new Error(`Auth group data could not be retrieved. ${error.message}`);
+  });
 }
 
 export const getUserListOfAuthApi = async ({ paths }) => {
   const { authId } = paths;
-    // authId가 null이거나 undefined인지 확인
-    if (authId === null || authId === undefined) {
-      throw new Error("authId is not defined");
-    }
+  // authId가 null이거나 undefined인지 확인
+  if (authId === null || authId === undefined) {
+    throw new Error("authId is not defined");
+  }
   
   return axiosInstance.get(`/auth-group/auth/${authId}`)
   .then(response => {

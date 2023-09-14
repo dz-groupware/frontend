@@ -1,4 +1,5 @@
-import {createSlice} from '@reduxjs/toolkit';
+import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
+import { addAuthApi, getAuthGroupApi } from '../api/authgroup';
 //jane
 const companyMgmtInitialState = {
     companyInfo: {
@@ -137,8 +138,48 @@ export const modalSlice = createSlice({
       }
     });
   }
-  
-  
+  export const fetchAuthGroups = createAsyncThunk(
+    'authGroup/fetchAuthGroups',
+    async (queryParams) => {
+      try {
+        const response = await getAuthGroupApi({ params: queryParams });
+        return response.data;
+      } catch (error) {
+        throw Error(error);
+      }
+    }
+  );
+  export const addAuthGroup = createAsyncThunk('authGroup/addAuthGroup', async (newAuthGroup, { dispatch }) => {
+    await addAuthApi({ data: newAuthGroup });
+    dispatch(fetchAuthGroups()); // 새 권한을 추가한 후 목록을 새로고침
+  });
+  export const authGroupSlice = createSlice({
+    name: 'authGroup',
+    initialState: {
+      data: [],
+      hasMore: true,
+      isLoading: false,
+      error: null,
+    },
+    reducers: {
+      fetchDataStart: (state) => {
+        state.isLoading = true;
+      },
+      fetchDataSuccess: (state, action) => {
+        state.isLoading = false;
+        state.data = [...state.data, ...action.payload.data];
+        state.hasMore = action.payload.hasMore;
+      },
+      fetchDataFailure: (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      },
+      resetData: (state) => {
+        state.data = [];
+        state.hasMore = true;
+      },
+    },
+  });
 
 export const {menu, favor, recent, profileList, empId, compId} = menuSlice.actions;
 export const {load} = recentSlice.actions;

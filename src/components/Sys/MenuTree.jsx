@@ -14,6 +14,7 @@ export default function MenuTree(props) {
     });
   }, []);
 
+
   return (
     <ModalBackdrop onClick={() => props.setModalOn(false)}>
       <ModalView onClick={(e) => e.stopPropagation()}>
@@ -22,11 +23,13 @@ export default function MenuTree(props) {
           <span onClick={() => props.setModalOn(false)}>x</span>
         </div>
         <MenuArea>
+          <div>
           {
             menuTree.map((a, i) => (
               <MenuItem data={a} setModalOn={props.setModalOn} setValue={props.setValue} key={a['name']+'gnb'}/>
             ))
           }
+          </div>
         </MenuArea>
       </ModalView>
     </ModalBackdrop>
@@ -47,19 +50,19 @@ export function MenuItem(props) {
 
   const handleMenuItem = (a) => {
     if(subItem.length === 0) {
-      console.log('lnb id : ', props.data['id'])
       LnbListApi(props.data['id'])
       .then(res => setSubItem(res.data));
     }
     setOpen(!open);
     props.setValue(props.data);
   }
+
   return (
     <Menu>
       <div onClick={handleMenuItem}>
         └{props.data['name']}
       </div>
-      { subItem.length > 1 &&
+      { subItem.length > 1 && open &&
         subItem.map((a, i) => (
           <MenuItem data={a} setModalOn={props.setModalOn} setValue={props.setValue} key={a['name']+'lnb'}/>
         ))
@@ -83,34 +86,37 @@ width:100%;
 height:100%;
 `;
 export const ModalView = styled.div`
-position: relative;
-top:50px;
-right:-600px;
+position: absolute;
+top: 100px;
+right: 50px;
 align-items: center;
 flex-direction: column;
 border-radius: 5px;
 width: 300px;
 height: 500px;
 color: black;
-background-color: #ffffff;
+background-color: rgb(146,183,214);
 z-index:2;
 > #menuTitle {
   display: flex;
   justify-content: space-around;
-  > * {
-    margin: 10px;
-    font-size: large;
-    font-weight: bold;
-  }
+  height: 30px;
+  font-size: large;
+  font-weight: bold;
 }
 `;
 export const MenuArea = styled.div`
-width: 100%;
-height: 400px;
-overflow: scroll;
+width: 90%;
+height: 100%;
+
+> div {
+  background-color: white;
+  width: 100%;
+  height: 450px;
+  overflow: scroll;
+}
 `;
 export const Menu = styled.div`
 margin: 10px;
 margin-left: 20px;
-
 `;

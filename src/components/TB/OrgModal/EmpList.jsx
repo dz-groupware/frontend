@@ -3,29 +3,28 @@ import styled from 'styled-components';
 import { IoCallOutline } from 'react-icons/io5';
 
 export default function EmpList(props){
-  console.log(props.value);
-    return (
-        <ListDiv>
-        {
-            props.value.map ((a, i) => (
-                <EmpItem onClick={()=>{props.api(a)}} key={a['name']+a['id']}>
-                    <div>
-                        <img src={a['imageUrl']} alt='p_img' />
-                    </div>
-                    <div className='info'>
-                        <div>
-                            <div id='title'>{a['empName']} / {a['position']}</div> <div> | {a['loginId']}</div>
-                        </div>
-                        <p>{a['compName']} / {a['deptName']}</p>
-                        <div className='number'>
-                          <IoCallOutline /><span>{a['number']}</span>
-                        </div>
-                    </div>
-                </EmpItem>
-            ))
-        }
-        </ListDiv>
-    );
+  return (
+    <ListDiv>
+    {
+      props.value.map ((a, i) => (
+        <EmpItem onClick={()=>{props.handler(a)}} key={a['empName']+i+a['compName']}>
+          <div>
+            <img src={a['imageUrl']} alt='p_img' />
+          </div>
+          <div className='info'>
+            <div>
+              <div id='title'>{a['empName']} / {a['position']}</div> <div> | {a['loginId']}</div>
+            </div>
+            <p>{a['compName']} / {a['deptName']}</p>
+            <div className='number'>
+              <IoCallOutline /><span>{a['number']}</span>
+            </div>
+          </div>
+        </EmpItem>
+      ))
+    }
+    </ListDiv>
+  );
 }
 
 const EmpItem=styled.div`
@@ -35,22 +34,18 @@ margin: 5px;
 background-color: white;
 z-index: 2;
 > div > img {
-    margin: 20px;
-    width: 50px;
-    height: 50px;
+  margin: 20px;
+  width: 50px;
+  height: 50px;
 }
-
 > .info {
   font-weight: 100;
-
   > * {
     margin: 10px;
     margin-left: 0px;
   }
-
   > div {
     display: flex;
-
     > * {
       margin: 5px;
     }
@@ -58,7 +53,6 @@ z-index: 2;
       font-size: large;
       font-weight: 600;
     }
-
   }
   > p {
     margin-left: 10px;
@@ -66,7 +60,6 @@ z-index: 2;
     font-size: small;
     font-weight: 500;
   }
-
   > .number {
     color: gray;
     display: flex;

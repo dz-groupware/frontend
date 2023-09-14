@@ -24,19 +24,16 @@ export default function Home() {
     const basicInfo = async() => {
       try{
         await basicInfoApi(empId).then(response => {
-          if(response.status === 403 || response.status === 401){
-            navigate('./login');
-          }
           dispatch(profileList(response.data.profile));
           dispatch(menu(response.data.menu));
           dispatch(favor(response.data.favor));            
         });
-
       } catch (error) {
-        if(error.response && error.response.status === 403){
+        console.log(error);
+        if(error.message === 'UNAUTHORIZED'){
           navigate('/login');
         }
-        if(error.response && error.response.status === 401){
+        if(error.message === 'FORBIDDEN'){
           navigate('/login');
         }
       }

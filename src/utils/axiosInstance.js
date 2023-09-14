@@ -16,6 +16,13 @@ axiosInstance.interceptors.request.use(
     },
     (err) => {
       //요청 에러 시 수행 로직
+      if (err.response && err.response.status === 401) {
+        throw new Error('UNAUTHORIZED');
+      }
+      if (err.response && err.response.status === 403) {
+        throw new Error('FORBIDDEN');
+      }
+      
       return Promise.reject(err);
     }
   );
@@ -28,6 +35,12 @@ axiosInstance.interceptors.request.use(
       return res;
     },
     (err) => {
+      if (err.response && err.response.status === 401) {
+        throw new Error('UNAUTHORIZED');
+      }
+      if (err.response && err.response.status === 403) {
+        throw new Error('FORBIDDEN');
+      }
       return Promise.reject(err);
     }
   );

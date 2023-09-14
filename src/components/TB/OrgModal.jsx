@@ -36,8 +36,12 @@ export default function OrgModal(props){
   }
 
   function EmpDetailHandler(detailData){
-    setDetail(detailData);
-    setDetailOpen(!detailOpen);
+    if(detail === detailData){
+      setDetailOpen(false);
+    } else {
+      setDetail(detailData);
+      setDetailOpen(true);
+    }
   }
 
   function searchHandler(){
@@ -64,6 +68,7 @@ export default function OrgModal(props){
   const modalOff = () => {
     props.setOrgModal(false);
   }
+
   return (
     <ModalBackdrop onClick={modalOff}>
       <OrgModalView onClick={(e) => e.stopPropagation()}>
@@ -91,7 +96,7 @@ export default function OrgModal(props){
             ))
           }
           </DeptList>
-          <EmpList value={empList} api={EmpDetailHandler}/>
+          <EmpList value={empList} handler={EmpDetailHandler}/>
           {detailOpen ? <EmpDetail list={detail}/> : <Empty></Empty>}
       </div>
       </div>

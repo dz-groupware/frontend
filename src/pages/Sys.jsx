@@ -12,10 +12,11 @@ import { GnbDetail, MenuDetail } from '../components/Sys/Detail';
 
 export default function Sys(){
   const [gnbList, setGnbList] = useState([]);
-  const [menuDetail, setMenuDetail] = useState([]);
   const [result, setResult] = useState([]);
-  const [detail, setDetail] = useState([false, false]);
   const [favor, setFavor] = useState(false);
+
+  const [detail, setDetail] = useState([false, false]);
+  const [menuDetail, setMenuDetail] = useState("");
 
   const empId = useSelector(state => state.gnbMenu.empId);
   const compId = useSelector(state => state.gnbMenu.compId);
@@ -29,12 +30,9 @@ export default function Sys(){
     }, [empId, menuId]);
 
     // 대메뉴/메뉴 디테일 on/off
-    function menuDetailHandler(type, menuDetail){
-      if (type === 'gnbDetail') {
-        setDetail([2, false]);
-      }
-      if (type === 'menuDetail') {
-        setDetail([false, 2]);
+    function menuDetailHandler(type, detail){
+      if (detail === ""){
+        detail = JSON.parse('{ "enabledYN": "", "iconUrl": "", "id": "", "name": "", "parId": "", "sortOrder": "" }');
       }
       if (type === 'newGnb') {
         setDetail([1, false]);
@@ -42,11 +40,17 @@ export default function Sys(){
       if (type === 'newMenu') {
         setDetail([false, 1]);
       }
-      setMenuDetail(menuDetail);
+      if (type === 'gnbDetail') {
+        setDetail([2, false]);
+      }
+      if (type === 'menuDetail') {
+        setDetail([false, 2]);
+      }
+      setMenuDetail(detail);
     }
 
     // X 버튼
-    function detailOff(){
+    const detailOff = () =>{
       setDetail([false, false]);
     }
 
@@ -75,7 +79,6 @@ export default function Sys(){
     }
   }
 
-  console.log(result);
   return (
     <Module>
       <Nav>
@@ -123,8 +126,8 @@ export default function Sys(){
             }
           </div>
         </MenuTree>
-        { detail[0] && <GnbDetail value={menuDetail} api={detailOff} on={detail[0]} compId={compId}/>}
-        { detail[1] && <MenuDetail value={menuDetail} api={detailOff} on={detail[1]} compId={compId}/>}
+        { detail[0] && <GnbDetail value={menuDetail} detailOff={detailOff} on={detail[0]} compId={compId}/>}
+        { detail[1] && <MenuDetail value={menuDetail} detailOff={detailOff} on={detail[1]} compId={compId}/>}
       </FormArea>
     </Module>
   );

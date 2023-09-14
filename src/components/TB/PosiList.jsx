@@ -71,13 +71,15 @@ function Using(){
 
 export const ModalArea = styled.div`
 width:100%;
-height:200px;
+height:230px;
 margin:0;
-display: block;
+display: flex;
+flex-direction: column;
 
 > table {
   width: 560px;
   font-size: medium;
+  height: 200px;
 
   > tbody {
     > #tHeader {
@@ -106,7 +108,6 @@ display: block;
 
 > #modal_btn {
   position: relative;
-  bottom: 10px;
   display: flex;
   justify-content: center;
   width: 100%;

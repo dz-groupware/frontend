@@ -37,7 +37,7 @@ export function Error(){
 
   useEffect(() => {
     setTimeout(() => navigate('/'), 3000);
-  }, []);
+  }, [navigate]);
 
   // 우선은 main 페이지로 이동하도록 했는데, 
   // 로그인 하지 않은 상태에서 main 페이지로 이동하면 안되므로, 

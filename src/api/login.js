@@ -2,6 +2,7 @@ import { axiosInstance } from "../utils/axiosInstance"
 
 export const loginApi = async ({ data }) => {
   try {
+    console.log(data.loginId, data.loginPw);
     const response = await axiosInstance.post('/login', {
       loginId: data.loginId,
       loginPw: data.loginPw,

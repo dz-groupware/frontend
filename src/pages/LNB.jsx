@@ -20,11 +20,29 @@ export default function LNB() {
   const [data, setData] = useState(JSON.parse('[{"name":""}]'));
 
   useEffect(() => {
+    try{
+      const menuId = location.state.menuId;
+      searchMenuListAPI(menuId, compId)
+      .then(res => setData(res.data));
+      setGnbId(menuId);
+    } catch(error) {
+      if(error.message === 'UNAUTHORIZED'){
+        navigate('/login');
+      }
+      if(error.message === 'FORBIDDEN'){
+        navigate('/login');
+      }
+      if(error.message === 'INTERNEL_SERVER_ERROR'){}
+      navigate('/error');
+      console.log(error.message);
+    }
+
+/*
     if (location.state === null) {
       // 부적절한 이동 시도
       navigate('./error');
     } else {
-      const menuId = location.state.menuId;
+      
       if(menuId !== undefined && compId !== undefined && compId !== null){
         searchMenuListAPI(menuId, compId).then(res => {
           if(res.status === 401 || res.status === 403) {
@@ -42,6 +60,11 @@ export default function LNB() {
         // 즐겨찾기에서 눌렀을 경우 즐겨찾기 리스트를 저장하도록 수정할 예정
         // 현재는 이름만 즐겨찾기로 바뀌어 있음.
     }
+
+
+    
+    */
+
   }, [compId, location, navigate]);
 //    const data = JSON.parse('[{"name":"조직관리"}, {"naem":"메뉴설정"}]');
   return (
@@ -84,13 +107,24 @@ export function MenuTree(props){
   }, [props.compId, props.gnbId]);
 
   function handleMenuItem() {
-    if(subItem.length === 0) {
-      searchMenuListAPI(props.menu['id'], props.compId)
-      .then(res => setSubItem(res.data));
+    try{
+      if(subItem.length === 0) {
+        console.log('menuId: ',props.menu['id']);
+        searchMenuListAPI(props.menu['id'], props.compId)
+        .then(res => setSubItem(res.data));
+      }
+      setOpen(!open);
+      // menuId를 넘기지 않고 gnbId를 넘긴다. LNB() 컴포넌트는 GNB 메뉴 ID가 필요함.
+      navigate(`/${props.param}/${props.menu['name']}`, {state: {menuId: props.gnbId}});  
+    } catch(error) {
+      if(error.message === 'UNAUTHORIZED'){
+        navigate('/login');
+      }
+      if(error.message === 'FORBIDDEN'){
+        navigate('/login');
+      }
+      console.log(error);
     }
-    setOpen(!open);
-    // menuId를 넘기지 않고 gnbId를 넘긴다. LNB() 컴포넌트는 GNB 메뉴 ID가 필요함.
-    navigate(`/${props.param}/${props.menu['name']}`, {state: {menuId: props.gnbId}});
   }
 
   return (
@@ -98,9 +132,9 @@ export function MenuTree(props){
       <MenuItem>
         { 
         open ? 
-        (props.menu['childNodeYn'] === 0 ? <AiFillProfile /> : < AiFillFolderOpen/>)
+        (props.menu['childNodeYn'] === 1 ? <AiFillProfile /> : < AiFillFolderOpen/>)
         :
-        (props.menu['childNodeYn'] === 1 ? <AiFillFolder /> : <AiOutlineProfile />) 
+        (props.menu['childNodeYn'] === 0 ? <AiFillFolder /> : <AiOutlineProfile />) 
         }
         <div onClick={handleMenuItem}>{props.menu['name']}</div>
       </MenuItem>

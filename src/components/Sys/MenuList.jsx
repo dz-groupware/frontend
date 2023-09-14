@@ -23,14 +23,13 @@ background-color: rgb(240,245,248);
 border: 1px solid rgb(171,172,178);
 border-top: 3px solid gray;
 margin: 10px;
-paddig: 10px;
+padding: 10px;
 width: 250px;
-height: 75%;
+height: calc(100% - 150px);
 > div {
   display: block;
   
   width: 220px;
-  height: 90%;
   overflow: scroll;
   &::-webkit-scrollbar{
       display:none;
@@ -48,7 +47,7 @@ margin-top:5px;
 display: flex;
 justify-content: flex-start;
 
-height: 50px;
+height: 80px;
 
 background-color: white;
 border: 1px solid rgb(171,172,178);
@@ -60,5 +59,9 @@ text-align: center;
 font-size: medium;
 > #menuitemname {
   padding-top: 5%;
+}
+
+> img {
+  border-radius: 10px;
 }
 `;

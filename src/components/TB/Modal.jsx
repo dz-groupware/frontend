@@ -3,7 +3,7 @@ import styled from 'styled-components';
 
 export function SearchModal(props){
     return (
-    <ModalBackdrop onClick={() => {props.api('search')}}>
+    <ModalBackdrop onClick={() => {props.setSearchModal(false)}}>
         <ModalView onClick={(e) => e.stopPropagation()}>
         <br />
         <div>
@@ -16,7 +16,7 @@ export function SearchModal(props){
 
 export function SetModal(props){
     return (
-      <ModalBackdrop onClick={() => {props.api('set')}}>
+      <ModalBackdrop onClick={() => {props.setSetModal(false)}}>
       <ModalView onClick={(e) => e.stopPropagation()}>
         <br />
         <div>
@@ -29,7 +29,7 @@ export function SetModal(props){
 
 export function AlertModal(props){
     return (
-      <ModalBackdrop onClick={() => {props.api('alert')}}>
+      <ModalBackdrop onClick={() => {props.setAlertModal(false)}}>
       <ModalView onClick={(e) => e.stopPropagation()}>
         <br />
         <div>

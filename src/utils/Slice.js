@@ -50,23 +50,36 @@ const companyMgmtInitialState = {
     isVisible: false,
     searchList: JSON.parse('[{"":""}]')
   }
-  
-export const  menuSlice = createSlice({
-    name: 'gnbMenu',
-    initialState: {
-        menu: JSON.parse('[{"empId": "","menuId": "","parId": "","name": "","iconUrl": ""}]'),
-        favor: JSON.parse('[{"empId": "","menuId": "","parId": "","name": "","iconUrl": ""}]'),
-        profileList: JSON.parse('[{"empId": "","menuId": "","parId": "","name": "","iconUrl": ""}]'),
-        empId: 12,
-        compId: 1,
-    },
-    reducers: {
-        menu:(state, action) => {state.menu = action.payload;},
-        favor:(state, action) => {state.favor = action.payload;},
-        profileList:(state, action) => {state.profileList = action.payload;},
-        empId:(state, action) => {state.empId = action.payload;},
-        compId:(state, action) => {state.compId = action.payload;},
+
+function getIdFormLocal(k, d){
+  try {
+    const value = localStorage.getItem(k);
+    if (value !== null){
+      return JSON.parse(value);
     }
+    return d;
+  } catch (error) {
+    return d;
+  }
+}
+
+const initialState = {
+  menu: JSON.parse('[{"empId": "","menuId": "","parId": "","name": "","iconUrl": ""}]'),
+  favor: JSON.parse('[{"empId": "","menuId": "","parId": "","name": "","iconUrl": ""}]'),
+  profileList: JSON.parse('[{"empId": "","menuId": "","parId": "","name": "","iconUrl": ""}]'),
+  empId: getIdFormLocal('empId', ""),
+  compId: getIdFormLocal('compId', ""),
+}
+export const  menuSlice = createSlice({
+  name: 'gnbMenu',
+  initialState,
+  reducers: {
+    menu:(state, action) => {state.menu = action.payload;},
+    favor:(state, action) => {state.favor = action.payload;},
+    profileList:(state, action) => {state.profileList = action.payload;},
+    newEmpId:(state, action) => {state.empId = action.payload;},
+    newCompId:(state, action) => {state.compId = action.payload;},
+  }
 });
 
 export const recentSlice = createSlice({
@@ -181,7 +194,7 @@ export const modalSlice = createSlice({
     },
   });
 
-export const {menu, favor, recent, profileList, empId, compId} = menuSlice.actions;
+export const {menu, favor, recent, profileList, newEmpId, newCompId} = menuSlice.actions;
 export const {load} = recentSlice.actions;
 export const {profile, search, alert, org, set} = modalSlice.actions;
 export const companyActions = companyMgmtSlice.actions;

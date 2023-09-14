@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import Sys from './Sys';
 import CompanyMgmtPage from "./CompanyMgmtPage";
 import RoleSettingPage from "./RoleSettingPage";
-import { EmptyPage } from "./VIEW";
+import { EmptyPage, Error, Error404 } from "./VIEW";
 
 export default function Module(){
   const { menuName } = useParams();
@@ -19,9 +19,19 @@ export default function Module(){
       );
   }
   if (menuName === '권한Role설정'){
-      return(
-          <RoleSettingPage/>
-      );
+    return(
+        <RoleSettingPage/>
+    );
+  }
+  if (menuName === 'error404'){
+    return(
+        <Error404/>
+    );
+  }  
+  if (menuName === 'error'){
+    return(
+        <Error/>
+    );
   }
   return <EmptyPage menuName={menuName}/>
 } 

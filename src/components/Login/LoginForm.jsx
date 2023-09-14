@@ -48,9 +48,10 @@ export default function LoginForm() {
       dispatch(newCompId(data.data['compId']));
       localStorage.setItem('empId', data.data['empId']);
       localStorage.setItem('compId', data.data['compId']);
+      console.log('redirect');
       navigate('/',{state:{ menuId: "0" }});
     }
-  },statusCode);
+  }, [statusCode]);
 
   return (
     <Container>

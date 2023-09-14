@@ -92,7 +92,7 @@ export default function OrgModal(props){
           <DeptList>
           {
             data.map((a, i) => (
-              <CompList comp={a} loadEmpList={loadEmpList} key={a['name']+a['id']}/>
+              <CompList value={a} loadEmpList={loadEmpList} key={a['name']+a['id']}/>
             ))
           }
           </DeptList>
@@ -110,22 +110,29 @@ export function CompList(props) {
   const [open, setOpen] = useState(false);
   const [subItem, setSubItem] = useState([]);
 
-  function handleCompItem(compId) {
-    if(subItem.length === 0) {
-      orgTreeApi('comp', compId,"","").then(res => setSubItem(res.data));
+  function handleItem() {
+    console.log(props);
+    if (props.value['type'] === 'comp') {
+      props.value['id'] = ""
     }
+    orgTreeApi(props.value['type'], props.value['compId'], props.value['id']).then(res => setSubItem(res.data));
+    props.loadEmpList(props.value['type'], props.value['compId'], props.value['id']);
     setOpen(!open);
-    props.loadEmpList('comp', compId, "");
   }
 
   return (
-    <Dept key={props.comp['name']+props.comp['id']}>
-      <div className="title"  style={{display: 'flex', margin: '10px'}} onClick={() => {handleCompItem(props.comp['id'])}}>
-        <div  ><LuBuilding2 />{props.comp['name']}</div>
+    <Dept key={props.value['name']+props.value['id']}>
+      <div className="title" onClick={() => {
+        handleItem()
+        }}>
+        <div>
+        { props.value['type'] === 'comp' ? <LuBuilding2 /> : <AiOutlineTeam /> }
+        { props.value['name'] }
+        </div>
       </div>
       {
         open && subItem.map((a, i) => (
-          <DeptTree dept={a} compId={props.comp['id']} loadEmpList={props.loadEmpList} key={a['name']+a['id']}/>
+          <DeptTree value={a} loadEmpList={props.loadEmpList} key={a['name']+a['id']}/>
         ))
       }
     </Dept>
@@ -136,21 +143,28 @@ export function DeptTree(props) {
   const [open, setOpen] = useState(false);
   const [subItem, setSubItem] = useState([]);
 
-  function handleDeptItem(compId, deptId) {
-    if(subItem.length === 0) {
-      orgTreeApi('dept', compId, deptId,"").then(res => setSubItem(res.data));
-      props.loadEmpList('dept', compId, deptId);
+  function handleItem() {
+    console.log(props);
+    if (props.value['type'] === 'comp') {
+      props.value['id'] = ""
     }
+    orgTreeApi(props.value['type'], props.value['compId'], props.value['id']).then(res => setSubItem(res.data));
+    props.loadEmpList(props.value['type'], props.value['compId'], props.value['id']);
     setOpen(!open);
   }
+
   return (
-    <Dept key={props.dept['name']+props.dept['id']}>
-    <div style={{display: 'flex', margin: '10px', width:'100%', height:'20px'}}>
-      <div onClick={() => {handleDeptItem(props.compId, props.dept['id'])}}><AiOutlineTeam />{props.dept['name']}</div>
-    </div>
+    <Dept key={props.value['name']+props.value['id']}>
+      <div className='deptList'>
+        <div onClick={() => {
+          handleItem()
+          }}>
+          { props.value['type'] === 'comp' ? <LuBuilding2 /> : <AiOutlineTeam /> }
+          {props.value['name']}</div>
+      </div>
       {
         open && subItem.map((a, i) => (
-          <DeptTree dept={a} compId={props.compId} loadEmpList={props.loadEmpList} key={a['name']+a['id']}/>
+          <DeptTree value={a} loadEmpList={props.loadEmpList} key={a['name']+a['id']}/>
         ))
       }
   </Dept>
@@ -254,10 +268,23 @@ margin-top : 5px;
 width: 250px;
 height: 100%;
 border : 1px gray solid;
+overflow: scroll;
+&::-webkit-scrollbar{
+  display: none;
+}
 `;
 export const Dept = styled.div`
 margin-left: 15px;
-
+> .title {
+  display: flex;
+  margin: 10px;
+}
+> .deptList {
+  display: flex;
+  margin: 10px;
+  width: 100%;
+  height: 20px;
+}
 `;
 const Empty = styled.div`
 margin-top : 5px;

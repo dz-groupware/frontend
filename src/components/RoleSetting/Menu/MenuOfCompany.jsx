@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from 'react'
 import { styled } from 'styled-components'
-import { getGnbList, getGnbListApi } from '../../api/authgroup';
+import { getCompanyGnbListApi } from '../../../api/authgroup';
 import MenuItem from './MenuItem';
-import { useFetchData } from '../../hooks/useFetchData';
+import { useFetchData } from '../../../hooks/useFetchData';
 
-export default function MenuTreeMain({ companyId }) {
-  const { data, isLoading, error } = useFetchData( getGnbListApi, {paths:{companyId}});
-  const [selectedKey, setSelectedKey] = useState(null);
+export default function MenuOfCompany() {
+  const { data, isLoading, error } = useFetchData(getCompanyGnbListApi);
 
   if (isLoading) return <div>로딩중입니다!...</div>;
   if (error) return <div>{error}</div>;
@@ -18,7 +17,6 @@ export default function MenuTreeMain({ companyId }) {
         <MenuItem 
           key={item.menuId} 
           item={item} 
-          companyId={companyId}  // MenuItem에 companyId 전달
           childNodeYn={item.childNodeYn}
         />
       ))}

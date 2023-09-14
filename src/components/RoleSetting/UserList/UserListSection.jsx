@@ -1,19 +1,24 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { styled } from 'styled-components'
-import { getUserListOfAuthApi } from '../../api/authgroup';
-import { useFetchData } from '../../hooks/useFetchData';
+import { useFetchData } from '../../../hooks/useFetchData';
 import UserListItem from './UserListItem';
+import { getUserListOfAuthApi } from '../../../api/authgroup';
 
-export default function UserListSection({ activeAuthId }) {
-
-  const { data, isLoading, error } = useFetchData(getUserListOfAuthApi, {
-    paths:{authId: activeAuthId},
-    shouldFetch: activeAuthId != null
+export default function UserListSection({ authId }) {
+  console.log("UserListSection 렌더링", authId);
+  const { data, isLoading, setShouldFetch, error } = useFetchData(getUserListOfAuthApi, {
+    paths: { authId },  // paths 객체에 authId 추가
+    shouldFetch: authId !== null && authId !== undefined,
   });
-
+  useEffect(() => {
+    if(authId !== null && authId !== undefined) { // authId가 유효한지 검사
+      setShouldFetch(true);
+    }
+  }, [authId]);
+  
   if(isLoading) return <div>로딩중</div>;
   if(error) return <div>에러</div>;
-  if(!data) return null;
+  if(!data) return <div>데이터없음</div>;
 
   return (
     <Container>

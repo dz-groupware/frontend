@@ -1,17 +1,18 @@
-import React from 'react'
-import { styled } from 'styled-components';
+import React, { forwardRef } from 'react'
+import styled from 'styled-components';
 
-export default function AuthGroupItem({ item, onClick, isActive}) {
+const AuthGroupItem = forwardRef(({ item, onClick, isActive }, ref) => {
   return (
-    <Container $isActive={isActive} onClick={onClick}>
+    <Container ref={ref} $isActive={isActive} onClick={onClick}>
       <p>회사id- {item.companyId}</p>
       <p>회사명- {item.companyName}</p>
       <p>권한id- {item.authId}</p>
       <p>권한명- {item.authName}</p>
     </Container>
   )
-}
+});
 
+export default AuthGroupItem;
 
 const Container = styled.div`
   border: 1px solid #ccc;
@@ -20,16 +21,16 @@ const Container = styled.div`
   padding: 10px;
   margin: 5px 0;
   height: 100px;
-  transition: background-color 0.2s ease, border-color 0.2s ease;  // 부드럽게 색이 변경되도록
+  transition: background-color 0.2s ease, border-color 0.2s ease;  
   &:hover {
     border-width: 2px;
-    background-color: #d0cece84;  // 마우스 오버시 배경색 변경
-    border-color: #d0cece84;          // 마우스 오버시 테두리 색 변경
+    background-color: #d0cece84;  
+    border-color: #d0cece84;          
   }
 
   &:active {
     border-width: 2px;
-    background-color: #5dc3fb;  // 클릭시 배경색 변경
+    background-color: #5dc3fb;  
     border-color: #5dc3fb;  
   }
   background-color: ${props => props.$isActive ? 'rgba(93, 195, 251, 0.7)' : 'transparent'};

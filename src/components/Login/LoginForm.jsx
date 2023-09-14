@@ -41,6 +41,7 @@ export default function LoginForm() {
   const dispatch = useDispatch();
 
   useEffect(()=>{
+    console.log("code,",statusCode);
     if(statusCode===200){
       // 추가(김현주) : 로그인 시 empId, compId를 리덕스 슬라이스에 저장해야 함.
       dispatch(newEmpId(data.data['empId']));

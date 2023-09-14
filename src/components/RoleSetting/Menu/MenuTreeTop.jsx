@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import LinkButon from '../Commons/LinkButon';
-import ActionButton from '../Commons/ActionButton';
+import LinkButon from '../../Commons/LinkButon';
+import ActionButton from '../../Commons/ActionButton';
 
 export default function MenuTreeTop() {
   const [selectedKey, setSelectedKey] = useState(null);

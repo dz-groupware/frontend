@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import styled from 'styled-components';
 import { MdDisplaySettings, MdSmartDisplay, MdOutlineMapsUgc } from 'react-icons/md'
 import { PiCalendarCheck, PiStarBold } from 'react-icons/pi'
-import AuthCreateModal from './AuthCreateModal';
+import RoleCreateModal from './RoleCreateModal';
 export default function RoleSettingTop() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   
@@ -27,7 +27,7 @@ export default function RoleSettingTop() {
         <PiCalendarCheck fontSize={26} color='C9C9C9'/>
         <PiStarBold fontSize={26} color='C9C9C9'/>
       </RightWrapper>
-      <AuthCreateModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+      <RoleCreateModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </Container>
   )
 }

@@ -1,7 +1,33 @@
-import React from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import styled from 'styled-components';
+import { addAuthApi, getCompanyGnbListApi, getCompanyLnbListApi } from '../../api/authgroup';
+import { useFetchData } from '../../hooks/useFetchData';
+import RoleModalMenuItem from './RoleModalMenuItem';
+export default function RoleCreateModal({ isOpen, onClose }) {
+  // const { data, isLoading, error } = useFetchData(getCompanyGnbListApi);
+  // if (isLoading) return <div>로딩중입니다!...</div>;
+  // if (error) return <div>{console.log(error)}</div>;
+  // if (!data) return null;
+  const [authName, setAuthName] = useState('');
+  const [usage, setUsage] = useState('사용');
+  const authNameRef = useRef();
+  const handleSubmit = async () => {
+    try {
+      const data = {
+        authName: authNameRef.current.value, 
+        enabledYn: usage === '사용' ? true : false
+      };
 
-export default function AuthCreateModal({ isOpen, onClose }) {
+      // 직접 API 호출
+      await addAuthApi({ data });
+      console.log('권한이 성공적으로 추가되었습니다.');
+      onClose(); // 모달 닫기
+    } catch (error) {
+      console.error('권한 추가에 실패했습니다.', error);
+    }
+  };
+
+  
   return (
     isOpen && (
       <ModalBackground>
@@ -10,26 +36,30 @@ export default function AuthCreateModal({ isOpen, onClose }) {
           <FormWrapper>
             <Label>
               <LabelText>권한명</LabelText>
-              <Input type="text" placeholder='권한명을 입력하세요.' />
+              <Input type="text" placeholder='권한명을 입력하세요.' ref={authNameRef}/>
             </Label>
             <Label>
               <LabelText>사용 여부</LabelText>
               <div style={{display: 'flex', gap: '2rem', flex: 4}}>
                 <label>
-                  <Radio type="radio" name="usage" value="사용" defaultChecked /> 사용
+                  <Radio type="radio" name="usage" value="사용" defaultChecked onChange={() => setUsage('사용')}/> 사용
                 </label>
                 <label>
-                  <Radio type="radio" name="usage" value="미사용" /> 미사용
+                  <Radio type="radio" name="usage" value="미사용" onChange={() => setUsage('미사용')}/> 미사용
                 </label>
               </div>
             </Label>
-            <Label>
-              <LabelText>권한작성자</LabelText>
-              <Input type="text" placeholder='이름을 입력하세요.' />
-            </Label>
+              {/* {data.map((item, index) => (
+                <RoleModalMenuItem
+                  key={item.menuId}
+                  item={item} 
+                  fetchApi={getCompanyLnbListApi} 
+                  paths={{parId:item.menuId}}
+                />
+              ))} */}
           </FormWrapper>
           <ButtonWrapper>
-            <CreateButton onClick={() => console.log("생성")}> 생성 </CreateButton>
+            <CreateButton onClick={() => handleSubmit()}> 생성 </CreateButton>
             <CloseModalButton onClick={onClose}> 닫기 </CloseModalButton>
           </ButtonWrapper>
         </Modal>
@@ -57,7 +87,7 @@ const Modal = styled.div`
   padding: 20px;
   border-radius: 10px;
   width: 30%;
-  height: 60%;
+  height: fit-content;
   flex-direction: column; /* 변경된 부분: Flex direction 설정 */
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
 `;
@@ -88,6 +118,7 @@ const Label = styled.label`
 const Input = styled.input`
   border: 1px solid #ccc;
   border-radius: 4px;
+  height: 2rem;
   padding: 5px;
   flex: 4; /* 이 부분을 변경하여 입력 필드가 더 많은 공간을 차지하도록 합니다. */
 `;

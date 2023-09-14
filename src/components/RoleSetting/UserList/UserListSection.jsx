@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react'
 import { styled } from 'styled-components'
-import { useFetchData } from '../../hooks/useFetchData';
+import { useFetchData } from '../../../hooks/useFetchData';
 import UserListItem from './UserListItem';
-import { getUserListOfAuthApi } from '../../api/authgroup';
+import { getUserListOfAuthApi } from '../../../api/authgroup';
 
 export default function UserListSection({ authId }) {
   console.log("UserListSection 렌더링", authId);

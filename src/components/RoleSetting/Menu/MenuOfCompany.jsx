@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react'
 import { styled } from 'styled-components'
-import { getGnbListApi } from '../../api/authgroup';
+import { getCompanyGnbListApi } from '../../../api/authgroup';
 import MenuItem from './MenuItem';
-import { useFetchData } from '../../hooks/useFetchData';
+import { useFetchData } from '../../../hooks/useFetchData';
 
 export default function MenuOfCompany() {
-  const { data, isLoading, error } = useFetchData( getGnbListApi);
+  const { data, isLoading, error } = useFetchData(getCompanyGnbListApi);
 
   if (isLoading) return <div>로딩중입니다!...</div>;
   if (error) return <div>{error}</div>;

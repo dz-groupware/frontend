@@ -1,10 +1,8 @@
-  import React, { useEffect } from 'react'
-  import { styled } from 'styled-components'
-  import { useFetchData } from '../../hooks/useFetchData';
-  import { getGnbListOfAuthWithAllApi, getLnbListOfAuthWithAllApi } from '../../api/authgroup';
-  import MenuItem from './MenuItem';
-import { useDispatch, useSelector } from 'react-redux';
-import { fetchAuthMappedMenuByThunk } from '../../utils/thunk';
+import React, { useEffect } from 'react'
+import { styled } from 'styled-components'
+import { useFetchData } from '../../../hooks/useFetchData';
+import { getGnbListOfAuthWithAllApi, getLnbListOfAuthWithAllApi } from '../../../api/authgroup';
+import MenuItem from './MenuItem';
 
   export default function MenuOfAuthEditor({ authId }) {
     

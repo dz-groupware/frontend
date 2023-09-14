@@ -4,7 +4,7 @@ import { axiosInstance } from '../utils/axiosInstance';
  * 수정해야함
  */
 export const getAuthGroupApi = ({ params }) => {
-  const { lastId,lastAuthName, pageSize, orderBy, searchTerm } = params; 
+  const { lastId, lastAuthName, pageSize, orderBy, searchTerm } = params; 
   return axiosInstance.get(`/auth-group/companies/auth/list`, {
     params: {
       lastId,
@@ -29,7 +29,7 @@ export const getCountAuthGroupApi = async () => {
   }
 }
 
-export const getGnbListApi = async () => {
+export const getCompanyGnbListApi = async () => {
   try {
     const response = await axiosInstance.get(`/auth-group/companies/gnb-list`);
     return response.data;
@@ -39,7 +39,7 @@ export const getGnbListApi = async () => {
 }
 };
 
-export const getLnbListApi = async ({ paths }) => {
+export const getCompanyLnbListApi = async ({ paths }) => {
   const { parId } = paths;
   return axiosInstance.get(`/auth-group/companies/gnb/${parId}/lnb-list`)
     .then(response => {
@@ -106,4 +106,13 @@ export const getUserListOfAuthApi = async ({ paths }) => {
   }).catch(error => {
     throw error;  // 혹은 적절한 오류 응답을 반환하세요.
   });
+}
+
+export const addAuthApi = async ({ data }) => {
+  return axiosInstance.post(`/auth-group/auth`,data)
+  .then(response => {
+    return 
+  }).catch(error => {
+    throw error;
+  })
 }

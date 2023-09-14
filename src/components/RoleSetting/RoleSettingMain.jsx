@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from 'react'
-import AuthGroupSection from './AuthGroupSection';
-import MenuTreeTop from './MenuTreeTop';
 import styled  from 'styled-components';
-import MenuOfAuthEditor from './MenuOfAuthEditor';
 import Line from '../Commons/Line';
-import UserListSection from './UserListSection';
-import MenuOfAuth from './MenuOfAuth';
+import MenuOfAuthEditor from './Menu/MenuOfAuthEditor';
+import UserListSection from './UserList/UserListSection';
+import MenuTreeTop from './Menu/MenuTreeTop';
+import AuthGroupSection from './AuthGroup/AuthGroupSection';
 
 export default function RoleSettingMain() {
   //여기서 Company누를 때 일어나는 상황 정하기

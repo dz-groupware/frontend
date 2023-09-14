@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react'
-import { getGnbListOfAuthApi, getLnbListOfAuthApi } from '../../api/authgroup';
-import { useFetchData } from '../../hooks/useFetchData';
+import { getGnbListOfAuthApi, getLnbListOfAuthApi } from '../../../api/authgroup';
 import MenuItem from './MenuItem';
 import styled from 'styled-components';
+import { useFetchData } from '../../../hooks/useFetchData';
 
 export default function MenuOfAuth({ authId }) {
   const { data, isLoading, setShouldFetch, error } = useFetchData(getGnbListOfAuthApi,{

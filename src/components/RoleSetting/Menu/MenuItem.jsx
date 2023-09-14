@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import styled from 'styled-components';
-import { useFetchData } from '../../hooks/useFetchData';
 import { FiPlus, FiMinus } from 'react-icons/fi'
+import { useFetchData } from '../../../hooks/useFetchData';
 
 export default function MenuItem({ item, depth=1 ,hasMenu, fetchApi, paths}) {
   const [expanded, setExpanded] = useState(false);

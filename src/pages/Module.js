@@ -2,6 +2,7 @@ import { useParams } from "react-router-dom";
 
 import Sys from './Sys';
 import CompanyMgmtPage from "./CompanyMgmtPage";
+import EmployeeMgmtPage from "./EmployeeMgmtPage";
 import RoleSettingPage from "./RoleSettingPage";
 import { EmptyPage, Error, Error404 } from "./VIEW";
 

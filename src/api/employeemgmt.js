@@ -3,7 +3,7 @@ import { axiosInstance } from "../utils/axiosInstance";
 export const getEmployeeMgmtList = async () => {
     try {
         const response = await axiosInstance.get('/employeemgmt');
-        return response.data.data;
+        return response.data;
     } catch (error) {
       console.error("Error fetching company data:", error);
       alert("오류가 발생했습니다.");  // 사용자에게 오류 메시지를 표시합니다.

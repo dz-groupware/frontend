@@ -206,7 +206,6 @@ export function MenuDetail(props) {
 
   const updateMenu = async () => {
     const menu = new FormData();
-    console.log("type : ", props.on+2)
     try {
       menu.set('id', menuId);
       menu.set('parId', parId === "" ? 0 : parId);
@@ -233,8 +232,7 @@ export function MenuDetail(props) {
     setParName(props.value['parName']);
   }, [props.value]);
   
-  const handleParMenu = (value) => {
-    console.log('in handle : value :: ', value);
+  const handleParMenu = (value) => {;
     setParId(value['id']);
     setParName(value['name']);
   }

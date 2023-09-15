@@ -1,7 +1,6 @@
 import { axiosInstance } from '../utils/axiosInstance';
    
 export function orgTreeApi(type = "", compId = "", deptId = ""){  
-  console.log(type," : ",compId," : ",deptId);
     return axiosInstance.get(
         `/modal/org/tree`,{
             params: {

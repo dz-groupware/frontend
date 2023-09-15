@@ -111,7 +111,6 @@ export function CompList(props) {
   const [subItem, setSubItem] = useState([]);
 
   function handleItem() {
-    console.log(props);
     if (props.value['type'] === 'comp') {
       props.value['id'] = ""
     }
@@ -144,7 +143,6 @@ export function DeptTree(props) {
   const [subItem, setSubItem] = useState([]);
 
   function handleItem() {
-    console.log(props);
     if (props.value['type'] === 'comp') {
       props.value['id'] = ""
     }

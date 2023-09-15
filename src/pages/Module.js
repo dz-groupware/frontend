@@ -5,6 +5,7 @@ import CompanyMgmtPage from "./CompanyMgmtPage";
 import EmployeeMgmtPage from "./EmployeeMgmtPage";
 import RoleSettingPage from "./RoleSettingPage";
 import { EmptyPage, Error, Error404 } from "./VIEW";
+import Department from "./Department";
 
 export default function Module(){
   const { menuName } = useParams();
@@ -15,9 +16,14 @@ export default function Module(){
       );
   }    
   if (menuName === '회사관리'){
-      return(
-          <CompanyMgmtPage />
-      );
+    return(
+        <CompanyMgmtPage />
+    );
+  }
+  if (menuName === '부서관리'){
+    return(
+        <Department />
+    );
   }
   if (menuName === '사원관리'){
       return(

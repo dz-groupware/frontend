@@ -29,7 +29,6 @@ export function FavList(props) {
   const param = '즐겨찾기'
 
   const handleFavor = (menuId) => {
-    console.log(props.empId, menuId);
     GnbFavorDeleteApi(props.empId, menuId)
     .then(GnbFavorApi(props.empId)
     .then(res => dispatch(favor(res.data))));

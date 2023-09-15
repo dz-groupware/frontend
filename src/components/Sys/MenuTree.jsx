@@ -9,7 +9,6 @@ export default function MenuTree(props) {
 
   useEffect(() => {
     GnbListApi().then(res => {
-      console.log(res);
       setMenuTree(res.data);
     });
   }, []);
@@ -54,7 +53,6 @@ export function MenuItem(props) {
       .then(res => setSubItem(res.data));
     }
     setOpen(!open);
-    console.log('data : ', props.data);
     props.handleParMenu(props.data)
   }
 

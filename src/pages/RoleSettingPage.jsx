@@ -10,13 +10,19 @@ export default function RoleSettingPage() {
     <Container>
       <RoleSettingTop/>
       <Line color="#f5f5f5" height="2px" bottom={"20px"}/>
-      <LinkButon 
-        cursor="none"
-        onClick={(e)=>e.preventDefault()}
-        name="권한그룹"
-        selected={true}
-      />
-      <Line/>
+      <div style={{  marginLeft: "1.2rem" }} >
+        <LinkButon 
+          cursor="none"
+          onClick={(e)=>e.preventDefault()}
+          name="권한그룹"
+          selected={true}
+          padding={"0.1rem 1.2rem 0.5rem"}
+          showBorderBottom={true}
+          showBorderLeft={true}
+          showBorderRight={true}
+        />
+      </div>
+      <Line left={"1.2rem"}/>
       <RoleSettingMain/>
     </Container>
   );
@@ -25,6 +31,6 @@ export default function RoleSettingPage() {
 const Container = styled.div`
   display: flex;
   flex-direction: column;
-  height: 1200px; //높이 바꿔
-  border: 1px solid blue;
+  width: 100%;
+  height: 100%; //높이 바꿔
 `;

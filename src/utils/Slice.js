@@ -1,4 +1,5 @@
-import {createSlice} from '@reduxjs/toolkit';
+import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
+import { addAuthApi, getAuthGroupApi } from '../api/authgroup';
 //jane
 const companyMgmtInitialState = {
     companyInfo: {
@@ -58,28 +59,36 @@ const companyMgmtInitialState = {
     searchList: JSON.parse('[{"":""}]'),
     activeTab :'basic'
   }
-  
 
-
-
-
-
-export const  menuSlice = createSlice({
-    name: 'gnbMenu',
-    initialState: {
-        menu: JSON.parse('[{"empId": "","menuId": "","parId": "","name": "","iconUrl": ""}]'),
-        favor: JSON.parse('[{"empId": "","menuId": "","parId": "","name": "","iconUrl": ""}]'),
-        profileList: JSON.parse('[{"empId": "","menuId": "","parId": "","name": "","iconUrl": ""}]'),
-        empId: 12,
-        compId: 1,
-    },
-    reducers: {
-        menu:(state, action) => {state.menu = action.payload;},
-        favor:(state, action) => {state.favor = action.payload;},
-        profileList:(state, action) => {state.profileList = action.payload;},
-        empId:(state, action) => {state.empId = action.payload;},
-        compId:(state, action) => {state.compId = action.payload;},
+function getIdFormLocal(k, d){
+  try {
+    const value = localStorage.getItem(k);
+    if (value !== null){
+      return JSON.parse(value);
     }
+    return d;
+  } catch (error) {
+    return d;
+  }
+}
+
+const initialState = {
+  menu: JSON.parse('[{"empId": "","menuId": "","parId": "","name": "","iconUrl": ""}]'),
+  favor: JSON.parse('[{"empId": "","menuId": "","parId": "","name": "","iconUrl": ""}]'),
+  profileList: JSON.parse('[{"empId": "","menuId": "","parId": "","name": "","iconUrl": ""}]'),
+  empId: getIdFormLocal('empId', ""),
+  compId: getIdFormLocal('compId', ""),
+}
+export const  menuSlice = createSlice({
+  name: 'gnbMenu',
+  initialState,
+  reducers: {
+    menu:(state, action) => {state.menu = action.payload;},
+    favor:(state, action) => {state.favor = action.payload;},
+    profileList:(state, action) => {state.profileList = action.payload;},
+    newEmpId:(state, action) => {state.empId = action.payload;},
+    newCompId:(state, action) => {state.compId = action.payload;},
+  }
 });
 
 export const recentSlice = createSlice({
@@ -159,10 +168,50 @@ export const modalSlice = createSlice({
       }
     });
   }
-  
-  
+  export const fetchAuthGroups = createAsyncThunk(
+    'authGroup/fetchAuthGroups',
+    async (queryParams) => {
+      try {
+        const response = await getAuthGroupApi({ params: queryParams });
+        return response.data;
+      } catch (error) {
+        throw Error(error);
+      }
+    }
+  );
+  export const addAuthGroup = createAsyncThunk('authGroup/addAuthGroup', async (newAuthGroup, { dispatch }) => {
+    await addAuthApi({ data: newAuthGroup });
+    dispatch(fetchAuthGroups()); // 새 권한을 추가한 후 목록을 새로고침
+  });
+  export const authGroupSlice = createSlice({
+    name: 'authGroup',
+    initialState: {
+      data: [],
+      hasMore: true,
+      isLoading: false,
+      error: null,
+    },
+    reducers: {
+      fetchDataStart: (state) => {
+        state.isLoading = true;
+      },
+      fetchDataSuccess: (state, action) => {
+        state.isLoading = false;
+        state.data = [...state.data, ...action.payload.data];
+        state.hasMore = action.payload.hasMore;
+      },
+      fetchDataFailure: (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      },
+      resetData: (state) => {
+        state.data = [];
+        state.hasMore = true;
+      },
+    },
+  });
 
-export const {menu, favor, recent, profileList, empId, compId} = menuSlice.actions;
+export const {menu, favor, recent, profileList, newEmpId, newCompId} = menuSlice.actions;
 export const {load} = recentSlice.actions;
 export const {profile, search, alert, org, set} = modalSlice.actions;
 export const companyActions = companyMgmtSlice.actions;

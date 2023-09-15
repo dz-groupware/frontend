@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from 'react'
-import { styled } from 'styled-components'
-import { getGnbListApi } from '../../api/authgroup';
-import MenuItem from './MenuItem';
+import React from 'react'
+import styled from 'styled-components';
+import MenuItem from './Menu/MenuItem';
 import { useFetchData } from '../../hooks/useFetchData';
+import { getCompanyGnbListApi } from '../../api/authgroup';
 
-export default function MenuTreeMain() {
-  const { data, isLoading, error } = useFetchData( getGnbListApi);
+export default function RoleMenuEditor() {
+  const { data, isLoading, error } = useFetchData(getCompanyGnbListApi);
 
   if (isLoading) return <div>로딩중입니다!...</div>;
   if (error) return <div>{error}</div>;
@@ -23,8 +23,5 @@ export default function MenuTreeMain() {
     </Container>
   );
 }
-
 const Container = styled.div`
-  min-width: 300px;
 `;
-

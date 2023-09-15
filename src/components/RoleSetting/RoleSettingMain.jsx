@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from 'react'
-import AuthGroupSection from './AuthGroupSection';
-import MenuTreeTop from './MenuTreeTop';
 import styled  from 'styled-components';
-import MenuTreeMain from './MenuTreeMain';
-import SelectedAuthMenu from './SelectedAuthMenu';
 import Line from '../Commons/Line';
-import UserListSection from './UserListSection';
+import MenuOfAuthEditor from './Menu/MenuOfAuthEditor';
+import UserListSection from './UserList/UserListSection';
+import MenuTreeTop from './Menu/MenuTreeTop';
+import AuthGroupSection from './AuthGroup/AuthGroupSection';
 
 export default function RoleSettingMain() {
   //여기서 Company누를 때 일어나는 상황 정하기
@@ -31,12 +30,11 @@ export default function RoleSettingMain() {
         <StyledMenuTreeContainer $visible={visible} >
           <MenuTreeTop />
           <Line color="black"/>
-          <h2> 메뉴명 </h2>
-          {/* <MenuTreeMain /> */}
-          {activeAuthId ? <SelectedAuthMenu activeAuthId={activeAuthId}/> : <div style={{ height: '100%' }} />}
+          {/* {activeAuthId ? <AuthMappedMenu authId={activeAuthId}/> : <div style={{ height: '100%' }} />} */}
+          {activeAuthId ? <MenuOfAuthEditor authId={activeAuthId}/> : <div style={{ height: '100%' }} />}
         </StyledMenuTreeContainer>
         <StyledUserListContainer $visible={visible}>
-          <UserListSection activeAuthId={activeAuthId}/>
+          <UserListSection authId={activeAuthId}/>
         </StyledUserListContainer>
     </Container>
   );
@@ -45,19 +43,26 @@ export default function RoleSettingMain() {
 
 const Container = styled.div`
   display: flex;
-  height: 100%;
+  height: 80%;
   gap: 30px;
 `;
 const StyledAuthGroupContainer = styled.div`
-  width: 400px;
+  height: 100%;
 `;
 
 const StyledMenuTreeContainer = styled.div`
-  width: 800px;
-  visibility: ${props => props.$visible ? 'visible' : 'hidden'};
+  flex: 1;
+  min-width: 400px;
+  margin-top: 1.2rem;
+  height: 90%;
+  overflow-y: auto;
+  visibility: ${props =>   props.$visible ? 'visible' : 'hidden'};
 `;
 
 const StyledUserListContainer = styled.div`
   width: 400px;
+  height: 100%;
+  margin-top: 1.2rem;
+  margin-right: 1.2rem;
   visibility: ${props => props.$visible ? 'visible' : 'hidden'};
 `

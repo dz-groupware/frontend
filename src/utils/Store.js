@@ -1,5 +1,5 @@
 import { configureStore } from '@reduxjs/toolkit';
-import { menuSlice, recentSlice, modalSlice, companyMgmtSlice, employeeMgmtSlice } from './Slice';
+import { menuSlice, recentSlice, modalSlice, companyMgmtSlice, employeeMgmtSlice, authGroupSlice } from './Slice';
 
 const store = configureStore({
     reducer:{
@@ -8,6 +8,7 @@ const store = configureStore({
         modalSwitch:modalSlice.reducer,
         companyMgmt: companyMgmtSlice.reducer,
         employeeMgmt: employeeMgmtSlice.reducer,
+        authGroupSlice: authGroupSlice.reducer,
     }
 });
 

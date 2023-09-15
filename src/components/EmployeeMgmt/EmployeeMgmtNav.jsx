@@ -1,10 +1,10 @@
 import { useDispatch } from 'react-redux';
 import MgmtNav from '../Commons/MgmtNav';
 import { useEffect, useState } from 'react';
-import { employeeActions, hideForm, searchInfo } from '../../App';
 import { axiosInstance } from '../../utils/axiosInstance';
-import {styled} from 'styled-components';
-import NotificationInfo from '../Commons/NotificationInfo';
+import { styled } from 'styled-components';
+import { employeeActions } from '../../utils/Slice';
+import { getCompanyMgmtList } from '../../api/companymgmt';
 //회사 목록 선택시 보내는 Search 부분 api 변경해야함 선택 옵션도 달라져야함 
 
 
@@ -15,20 +15,20 @@ export default function EmployeeMgmtNav() {
   const [companyOptions, setCompanyOptions] = useState([]); // 회사 옵션을 담을 상태
 
 
+  const fetchCompanies = async () => {
+    try {
+        const companyList = await getCompanyMgmtList();
+        setCompanyOptions(companyList);
+    } catch (error) {
+        console.error("Error fetching company data:", error);
+    }
+};
+
   useEffect(() => {
-    // 회사 목록을 가져오는 함수
-    const fetchCompanies = async () => {
-      try {
-
-        const response = await axiosInstance.get('/companies/');
-        setCompanyOptions(response.data);
-      } catch (error) {
-        console.error("API Error:", error);
-      }
-    };
-
-    fetchCompanies(); // 함수 실행
+    fetchCompanies(); 
   }, []);
+
+
 
   const handleSearch = async () => {
     try {
@@ -50,18 +50,21 @@ export default function EmployeeMgmtNav() {
 
   const searchFields = (
     <>
-    
       <Label>회사</Label>
-      <Select
+      <Select style={{ width: 'fitContent' }}
         value={selectedOption}
         onChange={(e) => setSelectedOption(e.target.value)}
       >
-        <option value="" >선택</option>
-        {companyOptions && companyOptions.map((company, index) => (
-          <option key={index} value={company.code}>{company.name}</option>
-        ))}
-        
+        <option value="0">선택</option>
+
+
+        {Array.isArray(companyOptions) && companyOptions.length > 0 ? companyOptions.map((company) => (
+          <option key={company.id} value={company.id}>{company.name}</option>
+        )) : <option disabled>Loading companies...</option>}
+
       </Select>
+
+
       <Label>이름/ID/Mail ID</Label>
       <Input
         value={searchValue}
@@ -71,7 +74,7 @@ export default function EmployeeMgmtNav() {
   );
   return (
     <div>
-     
+
       <MgmtNav onSearch={handleSearch}>
         {searchFields}
       </MgmtNav>

@@ -11,6 +11,8 @@ const StyledButton = styled.button`
   border: 1px solid #E7E7E7;
   border-radius: 5px;
   cursor : pointer; 
+  white-space: nowrap;  // 줄바꿈 방지
+  
 `;
 
 export default StyledButton;

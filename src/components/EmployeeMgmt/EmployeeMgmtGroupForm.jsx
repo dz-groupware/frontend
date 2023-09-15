@@ -64,14 +64,14 @@ export default function EmployeeMgmtGroupForm() {
             <InputContainer>
                         <Label>회사</Label>
                         <Select
-        value={selectedOption}
+        value={selectedOption} 
         onChange={(e) => setSelectedOption(e.target.value)}
       >
-        <option value="" >선택</option>
+        {/* <option value="" >선택</option>
         {companyOptions && companyOptions.map((company, index) => (
           <option key={index} value={company.code}>{company.name}</option>
         ))}
-        
+         */}
       </Select>
                     </InputContainer>
 

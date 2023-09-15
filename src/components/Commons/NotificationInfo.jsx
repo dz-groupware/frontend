@@ -28,7 +28,8 @@ display: flex;
 justify-content: left;
 align-items: center;
 margin: 10px;
-padding: 10px;
+
+padding: 20px;
 width: 97%;
 background-color: rgb(214,236,248);
 border: 1px solid rgb(146,183,214);
@@ -37,5 +38,4 @@ color: black;
 height: 20px;
 font-weight: 500;
 font-size: 14px;
-  
 `;

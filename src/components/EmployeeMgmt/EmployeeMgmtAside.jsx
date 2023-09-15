@@ -12,12 +12,12 @@ export default function EmployeeMgmtAside() {
   const isSearchExecuted = useSelector(state => state.employeeMgmt.isSearchExecuted);
 
   useEffect(() => {
-    async function fetchCompanies() {
+    async function fetchEmployees() {
       const data = await getEmployeeMgmtList();
       setEmployeeDataList(data);
     }
 
-    fetchCompanies();
+    fetchEmployees();
   }, [searchedEmployeeDataList]);
   if (!employeeDataList) {
     return <div>Loading...</div>;

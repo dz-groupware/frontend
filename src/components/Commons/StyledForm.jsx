@@ -4,16 +4,21 @@ export const Container = styled.div`
     max-width: 95%;
     min-width: 95%;
     width: 100%;
-    margin: 0 auto;  // 중앙 정렬
+    margin: 0 auto;
     display: flex;
     flex-direction: column;
-    align-items: center;  // 자식 요소 중앙 정렬
+    align-items: center;
 `;
 
 export const InputContainer = styled.div`
     display: flex;
     border-bottom: 1px solid lightgrey;
     width: 100%;
+    align-items: center;
+    label {
+        display: flex;
+        align-items: center;
+    }
 `;
 
 export const HalfInputContainer = styled.div`
@@ -21,6 +26,7 @@ export const HalfInputContainer = styled.div`
     justify-content: space-between;
     width: 100%;
     border-bottom: none;
+
 `;
 
 export const Label = styled.div`
@@ -30,18 +36,25 @@ export const Label = styled.div`
     font-weight: bold;
     text-align: right;
     height:40px;
+    
 `;
 
 export const Input = styled.input`
     flex: 1;
     margin: 5px;
     border: 1px solid lightgrey;
+    height:30px;
+    align-items: center;
+    white-space: nowrap; 
+    overflow: hidden;
+    text-overflow: ellipsis;
 `;
 export const Select = styled.select`
     flex: 1;
     width: 100%;
     margin: 5px;
     border: 1px solid lightgrey;
+    height:30px;
 `;
 
 export const DoubleInputContainer = styled.div`
@@ -57,8 +70,8 @@ export const PrefixSelect = styled.select`
     border: 1px solid lightgrey;
 `;
 
-export const FormInput = ({ label, name, value, type = "text", maxLength, onChange, disabled, placeholder }) => (
-    <InputContainer>
+export const FormInput = ({ customStyle,label, name, value, type = "text", maxLength, onChange, disabled, placeholder }) => (
+    <InputContainer style={customStyle}>
         <Label>{label}</Label>
         <Input name={name} type={type} value={value} maxLength={maxLength} onChange={onChange} disabled={disabled} placeholder={placeholder} />
     </InputContainer>

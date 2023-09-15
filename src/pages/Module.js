@@ -18,6 +18,11 @@ export default function Module(){
           <CompanyMgmtPage />
       );
   }
+  if (menuName === '사원관리'){
+      return(
+          <EmployeeMgmtPage />
+      );
+  }
   if (menuName === '권한Role설정'){
     return(
         <RoleSettingPage/>

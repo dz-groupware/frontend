@@ -150,7 +150,6 @@ const NumberArea = styled.div`
   width: 100%;
   margin:10px;
   
-  
 `;
 const SelectBox = styled.select`
 &:focus {

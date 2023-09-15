@@ -45,6 +45,9 @@ export const Input = styled.input`
     border: 1px solid lightgrey;
     height:30px;
     align-items: center;
+    white-space: nowrap; 
+    overflow: hidden;
+    text-overflow: ellipsis;
 `;
 export const Select = styled.select`
     flex: 1;
@@ -67,8 +70,8 @@ export const PrefixSelect = styled.select`
     border: 1px solid lightgrey;
 `;
 
-export const FormInput = ({ label, name, value, type = "text", maxLength, onChange, disabled, placeholder }) => (
-    <InputContainer>
+export const FormInput = ({ customStyle,label, name, value, type = "text", maxLength, onChange, disabled, placeholder }) => (
+    <InputContainer style={customStyle}>
         <Label>{label}</Label>
         <Input name={name} type={type} value={value} maxLength={maxLength} onChange={onChange} disabled={disabled} placeholder={placeholder} />
     </InputContainer>

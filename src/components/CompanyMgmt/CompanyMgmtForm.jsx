@@ -15,8 +15,6 @@ import {
 import { companyActions } from '../../utils/Slice';
 import { addCompanyMgmt, getAllCompanyMgmtParList, modifyCompanyMgmt } from '../../api/companymgmt';
 
-//회사코드 입력값 로직 짜야함
-
 export default function CompanyMgmtForm() {
     const dispatch = useDispatch();
     const reduxCompanyInfo = useSelector(state => state.companyMgmt.companyInfo);
@@ -292,7 +290,7 @@ export default function CompanyMgmtForm() {
                 </HalfInputContainer>
             </HalfInputContainer>
 
-            <HalfInputContainer>
+            <HalfInputContainer style={{ borderBottom: "1px solid lightgrey" }}>
                 <Label>대표자번호</Label>
                 <PrefixSelect name="repTel1" value={info.repTel.split('-')[0] || "direct"} onChange={handleHyphenChange}>
                     <option value="direct">선택</option>

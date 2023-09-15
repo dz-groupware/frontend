@@ -7,6 +7,7 @@ import store from './utils/Store';
 import { Route, Routes } from 'react-router-dom';
 import Home from './pages/Home';
 import { Error } from './pages/VIEW';
+import EmployeeMgmtPage from './pages/EmployeeMgmtPage';
 
 //const queryClient = new QueryClient();
 

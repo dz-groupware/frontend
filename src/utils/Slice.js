@@ -27,30 +27,43 @@ const companyMgmtInitialState = {
   };
   
    const employeeMgmtInitialState = {
-    employeeInfo: {
+    employeeBasicInfo: {
       id: '',
       imageUrl:'',
       name: '',
       IdNum: '',
       gender: '',
-      accountYn: '',
+      accountYn: true,
       loginId: '',
       loginPw: '',
-      businessNum: '',
-      email: '',
       privEmail: '',
       mobileNumber: '',
       homeNumber: '',
       address: '',
       joinDate: '',
       resignationDate: '',
-      deletedYn: false
     },
+    employeeGroupInfo:{
+      
+      position:'',
+      id:'',
+      departmentName:'',
+      employeeId:'',
+      transferredYn:'',
+      joinDate:'',
+      leftDate:'',
+     },
     idForForm: null,
     isVisible: false,
-    searchList: JSON.parse('[{"":""}]')
+    searchList: JSON.parse('[{"":""}]'),
+    activeTab :'basic'
   }
   
+
+
+
+
+
 export const  menuSlice = createSlice({
     name: 'gnbMenu',
     initialState: {
@@ -110,7 +123,7 @@ export const modalSlice = createSlice({
   export const employeeMgmtSlice = createManagementSlice(employeeMgmtInitialState, 'employeeMgmt');
   
   function createManagementSlice(initialState, sliceName) {
-    // info의 키 이름을 동적으로 가져옵니다 (예: companyInfo 또는 employeeInfo).
+    // info의 키 이름을 동적으로 가져옵니다 (예: companyInfo 또는 employeeBasicInfo).
     const infoKey = Object.keys(initialState).find(key => key.endsWith('Info'));
   
     return createSlice({
@@ -130,6 +143,7 @@ export const modalSlice = createSlice({
             ? { ...state[infoKey], ...action.payload[infoKey] } // 수정
             : { ...initialState[infoKey] }; // 수정
           state.idForForm = action.payload ? action.payload[infoKey].id : null;
+          state.activeTab = initialState.activeTab;
         },
         hideForm: (state) => {
           state.isVisible = false;
@@ -137,7 +151,11 @@ export const modalSlice = createSlice({
         },
         resetState: (state) => {
           return initialState;
-        }
+        },
+        setActiveTab: (state, action) => {
+          state.activeTab = action.payload;
+      }
+        
       }
     });
   }

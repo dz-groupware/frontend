@@ -54,6 +54,8 @@ export function searchAPI(formData) {
 
 
 export function saveMenuAPI(menu, type) {
+  console.log(menu.get('name'));
+  console.log(type);
   return axiosInstance.post(
     `/setting/menu?type=${type}`, menu
   )

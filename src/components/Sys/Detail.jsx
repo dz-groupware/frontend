@@ -202,14 +202,14 @@ export function MenuDetail(props) {
   const [enabledYN, setEnabledYn] = useState("");
   const [sortOrder, setSortOrder] = useState("");
   
-  const [value, setValue] = useState();
   const [modalOn, setModalOn] = useState(false);
 
   const updateMenu = async () => {
     const menu = new FormData();
+    console.log("type : ", props.on+2)
     try {
       menu.set('id', menuId);
-      menu.set('parId', value['id'] === "" ? 0 : value['id']);
+      menu.set('parId', parId === "" ? 0 : parId);
       menu.set('name', menuName);
       menu.set('enabledYN', enabledYN);
       menu.set('sortOrder', sortOrder);
@@ -233,6 +233,12 @@ export function MenuDetail(props) {
     setParName(props.value['parName']);
   }, [props.value]);
   
+  const handleParMenu = (value) => {
+    console.log('in handle : value :: ', value);
+    setParId(value['id']);
+    setParName(value['name']);
+  }
+
   return (
     props.on &&
     <DetailDiv>
@@ -300,7 +306,7 @@ export function MenuDetail(props) {
           </tr>
         </tbody>
       </table>
-      {modalOn && <MenuTree setModalOn={setModalOn} setValue={setValue} />}
+      {modalOn && <MenuTree setModalOn={setModalOn} handleParMenu={handleParMenu}/>}
     </DetailDiv>
   );
 

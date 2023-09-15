@@ -99,7 +99,7 @@ export default function Sys(){
       <FormArea>
         <MenuList value={gnbList} api={menuDetailHandler}/>
         <MenuTree>
-          <SearchTree id='searchForm'>
+          <SearchForm id="searchForm">
             <select name="gnbName">
               {
                 gnbList.map((a, i) => (
@@ -118,12 +118,15 @@ export default function Sys(){
                 <option value='general'>사용자메뉴</option>
               </select>
             </div>
-          </SearchTree>
-          <div>{
-            result.map((a, i) => (
-              <div onClick={() => {menuDetailHandler('menuDetail', a)}} key={a['name']+a['id']}>{a['name']}</div>
-              ))
-            }
+          </SearchForm>
+          <div>
+            <SearchResult>
+              {
+              result.map((a, i) => (
+                <div onClick={() => {menuDetailHandler('menuDetail', a)}} key={a['name']+a['id']}>{a['name']}</div>
+                ))
+              }          
+            </SearchResult>
           </div>
         </MenuTree>
         { detail[0] && <GnbDetail value={menuDetail} detailOff={detailOff} on={detail[0]} compId={compId}/>}
@@ -202,8 +205,9 @@ background-color: white;
 width: 400px;
 border: 1px solid rgb(171,172,178);
 color: black;
+
 `;
-export const SearchTree = styled.form`
+export const SearchForm = styled.form`
 padding: 5px;
 height: 100px;
 background-color: rgb(240,245,248);
@@ -246,5 +250,18 @@ min-width: 400px;
       background-color: white;
     }
   }
+}
+`;
+export const SearchResult = styled.form`
+overflow: scroll;
+height: 300px;
+&::-webkit-scrollbar {
+  display: none;
+}
+> div {
+  margin: 10px;
+  padding: 10px;
+  background-color: rgb(214,236,248);
+
 }
 `;

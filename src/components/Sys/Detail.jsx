@@ -196,11 +196,12 @@ export function GnbDetail(props) {
 
 export function MenuDetail(props) {
   const [menuId, setMenuId] = useState("");
-  const [parId, setParId] = useState("");
   const [menuName, setMenuName] = useState("");
+  const [parId, setParId] = useState("");
+  const [parName, setParName] = useState("");
   const [enabledYN, setEnabledYn] = useState("");
   const [sortOrder, setSortOrder] = useState("");
-
+  
   const [value, setValue] = useState();
   const [modalOn, setModalOn] = useState(false);
 
@@ -229,6 +230,7 @@ export function MenuDetail(props) {
     setMenuName(props.value['name']);
     setEnabledYn(props.value['enabledYN']);
     setSortOrder(props.value['sortOrder']);
+    setParName(props.value['parName']);
   }, [props.value]);
   
   return (
@@ -247,9 +249,9 @@ export function MenuDetail(props) {
           <tr>
             <td>상위메뉴</td>
             <td>
-              <textarea value={value === undefined ? "" : value['name']} onClick={() => {setModalOn(true)}} readOnly></textarea>
-              <textarea name='parId' value={value === undefined ? "" : value['id']} style={{display: 'none'}} readOnly></textarea>
-              <textarea name='id' value={props.value === undefined ? "" : props.value['id']} style={{display: 'none'}} readOnly></textarea>
+              <textarea value={parName === undefined ? "" : parName} onClick={() => {setModalOn(true)}} readOnly></textarea>
+              <textarea className='readOnly' value={parId === undefined ? "" : parId} readOnly></textarea>
+              <textarea className='readOnly' value={menuId === undefined ? "" : menuId} readOnly></textarea>
             </td>
           </tr>
           <tr>
@@ -355,6 +357,11 @@ height: calc(100% - 151px);
             margin: 5px;
           }
         }  
+      }
+      > td {
+        > .readOnly{
+          display: none;
+        }
       }
     }
     > :nth-child(4) {

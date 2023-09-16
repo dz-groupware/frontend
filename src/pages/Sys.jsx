@@ -82,8 +82,8 @@ export default function Sys(){
   return (
     <Module>
       <Nav>
-        <div id ='title'>메뉴설정</div>
-        <div id ='btn'>
+        <div id ='menuTitle'>메뉴설정</div>
+        <div id ='menuBtn'>
           <button>변경이력</button>
           <button onClick={() => {menuDetailHandler('newGnb', '')}}>대메뉴추가</button>
           <button onClick={() => {menuDetailHandler('newMenu', '')}}>메뉴추가</button>
@@ -150,14 +150,14 @@ color: black;
 width: 100%;
 justify-content: space-between;
 
-> #title {
+> #menuTitle {
   margin: 10px;
   margin-left: 20px;
   font-size: large;
   font-weight: bold;
   color: rgb(32,35,44);
 }
-> #btn {
+> #menuBtn {
   display: flex;
   margin-top: 5px;
   > * {

@@ -1,80 +1,95 @@
 import { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
-import { addDepartment } from '../api/department';
 
-import { getDepartemnt, getBasicDetailById } from '../api/department';
-import {  AiOutlineInfoCircle, AiOutlineSearch } from 'react-icons/ai';
+import { getDepartemnt, saveAll, getOptionCompList, findDeptNameAndCode } from '../api/department';
+import { FavorApi } from '../api/menu';
+import {  AiOutlineInfoCircle, AiOutlineSearch, AiFillStar, AiOutlineStar } from 'react-icons/ai';
+
+import DeptDetail from '../components/Department/DeptDetail';
+import DeptItem from '../components/Department/DeptItem';
+
 
 export default function Department() {
   const [deptId, setDeptId] = useState('');
-  const [detailType, setDetailType] = useState('basic');
+  const [newDeptId, setNewDeptId] = useState('');
+  const [detailType, setDetailType] = useState(false);
   const [detail, setDetail] = useState('');
   const [result, setResult] = useState(JSON.parse('[{"code":"KQ1D9A8", "name":"시스템 개발팀"}, {"code":"8S22K9X", "name":"데이터 분석팀"}]'));
+  const [detailEmp, setDetailEmp] = useState(JSON.parse('[{"":""}]'));
+  const [modalSaveAll, setModalSaveAll] = useState(false);
 
-  const [form, setForm] = useState([]);
+  
+  const [form, setForm] = useState(JSON.parse('[]'));
 
   const isModified = useRef(false);
 
-  // 더미 데이터
-  const gnbList = JSON.parse('[{"code":"KQ1D9A8", "name":"시스템 개발팀"}, {"code":"8S22K9X", "name":"데이터 분석팀"}]');
+  const [re, setRe] = useState(false);
+  const [favor, setFavor] = useState(false);
+  const [compList, setCompList] = useState(JSON.parse('[]'));
 
-  console.log("deptId : ", deptId);
+  const [ status, setStatus ] = useState('');
+  // 나중에 수정될 부분
+  const menuId = 6;
+  console.log("newDeptId, deptId : ", newDeptId, deptId);
   console.log("form : ", form);
-  console.log(detail);
+
+  // 부서 리스트를 받아옴
+  // re로 바뀌도록 했는데 안되고 있는 상태
   useEffect(() => {
-    getDepartemnt().then(res => {
-      console.log(res.data);
-      setResult(res.data);
-    });
-  }, []);
+    const loadDeptList = async () => {
+      try {
+        const res = await getDepartemnt();
+        setResult(res.data);
+      } catch (error) {
+        console.log(error);
+      }
+    }
+    loadDeptList();
+    FavorApi('load', menuId).then(res => {setFavor(res.data)});
+    getOptionCompList().then(res => setCompList(res.data));
+  }, [re]);
 
-  // 선택한 부서가 바뀔 때, 
-  useEffect(() => {
+  // 일괄 등록 
+  const hadleSaveAll = () => {
     
-    const updateFormDataById = (id, newData) => {
-      setForm((prev) => {
-        const checkForm = prev.some(item => item.id === id);
-
-        // 저장된 적 없으면 추가
-        if(!checkForm){
-          addFormData();
-          return prev;
-        }
-
-        // 저장된 적 있으면 수정
-        return prev.map(item => item.id === id ? {status: "modify",  ...item, ...newData } : item);
-    });
-
-    const addFormData = () => {   
-      console.log("request deptId : ", deptId);
-      getBasicDetailById(deptId).then(res => {
-        const newFormData = { id: res.data.id, status: "added", ...res.data }; // 현재의 타임스탬프를 id로 사용
-        setForm((prev) => [...prev, newFormData]);
-        setDetail(res.data);
-        console.log("request done");
-      });    
-    };
-
-
-    
+    saveAll(form);
   }
-  if(deptId !== ""){
-    console.log("here")
-    updateFormDataById(deptId, detail);     
-    setDetail(detail); 
+
+  // 추가
+  const handleAddForm = () => {
+    setNewDeptId(0);
+    setDetailType('basic');
   }
-    // deptId 다른 부서 상세 페이지로 이동할 때, 이전까지 작성한 내용을 저장하기 위해서
-  }, [deptId]);
+
+    // 즐겨찾기 추가/삭제 요청
+    function FavorHandler(){
+      if (favor) {
+        // 즐겨찾기가 되어 있으면 삭제 요청
+        FavorApi('off', menuId).then(() => {
+        setFavor(!favor);
+      });
+    } else {
+      // 즐겨찾기가 안되어 있으면 즐겨찾기 추가 요청
+      FavorApi('on', menuId).then(() => {
+        setFavor(!favor);
+      });
+    }
+  }
+
+  const hadleSearch = () => {
+    const fd = new FormData(document.getElementById('deptSearchForm'));
+    findDeptNameAndCode(fd.get('searchOption'), fd.get('searchText')).then(res => setResult(res.data));
+  }
 
   return (
     <ContentDept>
       <DeptTitle>
         <div id="deptTitle">부서관리</div>
         <div id = "deptBtn">
-          <button onClick={() => {}}>일괄등록</button>
-          <button onClick={() => {}}>추가</button>
+          <button onClick={() => {setModalSaveAll(true); setNewDeptId(-1);}}>일괄등록</button>
+          <button onClick={handleAddForm}>추가</button>
           <button onClick={() => {}}>변경이력</button>
-          <button onClick={() => {}}>즐겨찾기</button>&nbsp;
+          <div onClick={FavorHandler}>{favor ? <AiFillStar /> : <AiOutlineStar/>}</div>
         </div>
       </DeptTitle>
       <Info>
@@ -85,15 +100,15 @@ export default function Department() {
       <DetailArea>
         <SearchArea>
           <SearchForm id="deptSearchForm">
-            <select>
+            <select name='searchOption'>
               {
-                gnbList.map((a, i) => (
-                  <option key={a['name']+a['id']} id='gnbName' value={a['name']}>{a['name']}</option>
+                compList.map((a, i) => (
+                  <option key={a['name']+a['compId']} value={a['compId']}>{a['name']}</option>
                 ))
               }
             </select>
-            <input placeholder='코드/사업장/부서명을 입력하세요'/>
-            <AiOutlineSearch onClick={() => {}}/>
+            <input name='searchText' placeholder='코드/사업장/부서명을 입력하세요'/>
+            <AiOutlineSearch onClick={hadleSearch}/>
           </SearchForm>
           <SearchTree>
             <div id='SearchSortOrder'>
@@ -107,124 +122,73 @@ export default function Department() {
             <div id='SearchResult'>
               {
                 result.map((a, i) => (
-                  <DeptItem key={a['name']+a['id']} setDetailType={setDetailType} value={a} detailType={detailType} setDeptId={setDeptId} setDetail={setDetail}/>
+                  <DeptItem key={a['name']+a['id']} setNewDeptId={setNewDeptId} setDetailType={setDetailType} value={a} detailType={detailType} setDeptId={setDeptId} setDetail={setDetail} setStatus={setStatus}/>
                 ))
               } 
             </div>
           </SearchTree>
         </SearchArea>
-        <DeptDetail detailType={detailType} setDetail={setDetail} deptId={deptId} detail={detail} isModified={isModified}/>
+        <DeptDetail detailType={detailType} setDeptId={setDeptId} setDetailEmp={setDetailEmp}
+        deptId={deptId} detail={detail} isModified={isModified} newDeptId={newDeptId}
+        empList={detailEmp} setDetailType={setDetailType} form={form} setForm={setForm} 
+        setRe={setRe} status={status} setStatus={setStatus}/>
       </DetailArea>
+      {modalSaveAll && <DetailSaveAll form={form} setModalSaveAll={setModalSaveAll}/>}
     </ContentDept>
-  )
-}
-function DeptDetail(props){
-  const handleAddDept = () => {
-    // 현재 수정 정보 저장
-    const dept = new FormData(document.getElementById('basic'));
-    addDepartment(dept).then();
-  }
-  const handleDelDept = () => {
-    // 현재 수정 정보 저장
-    //setDetail('');
-    // 수정 중이던 (일괄변경 : form 에서 detail에서 모두 삭제)
-  }
-  return (
-    <>
-      {
-        props.detailType &&
-        <Content>
-        <DetailTitle>
-        <div>상세정보</div>
-        <div>
-          <button onClick={handleAddDept}>저장</button> 
-          <button onClick={handleDelDept}>삭제</button> 
-          <div>|</div>
-          <div onClick={() => props.setDetailType(false)}>X</div>
-        </div> 
-      </DetailTitle>
-      <DetailType>
-        <div className={props.detailType === 'basic' ? 'on' : 'off'} onClick={() => props.setDetailType('basic')}>기본 정보</div>
-        <span>|</span>
-        <div className={props.detailType === 'emp'  ? 'on' : 'off'} onClick={() => props.setDetailType('emp')}>부서원 정보</div>
-      </DetailType>
-
-      {props.detailType === 'basic' ? <DeptDetailBasic detail={props.detail} isModified={props.isModified}/> : null}
-      {props.detailType === 'emp' ? <DeptDetailEmp detail={props.detail} /> : null}
-      </Content>
-      }
-    </>
-  )
-}
-
-function DeptItem(props){
-  console.log(props.value);
-
-  const handleDetail = () => {
-    // 원래 id가 맞음
-    //    props.setDeptId(props.value['code']);
-    props.setDeptId(props.value['id']);
-    props.setDetailType('basic');
-  }
-
-  return (
-    <>
-      <div onClick={handleDetail} >
-        {props.value['code']}.{props.value['name']}
-      </div>
-    </>
   );
 }
 
-function DeptDetailBasic(props){
-  
-
-  // props.detail이 바뀌면 새로운 데이터 저장. isModified = false
-  // useEffect(() => {
-  //   // 새로운 데이터를 저장하기 전에, 이전 데이터 저장
-
-  //   // 새로운 데이터 저장
-
-  //   // 
-  //   isModified.current = false;
-  // }, [props.detail]);
-
-
-  const handleChange = () => {
-    props.isModified.current = true;
-  }
-
-  console.log('in detailBasic');
-  console.log(props.detail);
-  console.log(props.isModified);
-
+function DetailSaveAll(props) {
   return (
-    <Detail>
-      <BasicForm>
+    <ModalBackdrop onClick={() => props.setModalSaveAll(false)}>
+      <ModalView onClick={(e) => e.stopPropagation()}>
+        <div id='saveAllTitle'>
+        <div>일괄저장</div>
+        <button>확인</button>
+          <span onClick={() => props.setModalSaveAll(false)}>x</span>
+        </div>
+        <FormArea>
+          <div>
+          {
+            props.form.map((a, i) => (
+              <FormList value={a} setModalSaveAll={props.setModalSaveAll} key={a['name']+'gnb'}/>
+            ))
+          }
+          </div>
+        </FormArea>
+      </ModalView>
+    </ModalBackdrop>
+  );
+}
+
+function FormList(props) {
+  return (
+    <BasicForm>
+      <div style={{display: 'flex'}}><div>*모든 필드를 채워주세요</div> ...<div>삭제</div></div>
         <form id='basic'>
         <table>
           <tr>
             <td>상위부서</td>
-            <td colspan="3">
-              <input name="parId" value={props.detail['parId']} onChange={handleChange}/>(모달)
+            <td colSpan="3">
+              <textarea value={props.value['parName']} readOnly></textarea>
             </td>
           </tr>
           <tr>
             <td>부서코드</td>
-            <td colspan="3">
-              <input name="code" value={props.detail['code']} />
+            <td colSpan="3">
+              <input name="code" value={props.value['code']} />
             </td>
           </tr>
           <tr>
             <td>부서명</td>
-            <td colspan="3">
-              <input name="name" value={props.detail['name']} />
+            <td colSpan="3">
+              <input name="name" value={props.value['name']} />
             </td>
           </tr>
           <tr>
             <td>부서약칭</td>
-            <td colspan="3">
-              <input name="abbr" value={props.detail['abbr']} />
+            <td colSpan="3">
+              <input name="abbr" value={props.value['abbr']} />
             </td>
           </tr>
           <tr>
@@ -232,13 +196,15 @@ function DeptDetailBasic(props){
               사용여부
             </td>
             <td className="data">
-              <input name='enabledYn' value="true" type='radio'/>사용<input name='enabledYn' value="false" type='radio' checked={props.detail['enabledYn'] === true ? true: false} />미사용
+              <input name='enabledYn' value="true" type='radio' checked={props.value['enabledYn'] === 'true' || props.value['enabledYn'] === true }  readOnly/>사용
+              <input name='enabledYn' value="false" type='radio' checked={props.value['enabledYn'] === 'false' || props.value['enabledYn'] === false} readOnly/>미사용
             </td>
             <td className="field">
               관리부서
             </td>
             <td className="data">
-              <input name='managementYn' value="true" type='radio'/>설정<input name='managementYn' value="false" type='radio'/>미설정
+              <input name='managementYn' value="true" type='radio' checked={props.value['managementYn'] === 'true' || props.value['managementYn'] === true}  readOnly/>설정
+              <input name='managementYn' value="false" type='radio' checked={props.value['managementYn'] === 'false' || props.value['managementYn'] === false} readOnly />미설정
             </td>
           </tr>
           <tr>
@@ -246,49 +212,22 @@ function DeptDetailBasic(props){
               조직도 표시
             </td>
             <td className="data">
-              <input name='includedYn' value="true" type='radio'/>표시<input name='includedYn' value="false" type='radio'/>미표시
+              <input name='includedYn' value="true" type='radio' checked={props.value['includedYn'] === 'true' || props.value['includedYn'] === true} readOnly />표시
+              <input name='includedYn' value="false" type='radio' checked={props.value['includedYn'] === 'false' || props.value['includedYn'] === false} readOnly />미표시
             </td>
             <td className="field">
               정렬
             </td>
             <td className="data">
-              <input name='sortOrder' value={props.detail['sortOrder']} />
+              <input name='sortOrder' type="number" value={props.value['sortOrder']} />
             </td>
           </tr>
         </table>
         </form>
       </BasicForm>
-    </Detail>
   )
 }
 
-function DeptDetailEmp(){
-  const empList = JSON.parse('[{"deptName":"부서명1", "position":"직책1","empName":"사원명1","sortOrder":"1"}, {"deptName":"부서명1", "position":"직책2","empName":"사원명2","sortOrder":"2"}]')
-  return (
-    <>
-      <BasicForm>
-        <table>
-          <tr className="detailEmpTitle">
-            <td>부서</td>
-            <td>직책</td>
-            <td>사용자명</td>
-            <td>정렬순서</td>
-          </tr>
-          {
-            empList.map((a, i) => (
-              <tr>
-                <td>{a['deptName']}</td>
-                <td>{a['position']}</td>
-                <td>{a['empName']}</td>
-                <td>{a['sortOrder']}</td>
-              </tr>
-            ))
-          }
-        </table>
-      </BasicForm>
-    </>
-  )
-}
 const ContentDept = styled.div`
 background-color: white;
 border: 1px solid rgb(171,172,178);
@@ -362,11 +301,6 @@ border: 1px solid gray;
   &::-webkit-scrollbar {
     display: none;
   }
-  > div {
-    margin: 10px;
-    padding: 10px;
-    background-color: rgb(214,236,248);
-  }
 }
 `;
 const Info = styled.div`
@@ -419,68 +353,60 @@ color: black;
   }
 }
 `;
-const Content = styled.div`
-display: block;
-width: 100%;
-height: 100%;
-min-width: 600px;
-color: black;
-margin: 10px;
+export const ModalBackdrop = styled.div`
+z-index: 1; 
+position: fixed;
+display : flex;
+justify-content : center;
+align-items : center;
+border-radius: 10px;
+top : 0;
+left : 0;
+right : 0;
+bottom : 0;
+width:100%;
+height:100%;
 `;
-const Detail = styled.div`
-display: block;
-width: 100%;
-height: 100%;
-min-width: 600px;
+export const ModalView = styled.div`
+position: absolute;
+align-items: center;
+flex-direction: column;
+border-radius: 5px;
+width: 1000px;
+height: 550px;
 color: black;
-`;
-const DetailTitle = styled.div`
-display: flex;
-justify-content: space-between;
-font-size: large;
-font-weight: bold;
-width: 100%;
-border-bottom: 2px solid gray;
-margin-bottom: 5px;
-> div {
-  padding: 5px;
+background-color: rgb(146,183,214);
+z-index:2;
+> #saveAllTitle {
   display: flex;
+  justify-content: space-around;
+  height: 30px;
+  font-size: large;
+  font-weight: bold;
+  margin: 20px;
 }
 `;
-const DetailType = styled.div`
-display: flex;
+export const FormArea = styled.div`
 width: 100%;
-border-bottom: 2px solid gray;
-margin-bottom: 5px;
-font-size: medium;
-font-weight: bold;
+height: 100%;
+padding: 10px;
 
-& .on {
-  color: blue;
-  border-bottom: 1px solid blue;
-}
-& .off {
-  color: black;
-}
 > div {
-  display: flex;
-  padding : 10px;
-}
-> span{
-  padding-top: 10px;
+  background-color: white;
+  width: 100%;
+  height: 450px;
+  overflow: scroll;
+  &::-webkit-scrollbar{
+    display: none;
+  }
 }
 `;
 const BasicForm = styled.div`
 width: 100%;
-height: calc(100% - 100px);
+height: 100%;
 > form {
-overflow: scroll;
-height: calc(100% - 100px);
-&::-webkit-scrollbar{
-  display: none;
-}
 > table {
-  min-width: 700px;
+  min-width: 500px;
   border-collapse: collapse;
   > tr {
     > td:nth-child(1) {
@@ -498,12 +424,17 @@ height: calc(100% - 100px);
       background-color:  white;
       color: gray;
       width: 80%;
-      min-width: 400px;
+      min-width: 350px;
       font-size: small;
       padding: 10px;
       text-align: left;
       border-top: 1px solid gray;
       border-bottom: 1px solid gray;
+    }
+    > td {
+      > .readOnly {
+        display: none;
+      }
     }
     }
   > tr {
@@ -529,28 +460,49 @@ height: calc(100% - 100px);
     }
   }
   }  
+}
 
+> .detailEmpBody {
+  overflow: scroll;
+height: calc(100% - 50px);
+&::-webkit-scrollbar{
+  display: none;
 }
 > table {
   width: 100%;
   min-width: 700px;
   border-collapse: collapse;
   text-align: center;
-  > .detailEmpTitle {
-      background-color: rgb(240,245,248);
-      width: 100%;
-      min-width: 400px;
-      font-size: large;
-      font-weight: bold;
-      padding: 10px;
-      border-top: 1px solid gray;
-      border-bottom: 1px solid gray;
-  }
-  > tr td {
-    padding: 10px;
-      border-top: 1px solid gray;
-      border-bottom: 1px solid gray;
 
+  > tr > td {
+    width: 25%;
+    min-width: 100px;
+    padding: 10px;
+    border-top: 1px solid gray;
+    border-bottom: 1px solid gray;
+  }
+}
+}
+> div > table {
+  width: 100%;
+  min-width: 700px;
+  border-collapse: collapse;
+  text-align: center;
+  > .detailEmpTitle { 
+    background-color: rgb(240,245,248);
+    width: 100%;
+    min-width: 400px;
+    font-size: large;
+    font-weight: bold;
+    padding: 10px;
+    border-top: 1px solid gray;
+    border-bottom: 1px solid gray;
+    height: 30px;
+    > td {
+      padding: 10px;
+      width: 25%;
+      min-width: 100px;
+    }
   }
 }
 `;

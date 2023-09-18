@@ -5,39 +5,33 @@ export function GnbApi(){
         `/setting/menu/gnb`
     )
 }
-
-export function FavorApi(type, empId, menuId){
-    if (empId !== undefined && empId !== null){
-        if (type === 'load') {
-            return axiosInstance.get(
-                `/setting/favor`,{
-                    params: {
-                        empId,
-                        menuId
-                    }
-                }
-            )
-        }
-        if (type === 'off') {
-            return axiosInstance.delete(
-                `/setting/favor`,{
-                    params: {
-                        empId,
-                        menuId
-                    }
-                }
-            )
-        }
-        if (type === 'on') {
-            return axiosInstance.post(
-                `/setting/favor`,{
-                        empId,
-                        menuId
-                }
-            )
-        }
-        return JSON.parse('[{"":""}]');
-    }
+export function FavorApi(type, menuId){
+  if (type === 'load') {
+      return axiosInstance.get(
+          `/setting/favor`,{
+              params: {
+                  menuId
+              }
+          }
+      )
+  }
+  if (type === 'off') {
+      return axiosInstance.delete(
+          `/setting/favor`,{
+              params: {
+                  menuId
+              }
+          }
+      )
+  }
+  if (type === 'on') {
+    return axiosInstance.post(
+      `/setting/favor`,{
+        menuId
+      }
+    )
+  }
+  return JSON.parse('[{"":""}]');
 }
 
 export function searchAPI(formData) {

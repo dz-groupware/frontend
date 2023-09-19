@@ -15,7 +15,7 @@ export function FavorApi(type, menuId){
           }
       )
   }
-  if (type === 'off') {
+  if (type === false) {
       return axiosInstance.delete(
           `/setting/favor`,{
               params: {
@@ -24,7 +24,7 @@ export function FavorApi(type, menuId){
           }
       )
   }
-  if (type === 'on') {
+  if (type === true) {
     return axiosInstance.post(
       `/setting/favor`,{
         menuId

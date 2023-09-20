@@ -29,25 +29,35 @@ export const getCountAuthGroupApi = async () => {
   }
 }
 
-export const getCompanyGnbListApi = async () => {
+export const getCompanyGnbListApi = async ({ params}) => {
+  const { enabledYn } = params;
   try {
-    const response = await axiosInstance.get(`/auth-group/companies/gnb-list`);
+    const response = await axiosInstance.get(`/auth-group/companies/gnb-list`,{
+      params:{
+        enabledYn,
+      }
+    });
     return response.data;
   } catch (error) {
     console.error(error);  // 상세 에러 정보 출력
     throw new Error('gnb를 받아올 수가 없습니다.');
-}
+  } 
 };
 
-export const getCompanyLnbListApi = async ({ paths }) => {
+export const getCompanyLnbListApi = async ({ paths, params }) => {
   const { parId } = paths;
-  return axiosInstance.get(`/auth-group/companies/gnb/${parId}/lnb-list`)
-    .then(response => {
-      return response.data;
-    }).catch(error => {
-      console.error('getLnbListApi 에러:', error);
-      throw new Error(`Auth group data could not be retrieved. ${error.message}`);
-    });;
+  const { enabledYn } = params;
+  return axiosInstance.get(`/auth-group/companies/gnb/${parId}/lnb-list`,{
+    params: {
+      enabledYn,
+    }
+  })
+  .then(response => {
+    return response.data;
+  }).catch(error => {
+    console.error('getLnbListApi 에러:', error);
+    throw new Error(`Auth group data could not be retrieved. ${error.message}`);
+  });;
 };
 
 export const getGnbListOfAuthApi = async ({ paths }) => {
@@ -111,8 +121,35 @@ export const getUserListOfAuthApi = async ({ paths }) => {
 export const addAuthApi = async ({ data }) => {
   return axiosInstance.post(`/auth-group/auth`,data)
   .then(response => {
-    return 
+    return response.data;
   }).catch(error => {
     throw error;
   })
+}
+
+
+export const modifyMappedMenuOfAuthApi = async ({ paths, data }) => {
+  const { authId } = paths;
+  return axiosInstance
+    .post(`/auth-group/auth/${authId}/menu-mappings`,data)
+    .then(response => {
+      return response;
+    })
+    .catch(error => {
+      throw error;
+    });
+}
+
+export const deleteAuthApi = async ({ paths }) => {
+  const { authId } = paths;
+  console.log('api호출');
+  return axiosInstance
+    .delete(`/auth-group/auth/${authId}`)
+    .then(response =>{
+      console.log(response)
+      return response;
+    })
+    .catch(error => {
+      throw error;
+    });
 }

@@ -33,6 +33,6 @@ const Container = styled.div`
     background-color: #5dc3fb;  
     border-color: #5dc3fb;  
   }
-  background-color: ${props => props.$isActive ? 'rgba(93, 195, 251, 0.7)' : 'transparent'};
-  border-color: ${props => props.$isActive ? 'rgba(121, 125, 241, 0.7)' : '#ccc'};
+  background-color: ${props => props.$isActive ? '#e6f4ff' : 'transparent'};
+  border-color: ${props => props.$isActive ? '#7BAAF1' : '#ccc'};
 `;

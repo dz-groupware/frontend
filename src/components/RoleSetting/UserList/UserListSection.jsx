@@ -5,10 +5,9 @@ import UserListItem from './UserListItem';
 import { getUserListOfAuthApi } from '../../../api/authgroup';
 
 export default function UserListSection({ authId }) {
-  console.log("UserListSection 렌더링", authId);
   const { data, isLoading, setShouldFetch, error } = useFetchData(getUserListOfAuthApi, {
     paths: { authId },  // paths 객체에 authId 추가
-    shouldFetch: authId !== null && authId !== undefined,
+    shouldFetch: false,
   });
   useEffect(() => {
     if(authId !== null && authId !== undefined) { // authId가 유효한지 검사

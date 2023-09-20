@@ -7,12 +7,12 @@ import ActionButton from '../../Commons/ActionButton';
 import { useFetchData } from '../../../hooks/useFetchData';
 import { getCountAuthGroupApi } from '../../../api/authgroup';
 
-export default function AuthGroupSection({ activeAuthId, setActiveAuthId}) {
+export default function AuthGroupSection({ activeAuthId, setActiveAuthId, refresh, isEditMode, handleItemClick}) {
   const rangeOptions = ['전체', '사용', '미사용'];  // 필터 옵션을 배열로 정의
   const orderOptions = [
-    { label: '필터', value: 'none' },
-    { label: '오래된순', value: 'authDashboardIdAsc' },
+    // { label: '필터', value: 'none' },
     { label: '최신순', value: 'authDashboardIdDesc' },
+    { label: '오래된순', value: 'authDashboardIdAsc' },
     { label: '권한명순', value: 'authNameAsc' },
     { label: '권한명역순', value: 'authNameDesc'},
   ];
@@ -77,10 +77,13 @@ export default function AuthGroupSection({ activeAuthId, setActiveAuthId}) {
       </GroupCountFilter>
       <Line color="#C9C9C9" height={"1px"} top={"5px"}/>
       <AuthGroupList 
+        refresh={refresh}
         activeAuthId={activeAuthId} 
         setActiveAuthId={setActiveAuthId} 
         orderBy={orderBy}
         searchTerm={searchTerm}
+        isEditMode={isEditMode}
+        handleItemClick={handleItemClick}
       />
     </Container>
   );

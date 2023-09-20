@@ -16,32 +16,33 @@ export default function LoginForm() {
   const [inputValid, setInputValid] = useState(false);
   // const loginAction = useLoginMutation(loginValue);
   const navigate = useNavigate();
-  const { data, isLoading, error, setData, setShouldFetch, statusCode } = useFetchData(loginApi,{data: {
+  const { data, isLoading, error, setData, setShouldFetch, status } = useFetchData(loginApi,{data: {
     loginId: loginValue.loginId,
     loginPw: loginValue.password,
   },shouldFetch:false});
 
   const handleInputChange = (e) => {
     setLoginValue({...loginValue, [e.target.name]: e.target.value})
+
+  }
+
+  const handleLoginAction = async (e) => {
+    e.preventDefault();
     setData({
       loginId: loginValue.loginId,
       loginPw: loginValue.password,
     });
-  }
-
-  const handleLoginAction = async (e) => {
     setShouldFetch(true);  // API 호출을 활성화
   };
 
   useEffect(()=>{
-    console.log("code,",statusCode);
-    if(statusCode===200){
+    if(status===202){
       navigate('/home',{state:{ menuId: "0" }});
     }
-  },statusCode);
+  },[status]);
 
   return (
-    <Container>
+    <StyledForm onSubmit={handleLoginAction}>
       <LoginText>로그인</LoginText>
       <SignInput
         name={"loginId"}
@@ -66,10 +67,10 @@ export default function LoginForm() {
       <SignButton
         onClickHandler={handleLoginAction} 
       />
-    </Container>
+    </StyledForm>
   )
 }
-const Container = styled.article`
+const StyledForm = styled.form`
   width: 80%;
   display: flex;
   flex-direction: column;

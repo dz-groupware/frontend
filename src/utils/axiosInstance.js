@@ -24,18 +24,18 @@ axiosInstance.interceptors.request.use(
 axiosInstance.interceptors.response.use(
   (response) => {
     // 응답에 대한 로직
-    const statusCode = response.status;
+    const status = response.status;
     const data = response.data;
 
-    return { statusCode, data };
+    return { status, data };
   },
   (err) => {
     // 오류 응답의 상태 코드와 본문을 얻으려면 err.response.status와 err.response.data를 확인해야 합니다.
     if (err.response) {
-      const errorStatusCode = err.response.status;
+      const errorStatus = err.response.status;
       const errorData = err.response.data;
 
-      return Promise.reject({ statusCode: errorStatusCode, data: errorData });
+      return Promise.reject({ status: errorStatus, data: errorData });
     }
 
     return Promise.reject(err);

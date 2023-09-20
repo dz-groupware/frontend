@@ -1,37 +1,57 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import styled  from 'styled-components';
 import Line from '../Commons/Line';
-import MenuOfAuthEditor from './Menu/MenuOfAuthEditor';
 import UserListSection from './UserList/UserListSection';
 import MenuTreeTop from './Menu/MenuTreeTop';
 import AuthGroupSection from './AuthGroup/AuthGroupSection';
+import MenuOfAuth from './Menu/MenuOfAuth';
+import MenuOfAuthEditor from './Menu/MenuOfAuthEditor';
 
-export default function RoleSettingMain() {
-  //여기서 Company누를 때 일어나는 상황 정하기
-  const [activeAuthId, setActiveAuthId] = useState(null);
+export default function RoleSettingMain({refresh, activeAuthId, setActiveAuthId, changeRefresh, isEditMode, setIsEditMode, handleItemClick}) {
   const [visible, setVisible] = useState(true);
+  const [isSaveClicked, setIsSaveClicked] = useState(false);
+  const [isDeleteClicked, setIsDeleteClicked] = useState(false);
+
+
   useEffect(() => {
-    console.log("RoleSettingMain컴포넌트의 activeAuthId" , activeAuthId);
     if (activeAuthId !== null) {
       setVisible(true);
     } else {
       setVisible(false);
     }
   }, [activeAuthId]);
-  
   return (
     <Container>
         <StyledAuthGroupContainer>
           <AuthGroupSection 
+            refresh={refresh}
             setActiveAuthId={setActiveAuthId} 
             activeAuthId={activeAuthId}
+            isEditMode={isEditMode}
+            handleItemClick={handleItemClick}
           />
         </StyledAuthGroupContainer>
         <StyledMenuTreeContainer $visible={visible} >
-          <MenuTreeTop />
+          <MenuTreeTop 
+            authId={activeAuthId} 
+            isEditMode={isEditMode} 
+            setIsEditMode={setIsEditMode} 
+            setIsSaveClicked={setIsSaveClicked}
+            setIsDeleteClicked={setIsDeleteClicked}
+          />
           <Line color="black"/>
-          {/* {activeAuthId ? <AuthMappedMenu authId={activeAuthId}/> : <div style={{ height: '100%' }} />} */}
-          {activeAuthId ? <MenuOfAuthEditor authId={activeAuthId}/> : <div style={{ height: '100%' }} />}
+          {isEditMode ? 
+            <MenuOfAuthEditor 
+              authId={activeAuthId} 
+              isSaveClicked={isSaveClicked} 
+              setIsSaveClicked={setIsSaveClicked} 
+              setIsEditMode={setIsEditMode}
+              isDeleteClicked={isDeleteClicked}
+              setIsDeleteClicked={setIsDeleteClicked}
+              changeRefresh={changeRefresh}
+            /> : activeAuthId ? 
+              <MenuOfAuth authId={activeAuthId}/> : <div style={{ height: '100%' }} />
+          }
         </StyledMenuTreeContainer>
         <StyledUserListContainer $visible={visible}>
           <UserListSection authId={activeAuthId}/>

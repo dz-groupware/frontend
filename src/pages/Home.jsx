@@ -1,10 +1,9 @@
-import React, { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import React, { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import { Route, Routes, useNavigate } from 'react-router-dom';
 
 import styled from 'styled-components';
 
-import { menu, favor, profileList } from '../utils/Slice';
 import { basicInfoApi } from '../api/gnb';
 
 import TB from './TB';
@@ -14,26 +13,26 @@ import Module from './Module';
 import { Main } from './VIEW';
 
 export default function Home() {
+  const [profile, setProfile] = useState(JSON.parse(`[{}]`));
+  const [gnb, setGnb] = useState(JSON.parse(`[{}]`));
+  const [favor, setFavor] = useState(JSON.parse(`[{}]`));
 
-  const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const empId = useSelector(state => state.gnbMenu.empId);
+  const empId = useSelector(state => state.loginInfo.empId);
 
   useEffect(() => {
+    console.log('in useEffect');
     const basicInfo = async() => {
       try{
-        await basicInfoApi(empId).then(response => {
-          dispatch(profileList(response.data.profile));
-          dispatch(menu(response.data.menu));
-          dispatch(favor(response.data.favor));            
+        await basicInfoApi(empId).then(res => {
+          setProfile(res.data.profile);
+          setGnb(res.data.menu);
+          setFavor(res.data.favor);           
         });
       } catch (error) {
         console.log(error);
-        if(error.message === 'UNAUTHORIZED'){
-          navigate('/login');
-        }
-        if(error.message === 'FORBIDDEN'){
+        if(error.message === 'UNAUTHORIZED' || error.message === 'FORBIDDEN'){
           navigate('/login');
         }
       }
@@ -41,12 +40,12 @@ export default function Home() {
     
     basicInfo();
 
-  }, [empId, dispatch, navigate]);
+  }, [empId, navigate]);
 
   return (
     <>
       <Content>
-        <TB />
+        <TB profile={profile} empId={empId}/>
         <RouteArea id='route'>
           <Routes>
             <Route path='/' element={<Main />} />
@@ -56,7 +55,7 @@ export default function Home() {
           </Routes>
         </RouteArea>
       </Content>
-      <GNB />
+      <GNB gnb={gnb} favor={favor} empId={empId}/>
     </>
   );
 }

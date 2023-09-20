@@ -15,7 +15,7 @@ export default function OrgModal(props){
   
   const [data, setData] = useState(JSON.parse('[]'));
   const [empList, setEmpList] = useState(JSON.parse('[]'));
-  const empId = useSelector(state => state.gnbMenu.empId);
+  const empId = useSelector(state => state.loginInfo.empId);
 
   const [searchOption, setSearchOption] = useState("all", "");
   const [searchText, setSearchText] = useState("");

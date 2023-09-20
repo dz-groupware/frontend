@@ -1,4 +1,3 @@
-import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 
 import styled from 'styled-components';
@@ -11,16 +10,13 @@ import { SearchModal, AlertModal, SetModal } from '../components/TB/Modal';
 import { useState } from 'react';
 
 
-export default function TB() {
+export default function TB({ profile, empId }) {
 
   const [profileModal, setProfileModal] = useState(false);
   const [searchModal , setSearchModal] = useState(false);
   const [alertModal, setAlertModal] = useState(false);
   const [orgModal, setOrgModal] = useState(false);
   const [setModal, setSetModal] = useState(false);
-
-  const profile = useSelector(state => state.gnbMenu.profileList);
-  const empId = useSelector(state => state.gnbMenu.empId);
 
   return (
     <TBArea>

@@ -5,8 +5,8 @@ import { AiOutlinePoweroff } from 'react-icons/ai';
 
 import PosiList from './PosiList';
 
-export default function ProfileModal(props) {
-  
+export default function ProfileModal({ profile, empId, profileModal, setProfileModal }) {
+  console.log()
 //  const navigate = useNavigate();
   const handleLogOut = () => {
 //    console.log('done')
@@ -14,11 +14,11 @@ export default function ProfileModal(props) {
   }
 
   const modalOff = () => {
-    props.setProfileModal(false);
+    setProfileModal(false);
   }
 
-  for (let profile of props.profile) {
-    if (profile['empId'] === props.empId) {
+  for (let prf of profile) {
+    if (prf['empId'] === empId) {
       return (
         <ModalBackdrop onClick={modalOff}>
           <ModalView onClick={(e) => e.stopPropagation()}>
@@ -28,15 +28,15 @@ export default function ProfileModal(props) {
               </div>
             </div>
             <div>  
-            <img src={profile['imageUrl']} alt='p_img' />
-            <div className='profile'>
-              <div id="profile_name">{profile['empName']}</div>
-              <div>{profile['compName']} / {profile['deptName']}</div>
-              <p>최근접속 : {profile['lastAccess']} || {profile['lastIp']}(현재: {profile['lastIp']})</p>
+            <img src={prf['imageUrl']} alt='p_img' />
+            <div className='prf'>
+              <div id="prf_name">{prf['empName']}</div>
+              <div>{prf['compName']} / {prf['deptName']}</div>
+              <p>최근접속 : {prf['lastAccess']} || {prf['lastIp']}(현재: {prf['lastIp']})</p>
             </div>
           </div>
             <div id='tableName'><div> • 회사정보</div></div>
-            <PosiList empId={profile['empId']} modalOff={modalOff}/>
+            <PosiList empId={prf['empId']} modalOff={modalOff} profile={profile}/>
           </ModalView>
         </ModalBackdrop>
       );
@@ -96,11 +96,11 @@ background-color: #ffffff;
     height:70px;
     margin-right: 20px;
   }
-  > .profile {
+  > .prf {
       > * {
         margin: 5px;
       }
-      > #profile_name {
+      > #prf_name {
         margin-top: 10px;
         font-size: 18px;
         font-weight: bold;

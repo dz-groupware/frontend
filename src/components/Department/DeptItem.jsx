@@ -5,19 +5,18 @@ import { getDepartmentById } from '../../api/department';
 import { AiFillProfile, AiFillFolderOpen, AiFillFolder, AiOutlineProfile } from 'react-icons/ai';
 
 
-export default function DeptItem(props){
+export default function DeptItem({ dept, id, setId, status, setStatus, setDetailEmp }){
   const [open, setOpen] = useState(false);
   const [subItem, setSubItem] = useState([]);
 
   const handleDetail = () => {
 
     if(subItem.length === 0) {
-      getDepartmentById(props.value['id']).then(res => setSubItem(res.data));
+      getDepartmentById(dept['id']).then(res => setSubItem(res.data));
     }
     setOpen(!open);
-    props.setNewDeptId(props.value['id']);
-    props.setDetailType('basic');
-    props.setStatus('modify');
+    setId({...id, newDeptId:dept['id']});
+    setStatus({...status, status:'modify'});
     console.log('set modify');
   }
 
@@ -27,19 +26,19 @@ export default function DeptItem(props){
       <div className='DeptTreeItem'>
       { 
         open ? 
-        (props.value['childNodeYn'] === true ? <AiFillProfile /> : < AiFillFolderOpen/>)
+        (dept['childNodeYn'] === true ? <AiFillProfile /> : < AiFillFolderOpen/>)
         :    
-        (props.value['childNodeYn'] === true ? <AiOutlineProfile /> : <AiFillFolder /> ) 
+        (dept['childNodeYn'] === true ? <AiOutlineProfile /> : <AiFillFolder /> ) 
       }
       <div onClick={handleDetail} >
-        {props.value['code']}.{props.value['name']}
+        {dept['code']}.{dept['name']}
       </div>
       </div>
       {
         open && subItem.map((a, i) => {
           if (a['id'] !== a['parId']) {
             return (
-              <DeptItem key={a['name']+a['id']} setDetailType={props.setDetailType} value={a} detailType={props.detailType} setDeptId={props.setDeptId} setDetail={props.setDetail} setNewDeptId={props.setNewDeptId} setStatus={props.setStatus}/>
+              <DeptItem dept={a} id={id} setId={setId} status={status} setStatus={setStatus} key={a['name']+a['id']} />
             )
           }
           return null;

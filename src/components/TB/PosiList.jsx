@@ -1,19 +1,14 @@
 import { useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useDispatch } from 'react-redux';
 
 import styled from 'styled-components';
 
 import { newEmpId, newCompId } from '../../utils/Slice';
 import { changeEmpApi } from '../../api/login';
 
-export default function PosiList(props) {
-
+export default function PosiList({ empId, modalOff, profile }) {
+  const [radioEmpId, setRadioEmpId] = useState(empId);
   const dispatch = useDispatch();
-
-  const datas = useSelector(state => state.gnbMenu.profileList);
-  const empId = useSelector(state => state.gnbMenu.empId);
-
-  const [radioEmpId, setRadioEmpId] = useState(props.empId);
 
   const handleRadio = (e) => {
     setRadioEmpId(e.target.value);
@@ -21,11 +16,12 @@ export default function PosiList(props) {
 
   const handleAnotherEmp = () => {
     changeEmpApi(radioEmpId).then(res => {
+      console.log("emp switch : ", res);
       dispatch(newEmpId(res.data['empId']));
       dispatch(newCompId(res.data['compId']));
       localStorage.setItem('empId', res.data['empId']);
       localStorage.setItem('compId', res.data['compId']);
-    }).then(props.modalOff);
+    }).then(modalOff);
   }
 
   return (
@@ -36,7 +32,7 @@ export default function PosiList(props) {
           <td>회사명</td><td>부서명(관리부서)</td><td>상태</td>
         </tr>
           {
-            datas.map((a, i) => (
+            profile.map((a, i) => (
               <tr key={a['empId']}>
                 <td>
                   <input type='radio' name='a' value={a['empId']} checked={String(radioEmpId) === String(a['empId'])} onChange={handleRadio}/>
@@ -54,7 +50,7 @@ export default function PosiList(props) {
         </tbody>
       </table>
       <div id='modal_btn'>
-        <ExitBtn onClick={props.modalOff}>취소</ExitBtn>
+        <ExitBtn onClick={modalOff}>취소</ExitBtn>
         <DoneBtn onClick={handleAnotherEmp}>확인</DoneBtn>
       </div>
     </ModalArea>

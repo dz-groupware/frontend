@@ -33,6 +33,7 @@ export function profileAPI(){
 
 
 export function searchMenuListAPI(menuId, compId) {
+  console.log('lnb request (menuId) : ', menuId);
   if(menuId !== undefined && menuId !== null && compId !== undefined && compId !== null) {
       return axiosInstance.get(
           `/menu/lnb`,{

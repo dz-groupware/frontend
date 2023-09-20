@@ -6,37 +6,25 @@ import { addDepartment,  deleteDepartment, getBasicDetailById, getEmpListByDeptI
 import DeptDetailBasic from './DeptDetailBasic';
 import DeptDetailEmp from './DeptDetailEmp';
 
-export default function DeptDetail(props){
-  const [id, setId] = useState();
-  const [parId, setParId] = useState();
-  const [code, setCode] = useState();
-  const [parName, setParName] = useState();
-  const [name, setName] = useState();
-  const [abbr, setAbbr] = useState();
-  const [sortOrder, setSortOrder] = useState();
-  const [enabledYn, setEnabledYn ] = useState(false);
-  const [managementYn, setManagementYn ] = useState(false);
-  const [includedYn, setIncludedYn ] = useState(false);
-  
-  const setDetail = (value) => {
-    if (value !== null && value !== undefined) {
-    setId(value['id'] === undefined || value['id'] === null ? "" : value['id']);
-    setParId(value['parId'] === undefined ? "" : value['parId']);
-    setCode(value['code'] === undefined ? "" : value['code']);
-    setName(value['name'] === undefined ? "" : value['name']);
-    setParName(value['parName'] === undefined ? "" : value['parName']);
-    setAbbr(value['abbr'] === undefined ? "" : value['abbr']);
-    setSortOrder(value['sortOrder'] === undefined ? "" : value['sortOrder']);
-    setEnabledYn(value['enabledYn'] === undefined ? "" : value['enabledYn']);
-    setManagementYn(value['managementYn'] === undefined ? "" : value['managementYn']);
-    setIncludedYn(value['includedYn'] === undefined ? "" : value['includedYn']);
-//    props.setStatus(value['status'] === undefined || value['status'] === null ? "" : value['status']);
-    props.isModified.current = false;
+export default function DeptDetail({ id, setId, status, setStatus, form, setForm, isModified, empList, setDetailEmp }){
 
-    }
-  };
+  console.log("empList: ", empList);
+  const initValue = {
+    parId: 0,
+    parName: "",
+    id: 0,
+    name: "",
+    abbr: "",
+    code: "",
+    sortOrder: 0,
+    enabledYn: true,
+    managementYn: false,
+    includedYn: true,
+  }
 
-  console.log("status : ", props.status);
+  const [value, setValue] = useState(initValue);
+
+  console.log("status : ", status.status);
   const handleAddDept = () => {
     // 이제까지 수정된 정보를 저장하고, 
 
@@ -44,11 +32,12 @@ export default function DeptDetail(props){
   }
   const handleDelDept = () => {
     // 삭제 요청
-    deleteDepartment(id);
+    deleteDepartment(id.newDeptId);
     // 현재 수정 정보 저장
     deletedForm();
-    setDetail('');
-    props.setRe(id);
+    setValue(initValue);
+    isModified.current = false;
+    // setStatus({...status, id});
     // 수정 중이던 (일괄변경 : form 에서 detail에서 모두 삭제)
   }
 
@@ -57,137 +46,116 @@ export default function DeptDetail(props){
     let itemFound = false;
 
     const addFormData = () => {   
-      getBasicDetailById(props.newDeptId).then(res => {
+      getBasicDetailById(id.newDeptId).then(res => {
         if (res !== null){
-          props.setForm((prev) => [...prev, res.data]);
-          setDetail(res.data);
-          props.setStatus("");  
+          setForm((prev) => [...prev, res.data]);
+          setValue({...value, ...res.data});
+          setStatus({...status, status:""});
         }
       });    
     }
 
-    console.log('in useEffect/ newDeptId : ',props.newDeptId);
-    console.log('switch deptId : ', props.deptId , "->", props.newDeptId);
+    console.log('in useEffect/ newDeptId : ',id.newDeptId);
+    console.log('switch deptId : ', id.deptId , "->", id.newDeptId);
     // 변경사항이 있다면 저장시킴.
-    if (props.isModified.current === true) {
-      const updateForm = props.form.map(item => {
+    if (isModified.current === true) {
+      const updateForm = form.map(item => {
         if(item !== null && item !== undefined) {
-        if (item.id === props.deptId) {
-          console.log('in form : ', props.deptId);
+        if (item.id === id.deptId) {
+          console.log('in form : ', id.deptId);
           // 수정된 적 있으면 실행
           
-          const detail = {
-            id: id,
-            name: name,
-            abbr: abbr,
-            code: code,
-            parId: parId,
-            sortOrder: sortOrder,
-            enabledYn: enabledYn,
-            managementYn: managementYn,
-            includedYn: includedYn,
-            status: props.status === "add" ? "add" : "modify"
-          };
-          console.log('detail : ', detail);
-          console.log('not modify must be add : ',props.status === "add" ? "add" : "modify");
-          console.log('status in detail', detail.status);
+          // const detail = {...value, status: props.status === "add" ? "add" : "modify" };
+          // console.log('detail : ', detail);
           // 바뀐 정보 가져오기
-          return detail;
+          return {...value, status: status.status === "add" ? "add" : "modify" };
         } 
         return item;
         }
       });
-      console.log("updateForm ", props.newDeptId, "=> ", updateForm)
-      props.setForm(updateForm);
+      console.log("updateForm ", id.newDeptId, "=> ", updateForm)
+      setForm(updateForm);
     };
 
 /////////////////// 위로는 변경 내용 저장 아래는 폼에 맞는 내용 추가 /////////////////
     // 새로운 부서 추가
-    if (props.newDeptId === "-2" || props.newDeptId === -2) {
-      setDetail('');
-      setId("0");
-      props.setStatus("add");
+    if (id.newDeptId === "-3" || id.newDeptId === -3) {
+      setValue(initValue);
+      setStatus({...status, status: "add"});
     } 
+    if (id.newDeptId > 0) {
     // 눌렀던 내용 다시 가져오기
-    props.form.forEach(item => {
+    form.forEach(item => {
       if (item !== null && item !== undefined){
-      if (item.id === props.newDeptId) {
-        setDetail(item);
-        itemFound = true;
-      }
+        if (item.id === id.newDeptId) {
+          setValue({...value, ...item});
+          itemFound = true;
+        }
       }
     });
-    console.log('in useEffect/ newDeptId : ',props.newDeptId);
-    // 누른 적 없던 내용 가져오기 
-    if (!itemFound &&  props.newDeptId !== undefined &&  props.newDeptId !== null &&  props.newDeptId !== "" &&  props.newDeptId !== "0" &&  props.newDeptId !== -1){
-      console.log('여기 들어오면 안됨')
-      addFormData();
-      props.setDeptId(props.newDeptId);
+      console.log('in useEffect/ newDeptId : ',id.newDeptId);
+      // 누른 적 없던 내용 가져오기 
+      if (!itemFound && id.newDeptId < 1){
+        console.log('여기 들어오면 안됨')
+        addFormData();
+        setId({...id, deptId: id.newDeptId});
+      }
     }
     // deptId 다른 부서 상세 페이지로 이동할 때, 이전까지 작성한 내용을 저장하기 위해서
 
     // 저장
-    if (props.newDeptId === -2){
-      // 현재 수정 정보 저장
-      const dept = new FormData();
-      dept.set('id', id);
-      dept.set('parId', parId);
-      dept.set('code', code);
-      dept.set('name', name);
-      dept.set('parName', parName);
-      dept.set('abbr', abbr);
-      dept.set('sortOrder', sortOrder);
-      dept.set('enabledYn', enabledYn);
-      dept.set('managementYn', managementYn);
-      dept.set('includedYn', includedYn);
-      dept.set('status', props.status === "add" ? "add" : "modify");
-      addDepartment(dept).then();
+    if (id.newDeptId === -2){
+      if (id.deptId === -2){
+        console.log("이미 저장된 내용입니다.");
+      } else {
+        // 현재 수정 정보 저장
+        const dept = new FormData();
+        dept.set(value);
+        addDepartment(dept).then();
+      }
     }
-  }, [props.newDeptId]);
+  }, [id.newDeptId]);
 
   useEffect(() => {
-    if (props.detailType === 'emp'){
-      getEmpListByDeptId(props.deptId).then(res => props.setDetailEmp(res.data));
+    console.log('for empList : ');
+    if (status.detailType === 'emp' && id.newDeptId > 0){
+      console.log('여기 들어왔음 : ', id.newDeptId);
+      getEmpListByDeptId(id.newDeptId).then(res => {
+        console.log("이겨 결과 : ", res);
+        setDetailEmp(res.data)});
     }
-  }, [props.detailType, props.newDeptId]);
-
+  }, [status, id, setDetailEmp]);
+console.log(status);
+console.log(id);
   const deletedForm = () => {
-    let newform = props.form.filter(item => item.id !== props.deptId);
-    props.setForm(newform);
+    let newform = form.filter(item => item.id !== id.deptId);
+    setForm(newform);
   }
 
   return (
     <>
       {
-        props.detailType &&
+        status.detailType &&
         <Content>
         <DetailTitle>
         <div>상세정보</div>
         <div>
-          <button onClick={() => {console.log('저장 클릭');props.setNewDeptId(-2)}}>저장</button> 
+          <button onClick={() => setId({...value, newDeptId:-2})}>저장</button> 
           <button onClick={handleDelDept}>삭제</button> 
           <div>|</div>
-          <div onClick={() => props.setDetailType(false)}>X</div>
+          <div onClick={() => setStatus({...status, detailType:false})}>X</div>
         </div> 
       </DetailTitle>
       <DetailType>
-        <div className={props.detailType === 'basic' ? 'on' : 'off'} onClick={() => props.setDetailType('basic')}>기본 정보</div>
+        <div className={status.detailType === 'basic' ? 'on' : 'off'} onClick={() => setStatus({...value, detailType:'basic'})}>기본 정보</div>
         <span>|</span>
-        <div className={props.detailType === 'emp'  ? 'on' : 'off'} onClick={() => props.setDetailType('emp')}>부서원 정보</div>
+        <div className={status.detailType === 'emp'  ? 'on' : 'off'} onClick={() => setStatus({...value, detailType:'emp'})}>부서원 정보</div>
       </DetailType>
 
-      {props.detailType === 'basic' ? 
-      <DeptDetailBasic 
-      id={id} setId={setId} parId={parId} setParId={setParId}
-      name={name} setName={setName} parName={parName} setParName={setParName} 
-      code={code} setCode={setCode} abbr={abbr} setAbbr={setAbbr}
-      enabledYn={enabledYn} setEnabledYn={setEnabledYn}
-      sortOrder={sortOrder} setSortOrder={setSortOrder} 
-      managementYn={managementYn} setManagementYn={setManagementYn} 
-      includedYn={includedYn} setIncludedYn={setIncludedYn}
-      detail={props.detail} isModified={props.isModified} handleAddDept={handleAddDept}/> : null}
-      {props.detailType === 'emp' ? 
-      <DeptDetailEmp detail={props.detail} empList={props.empList}/> : null}
+      {status.detailType === 'basic' ? 
+      <DeptDetailBasic value={value} setValue={setValue}isModified={isModified} handleAddDept={handleAddDept}/> : null}
+      {status.detailType === 'emp' ? 
+      <DeptDetailEmp empList={empList}/> : null}
       </Content>
       }
     </>

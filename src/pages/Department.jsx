@@ -11,26 +11,34 @@ import DetailSaveAll from '../components/Department/DetailSaveAll';
 
 
 export default function Department() {
-  const [deptId, setDeptId] = useState('');
-  const [newDeptId, setNewDeptId] = useState('');
-  const [re, setRe] = useState(false);
-  const [ status, setStatus ] = useState('');
-  const [detailType, setDetailType] = useState(false);
+  const [id, setId] = useState({
+    deptId: 0,
+    newDeptId: 0,
+  });
+
+  const [status, setStatus] = useState({
+    status: '',
+    detailType: false,
+    re: false,
+  });
+
   const [modalSaveAll, setModalSaveAll] = useState(false);
   const [favor, setFavor] = useState(false);
   const isModified = useRef(false);
 
   const [form, setForm] = useState(JSON.parse('[]'));
-  const [detail, setDetail] = useState('');
+
   const [result, setResult] = useState(JSON.parse('[{"code":"KQ1D9A8", "name":"시스템 개발팀"}, {"code":"8S22K9X", "name":"데이터 분석팀"}]'));
   const [detailEmp, setDetailEmp] = useState(JSON.parse('[{"":""}]'));
   const [compList, setCompList] = useState(JSON.parse('[]'));
+
   // 나중에 수정될 부분
   const menuId = 6;
   
   console.log("===========================");
-  console.log("newDeptId : ", newDeptId, " || deptId : ", deptId);
+  console.log("newDeptId : ", id.newDeptId, " || deptId : ", id.deptId);
   console.log("form : ", form);
+  console.log("empList : ", detailEmp);
 
   // re로 바뀌도록 했는데 안되고 있는 상태
   useEffect(() => {
@@ -48,7 +56,7 @@ export default function Department() {
     FavorApi('load', menuId).then(res => {setFavor(res.data)});
     // 검색 옵션 /회사리스트 조회
     getOptionCompList().then(res => setCompList(res.data));
-  }, [re]);
+  }, [status.re]);
 
   // 일괄 등록 
   // const hadleSaveAll = () => {
@@ -57,9 +65,9 @@ export default function Department() {
 
   
   const handleAddForm = () => {
-    // 추가 // 추가 상태 : 빈 form, 수정상태 "add"
-    setNewDeptId(-2);
-    setDetailType('basic');
+    // 추가 // 추가 상태 : 빈 form, 수정상태 "add" (-2)
+    setId({...id, newDeptId:-3});
+    setStatus({...status, detailType: 'basic'});
   }
 
     // 즐겨찾기 추가/삭제 요청
@@ -80,7 +88,7 @@ export default function Department() {
       <DeptTitle>
         <div id="deptTitle">부서관리</div>
         <div id = "deptBtn">
-          <button onClick={() => {setModalSaveAll(true); setNewDeptId(-1);}}>일괄등록</button>
+          <button onClick={() => {setModalSaveAll(true); setId({...id, newDeptId: -1});}}>일괄등록</button>
           <button onClick={handleAddForm}>추가</button>
           <button onClick={() => {}}>변경이력</button>
           <div onClick={FavorHandler}>{favor ? <AiFillStar /> : <AiOutlineStar/>}</div>
@@ -116,18 +124,19 @@ export default function Department() {
             <div id='SearchResult'>
               {
                 result.map((a, i) => (
-                  <DeptItem key={a['name']+a['id']} setNewDeptId={setNewDeptId} setDetailType={setDetailType} value={a} detailType={detailType} setDeptId={setDeptId} setDetail={setDetail} setStatus={setStatus}/>
+                  <DeptItem key={a['name']+a['id']} dept={a} id={id} setId={setId} status={status} setStatus={setStatus} setDetailEmp={setDetailEmp}/>
                 ))
               } 
             </div>
           </SearchTree>
         </SearchArea>
-        <DeptDetail detailType={detailType} setDeptId={setDeptId} setDetailEmp={setDetailEmp}
-        deptId={deptId} detail={detail} isModified={isModified} newDeptId={newDeptId}
-        empList={detailEmp} setDetailType={setDetailType} form={form} setForm={setForm} 
-        setRe={setRe} status={status} setStatus={setStatus} setNewDeptId={setNewDeptId}/>
+        <DeptDetail 
+        id={id} setId={setId} status={status} setStatus={setStatus}
+        form={form} setForm={setForm} isModified={isModified}
+        empList={detailEmp} setDetailEmp={setDetailEmp} />
       </DetailArea>
-      {modalSaveAll && <DetailSaveAll form={form} setModalSaveAll={setModalSaveAll}/>}
+      {modalSaveAll && 
+      <DetailSaveAll form={form} setModalSaveAll={setModalSaveAll}/>}
     </ContentDept>
   );
 }

@@ -47,7 +47,13 @@ export const useFetchData = (apiFunction, { params = {}, paths = {}, data = {}, 
       try {
         const response = await apiFunction({ params: currentParams, paths: currentPaths, data: currentData });
         setFetchedData(response.data);
-        setStatusCode(response.status);
+        // (수정 : 김현주) 
+        if (response !== undefined) {
+          // 로그인 실패가 아니면
+          setStatusCode(200);
+        } else {
+          setStatusCode(response.status);
+        }
       } catch (e) {
         setError(e);
       } finally {

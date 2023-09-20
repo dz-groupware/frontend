@@ -18,8 +18,8 @@ export default function Sys(){
   const [detail, setDetail] = useState([false, false]);
   const [menuDetail, setMenuDetail] = useState("");
 
-  const empId = useSelector(state => state.gnbMenu.empId);
-  const compId = useSelector(state => state.gnbMenu.compId);
+  const empId = useSelector(state => state.loginInfo.empId);
+  const compId = useSelector(state => state.loginInfo.compId);
   const menuId = 8;  // 현재 페이지 id 가져오기 (나중에)
 
     useEffect(() => {

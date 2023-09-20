@@ -13,7 +13,7 @@ export default function LNB() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const compId = useSelector(state => state.gnbMenu.compId);
+  const compId = useSelector(state => state.loginInfo.compId);
 
   const [lnbOpen, setLnbOpen] = useState(true);
   const [gnbId, setGnbId] = useState('');
@@ -109,7 +109,6 @@ export function MenuTree(props){
   function handleMenuItem() {
     try{
       if(subItem.length === 0) {
-        console.log('menuId: ',props.menu['id']);
         searchMenuListAPI(props.menu['id'], props.compId)
         .then(res => setSubItem(res.data));
       }

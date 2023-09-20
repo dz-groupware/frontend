@@ -3,44 +3,10 @@ import styled from 'styled-components';
 
 import { getDepartemnt, getDepartmentList } from '../../api/department';
 
-export default function DeptDetailBasic(props){
+export default function DeptDetailBasic({ value, setValue, isModified, handleAddDept }){
   const [modalOn, setModalOn] = useState(false);
-  const handleRadio = (e) => {
-    if (e.target.name === "enabledYn"){
-      props.setEnabledYn(e.target.value);
-    }
-    if (e.target.name === "managementYn"){
-      props.setManagementYn(e.target.value);
-    }
-    if (e.target.name === "includedYn"){
-      props.setIncludedYn(e.target.value);
-    }
-    props.isModified.current = true;
-  };
 
-  const handleChange = (e) => {
-    if (e.target.name === 'parId') {
-      props.setParId(e.target.value);
-    }
-    if (e.target.name === 'name') {
-      props.setName(e.target.value);
-    }
-    if (e.target.name === 'abbr') {
-      props.setAbbr(e.target.value);
-    }
-    if (e.target.name === 'code') {
-      props.setCode(e.target.value);
-    }
-    if (e.target.name === 'sortOrder') {
-      props.setSortOrder(e.target.value);
-    }
-    props.isModified.current = true;
-  }
 
-  const handleParDept = (value) => {
-    props.setParId(value['id']);
-    props.setParName(value['name']);
-  }
 
   return (
     <Detail>
@@ -50,28 +16,34 @@ export default function DeptDetailBasic(props){
           <tr>
             <td>상위부서</td>
             <td colSpan="3">
-              <textarea value={props.parName === undefined ? "" : props.parName} onClick={()=>setModalOn(true)} readOnly></textarea>
-              <textarea name='parId' className='readOnly' value={props.parId === undefined ? "" : props.parId} readOnly></textarea>
-              <textarea className='readOnly' value={props.Id === undefined ? "" : props.id} readOnly></textarea>
-
+              <textarea defaultValue={value.parName} onClick={()=>setModalOn(true)} readOnly></textarea>
             </td>
           </tr>
           <tr>
             <td>부서코드</td>
             <td colSpan="3">
-              <input name="code" value={props.code}  onChange={handleChange}/>
+              <input 
+              placeholder='부서코드를 입력하세요'
+              value={value.code}
+              onChange={e => setValue({...value, code: e.target.value})}/>
             </td>
           </tr>
           <tr>
             <td>부서명</td>
             <td colSpan="3">
-              <input name="name" value={props.name} onChange={handleChange} />
+              <input 
+              placeholder='부서명을 입력하세요'
+              value={value.name} 
+              onChange={e => setValue({...value, name: e.target.value})} />
             </td>
           </tr>
           <tr>
             <td>부서약칭</td>
             <td colSpan="3">
-              <input name="abbr" value={props.abbr} onChange={handleChange} />
+              <input 
+              placeholder='부서약칭을 입력하세요'
+              value={value.abbr} 
+              onChange={e => setValue({...value, abbr: e.target.value})} />
             </td>
           </tr>
           <tr>
@@ -79,15 +51,23 @@ export default function DeptDetailBasic(props){
               사용여부
             </td>
             <td className="data">
-              <input name='enabledYn' value="true" type='radio' checked={props.enabledYn === 'true' || props.enabledYn === true } onChange={handleRadio}/>사용
-              <input name='enabledYn' value="false" type='radio' checked={props.enabledYn === 'false' || props.enabledYn === false} onChange={handleRadio}/>미사용
+              <input name='enabledYn' value="true" type='radio' 
+              checked={value.enabledYn === true } 
+              onChange={e => setValue({...value, enabledYn: e.target.value})}/>사용
+              <input name='enabledYn' value="false" type='radio' 
+              checked={value.enabledYn === false} 
+              onChange={e => setValue({...value, enabledYn: e.target.value})}/>미사용
             </td>
             <td className="field">
               관리부서
             </td>
             <td className="data">
-              <input name='managementYn' value="true" type='radio' checked={props.managementYn === 'true' || props.managementYn === true} onChange={handleRadio}/>설정
-              <input name='managementYn' value="false" type='radio' checked={props.managementYn === 'false' || props.managementYn === false} onChange={handleRadio}/>미설정
+              <input name='managementYn' value="true" type='radio' 
+              checked={value.managementYn === true} 
+              onChange={e => setValue({...value, managementYn: e.target.value})}/>설정
+              <input name='managementYn' value="false" type='radio' 
+              checked={value.managementYn === false} 
+              onChange={e => setValue({...value, managementYn: e.target.value})}/>미설정
             </td>
           </tr>
           <tr>
@@ -95,27 +75,32 @@ export default function DeptDetailBasic(props){
               조직도 표시
             </td>
             <td className="data">
-              <input name='includedYn' value="true" type='radio' checked={props.includedYn === 'true' || props.includedYn === true} onChange={handleRadio}/>표시
-              <input name='includedYn' value="false" type='radio' checked={props.includedYn === 'false' || props.includedYn === false} onChange={handleRadio}/>미표시
+              <input name='includedYn' value="true" type='radio' 
+              checked={value.includedYn === true} 
+              onChange={e => setValue({...value, includedYn: e.target.value})}/>표시
+              <input name='includedYn' value="false" type='radio' 
+              checked={value.includedYn === false} 
+              onChange={e => setValue({...value, includedYn: e.target.value})}/>미표시
             </td>
             <td className="field">
               정렬
             </td>
             <td className="data">
-              <input name='sortOrder' type="number" value={props.sortOrder}  onChange={handleChange}  />
+              <input name='sortOrder' type="number" value={value.sortOrder}  
+              onChange={e => setValue({...value, sortOrder: e.target.value})}  />
             </td>
           </tr>
         </table>
         </form>
       </BasicForm>
       {
-        modalOn && <DeptModal setModalOn={setModalOn} handleParDept={handleParDept}/>
+        modalOn && <DeptModal value={value} setModalOn={setModalOn} setValue={setValue}/>
       }
     </Detail>
   )
 }
 
-function DeptModal(props){
+function DeptModal({ value, setModalOn, setValue }){
   const [item, setItem] = useState(JSON.parse('[{"":""}]'));
 
   useEffect(() => {
@@ -125,17 +110,17 @@ function DeptModal(props){
   }, []);
 
   return (
-    <ModalBackdrop onClick={() => props.setModalOn(false)}>
+    <ModalBackdrop onClick={() => setModalOn(false)}>
       <ModalView onClick={(e) => e.stopPropagation()}>
         <div id='menuTitle'>
           <div>상위부서</div>
-          <span onClick={() => props.setModalOn(false)}>x</span>
+          <span onClick={() => setModalOn(false)}>x</span>
         </div>
         <MenuArea>
           <div>
           {
             item.map((a, i) => (
-              <Item data={a} setModalOn={props.setModalOn} handleParDept={props.handleParDept} key={a['name']+'gnb'}/>
+              <Item value={value} data={a} setModalOn={setModalOn} setValue={setValue} key={a['name']+'gnb'}/>
             ))
           }
           </div>
@@ -146,34 +131,34 @@ function DeptModal(props){
   );
 }
 
-function Item(props) {
+function Item({ value, data, setModalOn, setValue }) {
   const [open, setOpen] = useState(false);
   const [subItem, setSubItem] = useState([]);
 
   useEffect(() => {
-    if(props.data !== undefined){
+    if(data !== undefined){
       setSubItem([]);
       setOpen(false);
     }
-  }, [props.data]);
+  }, [data]);
 
   const handleMenuItem = (a) => {
     if(subItem.length === 0) {
-      getDepartmentList(props.data['id'])
+      getDepartmentList(data['id'])
       .then(res => setSubItem(res.data));
     }
     setOpen(!open);
-    props.handleParDept(props.data);
+    setValue({...value, parId: data['id'], parName: data['name']});
   }
 
   return (
     <Menu>
       <div onClick={handleMenuItem}>
-        └{props.data['name']}
+        └{data['name']}
       </div>
       { subItem.length > 1 && open &&
         subItem.map((a, i) => (
-          <Item data={a} setModalOn={props.setModalOn} handleParDept={props.handleParDept} key={a['name']+'lnb'}/>
+          <Item value={value} data={a} setModalOn={setModalOn} setValue={setValue} key={a['name']+'lnb'}/>
         ))
       }
     </Menu>

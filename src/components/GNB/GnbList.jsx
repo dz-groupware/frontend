@@ -1,17 +1,15 @@
-import { useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom';
+
+import { GnbFavorDeleteApi, GnbFavorApi, } from '../../api/gnb';
+import { useEffect, useState } from 'react';
 
 import styled from 'styled-components';
 
-import {favor} from '../../utils/Slice';
-
-import { GnbFavorDeleteApi, GnbFavorApi, } from '../../api/gnb';
-
-export function MenuList(props) {
+export function MenuList({ gnb }) {
   return (
     <ListArea>
       {
-        props.value.map((a, i) => (
+        gnb.map((a, i) => (
           <StyledLink key={a['id']+i+'gnb'}>
             <Link to={{pathname: a['name']}} state= {{ menuId: a['id'] }}>
               {a["name"]}
@@ -23,21 +21,24 @@ export function MenuList(props) {
   );
 }
 
-
-export function FavList(props) {
-  const dispatch = useDispatch();
+export function FavList({ favor, empId }) {
+  const [favorList, setFavorList] = useState(JSON.parse(`[{}]`));
   const param = '즐겨찾기'
 
+  useEffect(()=> {
+    setFavorList(favor);
+  }, [empId]);
+
   const handleFavor = (menuId) => {
-    GnbFavorDeleteApi(props.empId, menuId)
-    .then(GnbFavorApi(props.empId)
-    .then(res => dispatch(favor(res.data))));
+    GnbFavorDeleteApi(empId, menuId)
+    .then(GnbFavorApi(empId)
+    .then(res => setFavorList(res.data)));
   }
 
   return (
     <ListArea>
       {
-        props.value.map((a, i) => (
+        favorList.map((a, i) => (
           <StyledLink key={a['id']+i+'fav'}>
             <Link to={{pathname: param+'/'+a['name']}} state= {{ menuId: a['id'] }}>
               {a["name"]}
@@ -50,11 +51,11 @@ export function FavList(props) {
   );
 }
 
-export function IconList(props) {
+export function IconList({ gnb }) {
   return (
     <>
       {
-        props.value.map((a, i) => (
+        gnb.map((a, i) => (
           <Link to={{pathname: a['name']}} state= {{ menuId: a['id'] }} key={a['id']+i+'icon'}>
             <img src={a['iconUrl']} alt={a['name']}/> 
           </Link>

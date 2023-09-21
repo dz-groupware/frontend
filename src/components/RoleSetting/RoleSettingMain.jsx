@@ -7,11 +7,10 @@ import AuthGroupSection from './AuthGroup/AuthGroupSection';
 import MenuOfAuth from './Menu/MenuOfAuth';
 import MenuOfAuthEditor from './Menu/MenuOfAuthEditor';
 
-export default function RoleSettingMain({refresh, activeAuthId, setActiveAuthId, changeRefresh, isEditMode, setIsEditMode, handleItemClick}) {
+export default function RoleSettingMain({refresh, activeAuthId, changeRefresh, isEditMode, setIsEditMode, handleItemClick}) {
   const [visible, setVisible] = useState(true);
   const [isSaveClicked, setIsSaveClicked] = useState(false);
   const [isDeleteClicked, setIsDeleteClicked] = useState(false);
-
 
   useEffect(() => {
     if (activeAuthId !== null) {
@@ -25,7 +24,6 @@ export default function RoleSettingMain({refresh, activeAuthId, setActiveAuthId,
         <StyledAuthGroupContainer>
           <AuthGroupSection 
             refresh={refresh}
-            setActiveAuthId={setActiveAuthId} 
             activeAuthId={activeAuthId}
             isEditMode={isEditMode}
             handleItemClick={handleItemClick}
@@ -33,7 +31,6 @@ export default function RoleSettingMain({refresh, activeAuthId, setActiveAuthId,
         </StyledAuthGroupContainer>
         <StyledMenuTreeContainer $visible={visible} >
           <MenuTreeTop 
-            authId={activeAuthId} 
             isEditMode={isEditMode} 
             setIsEditMode={setIsEditMode} 
             setIsSaveClicked={setIsSaveClicked}

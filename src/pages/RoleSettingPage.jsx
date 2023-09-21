@@ -16,15 +16,17 @@ export default function RoleSettingPage() {
   const changeRefresh = () => {
     setRefresh(!refresh);
   }
-  const handleItemClick = (id) => {
+
+  const handleItemClick = (authId) => {
     if (isEditMode) {
-      if (activeAuthId !== id) {
+      if (activeAuthId !== authId) {
         alert("수정 중에는 이동할 수 없습니다.");
       }  
     } else {
-      setActiveAuthId(id);
+      setActiveAuthId(authId);
     }
   };
+
   return (
     <Container>
       <TopContainer>
@@ -73,7 +75,6 @@ export default function RoleSettingPage() {
       <RoleSettingMain 
         refresh={refresh} 
         activeAuthId={activeAuthId} 
-        setActiveAuthId={setActiveAuthId} 
         changeRefresh={changeRefresh}
         isEditMode={isEditMode}
         setIsEditMode={setIsEditMode}

@@ -46,7 +46,7 @@ export const useFetchData = (apiFunction, { params = {}, paths = {}, data = {}, 
       }
       try {
         const response = await apiFunction({ params: currentParams, paths: currentPaths, data: currentData });
-        setFetchedData(response.data);
+        setFetchedData(response.data.data);
         setStatus(response.status);
       } catch (e) {
         setError(e);

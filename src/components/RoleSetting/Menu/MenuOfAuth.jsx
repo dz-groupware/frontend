@@ -1,6 +1,5 @@
   import React, { useEffect } from 'react'
   import { getGnbListOfAuthApi, getLnbListOfAuthApi } from '../../../api/authgroup';
-  import MenuItem from './MenuItem';
   import styled from 'styled-components';
   import { useFetchData } from '../../../hooks/useFetchData';
 import MenuItemView from './MenuItemView';

@@ -15,7 +15,6 @@
 
     const fetchMoreData = useCallback(async () => {
       if (isLoading || !hasMore) return;
-      console.log('lastName',lastAuthName)
       setIsLoading(true);
       
       let queryParam = { 
@@ -28,8 +27,8 @@
     
       
       try {
-        const response = await getAuthGroupApi({ params: queryParam });
-        
+        const res = await getAuthGroupApi({ params: queryParam });
+        const response = res.data;
         if (response.data && response.data.length > 0) {
           if(orderBy.includes('authName')) {
             setLastAuthName(response.data[response.data.length - 1].authName);

@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react'
 import { styled } from 'styled-components'
 import { useFetchData } from '../../../hooks/useFetchData';
 import { deleteAuthApi, getGnbListOfAuthWithAllApi, getLnbListOfAuthWithAllApi, modifyMappedMenuOfAuthApi } from '../../../api/authgroup';
-import MenuItem from './MenuItem';
 import MenuItemEditor from './MenuItemEditor';
 
 export default function MenuOfAuthEditor({ authId , isSaveClicked, setIsSaveClicked, setIsEditMode, isDeleteClicked, setIsDeleteClicked, changeRefresh}) {

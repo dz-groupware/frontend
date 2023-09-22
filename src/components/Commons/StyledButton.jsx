@@ -12,6 +12,12 @@ const StyledButton = styled.button`
   border-radius: 5px;
   cursor : pointer; 
   white-space: nowrap;  // 줄바꿈 방지
+  &:disabled {
+    cursor: not-allowed; 
+    color: #A9A9A9;
+    border: 1px solid #CDCDCD;
+    background: #E0E0E0;
+  }
   
 `;
 

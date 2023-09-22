@@ -239,7 +239,7 @@ export default function CompanyMgmtForm() {
             return;
         }
 
-
+        
         dispatch(companyActions.updateInfo(info));
      
         handleUpdate(e);

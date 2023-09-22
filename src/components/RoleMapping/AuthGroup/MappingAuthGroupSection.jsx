@@ -7,7 +7,7 @@ import { FiSearch } from 'react-icons/fi';
 import MappingAuthGroupList from './MappingAuthGroupList';
 import Line from '../../Commons/Line';
 
-export default function MappingAuthGroupSection({ activeAuthId, handleItemClick }) {
+export default function MappingAuthGroupSection({ activeAuthId, handleAuthClick }) {
   const orderOptions = [
     // { label: '필터', value: 'none' },
     { label: '최신순', value: 'authDashboardIdDesc' },
@@ -68,7 +68,7 @@ export default function MappingAuthGroupSection({ activeAuthId, handleItemClick 
         orderBy={orderBy}
         searchTerm={searchTerm}
         activeAuthId={activeAuthId}
-        handleItemClick={handleItemClick}
+        handleAuthClick={handleAuthClick}
       />
     </Container>
   );

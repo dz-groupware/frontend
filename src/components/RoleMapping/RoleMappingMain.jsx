@@ -8,18 +8,30 @@ import { useFetchData } from '../../hooks/useFetchData';
 import { getParentCompanyWithEmployeeCountApi, getSubsidiaryCompaniesWithEmployeeCountApi } from '../../api/company';
 import CompanyTreeBox from './Employee/CompanyTreeBox';
 
-export default function RoleMappingMain({ refresh, activeAuthId, handleItemClick, changeRefresh}) {
+export default function RoleMappingMain({ activeAuthId, handleAuthClick, activeEmpId,handleEmpClick}) {
   const { data: parCompanyInfo, isLoading: companyLoading, error: companyError} = useFetchData(getParentCompanyWithEmployeeCountApi);
-  
+  if (companyLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (companyError) {
+    return <div>Error: {companyError.message}</div>;
+  }
+
   return (
     <Container>
       <StyledCompanySection>
-        <CompanyTreeBox item={parCompanyInfo} companyId={ parCompanyInfo?.companyId } />
+        <CompanyTreeBox 
+          item={parCompanyInfo} 
+          companyId={parCompanyInfo ? parCompanyInfo.companyId : null}
+          activeEmpId={activeEmpId}
+          handleEmpClick={handleEmpClick}
+        />
       </StyledCompanySection>
       <StyledAuthGroupContainer >
         <MappingAuthGroupSection
           activeAuthId={activeAuthId}
-          handleItemClick={handleItemClick}
+          handleAuthClick={handleAuthClick}
         />
       </StyledAuthGroupContainer>
       <Container2>
@@ -28,7 +40,6 @@ export default function RoleMappingMain({ refresh, activeAuthId, handleItemClick
         <Line color="black"/>
         <MappingMenuOfAuth 
           authId={activeAuthId}
-          handleItemClick={handleItemClick}
         />
       </Container2>
     </Container>

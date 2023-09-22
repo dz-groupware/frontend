@@ -8,15 +8,19 @@ import LinkButon from '../components/Commons/LinkButon';
 export default function RoleMappingPage() {
   const [refresh, setRefresh] = useState(false);
   const [activeAuthId, setActiveAuthId] = useState(null);
-  
+  const [activeEmpId, setActiveEmpId] = useState(null);
   const changeRefresh = () => {
     setRefresh(!refresh);
   }
 
-  const handleItemClick = (authId) => {
-    console.log("출력되니",authId);
+  const handleAuthClick = (authId) => {
     setActiveAuthId(authId);
   };
+
+  const handleEmpClick = (empId) => {
+    console.log("empId",empId);
+    setActiveEmpId(empId);
+  }
 
   return (
     <Container>
@@ -51,9 +55,10 @@ export default function RoleMappingPage() {
       <RoleMappingMain 
         refresh={refresh} 
         activeAuthId={activeAuthId} 
-        setActiveAuthId={setActiveAuthId} 
         changeRefresh={changeRefresh}
-        handleItemClick={handleItemClick}
+        handleAuthClick={handleAuthClick}
+        activeEmpId={activeEmpId}
+        handleEmpClick={handleEmpClick}
       />
     </Container>
   );

@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { getAuthGroupApi } from '../../../api/authgroup';
 import MappingAuthGroupItem from './MappingAuthGroupItem';
 
-export default function MappingAuthGroupList({ activeAuthId, orderBy, searchTerm, refresh, showCloseRequest, handleItemClick }) {
+export default function MappingAuthGroupList({ activeAuthId, orderBy, searchTerm, refresh, showCloseRequest, handleAuthClick }) {
   const [lastId, setLastId] = useState(99999999);
   const [lastAuthName, setLastAuthName] = useState(null);
   const [data, setData] = useState([]);
@@ -106,7 +106,7 @@ export default function MappingAuthGroupList({ activeAuthId, orderBy, searchTerm
           <MappingAuthGroupItem
             key={item.id}
             item={item}
-            onClick={() => handleItemClick(item.id)}
+            onClick={() => handleAuthClick(item.id)}
             isActive={activeAuthId === item.id}
             ref={i === data.length - 1 ? lastElementRef : null}
           />

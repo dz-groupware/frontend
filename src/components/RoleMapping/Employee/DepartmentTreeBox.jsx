@@ -3,8 +3,9 @@ import styled from "styled-components";
 import { useFetchData } from "../../../hooks/useFetchData";
 import { useEffect, useState } from "react";
 import { getEmployeeByDepartmentIdApi, getSubsidiaryDepartmentsWithEmployeeCount } from "../../../api/company";
+import EmployeeBox from "./EmployeeBox";
 
-export function DepartmentTreeBox({ item, depth=0, companyId, paths }) {
+export function DepartmentTreeBox({ item, depth=0, companyId, activeEmpId, handleEmpClick }) {
   const [expanded, setExpanded] = useState(false);
   const { data: departmentList, isLoading: departmentLoading, error: departmentError, setShouldFetch: setDeptFetch } = useFetchData(getSubsidiaryDepartmentsWithEmployeeCount,
     {paths:{departmentId: item.departmentId, companyId}, shouldFetch:false});
@@ -51,7 +52,9 @@ export function DepartmentTreeBox({ item, depth=0, companyId, paths }) {
                 item={subItem} 
                 depth={depth+1}
                 companyId={companyId}
-                paths={{ departmentId: subItem.departmentId }}/>
+                activeEmpId={activeEmpId}
+                handleEmpClick={handleEmpClick}
+              />
             </div>
           ))}
         </>
@@ -59,10 +62,16 @@ export function DepartmentTreeBox({ item, depth=0, companyId, paths }) {
       {expanded && empList.length > 0 && (
         <>
           {empList.map((subItem, subIndex) => (
-            <div key={"e-"+subIndex}>
-              {console.log(subItem)}
-              이름: {subItem.empName}
-            </div>
+            <EmployeeBox 
+              key={"e-"+subItem.empId} 
+              id={subItem.empId}
+              name={subItem.empName} 
+              position={subItem.empPosition}
+              masterYn={subItem.empMasterYn}
+              depth={depth+1}
+              activeEmpId={activeEmpId}
+              onClick={() => handleEmpClick(subItem.empId)}
+            />
           ))}
         </>
       )}

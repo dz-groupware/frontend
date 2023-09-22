@@ -4,30 +4,41 @@ import { getEmployeeNoDepartmentApi, getParDepartmentsWithEmployeeCountApi, getS
 import styled from "styled-components";
 import { useFetchData } from "../../../hooks/useFetchData";
 import { DepartmentTreeBox } from "./DepartmentTreeBox";
+import EmployeeBox from "./EmployeeBox";
 
-export default function CompanyTreeBox({ item, depth=0, companyId }) {
+export default function CompanyTreeBox({ item, depth=0, companyId,activeEmpId, handleEmpClick }) {
   const [expanded, setExpanded] = useState(false);
-  const { data: companyItemList, setShouldFetch: setCompanyFetch, isLoading, error } = useFetchData(getSubsidiaryCompaniesWithEmployeeCountApi,{paths:{companyId}, shouldFetch:false});
+  const { data: companyItemList, setShouldFetch: setCompanyFetch, isLoading: companyLoading, error } = useFetchData(getSubsidiaryCompaniesWithEmployeeCountApi,{paths:{ companyId}, shouldFetch:false});
   const { data: parDepartmentInfoList, isLoading: departmentLoading, error: departmentError, setShouldFetch: setDepartmentFetch} = useFetchData(getParDepartmentsWithEmployeeCountApi, {paths:{companyId}, shouldFetch:false});
-  const { data: companyEmpList, setShouldFetch: setEmpFetch} = useFetchData(getEmployeeNoDepartmentApi, {paths:{companyId}, shouldFetch:false});
+  const { data: companyEmpList, isLoading: empLoading, setShouldFetch: setEmpFetch} = useFetchData(getEmployeeNoDepartmentApi, {paths:{companyId}, shouldFetch:false});
+
   const toggleSubCompany = async () => {
     if (expanded) {
       setExpanded((prev) => !prev);
       return;
     }
     
-    if ( !item.childNodeYn && companyItemList.length === 0) {
+    if (companyId && !item.childNodeYn && companyItemList.length === 0) {
       setCompanyFetch(true);
     }
 
-    if (item.hasDepartment){
+    if (companyId && item.hasDepartment){
       setDepartmentFetch(true);
     }
     setExpanded(true);
   };
   useEffect(()=>{
-    setEmpFetch(true);
-  },[expanded]);
+    if(companyId){
+      setEmpFetch(true);
+    }
+  },[expanded,companyId]);
+  if(companyLoading || departmentLoading || empLoading) {
+    return (
+      <>
+        <div>로딩중...</div>
+      </>
+    );
+  }
   return (
     <>
       <NameBar $depth={depth} >
@@ -55,7 +66,10 @@ export default function CompanyTreeBox({ item, depth=0, companyId }) {
               key={"c-"+subItem.companyId}
               depth={depth+1}
               item={subItem} 
-              paths={{ companyId: subItem?.companyId }}/>
+              companyId={subItem?.companyId}
+              activeEmpId={activeEmpId}
+              handleEmpClick={handleEmpClick}
+            />
           ))}
         </>
       )}
@@ -67,16 +81,25 @@ export default function CompanyTreeBox({ item, depth=0, companyId }) {
               item={subItem}
               depth={depth+1}
               companyId={item.companyId}
-              paths={{ departmentId: subItem?.departmentId }} />
+              activeEmpId={activeEmpId}
+              handleEmpClick={handleEmpClick}
+            />
           ))}
         </>
       )}
       {expanded && (
         <>
           {companyEmpList.map((subItem) => (
-            <>
-              이름:{subItem.empName}
-            </>
+              <EmployeeBox 
+                key={"e-"+subItem.empId} 
+                id={subItem.empId}
+                name={subItem.empName} 
+                position={subItem.empPosition}
+                masterYn={subItem.empMasterYn}
+                activeEmpId={activeEmpId}
+                onClick={() => handleEmpClick(subItem.empId)}
+                depth={depth+1}
+              />
           ))}
         </>
       )}

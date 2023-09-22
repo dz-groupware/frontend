@@ -37,7 +37,6 @@ export const getEmployeeByDepartmentIdApi = async ({paths}) => {
   const { departmentId } = paths;
   return axiosInstance.get(`/company/departments/${departmentId}/employees`)
   .then(response =>{ 
-    console.log(response);
     return response; })
   .catch(error => { throw error; });
 }
@@ -46,7 +45,6 @@ export const getEmployeeNoDepartmentApi = async ({paths}) => {
   const { companyId } = paths;
   return axiosInstance.get(`/company/${companyId}/employees`)
   .then(response =>{ 
-    console.log(response);
     return response; })
   .catch(error => { throw error; });
 }

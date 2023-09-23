@@ -16,7 +16,6 @@ export default function PosiList({ empId, modalOff, profile }) {
 
   const handleAnotherEmp = () => {
     changeEmpApi(radioEmpId).then(res => {
-      console.log("emp switch : ", res);
       dispatch(newEmpId(res.data['empId']));
       dispatch(newCompId(res.data['compId']));
       localStorage.setItem('empId', res.data['empId']);

@@ -18,13 +18,15 @@ export default function LNB() {
   const [lnbOpen, setLnbOpen] = useState(true);
   const [gnbId, setGnbId] = useState('');
   const [data, setData] = useState(JSON.parse('[{"name":""}]'));
+  console.log(lnbOpen);
 
   useEffect(() => {
     try{
-      const menuId = location.state.menuId;
-      searchMenuListAPI(menuId, compId)
+      const gnbId = location.state.gnbId;
+      console.log('in lnb (gnbId) : ', gnbId);
+      searchMenuListAPI(gnbId, compId)
       .then(res => setData(res.data));
-      setGnbId(menuId);
+      setGnbId(gnbId);
     } catch(error) {
       if(error.message === 'UNAUTHORIZED'){
         navigate('/login');
@@ -94,27 +96,27 @@ export default function LNB() {
   );
 }
 
-export function MenuTree(props){
+export function MenuTree({ menu, param, compId, gnbId }){
   const [open, setOpen] = useState(false);
   const [subItem, setSubItem] = useState([]);
   const navigate = useNavigate();
     
   useEffect(() => {
-    if(props.gnbId !== undefined){
+    if(gnbId !== undefined){
       setSubItem([]);
       setOpen(false);
     }
-  }, [props.compId, props.gnbId]);
+  }, [compId, gnbId]);
 
   function handleMenuItem() {
     try{
       if(subItem.length === 0) {
-        searchMenuListAPI(props.menu['id'], props.compId)
+        searchMenuListAPI(menu['id'], compId)
         .then(res => setSubItem(res.data));
       }
       setOpen(!open);
       // menuId를 넘기지 않고 gnbId를 넘긴다. LNB() 컴포넌트는 GNB 메뉴 ID가 필요함.
-      navigate(`/${props.param}/${props.menu['name']}`, {state: {menuId: props.gnbId}});  
+      navigate(`/${param}/${menu['name']}`, {state: {gnbId: gnbId, menuId : menu['id']}});  
     } catch(error) {
       if(error.message === 'UNAUTHORIZED'){
         navigate('/login');
@@ -131,17 +133,17 @@ export function MenuTree(props){
       <MenuItem>
         { 
         open ? 
-        (props.menu['childNodeYn'] === 1 ? <AiFillProfile /> : < AiFillFolderOpen/>)
+        (menu['childNodeYn'] === 1 ? <AiFillProfile /> : < AiFillFolderOpen/>)
         :
-        (props.menu['childNodeYn'] === 0 ? <AiFillFolder /> : <AiOutlineProfile />) 
+        (menu['childNodeYn'] === 0 ? <AiFillFolder /> : <AiOutlineProfile />) 
         }
-        <div onClick={handleMenuItem}>{props.menu['name']}</div>
+        <div onClick={handleMenuItem}>{menu['name']}</div>
       </MenuItem>
       {
         open && subItem.map((a, i) => {
           if (a['id'] !== a['parId']) {
             return (
-              <MenuTree menu={a} param={props.param} compId={props.compId} gnbId={props.gnbId} key={a['name']+a['id']}/>
+              <MenuTree menu={a} param={`${param}/${menu['name']}`} compId={compId} gnbId={gnbId} key={a['name']+a['id']}/>
             )
           }
           return null;

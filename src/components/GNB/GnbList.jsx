@@ -11,7 +11,7 @@ export function MenuList({ gnb }) {
       {
         gnb.map((a, i) => (
           <StyledLink key={a['id']+i+'gnb'}>
-            <Link to={{pathname: a['name']}} state= {{ menuId: a['id'] }}>
+            <Link to={{pathname: a['name']}} state= {{ gnbId: a['id'] }}>
               {a["name"]}
             </Link>
           </StyledLink>
@@ -40,7 +40,7 @@ export function FavList({ favor, empId }) {
       {
         favorList.map((a, i) => (
           <StyledLink key={a['id']+i+'fav'}>
-            <Link to={{pathname: param+'/'+a['name']}} state= {{ menuId: a['id'] }}>
+            <Link to={{pathname: param+'/'+a['name']}} state= {{ gnbId: a['id'] }}>
               {a["name"]}
             </Link>
             <span onClick={() => {handleFavor(a['id'])}}>X</span>
@@ -56,7 +56,7 @@ export function IconList({ gnb }) {
     <>
       {
         gnb.map((a, i) => (
-          <Link to={{pathname: a['name']}} state= {{ menuId: a['id'] }} key={a['id']+i+'icon'}>
+          <Link to={{pathname: a['name']}} state= {{ gnbId: a['id'] }} key={a['id']+i+'icon'}>
             <img src={a['iconUrl']} alt={a['name']}/> 
           </Link>
         ))

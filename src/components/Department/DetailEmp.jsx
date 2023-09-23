@@ -1,40 +1,35 @@
 import styled from 'styled-components';
 
-export default function DeptDetailEmp(props){
-  //const empList = JSON.parse('[{"deptName":"부서명1", "position":"직책1","empName":"사원명1","sortOrder":"1"}, {"deptName":"부서명1", "position":"직책2","empName":"사원명2","sortOrder":"2"}]')
+export default function DetailEmp({ empList }){
   return (
-    <>
-      <BasicForm>
-        <div>
-          <table>
-            <tr className="detailEmpTitle">
-              <td>부서</td>
-              <td>직책</td>
-              <td>사용자명</td>
-              <td>정렬순서</td>
-            </tr>
-          </table>
-        </div>
-        <div className="detailEmpBody">
-          <table>
-            {
-              props.empList.map((a, i) => (
-                <tr>
-                  <td>{a['deptName']}</td>
-                  <td>{a['position']}</td>
-                  <td>{a['empName']}</td>
-                  <td>{a['sortOrder']}</td>
-                </tr>
-              ))
-            }
-          </table>
-        </div>
-        
-          
-      </BasicForm>
-    </>
-  )
-}
+    <BasicForm>
+      <div>
+        <table>
+          <tr className="detailEmpTitle">
+            <td>부서</td>
+            <td>직책</td>
+            <td>사용자명</td>
+            <td>정렬순서</td>
+          </tr>
+        </table>
+      </div>
+      <div className="detailEmpBody">
+        <table>
+          {
+            empList.map((a, i) => (
+              <tr>
+                <td>{a['deptName']}</td>
+                <td>{a['position']}</td>
+                <td>{a['empName']}</td>
+                <td>{a['sortOrder']}</td>
+              </tr>
+            ))
+          }
+        </table>
+      </div>
+    </BasicForm>
+  );
+};
 
 const BasicForm = styled.div`
 width: 100%;

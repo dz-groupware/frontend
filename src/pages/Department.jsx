@@ -1,98 +1,57 @@
-import { useEffect, useRef, useState } from 'react';
+import { useState } from "react";
+
+import {  AiOutlineInfoCircle } from 'react-icons/ai';
+
 import styled from 'styled-components';
 
-import { getDepartemnt, getOptionCompList, findDeptNameAndCode } from '../api/department';
-import { FavorApi } from '../api/menu';
-import {  AiOutlineInfoCircle, AiOutlineSearch, AiFillStar, AiOutlineStar } from 'react-icons/ai';
-
-import DeptDetail from '../components/Department/DeptDetail';
-import DeptItem from '../components/Department/DeptItem';
-import DetailSaveAll from '../components/Department/DetailSaveAll';
-
+import DetailBasic from '../components/Department/DetailBasic';
+import DetailEmp from '../components/Department/DetailEmp';
+import TitleBtn from '../components/Department/TitleBtn';
+import SearchForm from '../components/Department/SearchForm';
+import SearchResult from '../components/Department/SearchResult';
+import DetailTitle from '../components/Department/DetailTitle';
 
 export default function Department() {
-  const [id, setId] = useState({
-    deptId: 0,
-    newDeptId: 0,
-  });
+  // initialState
+  const initSearch = {
+    option: '',
+    test: '',
+    on: false,
+  }
+  const initDetail = {
+    type: false,
+    id: '',
+    save: false,
+  }
+  const initValue = {
+    parId: 0,
+    parName: "없음",
+    id: 0,
+    name: "",
+    abbr: "",
+    code: "",
+    sortOrder: 0,
+    enabledYn: true,
+    managementYn: false,
+    includedYn: true,
+  }
+  // 컴포넌트에서 보내는 상태
+  const [search, setSearch] = useState(initSearch);
+  const [detail, setDetail] = useState(initDetail);
+  const [value, setValue] = useState(initValue);
 
-  const [status, setStatus] = useState({
-    status: '',
-    detailType: false,
-    re: false,
-  });
-
-  const [modalSaveAll, setModalSaveAll] = useState(false);
   const [favor, setFavor] = useState(false);
-  const isModified = useRef(false);
-
   const [form, setForm] = useState(JSON.parse('[]'));
 
-  const [result, setResult] = useState(JSON.parse('[{"code":"KQ1D9A8", "name":"시스템 개발팀"}, {"code":"8S22K9X", "name":"데이터 분석팀"}]'));
-  const [detailEmp, setDetailEmp] = useState(JSON.parse('[{"":""}]'));
-  const [compList, setCompList] = useState(JSON.parse('[]'));
+  const [option, setOption] = useState([]);
+  const [result, setResult] = useState([]);
+  const [empList, setEmpList] = useState([]);
 
-  // 나중에 수정될 부분
-  const menuId = 6;
-  
-  console.log("===========================");
-  console.log("newDeptId : ", id.newDeptId, " || deptId : ", id.deptId);
-  console.log("form : ", form);
-  console.log("empList : ", detailEmp);
-
-  // re로 바뀌도록 했는데 안되고 있는 상태
-  useEffect(() => {
-    // 부서 리스트를 받아옴 -> result로 저장하고 사용
-    const loadDeptList = async () => {
-      try {
-        const res = await getDepartemnt();
-        setResult(res.data);
-      } catch (error) {
-        console.log(error);
-      }
-    }
-    loadDeptList();
-    // 즐겨찾기 조회
-    FavorApi('load', menuId).then(res => {setFavor(res.data)});
-    // 검색 옵션 /회사리스트 조회
-    getOptionCompList().then(res => setCompList(res.data));
-  }, [status.re]);
-
-  // 일괄 등록 
-  // const hadleSaveAll = () => {
-  //   saveAll(form);
-  // }
-
-  
-  const handleAddForm = () => {
-    // 추가 // 추가 상태 : 빈 form, 수정상태 "add" (-2)
-    setId({...id, newDeptId:-3});
-    setStatus({...status, detailType: 'basic'});
-  }
-
-    // 즐겨찾기 추가/삭제 요청
-  function FavorHandler(){
-    FavorApi('off', menuId).then(() => {
-      setFavor(!favor);
-    });
-  }
-
-  // 검색 결과 result에 저장
-  const hadleSearch = () => {
-    const fd = new FormData(document.getElementById('deptSearchForm'));
-    findDeptNameAndCode(fd.get('searchOption'), fd.get('searchText')).then(res => setResult(res.data));
-  }
-
-  return (
+  return(
     <ContentDept>
       <DeptTitle>
         <div id="deptTitle">부서관리</div>
-        <div id = "deptBtn">
-          <button onClick={() => {setModalSaveAll(true); setId({...id, newDeptId: -1});}}>일괄등록</button>
-          <button onClick={handleAddForm}>추가</button>
-          <button onClick={() => {}}>변경이력</button>
-          <div onClick={FavorHandler}>{favor ? <AiFillStar /> : <AiOutlineStar/>}</div>
-        </div>
+        <TitleBtn favor={favor} setFavor={setFavor} detail={detail} setDetail={setDetail}/>
       </DeptTitle>
       <Info>
           <div>
@@ -100,139 +59,36 @@ export default function Department() {
           </div>
       </Info>
       <DetailArea>
-        <SearchArea>
-          <SearchForm id="deptSearchForm">
-            <select name='searchOption'>
-              {
-                compList.map((a, i) => (
-                  <option key={a['name']+a['compId']} value={a['compId']}>{a['name']}</option>
-                ))
-              }
+        <SearchResultArea>
+          <SearchForm option={option}/>
+          <div>
+            <span>조직도</span>
+            <select name="filter">
+              <option value="all">필터</option>
+              <option value='admin'>관리자 부서</option>
+              <option value='general'>사용자 사용자</option>
             </select>
-            <input name='searchText' placeholder='코드/부서명을 입력하세요'/>
-            <AiOutlineSearch onClick={hadleSearch}/>
-          </SearchForm>
-          <SearchTree>
-            <div id='SearchSortOrder'>
-              <span>조직도</span>
-              <select name="filter" sytle={{zIndex: -2}}>
-                <option value="all">필터</option>
-                <option value='admin'>관리자 부서</option>
-                <option value='general'>사용자 사용자</option>
-              </select>
-            </div>
-            <div id='SearchResult'>
-              {
-                result.map((a, i) => (
-                  <DeptItem key={a['name']+a['id']} dept={a} id={id} setId={setId} status={status} setStatus={setStatus} setDetailEmp={setDetailEmp}/>
-                ))
-              } 
-            </div>
-          </SearchTree>
-        </SearchArea>
-        <DeptDetail 
-        id={id} setId={setId} status={status} setStatus={setStatus}
-        form={form} setForm={setForm} isModified={isModified}
-        empList={detailEmp} setDetailEmp={setDetailEmp} />
+          </div>
+          <SearchResult result={result} />
+        </SearchResultArea>
+        <Detail>
+          <DetailTitle detail={detail} setDetail={setDetail} />
+            {detail.type === 'basic' ? 
+            <DetailBasic data={value} setData={setValue} /> : null}
+            {detail.type === 'emp' ? 
+            <DetailEmp empList={empList} /> : null}
+        </Detail>
       </DetailArea>
-      {modalSaveAll && 
-      <DetailSaveAll form={form} setModalSaveAll={setModalSaveAll}/>}
     </ContentDept>
   );
-}
+};
+
 
 const ContentDept = styled.div`
 background-color: white;
 border: 1px solid rgb(171,172,178);
 width: 100%;
 height: calc(100% - 90px);
-`;
-const DetailArea = styled.div`
-display: flex;
-width: 100%;
-height: calc(100% - 120px);
-`;
-const SearchArea = styled.div`
-margin:10px;
-height: calc(100% - 10px);
-background-color: white;
-width: 330px;
-border: 1px solid rgb(171,172,178);
-color: black;
-`;
-const SearchForm = styled.form`
-width: 100%;
-padding: 5px;
-height: 100px;
-background-color: rgb(240,245,248);
-border-bottom: 1px solid rgb(171,172,178);
-color: black;
-> select {
-  width: calc(100% - 20px);
-  height:25px;
-  margin: 10px;
-}
-> input {
-  width: calc(100% - 50px);
-  height: 20px;
-  margin: 5px;
-  margin-left: 10px;
-}
-> svg {
-  width: 20px;
-  height: 20px;
-  position: relative;
-  top: 7px;
-}
-`;
-const SearchTree = styled.div`
-width: 300px;
-height: calc(100% - 100px);
-border: 1px solid gray;
-> #SearchSortOrder{
-  display: flex;
-  justify-content: space-between;
-  font-weight: bold;
-  margin: 5px;
-  height: 20px;
-  > span {
-    font-size: small;
-  }
-  > select {
-    font-weight: bold;
-    position: relative;
-    border: none;
-    text-align: right;
-    > option {
-      background-color: white;
-    }
-  }
-}
-> #SearchResult {
-  overflow: scroll;
-  height: calc(100% - 30px);
-  &::-webkit-scrollbar {
-    display: none;
-  }
-}
-`;
-const Info = styled.div`
-display: flex;
-justify-content: center;
-
-> div {
-  margin: 10px;
-  padding: 10px;
-  padding-left:15px;
-  width: 100%;
-  height: 40px;
-  background-color: rgb(214,236,248);
-  border: 1px solid rgb(146,183,214);
-  border-radius: 5px;
-
-  color: black;
-  font-weight: bold;
-}
 `;
 const DeptTitle = styled.div`
 display: flex;
@@ -251,18 +107,65 @@ color: black;
   font-weight: bold;
   color: rgb(32,35,44);
 }
-> #deptBtn {
+`;
+
+const Info = styled.div`
+display: flex;
+justify-content: center;
+> div {
+  margin: 10px;
+  padding: 10px;
+  padding-left:15px;
+  width: 100%;
+  height: 40px;
+  background-color: rgb(214,236,248);
+  border: 1px solid rgb(146,183,214);
+  border-radius: 5px;
+  color: black;
+  font-weight: bold;
+}
+`;
+const DetailArea = styled.div`
+display: flex;
+width: 100%;
+height: calc(100% - 120px);
+`;
+const SearchResultArea = styled.div`
+margin:10px;
+height: calc(100% - 10px);
+background-color: white;
+width: 330px;
+border: 1px solid rgb(171,172,178);
+color: black;
+
+> div {
   display: flex;
-  margin-top: 5px;
-  > * {
-    height: 30px;
-    margin: 5px;
+  justify-content: space-between;
+  font-weight: bold;
+  margin: 5px;
+  height: 20px;
+  > span {
+    font-size: small;
   }
-  > svg {
-    margin-top: 10px;
-    width: 20px;
-    height: 20px;
-    color: gray;
+  > select {
+    font-weight: bold;
+    position: relative;
+    border: none;
+    text-align: right;
+    > option {
+      background-color: white;
+    }
   }
 }
+
+`;
+
+
+const Detail = styled.div`
+display: block;
+width: 100%;
+height: 100%;
+min-width: 600px;
+color: black;
+margin: 10px;
 `;

@@ -3,10 +3,17 @@ import styled from 'styled-components';
 
 import { getDepartemnt, getDepartmentList } from '../../api/department';
 
-export default function DeptDetailBasic({ value, setValue, isModified, handleAddDept }){
+export default function DetailBasic({ data, setData, detail }){
   const [modalOn, setModalOn] = useState(false);
+  const [value, setValue] = useState('');
 
+  useEffect(()=>{
+    setValue(data);
+  },[]);
 
+  useEffect(()=>{
+    setData(value);
+  },[detail]);
 
   return (
     <Detail>
@@ -25,6 +32,7 @@ export default function DeptDetailBasic({ value, setValue, isModified, handleAdd
               <input 
               placeholder='부서코드를 입력하세요'
               value={value.code}
+              valutType={'code'}
               onChange={e => setValue({...value, code: e.target.value})}/>
             </td>
           </tr>
@@ -53,10 +61,10 @@ export default function DeptDetailBasic({ value, setValue, isModified, handleAdd
             <td className="data">
               <input name='enabledYn' value="true" type='radio' 
               checked={value.enabledYn === true } 
-              onChange={e => setValue({...value, enabledYn: e.target.value})}/>사용
+              onChange={e => setValue({...value, enabledYn: true})}/>사용
               <input name='enabledYn' value="false" type='radio' 
               checked={value.enabledYn === false} 
-              onChange={e => setValue({...value, enabledYn: e.target.value})}/>미사용
+              onChange={e => setValue({...value, enabledYn: false})}/>미사용
             </td>
             <td className="field">
               관리부서
@@ -64,10 +72,10 @@ export default function DeptDetailBasic({ value, setValue, isModified, handleAdd
             <td className="data">
               <input name='managementYn' value="true" type='radio' 
               checked={value.managementYn === true} 
-              onChange={e => setValue({...value, managementYn: e.target.value})}/>설정
+              onChange={e => setValue({...value, managementYn: true})}/>설정
               <input name='managementYn' value="false" type='radio' 
               checked={value.managementYn === false} 
-              onChange={e => setValue({...value, managementYn: e.target.value})}/>미설정
+              onChange={e => setValue({...value, managementYn: false})}/>미설정
             </td>
           </tr>
           <tr>
@@ -77,17 +85,17 @@ export default function DeptDetailBasic({ value, setValue, isModified, handleAdd
             <td className="data">
               <input name='includedYn' value="true" type='radio' 
               checked={value.includedYn === true} 
-              onChange={e => setValue({...value, includedYn: e.target.value})}/>표시
+              onChange={e => setValue({...value, includedYn: true})}/>표시
               <input name='includedYn' value="false" type='radio' 
               checked={value.includedYn === false} 
-              onChange={e => setValue({...value, includedYn: e.target.value})}/>미표시
+              onChange={e => setValue({...value, includedYn: false})}/>미표시
             </td>
             <td className="field">
               정렬
             </td>
             <td className="data">
               <input name='sortOrder' type="number" value={value.sortOrder}  
-              onChange={e => setValue({...value, sortOrder: e.target.value})}  />
+              onChange={e => setValue({...value, sortOrder: parseInt(e.target.value, 10)})}  />
             </td>
           </tr>
         </table>
@@ -164,7 +172,6 @@ function Item({ value, data, setModalOn, setValue }) {
     </Menu>
   )    
 }
-
 
 const Detail = styled.div`
 display: block;

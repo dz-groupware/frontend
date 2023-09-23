@@ -6,12 +6,12 @@ import { addDepartment,  deleteDepartment, getBasicDetailById, getEmpListByDeptI
 import DeptDetailBasic from './DeptDetailBasic';
 import DeptDetailEmp from './DeptDetailEmp';
 
-export default function DeptDetail({ id, setId, status, setStatus, form, setForm, isModified, empList, setDetailEmp }){
+export default function DeptDetail({ id, setId, status, setStatus, form, setForm, isModified, empList, setDetailEmp, menuId }){
 
   console.log("empList: ", empList);
   const initValue = {
     parId: 0,
-    parName: "",
+    parName: "없음",
     id: 0,
     name: "",
     abbr: "",
@@ -24,7 +24,6 @@ export default function DeptDetail({ id, setId, status, setStatus, form, setForm
 
   const [value, setValue] = useState(initValue);
 
-  console.log("status : ", status.status);
   const handleAddDept = () => {
     // 이제까지 수정된 정보를 저장하고, 
 
@@ -40,38 +39,40 @@ export default function DeptDetail({ id, setId, status, setStatus, form, setForm
     // setStatus({...status, id});
     // 수정 중이던 (일괄변경 : form 에서 detail에서 모두 삭제)
   }
-
+  console.log("value : ", value);
   // 선택한 부서가 바뀔 때, 변경사항이 있다면 변경 시키고, 폼에 맞는 데이터를 넣어줌.
   useEffect(() => {
     let itemFound = false;
 
     const addFormData = () => {   
+      console.log('add form data');
       getBasicDetailById(id.newDeptId).then(res => {
+        console.log(res.data);
         if (res !== null){
           setForm((prev) => [...prev, res.data]);
-          setValue({...value, ...res.data});
+          setValue({...res.data});
           setStatus({...status, status:""});
         }
       });    
     }
 
-    console.log('in useEffect/ newDeptId : ',id.newDeptId);
     console.log('switch deptId : ', id.deptId , "->", id.newDeptId);
     // 변경사항이 있다면 저장시킴.
     if (isModified.current === true) {
       const updateForm = form.map(item => {
         if(item !== null && item !== undefined) {
-        if (item.id === id.deptId) {
-          console.log('in form : ', id.deptId);
-          // 수정된 적 있으면 실행
-          
-          // const detail = {...value, status: props.status === "add" ? "add" : "modify" };
-          // console.log('detail : ', detail);
-          // 바뀐 정보 가져오기
-          return {...value, status: status.status === "add" ? "add" : "modify" };
-        } 
-        return item;
+          if (item.id === id.deptId) {
+            console.log('in form : ', id.deptId);
+            // 수정된 적 있으면 실행
+            
+            // const detail = {...value, status: props.status === "add" ? "add" : "modify" };
+            // console.log('detail : ', detail);
+            // 바뀐 정보 가져오기
+            return {...value, status: status.status === "add" ? "add" : "modify" };
+          } 
+          return item;
         }
+        return null;
       });
       console.log("updateForm ", id.newDeptId, "=> ", updateForm)
       setForm(updateForm);
@@ -93,10 +94,9 @@ export default function DeptDetail({ id, setId, status, setStatus, form, setForm
         }
       }
     });
-      console.log('in useEffect/ newDeptId : ',id.newDeptId);
+
       // 누른 적 없던 내용 가져오기 
-      if (!itemFound && id.newDeptId < 1){
-        console.log('여기 들어오면 안됨')
+      if (!itemFound && id.newDeptId > 1){
         addFormData();
         setId({...id, deptId: id.newDeptId});
       }
@@ -108,10 +108,27 @@ export default function DeptDetail({ id, setId, status, setStatus, form, setForm
       if (id.deptId === -2){
         console.log("이미 저장된 내용입니다.");
       } else {
+
         // 현재 수정 정보 저장
         const dept = new FormData();
-        dept.set(value);
-        addDepartment(dept).then();
+
+        for (const key in value) {
+          if (key === 'id' || key === 'compId' || key === 'parId' || key === 'sortOrder') {
+            // 숫자 필드일 경우 숫자로 변환
+            dept.append(key, parseInt(value[key], 10));
+            console.log(parseInt(value[key], 10), typeof(parseInt(value[key], 10)))
+          } else if (key === 'enabledYn' || key === 'includedYn' || key === 'managementYn' || key === 'childNodeYn' || key === 'deletedYn') {
+            // 부울 필드일 경우 불린 값으로 변환
+            dept.append(key, value[key] === 'true');
+            console.log(value[key] === 'true', typeof(value[key] === 'true'))
+          } else {
+            // 나머지 필드는 문자열로 그대로 저장
+            dept.append(key, value[key]);
+            console.log(value[key], typeof(value[key]))
+          }
+        }
+        
+        addDepartment(dept, menuId).then();
       }
     }
   }, [id.newDeptId]);
@@ -125,14 +142,13 @@ export default function DeptDetail({ id, setId, status, setStatus, form, setForm
         setDetailEmp(res.data)});
     }
   }, [status, id, setDetailEmp]);
-console.log(status);
-console.log(id);
+
   const deletedForm = () => {
     let newform = form.filter(item => item.id !== id.deptId);
     setForm(newform);
   }
 
-  return (
+   return (
     <>
       {
         status.detailType &&

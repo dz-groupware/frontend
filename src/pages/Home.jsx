@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { Route, Routes, useNavigate } from 'react-router-dom';
+import { Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 
 import styled from 'styled-components';
 
@@ -18,14 +18,14 @@ export default function Home() {
   const [favor, setFavor] = useState(JSON.parse(`[{}]`));
 
   const navigate = useNavigate();
-
+  const location = useLocation();
+  const gnbId = location.state?.gnbId || "11";
   const empId = useSelector(state => state.loginInfo.empId);
 
   useEffect(() => {
-    console.log('in useEffect');
     const basicInfo = async() => {
       try{
-        await basicInfoApi(empId).then(res => {
+        await basicInfoApi(empId, gnbId).then(res => {
           setProfile(res.data.profile);
           setGnb(res.data.menu);
           setFavor(res.data.favor);           
@@ -49,8 +49,8 @@ export default function Home() {
         <RouteArea id='route'>
           <Routes>
             <Route path='/' element={<Main />} />
-            <Route path='/:param' element={<LNB />}>
-              <Route path=':menuName' element={<Module />} />
+            <Route path='/:param/*' element={<LNB />}>
+              <Route path=':menuName/*' element={<Module />} />
             </Route> 
           </Routes>
         </RouteArea>

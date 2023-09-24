@@ -42,6 +42,7 @@ export default function RoleSettingMain({refresh, activeAuthId, changeRefresh, i
               authId={activeAuthId} 
               isSaveClicked={isSaveClicked} 
               setIsSaveClicked={setIsSaveClicked} 
+              isEditMode={isEditMode}
               setIsEditMode={setIsEditMode}
               isDeleteClicked={isDeleteClicked}
               setIsDeleteClicked={setIsDeleteClicked}

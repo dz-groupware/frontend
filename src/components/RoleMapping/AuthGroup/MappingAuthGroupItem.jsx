@@ -1,13 +1,29 @@
-import React, { forwardRef } from 'react'
+import React, { forwardRef, useEffect } from 'react'
 import styled from 'styled-components';
 
-const MappingAuthGroupItem  = forwardRef(({ item, onClick, isActive }, ref) => {
+const MappingAuthGroupItem  = forwardRef(({ item, hasAuth, onClick, isActive, selectedAuthIds, handleCheckboxChange, isEditMode }, ref) => {
+  useEffect(()=>{
+    if(hasAuth) {
+      handleCheckboxChange(item.authId);
+    }
+  },[item]);
   return (
-    <Container ref={ref} $isActive={isActive} onClick={onClick}>
-      <p>회사id- {item.companyId}</p>
-      <p>회사명- {item.companyName}</p>
-      <p>권한id- {item.authId}</p>
-      <p>권한명- {item.authName}</p>
+    <Container 
+      ref={ref} 
+      $isActive={isActive} 
+      onClick={onClick}
+    >
+      {isEditMode && (
+        <input
+          type="checkbox"
+          checked={!!selectedAuthIds[item.authId]}
+          onChange={() => handleCheckboxChange(item.authId)}
+        />
+      )}
+      <Text $hasAuth={hasAuth}>회사id- {item.companyId}</Text>
+      <Text $hasAuth={hasAuth}>회사명- {item.companyName}</Text>
+      <Text $hasAuth={hasAuth}>권한id- {item.authId}</Text>
+      <Text $hasAuth={hasAuth}>권한명- {item.authName}</Text>
     </Container>
   )
 });
@@ -37,3 +53,6 @@ const Container = styled.div`
   border-color: ${props => props.$isActive ? '#7BAAF1' : '#ccc'};
 `;
 
+const Text = styled.p`
+  color: ${props => props.$hasAuth ? 'red' : 'inherit'};
+`;

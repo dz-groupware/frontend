@@ -30,7 +30,7 @@ export default function RoleCreateModal({ isOpen, onClose,changeRefresh, setActi
 
 
   if (isLoading) return <div>로딩중입니다!...</div>;
-  if (error) return <div>{console.log(error)}</div>;
+  if (error) return <div>에러발생!...</div>;
   if (!data) return null;
   return (
     isOpen && (

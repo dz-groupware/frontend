@@ -98,3 +98,50 @@ export const deleteAuthApi = async ({ paths }) => {
   .then(response =>{ return response; })
   .catch(error => { throw error; });
 }
+
+export const getEmpAuthGroupApi = ({ params }) => {
+  const { employeeId, lastId, lastAuthName, pageSize, orderBy, searchTerm } = params; 
+  return axiosInstance.get(`/auth-group/employees/auth/list`, {
+    params: {
+      employeeId,
+      lastId,
+      lastAuthName,
+      pageSize,
+      orderBy,
+      searchTerm
+    }
+  })
+  .then(response => response)
+  .catch(error => { throw new Error('권한리스트를 가져올 수가 없습니다.'); });
+};
+export const getEmpAuthGroupEditApi = ({ params }) => {
+  const { employeeId, lastId, lastAuthName, pageSize, orderBy, searchTerm } = params; 
+  return axiosInstance.get(`/auth-group/employees/auth/list/edit`, {
+    params: {
+      employeeId,
+      lastId,
+      lastAuthName,
+      pageSize,
+      orderBy,
+      searchTerm
+    }
+  })
+  .then(response => response)
+  .catch(error => { throw new Error('권한리스트를 가져올 수가 없습니다.'); });
+};
+
+export const getEmpAuthCountApi = ({ paths }) => {
+  const { employeeId } = paths;
+  return axiosInstance.get(`/auth-group/emp/${employeeId}/count`)
+  .then(response => response)
+  .catch(error => { throw new Error('권한개수를 가져올 수가 없습니다.'); })
+}
+
+
+export const addEmployeeAuthApi = async ({ data }) => {
+  return axiosInstance.post(`/auth-group/employee/auth`,data)
+  .then(response => { 
+    console.log(response);
+    return response; })
+  .catch(error => { throw error; })
+}

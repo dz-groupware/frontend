@@ -4,8 +4,8 @@ import { useFetchData } from '../../../hooks/useFetchData';
 import { deleteAuthApi, getGnbListOfAuthWithAllApi, getLnbListOfAuthWithAllApi, modifyMappedMenuOfAuthApi } from '../../../api/authgroup';
 import MenuItemEditor from './MenuItemEditor';
 
-export default function MenuOfAuthEditor({ authId , isSaveClicked, setIsSaveClicked, setIsEditMode, isDeleteClicked, setIsDeleteClicked, changeRefresh}) {
-  const [checkedItems, setCheckedItems] = useState([]);
+export default function MenuOfAuthEditor({ authId , isSaveClicked, setIsSaveClicked, isEditMode,setIsEditMode, isDeleteClicked, setIsDeleteClicked, changeRefresh}) {
+  const [checkedItems, setCheckedItems] = useState({});
   const { data, isLoading, setShouldFetch, error } = useFetchData(getGnbListOfAuthWithAllApi,{
     paths: {
       authId,
@@ -28,11 +28,10 @@ export default function MenuOfAuthEditor({ authId , isSaveClicked, setIsSaveClic
     },
   );
   useEffect(() =>{
-    console.log(authId);
-    console.log(checkedItems);
-  }, [checkedItems]);
-
-  //authId를 감지해서 api 호출
+    if(!isEditMode) {
+      setCheckedItems({});
+    }
+  },isEditMode)
   useEffect(() => { 
     if(authId !== null && authId !== undefined) { // authId가 유효한지 검사
       setShouldFetch(true);

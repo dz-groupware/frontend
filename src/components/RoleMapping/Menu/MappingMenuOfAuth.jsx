@@ -20,7 +20,9 @@ export default function MappingMenuOfAuth({ authId }) {
   if (isLoading) return <div>로딩중입니다!...</div>;
   if (error) return <div>{console.log(error)}</div>;
   if (!data) return null;
-
+  if (!authId) {
+    return null;
+  }
   return (
     <Container>
       <Table>

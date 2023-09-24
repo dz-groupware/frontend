@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react'
 import { useFetchData } from '../../../hooks/useFetchData';
-import { getCountAuthGroupApi } from '../../../api/authgroup';
+import { getAuthGroupApi, getCountAuthGroupApi, getEmpAuthCountApi } from '../../../api/authgroup';
 import styled from 'styled-components';
 import ActionButton from '../../Commons/ActionButton';
 import { FiSearch } from 'react-icons/fi';
 import MappingAuthGroupList from './MappingAuthGroupList';
 import Line from '../../Commons/Line';
 
-export default function MappingAuthGroupSection({ activeAuthId, handleAuthClick }) {
+export default function MappingAuthGroupSection({ activeAuthId, activeEmpId, handleAuthClick, isEditMode, selectedAuthIds, handleCheckboxChange ,setSelectedAuthIds}) {
   const orderOptions = [
     // { label: '필터', value: 'none' },
     { label: '최신순', value: 'authDashboardIdDesc' },
@@ -18,11 +18,36 @@ export default function MappingAuthGroupSection({ activeAuthId, handleAuthClick 
   const [orderBy, setOrderBy] = useState(orderOptions[0].value);
   const [searchInput, setSearchInput] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
-  const { data: countData, isLoading: isLoadingCount, error: isErrorCount, statusCode, setShouldFetch} = useFetchData(getCountAuthGroupApi);
-  
+
+
+  const { data: countData, isLoading: isLoadingCount, error: isErrorCount, statusCode, setShouldFetch} = useFetchData(isEditMode ? getCountAuthGroupApi : getEmpAuthCountApi,{
+    paths: isEditMode? null :{employeeId: activeEmpId},
+    shouldFetch:false
+  });
+
+
+
   const handleSearch = () => {
     setSearchTerm(searchInput);
+    setSearchInput('');  // 초기화
   };
+
+  useEffect(()=>{
+    if(activeEmpId){
+      setShouldFetch(true);
+    }
+    if(!isEditMode) {
+      setSelectedAuthIds({});
+    }
+  },[activeEmpId,isEditMode]);
+
+  useEffect(() => {
+    console.log(selectedAuthIds)
+  },[selectedAuthIds]);
+  if (!activeEmpId) {
+    return null;  
+  }
+
   return (
     <Container>
       <p> 권한그룹목록</p>
@@ -68,7 +93,11 @@ export default function MappingAuthGroupSection({ activeAuthId, handleAuthClick 
         orderBy={orderBy}
         searchTerm={searchTerm}
         activeAuthId={activeAuthId}
+        activeEmpId={activeEmpId}
         handleAuthClick={handleAuthClick}
+        selectedAuthIds={selectedAuthIds}
+        handleCheckboxChange={handleCheckboxChange}
+        isEditMode={isEditMode}
       />
     </Container>
   );
@@ -84,14 +113,6 @@ const Container = styled.div`
   border-right: 1px solid #ccc;
   border-bottom: 1px solid #ccc;
   padding: 20px;
-`;
-const StyledSelect = styled.select`
-  width: 100%;
-  margin-bottom: 10px;
-  height: 2.1rem;
-  padding: 7px;
-  border: 1px solid #C9C9C9;
-  border-radius: 4px;
 `;
 
 const SearchBar = styled.div`

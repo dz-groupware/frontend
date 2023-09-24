@@ -4,10 +4,10 @@ import { useFetchData } from '../../../hooks/useFetchData';
 import styled from 'styled-components';
 
 export default function MappingMenuItemView({ item, depth = 1, fetchApi, paths }) {
-  const [expanded, setExpanded] = useState(false);
+  const [expanded, setExpanded] = useState(true);
   const { data: subMenuItems, setShouldFetch, isLoading, error } = useFetchData(fetchApi, { 
     paths,
-    shouldFetch: false,
+    shouldFetch: true,
   });
   const toggleSubMenu = () => {
     if (expanded) {

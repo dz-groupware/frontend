@@ -24,6 +24,7 @@ export default function AuthGroupSection({ activeAuthId, setActiveAuthId, refres
   
   const handleSearch = () => {
     setSearchTerm(searchInput);
+    setSearchInput('');  // 초기화
   };
   useEffect(()=>{
     setShouldFetch(true);

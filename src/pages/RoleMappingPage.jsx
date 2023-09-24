@@ -1,46 +1,106 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { MdDisplaySettings, MdOutlineMapsUgc, MdSmartDisplay } from 'react-icons/md';
 import styled from 'styled-components';
 import RoleMappingMain from '../components/RoleMapping/RoleMappingMain';
 import Line from '../components/Commons/Line';
 import LinkButon from '../components/Commons/LinkButon';
+import ActionButton from '../components/Commons/ActionButton';
+import { useFetchData } from '../hooks/useFetchData';
+import { addEmployeeAuthApi } from '../api/authgroup';
 
 export default function RoleMappingPage() {
-  const [refresh, setRefresh] = useState(false);
   const [activeAuthId, setActiveAuthId] = useState(null);
   const [activeEmpId, setActiveEmpId] = useState(null);
-  const changeRefresh = () => {
-    setRefresh(!refresh);
-  }
-
+  const [isEditMode, setIsEditMode] = useState(null);
+  const [selectedAuthIds, setSelectedAuthIds] = useState({});
+  const {data, isLoading, error ,setShouldFetch, status, setStatus} = useFetchData(addEmployeeAuthApi, {
+    data:{ 
+      employeeId: activeEmpId, 
+      selectedAuthIds}, 
+    shouldFetch:false}); 
   const handleAuthClick = (authId) => {
     setActiveAuthId(authId);
   };
 
   const handleEmpClick = (empId) => {
-    console.log("empId",empId);
+    if(isEditMode){
+      alert('수정중에는 이동할 수 없습니다.');
+    }
     setActiveEmpId(empId);
   }
+  const handleSaveClick = () => {
+    if (activeEmpId && selectedAuthIds) {
+      console.log(selectedAuthIds);
+      setShouldFetch(true);   
+    }
+  }
+  useEffect(()=>{
+    if(status === 200){
+      alert('저장되었습니다.');
+      setIsEditMode(false);
+      setStatus(null);
+      setActiveAuthId(null);
+    }
+  },[status]);
 
+  const handleCheckboxChange = (authId) => {
+    setSelectedAuthIds(prevSelectedAuthIds => {
+      const newState = { ...prevSelectedAuthIds };
+      if (newState[authId]) {
+        delete newState[authId];
+      } else {
+        newState[authId] = true;
+      }
+      return newState;
+    });
+  };
+
+  useEffect(()=>{
+    console.log(activeAuthId);
+  },[activeAuthId])
   return (
     <Container>
       <TopContainer>
-      <TitleAndIconContainer>
-        <h1>권한설정</h1>
-        <IconWrapper>
-          <MdDisplaySettings fontSize={20} color='#939393'/>
-        </IconWrapper>
-        <IconWrapper>
-          <MdSmartDisplay fontSize={20} color='#939393'/>
-        </IconWrapper>
-        <IconWrapper>
-          <MdOutlineMapsUgc fontSize={20} color='#939393'/>
-        </IconWrapper>
-      </TitleAndIconContainer>
+        <TitleAndIconContainer>
+          <h1>권한설정</h1>
+          <IconWrapper>
+            <MdDisplaySettings fontSize={20} color='#939393'/>
+          </IconWrapper>
+          <IconWrapper>
+            <MdSmartDisplay fontSize={20} color='#939393'/>
+          </IconWrapper>
+          <IconWrapper>
+            <MdOutlineMapsUgc fontSize={20} color='#939393'/>
+          </IconWrapper>
+        </TitleAndIconContainer>
+        <div>
+          {activeEmpId && (        
+            <ActionButton 
+              width={'5rem'}
+              height={'2.5rem'}
+              fontWeight={600} 
+              fontSize={'1.0rem'} 
+              name= {isEditMode ? "저장":"권한부여"}
+              onClick={() => isEditMode ? handleSaveClick() : setIsEditMode(true)}
+            />
+          )}
+          {activeEmpId && isEditMode &&(        
+            <ActionButton 
+              width={'5rem'}
+              height={'2.5rem'}
+              fontWeight={600} 
+              fontSize={'1.0rem'} 
+              name="닫기"
+              onClick={() => setIsEditMode(false)}
+            />)
+          }
+        </div>
+
       </TopContainer>
+
       <Line color="#f5f5f5" height="2px" bottom={"20px"}/>
       <div style={{  marginLeft: "1.2rem" }} >
-        <LinkButon 
+        <LinkButon
           cursor="none"
           onClick={(e)=>e.preventDefault()}
           name="사용자 기준"
@@ -53,12 +113,14 @@ export default function RoleMappingPage() {
       </div>
       <Line left={"1.2rem"}/>
       <RoleMappingMain 
-        refresh={refresh} 
         activeAuthId={activeAuthId} 
-        changeRefresh={changeRefresh}
         handleAuthClick={handleAuthClick}
         activeEmpId={activeEmpId}
         handleEmpClick={handleEmpClick}
+        isEditMode={isEditMode}
+        selectedAuthIds={selectedAuthIds}
+        setSelectedAuthIds={setSelectedAuthIds}
+        handleCheckboxChange={handleCheckboxChange}
       />
     </Container>
   );

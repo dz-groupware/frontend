@@ -1,9 +1,9 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import styled from 'styled-components';
-import { getAuthGroupApi } from '../../../api/authgroup';
+import { getEmpAuthGroupApi, getEmpAuthGroupEditApi } from '../../../api/authgroup';
 import MappingAuthGroupItem from './MappingAuthGroupItem';
 
-export default function MappingAuthGroupList({ activeAuthId, orderBy, searchTerm, refresh, showCloseRequest, handleAuthClick }) {
+export default function MappingAuthGroupList({ activeAuthId,activeEmpId, orderBy, searchTerm, showCloseRequest, handleAuthClick, selectedAuthIds, handleCheckboxChange, isEditMode }) {
   const [lastId, setLastId] = useState(99999999);
   const [lastAuthName, setLastAuthName] = useState(null);
   const [data, setData] = useState([]);
@@ -14,21 +14,21 @@ export default function MappingAuthGroupList({ activeAuthId, orderBy, searchTerm
   const lastElementRef = useRef();
 
   const fetchMoreData = useCallback(async () => {
-    if (isLoading || !hasMore) return;
+    if (isLoading || !hasMore || !activeEmpId) return;
     console.log('lastName',lastAuthName)
     setIsLoading(true);
     
-    let queryParam = { 
-      pageSize: 8, 
-      orderBy, 
-      searchTerm,
-      ...(lastAuthName !== null && orderBy.includes('authName') && { lastAuthName: encodeURIComponent(lastAuthName) }),
-      ...(lastId !== null && !orderBy.includes('authName') && { lastId }),
-    };
-  
-    
+    let apiFunction = isEditMode ? getEmpAuthGroupEditApi : getEmpAuthGroupApi;
+
     try {
-      const res = await getAuthGroupApi({ params: queryParam });
+      const res = await apiFunction({ params: { 
+        employeeId: activeEmpId,
+        pageSize: 8, 
+        orderBy, 
+        searchTerm,
+        ...(lastAuthName !== null && orderBy.includes('authName') && { lastAuthName: encodeURIComponent(lastAuthName) }),
+        ...(lastId !== null && !orderBy.includes('authName') && { lastId }),
+      } });
       const response = res.data;
       
       if (response.data && response.data.length > 0) {
@@ -52,11 +52,12 @@ export default function MappingAuthGroupList({ activeAuthId, orderBy, searchTerm
     } finally {
       setIsLoading(false);
     }
-  }, [lastId, lastAuthName, orderBy, searchTerm, isLoading, hasMore]);
+  }, [lastId, lastAuthName, orderBy, searchTerm, isLoading, hasMore, activeEmpId]);
 
   useEffect(() => {
     setData([]);
     setHasMore(true);
+    lastElementRef.current = null;  // 초기화
     if (orderBy.includes('authName')) {
       setLastId(null); // authName 기준 정렬에서 lastId 는 null로 설정
       if (orderBy === 'authNameAsc') {
@@ -72,13 +73,13 @@ export default function MappingAuthGroupList({ activeAuthId, orderBy, searchTerm
           setLastId(0); // ID 오름차순 정렬을 시작합니다.
       }
   }
-  }, [orderBy, searchTerm,refresh]);
+  }, [orderBy, searchTerm,  activeEmpId, isEditMode]);
 
   useEffect(() => {
     if(data.length === 0 && hasMore) {
       fetchMoreData(); 
     }
-  }, [fetchMoreData, data.length]);
+  }, [fetchMoreData, data.length, isEditMode]);
 
   useEffect(() => {
     if (lastElementRef.current && hasMore) {
@@ -102,15 +103,23 @@ export default function MappingAuthGroupList({ activeAuthId, orderBy, searchTerm
   return (
     <Container>
       <div style={{ border: '1px solid #a9a9a9', height: '100%', overflowY: 'auto' }}>
-        {data.map((item, i) => (
-          <MappingAuthGroupItem
-            key={item.id}
-            item={item}
-            onClick={() => handleAuthClick(item.id)}
-            isActive={activeAuthId === item.id}
-            ref={i === data.length - 1 ? lastElementRef : null}
-          />
-          ))}
+        {data.length > 0 ? (
+          data.map((item, i) => (
+            <MappingAuthGroupItem
+              key={item.id}
+              item={item}
+              isEditMode={isEditMode}
+              onClick={() => handleAuthClick(item.id)}
+              isActive={activeAuthId === item.id}
+              ref={i === data.length - 1 ? lastElementRef : null}
+              selectedAuthIds={selectedAuthIds}
+              handleCheckboxChange={handleCheckboxChange}
+              hasAuth={item.hasAuth}
+            />
+          ))
+        ) : !isLoading && !hasMore ? (
+          <div>데이터가 없습니다.</div>
+        ) : null}
       </div>
       <div>
         {showCloseRequest ? <div>닫기 버튼을 눌러주세요.</div> : null}

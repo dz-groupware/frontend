@@ -5,22 +5,18 @@ import MappingMenuOfAuth from './Menu/MappingMenuOfAuth';
 import MappingMenuTreeTop from './Menu/MappingMenuTreeTop';
 import Line from '../Commons/Line';
 import { useFetchData } from '../../hooks/useFetchData';
-import { getParentCompanyWithEmployeeCountApi, getSubsidiaryCompaniesWithEmployeeCountApi } from '../../api/company';
+import { getParentCompanyWithEmployeeCountApi } from '../../api/company';
 import CompanyTreeBox from './Employee/CompanyTreeBox';
 
-export default function RoleMappingMain({ activeAuthId, handleAuthClick, activeEmpId,handleEmpClick}) {
+export default function RoleMappingMain({ activeAuthId, handleAuthClick, activeEmpId, handleEmpClick, isEditMode, selectedAuthIds, setSelectedAuthIds, handleCheckboxChange}) {
   const { data: parCompanyInfo, isLoading: companyLoading, error: companyError} = useFetchData(getParentCompanyWithEmployeeCountApi);
-  if (companyLoading) {
-    return <div>Loading...</div>;
-  }
-
-  if (companyError) {
-    return <div>Error: {companyError.message}</div>;
-  }
+  useEffect(()=>{
+  },[isEditMode]);
 
   return (
     <Container>
       <StyledCompanySection>
+        {companyError && ( <div>서버에 에러가 생겨서 불러올 수가 없습니다.</div>)}
         <CompanyTreeBox 
           item={parCompanyInfo} 
           companyId={parCompanyInfo ? parCompanyInfo.companyId : null}
@@ -28,16 +24,21 @@ export default function RoleMappingMain({ activeAuthId, handleAuthClick, activeE
           handleEmpClick={handleEmpClick}
         />
       </StyledCompanySection>
-      <StyledAuthGroupContainer >
+      <StyledAuthGroupContainer>
         <MappingAuthGroupSection
           activeAuthId={activeAuthId}
           handleAuthClick={handleAuthClick}
+          activeEmpId={activeEmpId}
+          isEditMode={isEditMode}
+          selectedAuthIds={selectedAuthIds}
+          setSelectedAuthIds={setSelectedAuthIds}
+          handleCheckboxChange={handleCheckboxChange}
         />
       </StyledAuthGroupContainer>
       <Container2>
-        <MappingMenuTreeTop 
-        />
-        <Line color="black"/>
+        {activeAuthId 
+          && <MappingMenuTreeTop /> 
+          && <Line color="black"/>}
         <MappingMenuOfAuth 
           authId={activeAuthId}
         />

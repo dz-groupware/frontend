@@ -59,5 +59,5 @@ export const useFetchData = (apiFunction, { params = {}, paths = {}, data = {}, 
     fetchData();
   }, [apiFunction, currentParams, currentPaths, currentData, shouldFetchState]); 
 
-  return { data: fetchedData, setData: setFetchedData, isLoading, error, setShouldFetch, status};  
+  return { data: fetchedData, setData: setFetchedData, isLoading, error, setShouldFetch, status, setStatus};  
 };

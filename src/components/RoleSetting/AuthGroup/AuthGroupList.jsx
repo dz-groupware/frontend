@@ -100,15 +100,19 @@
     return (
       <Container>
         <div style={{ border: '1px solid #a9a9a9', height: '100%', overflowY: 'auto' }}>
-          {data.map((item, i) => (
-            <AuthGroupItem
-              key={item.id}
-              item={item}
-              onClick={() => handleItemClick(item.id)}
-              isActive={activeAuthId === item.id}
-              ref={i === data.length - 1 ? lastElementRef : null}
-            />
-            ))}
+          {data.length > 0 ? (
+            data.map((item, i) => (
+              <AuthGroupItem
+                key={item.id}
+                item={item}
+                onClick={() => handleItemClick(item.id)}
+                isActive={activeAuthId === item.id}
+                ref={i === data.length - 1 ? lastElementRef : null}
+              />
+            ))
+          ) : !isLoading && !hasMore ? (
+            <div>데이터가 없습니다.</div>
+          ) : null}
         </div>
         <div>
           {showCloseRequest ? <div>닫기 버튼을 눌러주세요.</div> : null}

@@ -32,13 +32,6 @@ export default function CompanyTreeBox({ item, depth=0, companyId,activeEmpId, h
       setEmpFetch(true);
     }
   },[expanded,companyId]);
-  if(companyLoading || departmentLoading || empLoading) {
-    return (
-      <>
-        <div>로딩중...</div>
-      </>
-    );
-  }
   return (
     <>
       <NameBar $depth={depth} >

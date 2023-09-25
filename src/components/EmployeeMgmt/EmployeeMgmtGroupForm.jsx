@@ -89,11 +89,14 @@ export default function EmployeeMgmtGroupForm() {
 };
 
 
-
-
-  const addNewGroup = () => {
-    setGroupsInfo([...groupsInfo, {}]); // 빈 객체 추가
+const addNewGroup = () => {
+  const newGroup = {
+    deletedYn: false
   };
+  setGroupsInfo([...groupsInfo, newGroup]);
+};
+
+
 
   const handleBlur = () => {
     dispatch(employeeActions.updateGroupInfo(groupsInfo));
@@ -204,7 +207,7 @@ export default function EmployeeMgmtGroupForm() {
 
             </EmployeeMgmtGroupInputForm>
           ))}
-          {/* <StyledButton onClick={addNewGroup}>소속 부서 추가</StyledButton> */}
+          <StyledButton onClick={addNewGroup}>소속 부서 추가</StyledButton>
         </Container>
       );
     }

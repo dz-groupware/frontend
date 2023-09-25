@@ -23,7 +23,7 @@ export default function MgmtMain({ aside, form }) {
 
 const Container = styled.div`
     display: flex;
-    
+  
    
 `;
 

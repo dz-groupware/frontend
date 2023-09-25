@@ -1,181 +1,183 @@
 import { useDispatch, useSelector } from "react-redux";
-import { axiosInstance } from "../../utils/axiosInstance";
 import React, { useEffect, useState } from 'react';
 
 import MgmtInfo from "../Commons/MgmtInfo";
 import { employeeActions } from "../../utils/Slice";
+import { addEmployeeMgmt, deleteEmployeeMgmt, modifyEmployeeMgmt } from "../../api/employeemgmt";
 
 
 
-export default function EmployeeMgmtInfo({ isCodeDisabled, idForForm, formData }) {
+export default function EmployeeMgmtInfo() {
     const dispatch = useDispatch();
     const reduxEmployeeBasicInfo = useSelector(state => state.employeeMgmt.employeeBasicInfo);
     const reduxEmployeeGroupInfo = useSelector(state => state.employeeMgmt.employeeGroupInfo);
     const [basicInfo, basicSetInfo] = useState(reduxEmployeeBasicInfo);
     const [groupInfo, groupSetInfo] = useState(reduxEmployeeGroupInfo);
     const activeTab = useSelector(state => state.employeeMgmt.activeTab);
+    const idForForm = useSelector(state => state.employeeMgmt.idForForm);
 
-    
+
 
     useEffect(() => {
         basicSetInfo(reduxEmployeeBasicInfo);
-        console.log("reduxEmployeeBasicInfo:", reduxEmployeeBasicInfo);
-    }, [reduxEmployeeBasicInfo]);
+        groupSetInfo(reduxEmployeeGroupInfo);
+    }, [reduxEmployeeBasicInfo, reduxEmployeeGroupInfo]);
+    
+    const combinedEmployeeInfo = reduxEmployeeGroupInfo.map(group => ({
+        ...reduxEmployeeBasicInfo,
+        ...group
+    }));
+
 
     const handleDelete = async (e) => {
-        if (isCodeDisabled) {
-            try {
-                //    await deleteEmployeeMgmt(idForForm, {...getReduxForm});
-
-                alert("회사 데이터가 삭제되었습니다.");
-                window.location.reload();
-                dispatch(employeeActions.hideForm());
-            } catch (error) {
-                console.error("Error deleting employee data:", error);
+        if (idForForm) {
+            console.log("combinedEmployeeInfo",combinedEmployeeInfo.departmentId);
+            for (const info of combinedEmployeeInfo) {
+                if (!info.resignationDate) {
+                    alert("퇴사일을 입력해주세요.");
+                    
+                    return;
+                }
+                
+                try {
+                    console.log("퇴사 바디", info);
+                    await deleteEmployeeMgmt(info.id, info);
+                } catch (error) {
+                    console.error("Error deleting employee data for ID:", info.id, error);
+                    // 여기서 실패한 경우에 대한 추가 처리를 고려할 수 있습니다.
+                }
             }
+            alert("사원 데이터가 삭제되었습니다.");
+            window.location.reload();
+            dispatch(employeeActions.hideForm());
+            
         } else {
             alert("작성중이던 내용이 삭제되었습니다.");
             dispatch(employeeActions.hideForm());
             window.location.reload();
         }
     };
+    
+
 
 
 
     const handleUpdate = async (e) => {
         if (idForForm) {
-            try {
-                // await modifyCompanyMgmt(basicInfo);
-                alert("사원 데이터가 수정되었습니다.");
-                dispatch(employeeActions.hideForm());
-                window.location.reload();
-            } catch (error) {
-                console.error("Error updating company data:", error);
+            for (const info of combinedEmployeeInfo) {
+                try {
+                    await modifyEmployeeMgmt(info);
+                } catch (error) {
+                    console.error("Error updating employee data for ID:", info.id, error);
+                    // 여기서 실패한 경우에 대한 추가 처리를 고려할 수 있습니다.
+                }
             }
-
-
-
+            alert("사원 데이터가 수정되었습니다.");
+            dispatch(employeeActions.hideForm());
+            // window.location.reload();
+    
         } else {
-            try {
-                // await addCompanyMgmt(basicInfo);
-                alert("사원 데이터가 저장되었습니다.");
-                dispatch(employeeActions.hideForm());
-                window.location.reload();
-            } catch (error) {
-                console.error("Error adding company data:", error);
+            for (const info of combinedEmployeeInfo) {
+                try {
+                    await addEmployeeMgmt(info);
+                } catch (error) {
+                    console.error("Error adding employee data for ID:", info.id, error);
+                    // 이미 등록된 사원에 대한 오류 또는 다른 오류를 처리하기 위한 추가 로직을 여기에 넣을 수 있습니다.
+                }
             }
+            alert("사원 데이터가 저장되었습니다.");
+            dispatch(employeeActions.hideForm());
+            window.location.reload();
         }
     };
+    
 
 
 
+    const handleSubmit = async (e) => {
 
-    const handleBasicSubmit = async (e) => {
+
+
+        console.log("employee", combinedEmployeeInfo);
         const requiredFields = [
-            'name', 'IdNum', 'gender',
+            'name', 'empIdNum', 'gender',
             'accountYn', 'loginId', 'loginPw',
             'privEmail', 'mobileNumber',
-            'address', 'joinDate'
+            'address', 'joinDate', 'compId',
+            'position'
         ]; // 필수 입력 필드 목록
 
 
-        const isEmptyField = requiredFields.some(field => {
-            const value = basicInfo[field];
-            if (field === "accountYn") {
-                return value !== true && value !== false;
+        const missingFields = [];
+
+        for (const employeeInfo of combinedEmployeeInfo) {  // 배열을 순회합니다.
+            if (employeeInfo.position !== "대표") {
+                requiredFields.push('transferredYn', 'edjoinDate', 'deptId');
+                if (employeeInfo.transferredYn === true) {
+                    requiredFields.push('leftDate');
+                }
             }
-            return !value || value === 'direct' || value === null;
-        });
-
-
-        if (isEmptyField) {
-            console.log(basicInfo);
-            alert("모든 필드를 채워주세요.");
-            console.log('isEmptyField: ', isEmptyField);
+    
+            requiredFields.forEach((field) => {
+                const value = employeeInfo[field];  // 여기서 각 객체에서 필드 값을 가져옵니다.
+                if ((field !== "transferredYn" && field !== "accountYn" && !value) ||
+                    ((field === "transferredYn" || field === "accountYn") && value !== true && value !== false) ||
+                    value === 'direct' ||
+                    value === null ||
+                    value === '') {
+                    missingFields.push(field);  // 필드가 누락되거나 유효하지 않으면 missingFields 배열에 추가합니다.
+                }
+            });
+        }
+    
+        if (missingFields.length > 0) {
+            console.log("Missing fields:", missingFields);
+            alert("모든 필수 필드를 채워주세요: " + missingFields.join(", "));
             return;
         }
 
-        if (!basicInfo.privEmail.includes('@')) {
-            console.log('privEmail:', basicInfo.privEmail);
+
+        if (combinedEmployeeInfo.privEmail && !combinedEmployeeInfo.privEmail.includes('@')) {
+            console.log('privEmail:', combinedEmployeeInfo.privEmail);
             alert("이메일에 도메인이 포함되어야 합니다.");
             return;
         }
-        if (basicInfo.IdNum.length !== 14 || !basicInfo.IdNum.includes('-')) {
+        if (combinedEmployeeInfo.empIdNum && (combinedEmployeeInfo.empIdNum.length !== 14 || !combinedEmployeeInfo.empIdNum.includes('-'))) {
             alert("주민등록번호는 '-'를 포함한 14자리여야 합니다.");
             return;
         }
+        
 
-        const joinDate = new Date(basicInfo.joinDate);
-        const resignationDate = basicInfo.resignationDate ? new Date(basicInfo.resignationDate) : null;
+        const joinDate = new Date(combinedEmployeeInfo.joinDate);
+        const resignationDate = combinedEmployeeInfo.resignationDate ? new Date(combinedEmployeeInfo.resignationDate) : null;
 
         if (resignationDate && joinDate > resignationDate) {
             alert("퇴사일은 입사일 이후의 날짜여야 합니다.");
             return;
         }
 
-    
-        dispatch(employeeActions.updateInfo(basicInfo));
+        const ecjoinDate = new Date(combinedEmployeeInfo.ecjoinDate);
+        const leftDate = combinedEmployeeInfo.leftDate ? new Date(combinedEmployeeInfo.leftDate) : null;
 
-        handleUpdate(e);
-
-    };
-
-
-    const handleGroupSubmit = async (e) => {
-        const requiredFields = [
-            'name', 'IdNum', 'gender',
-            'accountYn', 'loginId', 'loginPw',
-            'email', 'privEmail', 'mobileNumber',
-            'address', 'joinDate'
-        ]; // 필수 입력 필드 목록
-
-
-        const isEmptyField = requiredFields.some(field => {
-            const value = groupInfo[field];
-            if (field === "accountYn") {
-                return value !== true && value !== false;
-            }
-            return !value || value === 'direct' || value === null;
-        });
-
-
-        if (isEmptyField) {
-            console.log(groupInfo);
-            alert("모든 필드를 채워주세요.");
-            console.log('isEmptyField: ', isEmptyField);
-            return;
-        }
-
-
-        const joinDate = new Date(groupInfo.joinDate);
-        const resignationDate = groupInfo.resignationDate ? new Date(groupInfo.resignationDate) : null;
-
-        if (resignationDate && joinDate > resignationDate) {
+        if (leftDate && ecjoinDate > leftDate) {
             alert("부서 이동일은 부서 배정일 이후의 날짜여야 합니다.");
             return;
         }
 
-
-        dispatch(employeeActions.updateInfo(groupInfo));
-
+        dispatch(employeeActions.updateBasicInfo(basicInfo));
+        dispatch(employeeActions.updateGroupInfo(groupInfo));
         handleUpdate(e);
-        console.log(groupInfo);
-
-    };
 
 
-    const handleSubmit = async (e) => {
-        if (activeTab == "basic") {
-            handleBasicSubmit(e);
-
-        }
-        else {
-            handleGroupSubmit(e);
-        }
     }
 
+
+
     return (
-        <MgmtInfo title="상세" $noborder="true" onSubmit={handleSubmit} onDelete={handleDelete} hideFormAction={employeeActions.hideForm}>
+        <MgmtInfo title="상세" $noborder="true"
+            onSubmit={handleSubmit}
+            onDelete={handleDelete}
+            hideFormAction={employeeActions.hideForm}>
 
         </MgmtInfo>
     );

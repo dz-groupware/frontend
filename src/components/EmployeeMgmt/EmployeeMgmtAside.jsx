@@ -140,12 +140,13 @@ export default function EmployeeMgmtAside() {
       }));
 
 
+
       // Redux에 업데이트
       dispatch(employeeActions.updateBasicInfo(employeeBasicInfo)); // Redux action이 단일 객체를 받아야 함
       dispatch(employeeActions.updateGroupInfo(employeeGroupInfo)); // Redux action이 배열을 받아야 함
 
       console.log("3333basic", reduxbasicInfo.id);//잘나옴
-      console.log("3333group", reduxgroupInfo);//잘나옴
+      console.log("3333group", employeeGroupInfo);//잘나옴
 
 
       dispatch(employeeActions.showForm({

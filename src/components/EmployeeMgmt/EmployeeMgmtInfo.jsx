@@ -74,7 +74,7 @@ export default function EmployeeMgmtInfo() {
             }
             alert("사원 데이터가 수정되었습니다.");
             dispatch(employeeActions.hideForm());
-            // window.location.reload();
+            window.location.reload();
     
         } else {
             for (const info of combinedEmployeeInfo) {
@@ -82,7 +82,6 @@ export default function EmployeeMgmtInfo() {
                     await addEmployeeMgmt(info);
                 } catch (error) {
                     console.error("Error adding employee data for ID:", info.id, error);
-                    // 이미 등록된 사원에 대한 오류 또는 다른 오류를 처리하기 위한 추가 로직을 여기에 넣을 수 있습니다.
                 }
             }
             alert("사원 데이터가 저장되었습니다.");

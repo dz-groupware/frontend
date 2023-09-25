@@ -23,6 +23,7 @@ export default function EmployeeMgmtGroupForm() {
   const [companyOptions, setCompanyOptions] = useState([]);
   const [departmentOptions, setDepartmentOptions] = useState([]);
   const [groupsInfo, setGroupsInfo] = useState([reduxEmployeeGroupInfo]);
+  
 
   useEffect(() => {
     // 회사 목록을 가져오는 함수
@@ -104,6 +105,7 @@ export default function EmployeeMgmtGroupForm() {
         <EmployeeMgmtGroupInputForm key={idx}>
           <InputContainer>
             <Label>회사</Label>
+
             <Select
               name="compId"
               value={group.compId || ''}
@@ -127,7 +129,7 @@ export default function EmployeeMgmtGroupForm() {
                 onBlur={handleBlur}
               >
                 <option value="direct">선택</option>
-                <option value="대표">대표</option>
+                {group.position === '대표' && <option value="대표">대표</option>}
                 <option value="팀장">팀장</option>
                 <option value="부장">부장</option>
                 <option value="대리">대리</option>
@@ -199,6 +201,7 @@ export default function EmployeeMgmtGroupForm() {
                   disabled={group.transferredYn !== true}
                 />
               </HalfInputContainer>
+
             </EmployeeMgmtGroupInputForm>
           ))}
           {/* <StyledButton onClick={addNewGroup}>소속 부서 추가</StyledButton> */}

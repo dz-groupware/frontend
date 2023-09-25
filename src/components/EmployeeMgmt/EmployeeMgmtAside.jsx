@@ -19,6 +19,7 @@ export default function EmployeeMgmtAside() {
   useEffect(() => {
     async function fetchEmployees() {
       const data = await getEmployeeMgmtList();
+      console.log("data" ,data);
       setEmployeeDataList(data);
     }
 
@@ -48,19 +49,18 @@ export default function EmployeeMgmtAside() {
 
     let sortedDataList = Object.keys(dataList).map(key => dataList[key]);
 
-
     // sortType에 따라서 정렬
     if (sortType === "sortdate") {
       sortedDataList = sortedDataList.sort((a, b) => a.joinDate.localeCompare(b.joinDate));
     } else if (sortType === "sortname") {
       sortedDataList = sortedDataList.sort((a, b) => a.name.localeCompare(b.name));
     }
-
+ 
     const elements = sortedDataList.map((data, index) => {
       const truncatedLoginId = truncateString(data.loginId, 7);
       const truncatedName = truncateString(data.name, 6);
+      // console.log("data.id", data.id);
       return (
-
         <Wrapper key={index} onClick={() => handleEmployeeClick(data)} isselected={(data.id === selectedEmployeeId).toString()}>
           <ImageAndName>
             <Image src={data.imageUrl} alt="Employee Image" />
@@ -92,6 +92,9 @@ export default function EmployeeMgmtAside() {
   async function handleEmployeeClick(employeeMgmt) {
     // setIsSelected(employeeMgmt.id);
     setSelectedEmployeeId(employeeMgmt.id);
+    console.log("selectedEmployeeId",selectedEmployeeId);
+
+    
     try {
       const fetchedEmployeeData = await getEmployeeDetailsById(employeeMgmt.id);
       
@@ -105,8 +108,9 @@ export default function EmployeeMgmtAside() {
       const fetchedEmployeeArray = Object.values(fetchedEmployeeData);
       // 첫 번째 데이터로 basicInfo 생성
       const firstEmployee = fetchedEmployeeArray[0];
+      console.log("firstEmployee",firstEmployee);
 
-      const basicInfo = {
+      const employeeBasicInfo = {
         id: firstEmployee.id,
         imageUrl: firstEmployee.imageUrl,
         name: firstEmployee.name,
@@ -124,28 +128,30 @@ export default function EmployeeMgmtAside() {
       };
 
       // 모든 데이터에서 groupInfo 수집
-      const employeeGroupInfoArray = fetchedEmployeeArray.map(employee => ({
+      const employeeGroupInfo = fetchedEmployeeArray.map(employee => ({
+        departmentId: employee.departmentId,
         position: employee.position,
         compId: employee.compId,
         deptId: employee.deptId,
         transferredYn: employee.transferredYn,
         edjoinDate: employee.edjoinDate,
-        leftDate: employee.leftDate
+        leftDate: employee.leftDate,
+        deletedYn: employee.deletedYn
       }));
 
 
       // Redux에 업데이트
-      dispatch(employeeActions.updateBasicInfo(basicInfo)); // Redux action이 단일 객체를 받아야 함
-      dispatch(employeeActions.updateGroupInfo(employeeGroupInfoArray)); // Redux action이 배열을 받아야 함
+      dispatch(employeeActions.updateBasicInfo(employeeBasicInfo)); // Redux action이 단일 객체를 받아야 함
+      dispatch(employeeActions.updateGroupInfo(employeeGroupInfo)); // Redux action이 배열을 받아야 함
 
       console.log("3333basic", reduxbasicInfo.id);//잘나옴
       console.log("3333group", reduxgroupInfo);//잘나옴
 
 
       dispatch(employeeActions.showForm({
-        basicInfo,
-        employeeGroupInfoArray,
-        id: basicInfo.id
+        employeeBasicInfo,
+        employeeGroupInfo,
+        id: employeeBasicInfo.id
       }));
 
 

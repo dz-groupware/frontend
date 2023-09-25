@@ -71,10 +71,24 @@ export const addEmployeeMgmt = async (employeeInfo) => {
 };
 
 
+export const modifyEmployeeMgmt = async (employeeInfo) => {
+  try {
+    const response = await axiosInstance.put(`/employeemgmt`,employeeInfo);
+    return response.data;
+  } catch (error) {
+    console.error("Error adding company data:", error);
+    alert("오류가 발생했습니다.");  // 사용자에게 오류 메시지를 표시합니다.
+    throw error;
+}
+};
+
+
+
+
 
 export const deleteEmployeeMgmt = async (id, employeeInfo) => {
   try {
-      const response = await axiosInstance.delete(`/companies/del/${id}`, employeeInfo);
+      const response = await axiosInstance.put(`/employeemgmt/del/${id}`, employeeInfo);
       return response.data;
   } catch (error) {
       console.error("Error deleting company data:", error);

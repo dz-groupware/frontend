@@ -46,6 +46,7 @@ const employeeMgmtInitialState = {
     
   },
   employeeGroupInfo: [{
+    departmentId:'',
     compId: '',
     deptId: '',
     position: '',
@@ -154,12 +155,14 @@ function createManagementSlice(initialState, sliceName) {
       updateGroupInfo: (state, action) => {
         if (Array.isArray(action.payload)) {  // 전달된 payload가 배열인지 확인
           state.employeeGroupInfo = action.payload.map(data => ({
+            departmentId: data.departmentId,
             position: data.position,
             compId: data.compId,
             deptId: data.deptId,
             transferredYn: data.transferredYn,
             edjoinDate: data.edjoinDate,
-            leftDate: data.leftDate
+            leftDate: data.leftDate,
+            deletedYn: data.deletedYn
           }));
         } else {
           console.warn("Expected an array for updateGroupInfo but received:", action.payload);
@@ -183,20 +186,20 @@ function createManagementSlice(initialState, sliceName) {
             ...state[infoKey],
             ...firstItem,
           };
+
           state.idForForm = firstItem.id;
-          console.log("firstItem.id",firstItem.id);
         } else if (action.payload && action.payload[infoKey]) {
           state[infoKey] = {
             ...state[infoKey],
             ...action.payload[infoKey],
           };
           state.idForForm = action.payload[infoKey].id;
-          console.log("action.payload[infoKey].id",action.payload[infoKey].id);
         } else {
           state.idForForm = null;
+
+
         }
         state.activeTab = initialState.activeTab;
-        console.log("idForForm",action.payload.id);
 
         
       },

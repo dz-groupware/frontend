@@ -1,15 +1,15 @@
 import styled from 'styled-components';
 
-export default function Profile(props) {
+export default function Profile({ profile, empId }) {
 
-  for (let profile of props.profile) {
-    if (profile['empId'] === props.empId) {
+  for (let prf of profile) {
+    if (prf['empId'] === empId) {
       return (
         <ProfileArea>
-          <img src={profile['imageUrl']} alt='profileImg' />
+          <img src={prf['imageUrl']} alt='profileImg' />
           <div>
-            <div id="profile_name">{profile['empName']}</div>
-            <p>{profile['compName']} / {profile['deptName']}</p>
+            <div id="profile_name">{prf['empName']}</div>
+            <p>{prf['compName']} / {prf['deptName']}</p>
           </div>
         </ProfileArea>
       );

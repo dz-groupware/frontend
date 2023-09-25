@@ -20,14 +20,14 @@ export default function IconImageList(props){
 
   return(
     <IconDiv>
-      { props.newIconFile.length !== 0 &&
-        <div onClick={() => {props.setIconUrl(props.newIconFile['name'])}} >
-          {props.newIconFile['name'] === props.iconUrl ? <img src={props.newIconFile['name']} alt='i' key='new' id='clicked'/> : <img src={props.newIconFile['name']} alt='i' key='new'/>}
+      { props.newIconUrl !== "" && props.newIconUrl !== undefined &&
+        <div onClick={() => {props.setIconUrl(path+prefix+props.newIconFile['name'])}} >
+          {props.newIconFile['name'] === props.iconUrl ? <img src={props.newIconUrl} alt='i' key='new' id='clicked'/> : <img src={props.newIconUrl} alt='i' key='new'/>}
         </div>
       }
       {
       iconList.map((a, i) => (
-        <div onClick={() => {props.setIconUrl(a['key'])}} key={a['key']+'iconList'}>
+        <div onClick={() => {props.setIconUrl(path+a['key'])}} key={a['key']+'iconList'}>
           { a['key'] === props.iconUrl ? <img src={path+a['key']} alt='i' key={i} id='clicked'/> :<img src={path+a['key']} alt='i' key={i}/>}
         </div>
       ))

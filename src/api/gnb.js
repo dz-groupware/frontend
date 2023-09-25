@@ -33,6 +33,7 @@ export function profileAPI(){
 
 
 export function searchMenuListAPI(menuId, compId) {
+  console.log('lnb request (menuId) : ', menuId);
   if(menuId !== undefined && menuId !== null && compId !== undefined && compId !== null) {
       return axiosInstance.get(
           `/menu/lnb`,{
@@ -45,8 +46,11 @@ export function searchMenuListAPI(menuId, compId) {
   }
 }
 
-export function basicInfoApi(empId){
+export function basicInfoApi(empId, menuId){
+  const headers = {
+    'menuId' : menuId
+  }
 if(empId !== undefined && empId !== null){
-  return axiosInstance.get(`/home`);
+  return axiosInstance.get(`/home`, { headers });
 }
 }

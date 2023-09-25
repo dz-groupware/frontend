@@ -20,20 +20,22 @@ export default function LoginForm() {
   const [inputValid, setInputValid] = useState(false);
   // const loginAction = useLoginMutation(loginValue);
   const navigate = useNavigate();
-  const { data, isLoading, error, setData, setShouldFetch, statusCode } = useFetchData(loginApi,{data: {
+  const { data, isLoading, error, setData, setShouldFetch, status } = useFetchData(loginApi,{data: {
     loginId: loginValue.loginId,
     loginPw: loginValue.password,
   },shouldFetch:false});
 
   const handleInputChange = (e) => {
     setLoginValue({...loginValue, [e.target.name]: e.target.value})
+
+  }
+
+  const handleLoginAction = async (e) => {
+    e.preventDefault();
     setData({
       loginId: loginValue.loginId,
       loginPw: loginValue.password,
     });
-  }
-
-  const handleLoginAction = async (e) => {
     setShouldFetch(true);  // API 호출을 활성화
   };
 
@@ -41,20 +43,15 @@ export default function LoginForm() {
   const dispatch = useDispatch();
 
   useEffect(()=>{
-    console.log("code,",statusCode);
-    if(statusCode===200){
-      // 추가(김현주) : 로그인 시 empId, compId를 리덕스 슬라이스에 저장해야 함.
-      // 로그인 실패시 statusCode가 undefined로 되어 있어서 일부러 성공시 200을 반환하게 변경한 상태
-      dispatch(newEmpId(data['empId']));
-      dispatch(newCompId(data['compId']));
+    if(status===202){
       localStorage.setItem('empId', data['empId']);
       localStorage.setItem('compId', data['compId']);
       navigate('/',{state:{ menuId: "0" }});
     }
-  }, [statusCode]);
+  },[status]);
 
   return (
-    <Container>
+    <StyledForm onSubmit={handleLoginAction}>
       <LoginText>로그인</LoginText>
       <SignInput
         name={"loginId"}
@@ -79,10 +76,10 @@ export default function LoginForm() {
       <SignButton
         onClickHandler={handleLoginAction} 
       />
-    </Container>
+    </StyledForm>
   )
 }
-const Container = styled.article`
+const StyledForm = styled.form`
   width: 80%;
   display: flex;
   flex-direction: column;

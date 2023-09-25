@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
-import styled from 'styled-components';
+import React from 'react'
 import LinkButon from '../../Commons/LinkButon';
 import ActionButton from '../../Commons/ActionButton';
+import styled from 'styled-components';
 
-export default function MenuTreeTop({isEditMode, setIsEditMode, setIsSaveClicked, setIsDeleteClicked}) {
+export default function MappingMenuTreeTop({isEditMode, setIsEditMode, setIsSaveClicked, setIsDeleteClicked}) {
 
   return (
     <Container>
@@ -17,34 +17,6 @@ export default function MenuTreeTop({isEditMode, setIsEditMode, setIsSaveClicked
             showBorderLeft={true}
             showBorderRight={true}
         />
-        <ActionButtonWrapper>
-          {isEditMode && (
-            <ActionButton 
-              width={'3rem'}
-              fontWeight={400} 
-              fontSize={'1.0rem'} 
-              name="저장"
-              onClick={() => setIsSaveClicked(true)}
-              // onClick={handleSaveClick}
-            />
-          )}
-          {isEditMode && (
-            <ActionButton 
-              width={'3rem'}
-              fontWeight={400} 
-              fontSize={'1.0rem'} 
-              name="삭제"
-              onClick={() => setIsDeleteClicked(true)}
-            />
-          )}
-          <ActionButton 
-            width={'3rem'}
-            fontWeight={400} 
-            fontSize={'1.0rem'} 
-            name={isEditMode ? '닫기' : '수정'}
-            onClick={() => setIsEditMode(prev => !prev)}
-          />
-        </ActionButtonWrapper>
       </HeaderWrapper>
       <SearchWrapper>
         <Element>
@@ -81,13 +53,9 @@ const SearchWrapper = styled.div`
   border: 1px solid lightgrey;
 `;
 
-const ActionButtonWrapper = styled.div`
-  
-`;
 const Element = styled.div`
   flex: 1;
   display: flex;
   justify-content: space-between;
   align-items: center;
 `;
-

@@ -5,6 +5,7 @@ import { axiosInstance } from '../../utils/axiosInstance';
 import { styled } from 'styled-components';
 import { employeeActions } from '../../utils/Slice';
 import { getCompanyMgmtList } from '../../api/companymgmt';
+import { findEmployeeMgmtList } from '../../api/employeemgmt';
 //회사 목록 선택시 보내는 Search 부분 api 변경해야함 선택 옵션도 달라져야함 
 
 
@@ -32,21 +33,25 @@ export default function EmployeeMgmtNav() {
 
   const handleSearch = async () => {
     try {
-      dispatch(employeeActions.hideForm());
-      // searchValue와 selectedOption이 빈 문자열일 경우 *로 처리
-      const actualSearchValue = searchValue === "" ? "%25%25" : `%25${searchValue}%25`;
-      const actualSelectedOption = selectedOption === "" ? 2 : `${selectedOption}`;
-
-      const response = await axiosInstance.get(`/companies/search?name=${actualSearchValue}&enabledYn=${actualSelectedOption}`);
-
-
-      // 응답 데이터 처리
-      console.log("API Response:", response.data);
-      dispatch(employeeActions.searchInfo(response.data));
+        dispatch(employeeActions.hideForm());
+        
+        const responseData = await findEmployeeMgmtList(searchValue, selectedOption);
+            
+        // 응답 데이터 처리
+        console.log("API Response:", responseData);
+        dispatch(employeeActions.searchInfo(responseData));
     } catch (error) {
-      console.error("API Error:", error);
+        console.error("API Error:", error);
     }
-  };
+};
+    
+
+
+const handleKeyDown  = (e) => {
+  if (e.key === 'Enter') {
+    handleSearch(); // Enter 키를 누르면 검색 실행
+  }
+};
 
   const searchFields = (
     <>
@@ -55,7 +60,7 @@ export default function EmployeeMgmtNav() {
         value={selectedOption}
         onChange={(e) => setSelectedOption(e.target.value)}
       >
-        <option value="0">선택</option>
+        <option value="0">전체</option>
 
 
         {Array.isArray(companyOptions) && companyOptions.length > 0 ? companyOptions.map((company) => (
@@ -69,6 +74,7 @@ export default function EmployeeMgmtNav() {
       <Input
         value={searchValue}
         onChange={(e) => setSearchValue(e.target.value)}
+        onKeyDown={handleKeyDown } 
       />
     </>
   );

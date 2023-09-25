@@ -1,137 +1,221 @@
 import MgmtInfoMenu from '../Commons/MgmtInfoMenu';
 import {
-    Container,
-    InputContainer,
-    HalfInputContainer,
-    Label,
-    Input,
-    DoubleInputContainer,
-    PrefixSelect,
-    FormInput,
-    Select
+  Container,
+  InputContainer,
+  HalfInputContainer,
+  Label,
+  Input,
+  FormInput,
+  Select
 } from '../Commons/StyledForm';
-import EmployeeMgmtInfo from './EmployeeMgmtInfo';
-
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { hideForm, updateInfo } from '../../App';
 import { axiosInstance } from '../../utils/axiosInstance';
 import { styled } from 'styled-components';
-
+import { employeeActions } from '../../utils/Slice';
+import StyledButton from '../Commons/StyledButton';
 
 export default function EmployeeMgmtGroupForm() {
-    const dispatch = useDispatch();
-    const reduxCompanyInfo = useSelector(state => state.companyMgmt.companyInfo);
-    const isVisible = useSelector(state => state.companyMgmt.isVisible);
-    const [info, setInfo] = useState(reduxCompanyInfo);
-    const [companyOptions, setCompanyOptions] = useState([]); 
-    const [selectedOption, setSelectedOption] = useState("");
+  const dispatch = useDispatch();
+  const reduxEmployeeGroupInfo = useSelector(state => state.employeeMgmt.employeeGroupInfo);
+  const isVisible = useSelector(state => state.employeeMgmt.isVisible);
+  const [info, setInfo] = useState(reduxEmployeeGroupInfo);
+  const [companyOptions, setCompanyOptions] = useState([]);
+  const [departmentOptions, setDepartmentOptions] = useState([]);
+  const [groupsInfo, setGroupsInfo] = useState([reduxEmployeeGroupInfo]);
+  
 
-    
   useEffect(() => {
     // 회사 목록을 가져오는 함수
     const fetchCompanies = async () => {
       try {
-
         const response = await axiosInstance.get('/companies/');
         setCompanyOptions(response.data);
       } catch (error) {
         console.error("API Error:", error);
       }
     };
-
-    fetchCompanies(); // 함수 실행
+    // 부서 목록을 가져오는 함수
+    const fetchDepartments = async () => {
+      try {
+        const response = await axiosInstance.get('/employeemgmt/dep');
+        setDepartmentOptions(response.data);
+      } catch (error) {
+        console.error("API Error:", error);
+      }
+    };
+    fetchCompanies();
+    fetchDepartments();
   }, []);
 
 
+  useEffect(() => {
+    console.log("groupsInfo has changed:", groupsInfo);
+}, [groupsInfo]);
 
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        const finalValue = name === "accountYn" ? Number(value) : value;
+  useEffect(() => {
+    // info가 배열인 경우에 대한 처리
+    if (Array.isArray(reduxEmployeeGroupInfo)) {
+      setGroupsInfo(reduxEmployeeGroupInfo.map(item => ({ ...item })));
+    } else {
+      // info가 배열이 아닌 경우에 대한 처리
+      setGroupsInfo([reduxEmployeeGroupInfo]);
+    }
+  }, [reduxEmployeeGroupInfo, isVisible]);
 
-        setInfo(prev => ({
-            ...prev,
-            [name]: finalValue,
-        }));
+  const handleChange = (e, idx) => {
+    const { name, value } = e.target;
+    let propName = name;
 
+    // Extract correct property name for transferredYn
+    if (name.startsWith("transferredYn")) {
+      propName = "transferredYn";
+    }
+
+    let finalValue;
+    if (propName === "transferredYn") {
+      finalValue = value === "true";
+    } else {
+      finalValue = value;
+    }
+
+
+    const updatedGroups = [...groupsInfo];
+    updatedGroups[idx] = {
+      ...updatedGroups[idx],
+      [propName]: finalValue
     };
+    setGroupsInfo(updatedGroups);
+};
 
 
-    return (
+const addNewGroup = () => {
+  const newGroup = {
+    deletedYn: false
+  };
+  setGroupsInfo([...groupsInfo, newGroup]);
+};
 
-        <Container>
-            <EmployeeMgmtGroupInputForm>
+
+
+  const handleBlur = () => {
+    dispatch(employeeActions.updateGroupInfo(groupsInfo));
+  };
+
+  return (
+    <Container>
+      {groupsInfo.map((group, idx) => (
+        <EmployeeMgmtGroupInputForm key={idx}>
+          <InputContainer>
+            <Label>회사</Label>
+
+            <Select
+              name="compId"
+              value={group.compId || ''}
+              onChange={(e) => handleChange(e, idx)}
+              onBlur={handleBlur}
+            >
+              <option value="direct">선택</option>
+              {companyOptions && companyOptions.map((company, index) => (
+                <option key={index} value={company.id}>{company.name}</option>
+              ))}
+            </Select>
+          </InputContainer>
+
+          <HalfInputContainer>
             <InputContainer>
-                        <Label>회사</Label>
-                        <Select
-        value={selectedOption} 
-        onChange={(e) => setSelectedOption(e.target.value)}
-      >
-        {/* <option value="" >선택</option>
-        {companyOptions && companyOptions.map((company, index) => (
-          <option key={index} value={company.code}>{company.name}</option>
-        ))}
-         */}
-      </Select>
-                    </InputContainer>
+              <Label>직급</Label>
+              <Select
+                name="position"
+                value={group.position}
+                onChange={(e) => handleChange(e, idx)}
+                onBlur={handleBlur}
+              >
+                <option value="direct">선택</option>
+                {group.position === '대표' && <option value="대표">대표</option>}
+                <option value="팀장">팀장</option>
+                <option value="부장">부장</option>
+                <option value="대리">대리</option>
+                <option value="사원">사원</option>
+              </Select>
+            </InputContainer>
 
-                <HalfInputContainer>
+            <InputContainer>
+              <Label>부서</Label>
+              <Select
+                name="deptId"
+                value={group.deptId}
+                onChange={(e) => handleChange(e, idx)}
+                onBlur={handleBlur}
+              >
+                <option value="direct">선택</option>
+                {departmentOptions && departmentOptions.map((department, index) => (
+                  <option key={index} value={department.id}>{department.name}</option>
+                  ))}
+                  </Select>
+                </InputContainer>
+              </HalfInputContainer>
+    
+              <InputContainer>
+                <Label>인사이동유무</Label>
+                <label>
+                  <Input
+                    type="radio"
+                    name={`transferredYn-${idx}`}
+                    value="true"
+                    checked={group.transferredYn === true}
+                    onChange={(e) => handleChange(e, idx)}
+                    onBlur={handleBlur}
+                  />
+                  이동
+                </label>
+                <label>
+                  <Input
+                    type="radio"
+                    name={`transferredYn-${idx}`}
+                    value="false"
+                    checked={group.transferredYn === false}
+                    onChange={(e) => handleChange(e, idx)}
+                    onBlur={handleBlur}
+                  />
+                  미이동
+                </label>
+              </InputContainer>
+    
+              <HalfInputContainer>
+                <FormInput
+                  label="부서 배정일"
+                  name="edjoinDate"
+                  type="date"
+                  value={group.edjoinDate || ''}
+                  onChange={(e) => handleChange(e, idx)}
+                  onBlur={handleBlur}
+                  
 
-                    <InputContainer>
-                        <Label>직급</Label>
+                />
+                <FormInput
+                  label="부서 이동일"
+                  name="leftDate"
+                  type="date"
+                  value={group.leftDate || ''}
+                  onChange={(e) => handleChange(e, idx)}
+                  onBlur={handleBlur}
 
-                        <Select name="position" value={info.position} onChange={handleChange}>
-                            <option value="direct">선택</option>
-                            <option value="대표">대표</option>
-                            <option value="팀장">팀장</option>
-                            <option value="부장">부장</option>
-                            <option value="대리">대리</option>
-                            <option value="사원">사원</option>
-                        </Select>
-                    </InputContainer>
-                    <FormInput label="부서" name="departmentName" value={info.departmentName || ''} onChange={handleChange} />
-                </HalfInputContainer>
-
-
-
-                <HalfInputContainer>
-                    <FormInput label="사번" name="employeeId" value={info.employeeId || ''} onChange={handleChange} />
-
-                    <InputContainer>
-                        <Label>인사이동유무</Label>
-                        <label>
-                            <Input type="radio" name="transferredYn" value="1" checked={info.transferredYn === 1} onChange={handleChange} />사용
-                        </label>
-                        <label>
-                            <Input type="radio" name="transferredYn" value="0" checked={info.transferredYn === 0} onChange={handleChange} />미사용
-                        </label>
-                    </InputContainer>
-                </HalfInputContainer>
-
-
-
-
-                <HalfInputContainer>
-                    <FormInput label="부서 배정일" name="joinDate" type="date" value={info.joinDate || ''} onChange={handleChange} />
-                    <FormInput label="부서 이동일" name="leftDate" type="date" value={info.leftDate || ''} onChange={handleChange} />
-
-                </HalfInputContainer>
-
+                  disabled={group.transferredYn !== true}
+                />
+              </HalfInputContainer>
 
             </EmployeeMgmtGroupInputForm>
-
-
+          ))}
+          <StyledButton onClick={addNewGroup}>소속 부서 추가</StyledButton>
         </Container>
-
-    );
-}
-
-
-
-
-const EmployeeMgmtGroupInputForm = styled.div`
-  border-top : 2px solid black;
-  margin-top : 10px;
-  width : 105%;
-  background-color: white;
-`;
+      );
+    }
+    
+    const EmployeeMgmtGroupInputForm = styled.div`
+      border-top: 2px solid black;
+      margin-top: 10px;
+      width: 100%;
+      background-color: white;
+    `;
+    

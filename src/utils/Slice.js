@@ -1,69 +1,70 @@
-import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { addAuthApi, getAuthGroupApi } from '../api/authgroup';
 //jane
 const companyMgmtInitialState = {
-    companyInfo: {
-      id: '',
-      parId:'',
-      code: '',
-      enabledYn: '',
-      name: '',
-      abbr: '',
-      businessType: '',
-      repName: '',
-      repIdNum: '',
-      repTel: '',
-      businessNum: '',
-      corpType: '',
-      corpNum: '',
-      establishmentDate: '',
-      openingDate: '',
-      closingDate: '',
-      address: '',
-      deletedYn: false
-    },
-    idForForm: null,
-    isVisible: false,
-    searchList: JSON.parse('[{"":""}]')
-  };
-  
-   const employeeMgmtInitialState = {
-    employeeBasicInfo: {
-      id: '',
-      imageUrl:'',
-      name: '',
-      IdNum: '',
-      gender: '',
-      accountYn: true,
-      loginId: '',
-      loginPw: '',
-      privEmail: '',
-      mobileNumber: '',
-      homeNumber: '',
-      address: '',
-      joinDate: '',
-      resignationDate: '',
-    },
-    employeeGroupInfo:{
-      
-      position:'',
-      id:'',
-      departmentName:'',
-      employeeId:'',
-      transferredYn:'',
-      joinDate:'',
-      leftDate:'',
-     },
-    idForForm: null,
-    isVisible: false,
-    searchList: JSON.parse('[{"":""}]'),
-    activeTab :'basic'
-  }
+  companyInfo: {
+    id: '',
+    parId: '',
+    code: '',
+    enabledYn: '',
+    name: '',
+    abbr: '',
+    businessType: '',
+    repName: '',
+    repIdNum: '',
+    repTel: '',
+    businessNum: '',
+    corpType: '',
+    corpNum: '',
+    establishmentDate: '',
+    openingDate: '',
+    closingDate: '',
+    address: '',
+    deletedYn: false
+  },
+  idForForm: null,
+  isVisible: false,
+  searchList: JSON.parse('[{"":""}]')
+};
 
-function getIdFormLocal(k, d){
+const employeeMgmtInitialState = {
+  employeeBasicInfo: {
+    id: '',
+    imageUrl: '',
+    name: '',
+    empIdNum: '',
+    gender: '',
+    accountYn: true,
+    loginId: '',
+    loginPw: '',
+    privEmail: '',
+    mobileNumber: '',
+    homeNumber: '',
+    address: '',
+    joinDate: '',
+    resignationDate: '',
+    
+  },
+  employeeGroupInfo: [{
+    departmentId:'',
+    compId: '',
+    deptId: '',
+    position: '',
+    transferredYn: false,
+    edjoinDate: '',
+    leftDate: '',
+    deletedYn: false,
+  }],
+  idForForm: null,
+  isVisible: false,
+  searchList: JSON.parse('[{"":""}]'),
+  activeTab: 'basic'
+}
+
+function getIdFormLocal(k, d) {
   try {
     const value = localStorage.getItem(k);
-    if (value !== null){
+    if (value !== null) {
       return JSON.parse(value);
     }
     return d;
@@ -71,7 +72,6 @@ function getIdFormLocal(k, d){
     return d;
   }
 }
-
 
 export const loginSlice = createSlice({
   name: 'loginInfo',
@@ -117,59 +117,69 @@ export const loginSlice = createSlice({
         hideForm: (state) => {
           state.isVisible = false;
           state.idForForm = null;
-        },
-        resetState: (state) => {
-          return initialState;
-        },
-        setActiveTab: (state, action) => {
-          state.activeTab = action.payload;
-      }
-        
-      }
-    });
-  }
-  export const fetchAuthGroups = createAsyncThunk(
-    'authGroup/fetchAuthGroups',
-    async (queryParams) => {
-      try {
-        const response = await getAuthGroupApi({ params: queryParams });
-        return response.data;
-      } catch (error) {
-        throw Error(error);
-      }
+        }
+        state.activeTab = initialState.activeTab;
+
+      },
+      hideForm: (state) => {
+        state.isVisible = false;
+        state.idForForm = null;
+      },
+      resetState: (state) => {
+        state.isVisible = false;
+        state.idForForm = null;
+        return initialState;
+      },
+      setActiveTab: (state, action) => {
+        state.activeTab = action.payload;
+      },
+
+
     }
-  );
-  export const addAuthGroup = createAsyncThunk('authGroup/addAuthGroup', async (newAuthGroup, { dispatch }) => {
-    await addAuthApi({ data: newAuthGroup });
-    dispatch(fetchAuthGroups()); // 새 권한을 추가한 후 목록을 새로고침
   });
-  export const authGroupSlice = createSlice({
-    name: 'authGroup',
-    initialState: {
-      data: [],
-      hasMore: true,
-      isLoading: false,
-      error: null,
+}
+export const fetchAuthGroups = createAsyncThunk(
+  'authGroup/fetchAuthGroups',
+  async (queryParams) => {
+    try {
+      const response = await getAuthGroupApi({ params: queryParams });
+      return response.data;
+    } catch (error) {
+      throw Error(error);
+    }
+  }
+);
+export const addAuthGroup = createAsyncThunk('authGroup/addAuthGroup', async (newAuthGroup, { dispatch }) => {
+  await addAuthApi({ data: newAuthGroup });
+  dispatch(fetchAuthGroups()); // 새 권한을 추가한 후 목록을 새로고침
+});
+export const authGroupSlice = createSlice({
+  name: 'authGroup',
+  initialState: {
+    data: [],
+    hasMore: true,
+    isLoading: false,
+    error: null,
+  },
+  reducers: {
+    fetchDataStart: (state) => {
+      state.isLoading = true;
     },
-    reducers: {
-      fetchDataStart: (state) => {
-        state.isLoading = true;
-      },
-      fetchDataSuccess: (state, action) => {
-        state.isLoading = false;
-        state.data = [...state.data, ...action.payload.data];
-        state.hasMore = action.payload.hasMore;
-      },
-      fetchDataFailure: (state, action) => {
-        state.isLoading = false;
-        state.error = action.payload;
-      },
-      resetData: (state) => {
-        state.data = [];
-        state.hasMore = true;
-      },
+    fetchDataSuccess: (state, action) => {
+      state.isLoading = false;
+      state.data = [...state.data, ...action.payload.data];
+      state.hasMore = action.payload.hasMore;
     },
-  });
+    fetchDataFailure: (state, action) => {
+      state.isLoading = false;
+      state.error = action.payload;
+    },
+    resetData: (state) => {
+      state.data = [];
+      state.hasMore = true;
+    },
+  },
+});
 
 export const { isLogin, newEmpId, newCompId } = loginSlice.actions;
 export const companyActions = companyMgmtSlice.actions;

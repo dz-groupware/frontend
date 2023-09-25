@@ -1,16 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react'
 import styled from 'styled-components';
-import { addAuthApi, getCompanyGnbListApi, getCompanyLnbListApi } from '../../api/authgroup';
+import { addAuthApi, getCompanyGnbListApi } from '../../api/authgroup';
 import { useFetchData } from '../../hooks/useFetchData';
-import RoleModalMenuItem from './RoleModalMenuItem';
-export default function RoleCreateModal({ isOpen, onClose }) {
-  // const { data, isLoading, error } = useFetchData(getCompanyGnbListApi);
-  // if (isLoading) return <div>로딩중입니다!...</div>;
-  // if (error) return <div>{console.log(error)}</div>;
-  // if (!data) return null;
-  const [authName, setAuthName] = useState('');
+export default function RoleCreateModal({ isOpen, onClose,changeRefresh, setActiveAuthId }) {
+  const { data, isLoading, error } = useFetchData(getCompanyGnbListApi);
   const [usage, setUsage] = useState('사용');
   const authNameRef = useRef();
+
   const handleSubmit = async () => {
     try {
       const data = {
@@ -19,15 +15,23 @@ export default function RoleCreateModal({ isOpen, onClose }) {
       };
 
       // 직접 API 호출
-      await addAuthApi({ data });
-      console.log('권한이 성공적으로 추가되었습니다.');
+    const response = await addAuthApi({ data });
+      if(response && response.data) {
+        setActiveAuthId(response.data.authId); // 권한의 ID를 반환 받았다고 가정
+      }
+
+      changeRefresh();
       onClose(); // 모달 닫기
     } catch (error) {
-      console.error('권한 추가에 실패했습니다.', error);
+      throw error;
     }
   };
-
   
+
+
+  if (isLoading) return <div>로딩중입니다!...</div>;
+  if (error) return <div>에러발생!...</div>;
+  if (!data) return null;
   return (
     isOpen && (
       <ModalBackground>
@@ -49,14 +53,6 @@ export default function RoleCreateModal({ isOpen, onClose }) {
                 </label>
               </div>
             </Label>
-              {/* {data.map((item, index) => (
-                <RoleModalMenuItem
-                  key={item.menuId}
-                  item={item} 
-                  fetchApi={getCompanyLnbListApi} 
-                  paths={{parId:item.menuId}}
-                />
-              ))} */}
           </FormWrapper>
           <ButtonWrapper>
             <CreateButton onClick={() => handleSubmit()}> 생성 </CreateButton>
@@ -83,18 +79,18 @@ const ModalBackground = styled.div`
 
 const Modal = styled.div`
   display: flex;
+  flex-direction: column; /* 변경된 부분: Flex direction 설정 */
   background-color: white;
   padding: 20px;
   border-radius: 10px;
-  width: 30%;
-  height: fit-content;
-  flex-direction: column; /* 변경된 부분: Flex direction 설정 */
+  width: 50%;
+  height: 80%;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
 `;
 const CloseButton = styled.button`
-  position: absolute;
-  top: 10px;
-  right: 10px;
+  position: relative;
+  align-self: flex-end;
+  margin-right: 0.5rem;
   background: transparent;
   border: none;
   font-size: 1.5em;
@@ -104,7 +100,10 @@ const FormWrapper = styled.div`
   margin-top: 1.2rem;
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 1.2rem;
+  height: 80%;
+  overflow-y: auto;
 `;
 
 const Label = styled.label`

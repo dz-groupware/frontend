@@ -1,14 +1,13 @@
-import React, { useEffect, useState } from 'react';
-import styled from 'styled-components';
-import Line from '../../Commons/Line';
-import AuthGroupList from './AuthGroupList';
-import { FiSearch } from 'react-icons/fi'
-import ActionButton from '../../Commons/ActionButton';
+import React, { useEffect, useState } from 'react'
 import { useFetchData } from '../../../hooks/useFetchData';
-import { getCountAuthGroupApi } from '../../../api/authgroup';
+import { getAuthGroupApi, getCountAuthGroupApi, getEmpAuthCountApi } from '../../../api/authgroup';
+import styled from 'styled-components';
+import ActionButton from '../../Commons/ActionButton';
+import { FiSearch } from 'react-icons/fi';
+import MappingAuthGroupList from './MappingAuthGroupList';
+import Line from '../../Commons/Line';
 
-export default function AuthGroupSection({ activeAuthId, setActiveAuthId, refresh, isEditMode, handleItemClick}) {
-  const rangeOptions = ['전체', '사용', '미사용'];  // 필터 옵션을 배열로 정의
+export default function MappingAuthGroupSection({ activeAuthId, activeEmpId, handleAuthClick, isEditMode, selectedAuthIds, handleCheckboxChange ,setSelectedAuthIds}) {
   const orderOptions = [
     // { label: '필터', value: 'none' },
     { label: '최신순', value: 'authDashboardIdDesc' },
@@ -16,28 +15,42 @@ export default function AuthGroupSection({ activeAuthId, setActiveAuthId, refres
     { label: '권한명순', value: 'authNameAsc' },
     { label: '권한명역순', value: 'authNameDesc'},
   ];
-  const [rangeOp, setRangeOp] = useState(rangeOptions[0]);
   const [orderBy, setOrderBy] = useState(orderOptions[0].value);
   const [searchInput, setSearchInput] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
-  const { data: countData, isLoading: isLoadingCount, error: isErrorCount, setShouldFetch} = useFetchData(getCountAuthGroupApi);
-  
+
+
+  const { data: countData, isLoading: isLoadingCount, error: isErrorCount, statusCode, setShouldFetch} = useFetchData(isEditMode ? getCountAuthGroupApi : getEmpAuthCountApi,{
+    paths: isEditMode? null :{employeeId: activeEmpId},
+    shouldFetch:false
+  });
+
+
+
   const handleSearch = () => {
     setSearchTerm(searchInput);
     setSearchInput('');  // 초기화
   };
+
   useEffect(()=>{
-    setShouldFetch(true);
-  },[refresh]);
+    if(activeEmpId){
+      setShouldFetch(true);
+    }
+    if(!isEditMode) {
+      setSelectedAuthIds({});
+    }
+  },[activeEmpId,isEditMode]);
+
+  useEffect(() => {
+    console.log(selectedAuthIds)
+  },[selectedAuthIds]);
+  if (!activeEmpId) {
+    return null;  
+  }
+
   return (
     <Container>
-      <StyledSelect onChange={e => setRangeOp(e.target.value)}>
-        {rangeOptions.map((option, index) => (
-          <option key={index} value={option}>
-            {option}
-          </option>
-        ))}
-      </StyledSelect>
+      <p> 권한그룹목록</p>
       <SearchBar>
         <StyledInput
           type="text"
@@ -76,14 +89,15 @@ export default function AuthGroupSection({ activeAuthId, setActiveAuthId, refres
         </StyledFilterSelect>
       </GroupCountFilter>
       <Line color="#C9C9C9" height={"1px"} top={"5px"}/>
-      <AuthGroupList 
-        refresh={refresh}
-        activeAuthId={activeAuthId} 
-        setActiveAuthId={setActiveAuthId} 
+      <MappingAuthGroupList 
         orderBy={orderBy}
         searchTerm={searchTerm}
+        activeAuthId={activeAuthId}
+        activeEmpId={activeEmpId}
+        handleAuthClick={handleAuthClick}
+        selectedAuthIds={selectedAuthIds}
+        handleCheckboxChange={handleCheckboxChange}
         isEditMode={isEditMode}
-        handleItemClick={handleItemClick}
       />
     </Container>
   );
@@ -92,21 +106,13 @@ export default function AuthGroupSection({ activeAuthId, setActiveAuthId, refres
 const Container = styled.div`
   margin-top: 20px;
   margin-left: 20px;
-  width: 300px;
+  width: 350px;
   height: 95%;
   border-top: 2px solid #747474;
   border-left: 1px solid #ccc;
   border-right: 1px solid #ccc;
   border-bottom: 1px solid #ccc;
   padding: 20px;
-`;
-const StyledSelect = styled.select`
-  width: 100%;
-  margin-bottom: 10px;
-  height: 2.1rem;
-  padding: 7px;
-  border: 1px solid #C9C9C9;
-  border-radius: 4px;
 `;
 
 const SearchBar = styled.div`

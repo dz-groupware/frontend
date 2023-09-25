@@ -73,6 +73,8 @@ export const RouteArea = styled.div`
 color: rgb(66,71,84);
 height: calc(100% - 80px);
 width: 100%;
+
+
 `;
 export const TBArea = styled.div`
 height:80px;

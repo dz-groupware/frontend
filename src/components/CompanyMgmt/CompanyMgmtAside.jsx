@@ -15,6 +15,8 @@ export default function CompanyMgmtAside({ onShowForm }) {
   const [sortType, setSortType] = useState("default");
   const searchedCompanyDataList = useSelector(state => state.companyMgmt.searchList);
   const isSearchExecuted = useSelector(state => state.companyMgmt.isSearchExecuted);
+  const [selectedCompanyId, setSelectedCompanyId] = useState(null);
+  const isVisible = useSelector(state => state.companyMgmt.isVisible);
 
 
 
@@ -28,6 +30,12 @@ export default function CompanyMgmtAside({ onShowForm }) {
     fetchCompanies();
   }, [searchedCompanyDataList]);
 
+  useEffect(() => {
+    if (!isVisible) {
+      setSelectedCompanyId(null);
+    }
+  }, [isVisible]);
+  
 
   if (!companyDataList) {
     return <div>Loading...</div>;
@@ -54,7 +62,7 @@ export default function CompanyMgmtAside({ onShowForm }) {
       const CorpTypeStyled = data.corpType === 1 ? CorpType1 : CorpType2;
       const CorpTypeName = data.corpType === 1 ? "개인" : "법인";
       return (
-        <Wrapper key={index} onClick={() => handleCompanyClick(data)}>
+        <Wrapper key={index} onClick={() => handleCompanyClick(data)}  isSelected={data.id === selectedCompanyId}>
           <CompanyInfo>
             <div>{data.code}</div>
             <div>{truncatedName}</div>
@@ -80,6 +88,13 @@ export default function CompanyMgmtAside({ onShowForm }) {
 
 
   async function handleCompanyClick(companyMgmt) {
+    if (selectedCompanyId === companyMgmt.id) {
+      // 이미 선택된 직원을 다시 클릭한 경우 hideForm을 dispatch
+      dispatch(companyActions.hideForm());
+      setSelectedCompanyId(null); // 선택된 직원 ID를 초기화
+      return; // 이후 로직을 실행하지 않음
+  }
+    setSelectedCompanyId(companyMgmt.id);
     try {
       // 회사 정보를 가져옵니다.
       console.log(companyMgmt.id);
@@ -179,7 +194,7 @@ const Wrapper = styled.div`
   cursor: pointer;
   border: 1.5px solid #CCCCCC;
   margin-bottom: 10px;
-  background-color: white;
+  background-color: ${props => props.isSelected ? '#EFEFEF' : 'white'};
   padding :10px;
 `;
 

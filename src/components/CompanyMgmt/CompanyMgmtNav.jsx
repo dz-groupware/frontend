@@ -25,6 +25,13 @@ export default function CompanyMgmtNav() {
           console.error("API Error:", error);
       }
   };
+
+  
+const handleKeyDown  = (e) => {
+  if (e.key === 'Enter') {
+    handleSearch(); // Enter 키를 누르면 검색 실행
+  }
+};
       
         // MgmtNav에 전달할 children 요소들을 정의
         const searchFields = (
@@ -34,6 +41,7 @@ export default function CompanyMgmtNav() {
               style={{ margin: '10px' }}
               value={searchValue}
               onChange={(e) => setSearchValue(e.target.value)}
+              onKeyDown={handleKeyDown } 
             />
             <span style={{ fontSize: '15px', fontWeight: '900', margin: '10px' }}>사용여부</span>
             <select

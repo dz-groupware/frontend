@@ -1,5 +1,5 @@
 import MgmtMain from '../components/Commons/MgmtMain';
-import EmployeeMgmtHeader from '../components/EmployeeMgmt/EmployeeMgmtHeadr'
+import EmployeeMgmtHeader from '../components/EmployeeMgmt/EmployeeMgmtHeader'
 import EmployeeMgmtNav from '../components/EmployeeMgmt/EmployeeMgmtNav';
 import EmployeeMgmtForm from '../components/EmployeeMgmt/EmployeeMgmtForm';
 import EmployeeMgmtAside from '../components/EmployeeMgmt/EmployeeMgmtAside';
@@ -11,12 +11,12 @@ import { employeeActions } from '../utils/Slice';
 
 
 export default function EmployeeMgmtPage() {
-  const dispatch = useDispatch();
+  // const dispatch = useDispatch();
 
-  useEffect(() => {
-    // 상태 초기화 로직
-    dispatch(employeeActions.resetState());
-  }, []);
+  // useEffect(() => {
+  //   // 상태 초기화 로직
+  //   dispatch(employeeActions.resetState());
+  // }, []);
     return (
       <PageContainer children={
         <>

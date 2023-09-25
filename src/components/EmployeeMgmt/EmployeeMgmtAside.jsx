@@ -10,24 +10,44 @@ export default function EmployeeMgmtAside() {
   const [sortType, setSortType] = useState("default");
   const searchedEmployeeDataList = useSelector(state => state.employeeMgmt.searchList);
   const isSearchExecuted = useSelector(state => state.employeeMgmt.isSearchExecuted);
+  const [selectedEmployeeId, setSelectedEmployeeId] = useState(null);
+  const isVisible = useSelector(state => state.employeeMgmt.isVisible);
+  const reduxbasicInfo = useSelector(state => state.employeeMgmt.employeeBasicInfo);
+  const reduxgroupInfo = useSelector(state => state.employeeMgmt.employeeGroupInfo);
+  const [isSelected,setIsSelected]=useState(false);
 
   useEffect(() => {
-    async function fetchCompanies() {
+    async function fetchEmployees() {
       const data = await getEmployeeMgmtList();
+      console.log("data" ,data);
       setEmployeeDataList(data);
     }
 
-    fetchCompanies();
+    fetchEmployees();
   }, [searchedEmployeeDataList]);
+
+  useEffect(() => {
+    
+    if (!isVisible) {
+      
+      setSelectedEmployeeId(null);
+    }
+  }, [isVisible]);
+
+
+  // useEffect(() => {
+  //   setIsSelected()
+  // }, [setSelectedEmployeeId]);
+
   if (!employeeDataList) {
     return <div>Loading...</div>;
   };
 
+ 
 
   function renderEmployeeDataList(dataList) { //dataList는 배열
 
     let sortedDataList = Object.keys(dataList).map(key => dataList[key]);
-
 
     // sortType에 따라서 정렬
     if (sortType === "sortdate") {
@@ -35,13 +55,13 @@ export default function EmployeeMgmtAside() {
     } else if (sortType === "sortname") {
       sortedDataList = sortedDataList.sort((a, b) => a.name.localeCompare(b.name));
     }
-    
+ 
     const elements = sortedDataList.map((data, index) => {
-      const truncatedLoginId = truncateString(data.loginId, 10);
-      const truncatedName = truncateString(data.name, 10);
+      const truncatedLoginId = truncateString(data.loginId, 7);
+      const truncatedName = truncateString(data.name, 6);
+      // console.log("data.id", data.id);
       return (
-
-        <Wrapper key={index}>
+        <Wrapper key={index} onClick={() => handleEmployeeClick(data)} isselected={(data.id === selectedEmployeeId).toString()}>
           <ImageAndName>
             <Image src={data.imageUrl} alt="Employee Image" />
             <EmployeeInfo>
@@ -69,24 +89,78 @@ export default function EmployeeMgmtAside() {
 
 
 
+  async function handleEmployeeClick(employeeMgmt) {
+    // setIsSelected(employeeMgmt.id);
+    setSelectedEmployeeId(employeeMgmt.id);
+    console.log("selectedEmployeeId",selectedEmployeeId);
+
+    
+    try {
+      const fetchedEmployeeData = await getEmployeeDetailsById(employeeMgmt.id);
+      
+      if (!fetchedEmployeeData) {
+        console.error("No data returned for employee ID:", employeeMgmt.id);
+        return;
+      }
+     
+
+
+      const fetchedEmployeeArray = Object.values(fetchedEmployeeData);
+      // 첫 번째 데이터로 basicInfo 생성
+      const firstEmployee = fetchedEmployeeArray[0];
+      console.log("firstEmployee",firstEmployee);
+
+      const employeeBasicInfo = {
+        id: firstEmployee.id,
+        imageUrl: firstEmployee.imageUrl,
+        name: firstEmployee.name,
+        empIdNum: firstEmployee.empIdNum,
+        gender: firstEmployee.gender,
+        accountYn: firstEmployee.accountYn,
+        loginId: firstEmployee.loginId,
+        loginPw: firstEmployee.loginPw,
+        privEmail: firstEmployee.privEmail,
+        mobileNumber: firstEmployee.mobileNumber,
+        homeNumber: firstEmployee.homeNumber,
+        address: firstEmployee.address,
+        joinDate: firstEmployee.joinDate,
+        resignationDate: firstEmployee.resignationDate
+      };
+
+      // 모든 데이터에서 groupInfo 수집
+      const employeeGroupInfo = fetchedEmployeeArray.map(employee => ({
+        departmentId: employee.departmentId,
+        position: employee.position,
+        compId: employee.compId,
+        deptId: employee.deptId,
+        transferredYn: employee.transferredYn,
+        edjoinDate: employee.edjoinDate,
+        leftDate: employee.leftDate,
+        deletedYn: employee.deletedYn
+      }));
+
+
+      // Redux에 업데이트
+      dispatch(employeeActions.updateBasicInfo(employeeBasicInfo)); // Redux action이 단일 객체를 받아야 함
+      dispatch(employeeActions.updateGroupInfo(employeeGroupInfo)); // Redux action이 배열을 받아야 함
+
+      console.log("3333basic", reduxbasicInfo.id);//잘나옴
+      console.log("3333group", reduxgroupInfo);//잘나옴
+
+
+      dispatch(employeeActions.showForm({
+        employeeBasicInfo,
+        employeeGroupInfo,
+        id: employeeBasicInfo.id
+      }));
 
 
 
+    } catch (error) {
+      console.error("Error fetching employee data by code:", error);
+    }
+  }
 
-  // async function handleEmployeeClick(employeeMgmt) {
-  //   try {
-  //     // 회사 정보를 가져옵니다.
-  //     console.log(employeeMgmt.id);
-  //     const fetchedEmployeeData = await getEmployeeDetailsById(employeeMgmt.id);
-  //     console.log(fetchedEmployeeData);
-  //     // 가져온 회사 정보와 코드를 함께 showForm 액션에 전달합니다.
-  //     dispatch(employeeActions.showForm({ employeeInfo: fetchedEmployeeData, id: fetchedEmployeeData.id }));
-
-  //     console.log("fetchdata:", fetchedEmployeeData);
-  //   } catch (error) {
-  //     console.error("Error fetching employee data by code:", error);
-  //   }
-  // }
   return (
     <Container>
       <NumberOfEmployeesArea>
@@ -158,6 +232,7 @@ width: 100%;   // Container의 width와 동일하게 설정
 background-color: #FFFEFE;
 border-top: 1.5px solid #ECECEB ;
 padding : 15px;
+height:50px;
 
 `;
 
@@ -198,7 +273,8 @@ const Wrapper = styled.div`
   cursor: pointer;
   border: 1.5px solid #CCCCCC;
   margin-bottom: 10px;
-  background-color: white;
+  background-color: ${props => props.isselected === "true" ? '#EFEFEF' : 'white'};
+
   padding :10px;
 `;
 const Image = styled.img`

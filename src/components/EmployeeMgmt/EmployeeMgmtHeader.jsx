@@ -16,16 +16,20 @@ export default function EmployeeMgmtHeader() {
         <ButtonArea>
           <StyledButton>ID변경</StyledButton>
           <StyledButton>비밀번호 초기화</StyledButton>
-          <StyledButton onClick={() => dispatch(employeeActions.showForm())}>입사처리</StyledButton>
+          <StyledButton onClick={() =>{
+            dispatch(employeeActions.hideForm())
+            console.log("hide");
+            dispatch(employeeActions.resetState()) 
+            dispatch(employeeActions.showForm()) }}>입사처리</StyledButton>
           <StyledButton>퇴사처리</StyledButton>
           <StyledButton>변경이력</StyledButton>
           <span style={{ height: '24px', borderRight: '2px solid lightgrey', marginLeft: '0px', marginRight: '-5px' }} />
         </ButtonArea>
       } />
       <NotificationArea>
-      {/* <NotificationInfo>
+      <NotificationInfo>
         사원이 추가 될 경우 알림이 갑니다.
-      </NotificationInfo> */}
+      </NotificationInfo>
       </NotificationArea>
     </div >
   );

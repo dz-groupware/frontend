@@ -1,11 +1,11 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
 import { getDepartmentById } from '../../api/department';
 import { AiFillProfile, AiFillFolderOpen, AiFillFolder, AiOutlineProfile } from 'react-icons/ai';
 
 
-export default function DeptItem({ dept, detail, setDetail, menuId }){
+export default function DeptItem({ dept, detail, setDetail, menuId  }){
   const [open, setOpen] = useState(false);
   const [subItem, setSubItem] = useState([]);
 
@@ -16,8 +16,14 @@ export default function DeptItem({ dept, detail, setDetail, menuId }){
     // setOpen(!open);
     // setId({...id, newDeptId:dept['id']});
     // setStatus({...status, status:'modify', detailType:'basic'});
-    setDetail({id: dept['id'], type:'basic', state: 'modify', save: false });
+    setDetail({ ...detail, state: dept['id'] });
   }
+
+  useEffect(() =>{
+    if(typeof detail.state === 'number') {
+      setDetail({id: dept['id'], type:'basic', state: 'modify', save: false });
+    }
+  }, [detail.state]);
 
   return (
     <> 

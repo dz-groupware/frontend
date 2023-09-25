@@ -6,32 +6,57 @@ import DeptModal from './DeptModal';
 export default function DetailBasic({ data, setData, detail, setDetail }){
   const [modalOn, setModalOn] = useState(false);
   const [value, setValue] = useState('');
-  const { validText, isValid } = useValid(value);
-  const [noti, setNoti] = useState(false);
-
+  const { validText, isValid, validate } = useValid(value);
 
   useEffect(()=>{
     if (data !== undefined){
+      console.log('data in');
+      console.log('data : ', data);
       setValue(data);
-    } else {
     }
   },[data]);
 
-  const handleNotiClose = () => {
-    setNoti(false);
-  }
-
   useEffect(()=>{
-    if (detail.state === "add" || detail.state === "modify") {
-      
-      setNoti(true);
+    // 입력 중에 다른 변경이 감지되었다고 판단
+    // 유효성 검사
+    validate(value);
+    if (typeof detail.state === 'number'){
+      // 다른 상세로 변경되었다면 
+      // 변경되었는지 확인 //  수정 중인지 확인 :: setNoti
+      if(handleCompareData()){
+          // 변경되었으면, 변경된 데이터를 상위로 전달
+        setData(value); 
+        // 저장하는 상태
+        setDetail({...detail, save: true});
+      }
     }
-
+    if (detail.state === true) {
+      // 상위로 변경된 상태 저장
+      setData(value);
+    }
   },[detail.state]);
 
   useEffect(() => {
+    
+    
+  },[detail.id]);
 
-  },[value]);
+  const handleCompareData = () => {
+    if (data !== undefined) {
+      const keys = data.key(data);
+      for (let key of keys) {
+        if (data[key] !== value[key]) {
+          return false;
+        }
+        return true;
+      }  
+    }
+  }
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setValue({ ...value, [name]: value });
+  }
 
   return (
     <Detail>
@@ -47,33 +72,26 @@ export default function DetailBasic({ data, setData, detail, setDetail }){
           <tr>
             <td>부서코드</td>
             <td colSpan="3">
-              <input 
-              placeholder='부서코드를 입력하세요'
-              value={value.code}
-              valuetType={'code'}
-              onChange={e => setValue({...value, code: e.target.value})}
-              valid={!isValid.code}/> <div>{validText.code}</div>
+              <input name='code' placeholder='부서코드를 입력하세요'
+              value={value.code} onChange={handleInputChange}
+              data-valid={!isValid.code}/> <div>{validText.code}</div>
               <button >중복 검사</button>
             </td>
           </tr>
           <tr>
             <td>부서명</td>
             <td colSpan="3">
-              <input 
-              placeholder='부서명을 입력하세요'
-              value={value.name} 
-              onChange={e => setValue({...value, name: e.target.value})} 
-              valid={!isValid.name}/> <div>{validText.name}</div>
+              <input  name='name' placeholder='부서명을 입력하세요'
+              value={value.name}  onChange={handleInputChange} 
+              data-valid={!isValid.name}/> <div>{validText.name}</div>
             </td>
           </tr>
           <tr>
             <td>부서약칭</td>
             <td colSpan="3">
-              <input 
-              placeholder='부서약칭을 입력하세요'
-              value={value.abbr} 
-              onChange={e => setValue({...value, abbr: e.target.value})}
-              valid={!isValid.abbr} /> <div>{validText.abbr}</div>
+              <input name='abbr' placeholder='부서약칭을 입력하세요'
+              value={value.abbr}  onChange={handleInputChange}
+              data-valid={!isValid.abbr} /> <div>{validText.abbr}</div>
             </td>
           </tr>
           <tr>
@@ -126,25 +144,11 @@ export default function DetailBasic({ data, setData, detail, setDetail }){
       {
         modalOn && <DeptModal value={value} setModalOn={setModalOn} setValue={setValue}/>
       }
-      { noti && <Notification 
-      message="변경 내용이 삭제됩니다. 일괄등록 시 임시저장을 눌러주세요"
-      onClose={handleNotiClose} />}
     </Detail>
   )
 }
 
-function Notification ({ message, onClose }){
-  return (
-    <div>
-      <p>{ message }</p>
-      <button onClick={onClose}>임시저장</button>
-      <button onClick={onClose}>확인</button>
-      <button onClick={onClose}>취소</button>
-    </div>
-  );
-}
-
-function useValid(changeValue){
+function useValid(value){
   const initValid = {
     code: false,
     name: false,
@@ -153,40 +157,30 @@ function useValid(changeValue){
   const [validText, setText] = useState(initValid);
   const [isValid, setValid] = useState(initValid);
 
-  useEffect(() => {
-    const exp = /^[A-Za-z0-9]{8}$/;
-    if (!exp.test(changeValue.code)) {
-      setText({...validText, code: '8자리 :: 영어 대/소문자'})
-      setValid({ ...isValid, code: false });
-    } else {
-      setText({...validText, code: ''});
-      setValid({ ...isValid, code: true });
-    }
-  }, [changeValue.code]);
+  const validate = () => {
+    const codeExp = /^[A-Za-z0-9]{8}$/;
+    const nameExp = /^[A-Za-z0-9]+$/;
+    const abbrExp = /^[A-Za-z0-9]{6}$/;
 
-  useEffect(() => {
-    const exp = /^[A-Za-z0-9]+$/;
-    if (!exp.test(changeValue.name)) {
-      setText({...validText, name: '/ 제외 특수문자 불가'})
-      setValid({ ...isValid, name: false });
-    } else {
-      setText({...validText, name: ''});
-      setValid({ ...isValid, name: true });
-    }
-  }, [changeValue.name]);
+    const codeIsValid = codeExp.test(value.code);
+    const nameIsValid = nameExp.test(value.name);
+    const abbrIsValid = abbrExp.test(value.abbr);
 
-  useEffect(() => {
-    const exp = /^[A-Za-z0-9]{6}$/;
-    if (!exp.test(changeValue.abbr)) {
-      setText({...validText, abbr:'6자리 :: 영어 대문자 :: 숫자'})
-      setValid({ ...isValid, abbr: false });
-    } else {
-      setText({...validText, abbr:'8자리 :: 영어 대/소문자 :: 숫자'});
-      setValid({ ...isValid, abbr: true });
-    }
-  }, [changeValue.abbr]);
+    setValid({
+      code : codeIsValid,
+      name : nameIsValid,
+      abbr : abbrIsValid,
+    });
 
-  return { validText, isValid };
+    setText({
+      code : codeIsValid ? '' : '8자리 :: 영어 대/소문자',
+      name : nameIsValid ? '' : '/ 제외 특수문자 불가',
+      abbr : abbrIsValid ? '' : '6자리 :: 영어 대/소문자',
+    });
+
+    return {isValid : codeIsValid && nameIsValid && abbrIsValid};
+  }
+  return { validText, isValid, validate };
 }
 
 const Detail = styled.div`

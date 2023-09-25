@@ -40,6 +40,7 @@ export default function Department({ menuId }) {
     managementYn: false,
     includedYn: true,
   }
+
   // 컴포넌트에서 보내는 상태
   const [search, setSearch] = useState(initSearch);
   const [detail, setDetail] = useState(initDetail);
@@ -51,6 +52,8 @@ export default function Department({ menuId }) {
   const [option, setOption] = useState([]);
   const [result, setResult] = useState([]);
   const [empList, setEmpList] = useState([]);
+
+  const [noti, setNoti] = useState(false);
 
   useEffect(()=>{
     const loadDeptList = async () => {
@@ -68,22 +71,52 @@ export default function Department({ menuId }) {
     loadDeptList();
   }, []);
 
+  useEffect(() => {
+    if(detail.state === 'add'){
+      // 저장 요청 
+      handleModifyNoti()
+    }
+    if(detail.state === 'modify'){
+      // 수정 요청 
+    }
+    if(detail.state === 'delete'){
+      // 삭제 요청 
+    }
+  }, [detail.save]);
+
   // 부서 상세 정보 요청
   useEffect(()=>{ 
-    if(detail.type === 'basic') {
-      getBasicDetailById(detail.id).then(res => setValue(res.data));
-    }
-    if (detail.type === 'emp'){
-      getEmpListByDeptId(detail.id).then(res => setEmpList(res.data));
-    }
-  },[detail.id]);
+    // 폼 수정 중에 다른 상세 정보를 요청한다면
 
+  },[detail.id]);
 
   useEffect(()=>{
     
     setValue(initValue);
   },[detail.save]);
 
+
+  const handleModifyNoti = () => {
+    // if (수정중){
+    //   setNoti
+    //   // 날리기로 했으면 이후 로직 수행 아니면 건너 뜀
+    // }
+
+
+    if(detail.id === 0){
+      setValue(initValue);
+      setDetail({...detail, type: 'basic'});
+    } else if (detail.type === 'basic') {
+      getBasicDetailById(detail.id).then(res => setValue(res.data));
+    } else if (detail.type === 'emp'){
+      getEmpListByDeptId(detail.id).then(res => setEmpList(res.data));
+    }
+  }
+
+  const handleTmpSave = () => {
+    console.log('임시 저장');
+    setNoti(false);
+  }
 
   // 즐겨찾기 추가/삭제 요청
   function FavorHandler(){
@@ -113,7 +146,7 @@ export default function Department({ menuId }) {
               <option value='general'>사용자 사용자</option>
             </select>
           </div>
-          <SearchResult result={result} detail={detail} setDetail={setDetail} menuId={menuId}/>
+          <SearchResult result={result} detail={detail} setDetail={setDetail} menuId={menuId} />
         </SearchResultArea>
         <Detail>
           <DetailTitle detail={detail} setDetail={setDetail} />
@@ -123,11 +156,23 @@ export default function Department({ menuId }) {
             <DetailEmp empList={empList} /> : null}
         </Detail>
       </DetailArea>
+      { noti && <Notification 
+      message="변경 내용이 삭제됩니다. 일괄등록 시 임시저장을 눌러주세요"
+      onTmpSave={handleTmpSave} />}
     </ContentDept>
   );
 };
 
-
+function Notification ({ message, onTmpSave, setNoti }){
+  return (
+    <div>
+      <p>{ message }</p>
+      <button onClick={onTmpSave}>임시저장</button>
+      <button onClick={() => setNoti(false)}>확인</button>
+      <button onClick={() => setNoti(false)}>취소</button>
+    </div>
+  );
+}
 const ContentDept = styled.div`
 background-color: white;
 border: 1px solid rgb(171,172,178);

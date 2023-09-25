@@ -5,7 +5,7 @@ export default function TitleBtn({ favor, FavorHandler, detail, setDetail }){
   return(
     <BtnContent>
       <button onClick={() => {}}>일괄등록</button>
-      <button onClick={() => {setDetail({...detail, state:'add'})}}>추가</button>
+      <button onClick={() => {setDetail({...detail, id: 0, state:'add'})}}>추가</button>
       <button onClick={() => {}}>변경이력</button>
       <div onClick={FavorHandler}>{favor === "true" ? <AiFillStar /> : <AiOutlineStar/>}</div>
     </BtnContent>

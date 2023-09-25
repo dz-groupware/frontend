@@ -24,11 +24,11 @@ export default function Module(){
 
   // lazy import
   const handleLoad = async (value) => {
-    console.log('page : ',value);
-    const Page = React.lazy(() => import(`./${value}`));
+    console.log('page : ',value['page']);
+    const Page = React.lazy(() => import(`./${value['page']}`));
     setComponent(
       <Suspense fallback={<div>로딩중 ...</div>}>
-        <Page />
+        <Page menuId={value['menuId']}/>
       </Suspense>
     );
   };
@@ -46,7 +46,7 @@ export default function Module(){
     // const A = React.lazy(() => import("./a"));
     // 페이지 있으면 이동 가능
     if (menuList.has(decodeURIComponent(location.pathname))) {       
-      handleLoad(menuList.get(decodeURIComponent(location.pathname))['page']);
+      handleLoad(menuList.get(decodeURIComponent(location.pathname)));
     } else {
       // 페이지 없으면 에러 페이지
       setComponent(<Error/>);

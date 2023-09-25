@@ -1,19 +1,37 @@
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
-import { getDepartemnt, getDepartmentList } from '../../api/department';
+import DeptModal from './DeptModal';
 
-export default function DetailBasic({ data, setData, detail }){
+export default function DetailBasic({ data, setData, detail, setDetail }){
   const [modalOn, setModalOn] = useState(false);
   const [value, setValue] = useState('');
+  const { validText, isValid } = useValid(value);
+  const [noti, setNoti] = useState(false);
+
 
   useEffect(()=>{
-    setValue(data);
-  },[]);
+    if (data !== undefined){
+      setValue(data);
+    } else {
+    }
+  },[data]);
+
+  const handleNotiClose = () => {
+    setNoti(false);
+  }
 
   useEffect(()=>{
-    setData(value);
-  },[detail]);
+    if (detail.state === "add" || detail.state === "modify") {
+      
+      setNoti(true);
+    }
+
+  },[detail.state]);
+
+  useEffect(() => {
+
+  },[value]);
 
   return (
     <Detail>
@@ -32,8 +50,10 @@ export default function DetailBasic({ data, setData, detail }){
               <input 
               placeholder='부서코드를 입력하세요'
               value={value.code}
-              valutType={'code'}
-              onChange={e => setValue({...value, code: e.target.value})}/>
+              valuetType={'code'}
+              onChange={e => setValue({...value, code: e.target.value})}
+              valid={!isValid.code}/> <div>{validText.code}</div>
+              <button >중복 검사</button>
             </td>
           </tr>
           <tr>
@@ -42,7 +62,8 @@ export default function DetailBasic({ data, setData, detail }){
               <input 
               placeholder='부서명을 입력하세요'
               value={value.name} 
-              onChange={e => setValue({...value, name: e.target.value})} />
+              onChange={e => setValue({...value, name: e.target.value})} 
+              valid={!isValid.name}/> <div>{validText.name}</div>
             </td>
           </tr>
           <tr>
@@ -51,7 +72,8 @@ export default function DetailBasic({ data, setData, detail }){
               <input 
               placeholder='부서약칭을 입력하세요'
               value={value.abbr} 
-              onChange={e => setValue({...value, abbr: e.target.value})} />
+              onChange={e => setValue({...value, abbr: e.target.value})}
+              valid={!isValid.abbr} /> <div>{validText.abbr}</div>
             </td>
           </tr>
           <tr>
@@ -104,73 +126,67 @@ export default function DetailBasic({ data, setData, detail }){
       {
         modalOn && <DeptModal value={value} setModalOn={setModalOn} setValue={setValue}/>
       }
+      { noti && <Notification 
+      message="변경 내용이 삭제됩니다. 일괄등록 시 임시저장을 눌러주세요"
+      onClose={handleNotiClose} />}
     </Detail>
   )
 }
 
-function DeptModal({ value, setModalOn, setValue }){
-  const [item, setItem] = useState(JSON.parse('[{"":""}]'));
-
-  useEffect(() => {
-    getDepartemnt().then(res => {
-      setItem(res.data);
-    });
-  }, []);
-
+function Notification ({ message, onClose }){
   return (
-    <ModalBackdrop onClick={() => setModalOn(false)}>
-      <ModalView onClick={(e) => e.stopPropagation()}>
-        <div id='menuTitle'>
-          <div>상위부서</div>
-          <span onClick={() => setModalOn(false)}>x</span>
-        </div>
-        <MenuArea>
-          <div>
-          {
-            item.map((a, i) => (
-              <Item value={value} data={a} setModalOn={setModalOn} setValue={setValue} key={a['name']+'gnb'}/>
-            ))
-          }
-          </div>
-        </MenuArea>
-      </ModalView>
-    </ModalBackdrop>
-
+    <div>
+      <p>{ message }</p>
+      <button onClick={onClose}>임시저장</button>
+      <button onClick={onClose}>확인</button>
+      <button onClick={onClose}>취소</button>
+    </div>
   );
 }
 
-function Item({ value, data, setModalOn, setValue }) {
-  const [open, setOpen] = useState(false);
-  const [subItem, setSubItem] = useState([]);
+function useValid(changeValue){
+  const initValid = {
+    code: false,
+    name: false,
+    abbr: false,
+  }
+  const [validText, setText] = useState(initValid);
+  const [isValid, setValid] = useState(initValid);
 
   useEffect(() => {
-    if(data !== undefined){
-      setSubItem([]);
-      setOpen(false);
+    const exp = /^[A-Za-z0-9]{8}$/;
+    if (!exp.test(changeValue.code)) {
+      setText({...validText, code: '8자리 :: 영어 대/소문자'})
+      setValid({ ...isValid, code: false });
+    } else {
+      setText({...validText, code: ''});
+      setValid({ ...isValid, code: true });
     }
-  }, [data]);
+  }, [changeValue.code]);
 
-  const handleMenuItem = (a) => {
-    if(subItem.length === 0) {
-      getDepartmentList(data['id'])
-      .then(res => setSubItem(res.data));
+  useEffect(() => {
+    const exp = /^[A-Za-z0-9]+$/;
+    if (!exp.test(changeValue.name)) {
+      setText({...validText, name: '/ 제외 특수문자 불가'})
+      setValid({ ...isValid, name: false });
+    } else {
+      setText({...validText, name: ''});
+      setValid({ ...isValid, name: true });
     }
-    setOpen(!open);
-    setValue({...value, parId: data['id'], parName: data['name']});
-  }
+  }, [changeValue.name]);
 
-  return (
-    <Menu>
-      <div onClick={handleMenuItem}>
-        └{data['name']}
-      </div>
-      { subItem.length > 1 && open &&
-        subItem.map((a, i) => (
-          <Item value={value} data={a} setModalOn={setModalOn} setValue={setValue} key={a['name']+'lnb'}/>
-        ))
-      }
-    </Menu>
-  )    
+  useEffect(() => {
+    const exp = /^[A-Za-z0-9]{6}$/;
+    if (!exp.test(changeValue.abbr)) {
+      setText({...validText, abbr:'6자리 :: 영어 대문자 :: 숫자'})
+      setValid({ ...isValid, abbr: false });
+    } else {
+      setText({...validText, abbr:'8자리 :: 영어 대/소문자 :: 숫자'});
+      setValid({ ...isValid, abbr: true });
+    }
+  }, [changeValue.abbr]);
+
+  return { validText, isValid };
 }
 
 const Detail = styled.div`
@@ -284,53 +300,4 @@ height: calc(100% - 50px);
     }
   }
 }
-`;
-export const ModalBackdrop = styled.div`
-z-index: 1; 
-position: fixed;
-display : flex;
-justify-content : center;
-align-items : center;
-border-radius: 10px;
-top : 0;
-left : 0;
-right : 0;
-bottom : 0;
-width:100%;
-height:100%;
-`;
-export const ModalView = styled.div`
-position: absolute;
-top: 100px;
-right: 50px;
-align-items: center;
-flex-direction: column;
-border-radius: 5px;
-width: 300px;
-height: 500px;
-color: black;
-background-color: rgb(146,183,214);
-z-index:2;
-> #menuTitle {
-  display: flex;
-  justify-content: space-around;
-  height: 30px;
-  font-size: large;
-  font-weight: bold;
-}
-`;
-export const MenuArea = styled.div`
-width: 90%;
-height: 100%;
-
-> div {
-  background-color: white;
-  width: 100%;
-  height: 450px;
-  overflow: scroll;
-}
-`;
-export const Menu = styled.div`
-margin: 10px;
-margin-left: 20px;
 `;

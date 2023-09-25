@@ -1,8 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import {  AiOutlineInfoCircle } from 'react-icons/ai';
 
 import styled from 'styled-components';
+
+import { getDepartemnt, getOptionCompList, getBasicDetailById, getEmpListByDeptId, findDeptNameAndCode } from '../api/department';
+import { FavorApi } from '../api/menu';
 
 import DetailBasic from '../components/Department/DetailBasic';
 import DetailEmp from '../components/Department/DetailEmp';
@@ -11,7 +14,7 @@ import SearchForm from '../components/Department/SearchForm';
 import SearchResult from '../components/Department/SearchResult';
 import DetailTitle from '../components/Department/DetailTitle';
 
-export default function Department() {
+export default function Department({ menuId }) {
   // initialState
   const initSearch = {
     option: '',
@@ -21,7 +24,9 @@ export default function Department() {
   const initDetail = {
     type: false,
     id: '',
+    state: false,
     save: false,
+    isChanging: false,
   }
   const initValue = {
     parId: 0,
@@ -47,11 +52,50 @@ export default function Department() {
   const [result, setResult] = useState([]);
   const [empList, setEmpList] = useState([]);
 
+  useEffect(()=>{
+    const loadDeptList = async () => {
+      try {
+        const menu = await getDepartemnt(menuId);
+        setResult(menu.data);
+        const fav = await FavorApi('load', menuId);
+        setFavor(fav.data);
+        const opt = await getOptionCompList(menuId);
+        setOption(opt.data);
+      } catch (error) {
+        console.log(error);
+      }
+    }
+    loadDeptList();
+  }, []);
+
+  // 부서 상세 정보 요청
+  useEffect(()=>{ 
+    if(detail.type === 'basic') {
+      getBasicDetailById(detail.id).then(res => setValue(res.data));
+    }
+    if (detail.type === 'emp'){
+      getEmpListByDeptId(detail.id).then(res => setEmpList(res.data));
+    }
+  },[detail.id]);
+
+
+  useEffect(()=>{
+    
+    setValue(initValue);
+  },[detail.save]);
+
+
+  // 즐겨찾기 추가/삭제 요청
+  function FavorHandler(){
+    FavorApi('off', menuId).then(() => {
+      setFavor(!favor);
+    });
+  }
   return(
     <ContentDept>
       <DeptTitle>
         <div id="deptTitle">부서관리</div>
-        <TitleBtn favor={favor} setFavor={setFavor} detail={detail} setDetail={setDetail}/>
+        <TitleBtn favor={favor} FavorHandler={FavorHandler} detail={detail} setDetail={setDetail}/>
       </DeptTitle>
       <Info>
           <div>
@@ -69,12 +113,12 @@ export default function Department() {
               <option value='general'>사용자 사용자</option>
             </select>
           </div>
-          <SearchResult result={result} />
+          <SearchResult result={result} detail={detail} setDetail={setDetail} menuId={menuId}/>
         </SearchResultArea>
         <Detail>
           <DetailTitle detail={detail} setDetail={setDetail} />
             {detail.type === 'basic' ? 
-            <DetailBasic data={value} setData={setValue} /> : null}
+            <DetailBasic data={value} setData={setValue} detail={detail} setDetail={setDetail} /> : null}
             {detail.type === 'emp' ? 
             <DetailEmp empList={empList} /> : null}
         </Detail>

@@ -1,6 +1,5 @@
 import { useLocation } from "react-router-dom";
 import React, { Suspense, useEffect, useState } from "react";
-
 import { Error } from './VIEW';
 
 export default function Module(){

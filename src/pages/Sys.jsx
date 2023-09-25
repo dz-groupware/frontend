@@ -5,20 +5,21 @@ import styled from 'styled-components';
 
 import { AiOutlineStar, AiOutlineInfoCircle, AiOutlineSearch, AiFillStar } from 'react-icons/ai';
 
-import {GnbApi, FavorApi, searchAPI} from '../utils/API';
+import {GnbApi, FavorApi, searchAPI} from '../api/menu';
 
 import MenuList from '../components/Sys/MenuList';
 import { GnbDetail, MenuDetail } from '../components/Sys/Detail';
 
 export default function Sys(){
   const [gnbList, setGnbList] = useState([]);
-  const [menuDetail, setMenuDetail] = useState([]);
   const [result, setResult] = useState([]);
-  const [detail, setDetail] = useState([false, false]);
   const [favor, setFavor] = useState(false);
 
-  const empId = useSelector(state => state.gnbMenu.empId);
-  const compId = useSelector(state => state.gnbMenu.compId);
+  const [detail, setDetail] = useState([false, false]);
+  const [menuDetail, setMenuDetail] = useState("");
+
+  const empId = useSelector(state => state.loginInfo.empId);
+  const compId = useSelector(state => state.loginInfo.compId);
   const menuId = 8;  // 현재 페이지 id 가져오기 (나중에)
 
     useEffect(() => {
@@ -29,12 +30,9 @@ export default function Sys(){
     }, [empId, menuId]);
 
     // 대메뉴/메뉴 디테일 on/off
-    function menuDetailHandler(type, menuDetail){
-      if (type === 'gnbDetail') {
-        setDetail([2, false]);
-      }
-      if (type === 'menuDetail') {
-        setDetail([false, 2]);
+    function menuDetailHandler(type, detail){
+      if (detail === ""){
+        detail = JSON.parse('{ "enabledYN": "", "iconUrl": "", "id": "", "name": "", "parId": "", "sortOrder": "" }');
       }
       if (type === 'newGnb') {
         setDetail([1, false]);
@@ -42,11 +40,17 @@ export default function Sys(){
       if (type === 'newMenu') {
         setDetail([false, 1]);
       }
-      setMenuDetail(menuDetail);
+      if (type === 'gnbDetail') {
+        setDetail([2, false]);
+      }
+      if (type === 'menuDetail') {
+        setDetail([false, 2]);
+      }
+      setMenuDetail(detail);
     }
 
     // X 버튼
-    function detailOff(){
+    const detailOff = () =>{
       setDetail([false, false]);
     }
 
@@ -56,7 +60,7 @@ export default function Sys(){
       const formData = new FormData(document.getElementById('searchForm'));
       
       searchAPI(formData).then(res => {
-        setResult(res.data.data);
+        setResult(res.data);
       });
     }
 
@@ -78,8 +82,8 @@ export default function Sys(){
   return (
     <Module>
       <Nav>
-        <div id ='title'>메뉴설정</div>
-        <div id ='btn'>
+        <div id ='menuTitle'>메뉴설정</div>
+        <div id ='menuBtn'>
           <button>변경이력</button>
           <button onClick={() => {menuDetailHandler('newGnb', '')}}>대메뉴추가</button>
           <button onClick={() => {menuDetailHandler('newMenu', '')}}>메뉴추가</button>
@@ -95,7 +99,7 @@ export default function Sys(){
       <FormArea>
         <MenuList value={gnbList} api={menuDetailHandler}/>
         <MenuTree>
-          <SearchTree id='searchForm'>
+          <SearchForm id="searchForm">
             <select name="gnbName">
               {
                 gnbList.map((a, i) => (
@@ -114,16 +118,19 @@ export default function Sys(){
                 <option value='general'>사용자메뉴</option>
               </select>
             </div>
-          </SearchTree>
-          <div>{
-            result.map((a, i) => (
-              <div onClick={() => {menuDetailHandler('menuDetail', a)}} key={a['name']+a['id']}>{a['name']}</div>
-              ))
-            }
+          </SearchForm>
+          <div>
+            <SearchResult>
+              {
+              result.map((a, i) => (
+                <div onClick={() => {menuDetailHandler('menuDetail', a)}} key={a['name']+a['id']}>{a['name']}</div>
+                ))
+              }          
+            </SearchResult>
           </div>
         </MenuTree>
-        { detail[0] && <GnbDetail value={menuDetail} api={detailOff} on={detail[0]} compId={compId}/>}
-        { detail[1] && <MenuDetail value={menuDetail} api={detailOff} on={detail[1]} compId={compId}/>}
+        { detail[0] && <GnbDetail value={menuDetail} detailOff={detailOff} on={detail[0]} compId={compId}/>}
+        { detail[1] && <MenuDetail value={menuDetail} detailOff={detailOff} on={detail[1]} compId={compId}/>}
       </FormArea>
     </Module>
   );
@@ -132,8 +139,8 @@ export default function Sys(){
 export const Module = styled.div`
 background-color: white;
 border: 1px solid rgb(171,172,178);
-width:95%;
-height: 95%;
+width: 100%;
+height: calc(100% - 90px);
 `;
 export const Nav = styled.div`
 border-top: 5px solid rgb(20,136,247);
@@ -143,14 +150,14 @@ color: black;
 width: 100%;
 justify-content: space-between;
 
-> #title {
+> #menuTitle {
   margin: 10px;
   margin-left: 20px;
   font-size: large;
   font-weight: bold;
   color: rgb(32,35,44);
 }
-> #btn {
+> #menuBtn {
   display: flex;
   margin-top: 5px;
   > * {
@@ -175,12 +182,12 @@ justify-content: center;
   padding: 10px;
   padding-left:15px;
   width: 100%;
+  height: 40px;
   background-color: rgb(214,236,248);
   border: 1px solid rgb(146,183,214);
   border-radius: 5px;
 
   color: black;
-  height: 20px;
   font-weight: bold;
 }
 `;
@@ -193,18 +200,20 @@ margin-bottom: 10px;
 `;
 export const MenuTree = styled.div`
 margin:10px;
-height:75%;
+height: calc(100% - 150px);
 background-color: white;
 width: 400px;
 border: 1px solid rgb(171,172,178);
 color: black;
+
 `;
-export const SearchTree = styled.form`
+export const SearchForm = styled.form`
 padding: 5px;
 height: 100px;
 background-color: rgb(240,245,248);
 border-bottom: 1px solid rgb(171,172,178);
 color: black;
+min-width: 400px;
 > select {
   width:170px;
   height:25px;
@@ -241,5 +250,18 @@ color: black;
       background-color: white;
     }
   }
+}
+`;
+export const SearchResult = styled.form`
+overflow: scroll;
+height: 300px;
+&::-webkit-scrollbar {
+  display: none;
+}
+> div {
+  margin: 10px;
+  padding: 10px;
+  background-color: rgb(214,236,248);
+
 }
 `;

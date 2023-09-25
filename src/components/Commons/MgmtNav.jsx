@@ -8,7 +8,7 @@ export default function MgmtNav({children, onSearch}) {
   return (
       <Container>
         
-        <SearchArea>
+        <SearchArea type="submit">
           {children}
         </SearchArea>
         <ButtonArea onClick={onSearch}>

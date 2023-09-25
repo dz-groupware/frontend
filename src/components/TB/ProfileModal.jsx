@@ -1,38 +1,51 @@
 import styled from 'styled-components';
-import { useSelector } from 'react-redux';
+//import { useNavigate } from 'react-router';
+
+import { AiOutlinePoweroff } from 'react-icons/ai';
 
 import PosiList from './PosiList';
 
-export default function ProfileModal(props) {
-  const data = useSelector(state => state.gnbMenu.profileList)[0];
+export default function ProfileModal({ profile, empId, profileModal, setProfileModal }) {
+  console.log()
+//  const navigate = useNavigate();
+  const handleLogOut = () => {
+//    console.log('done')
+//    navigate('/');
+  }
 
-  return(
-    <ModalBackdrop onClick={() => {props.api('profile');}}>
-      <ModalView onClick={(e) => e.stopPropagation()}>
-        <br />
-        <div>
-          <img src={data['imageUrl']} alt='p_img' />
-          <div>
-            <div id="profile_name">{data['empName']}</div>
-            <div>{data['compName']} / {data['deptName']}</div>
-            <p>최근접속 : {data['lastAccess']} || {data['lastIp']}(현재: {data['lastIp']})</p>
+  const modalOff = () => {
+    setProfileModal(false);
+  }
+
+  for (let prf of profile) {
+    if (prf['empId'] === empId) {
+      return (
+        <ModalBackdrop onClick={modalOff}>
+          <ModalView onClick={(e) => e.stopPropagation()}>
+            <div className='top_btn'>
+              <div onClick={handleLogOut}>
+                <AiOutlinePoweroff />
+              </div>
+            </div>
+            <div>  
+            <img src={prf['imageUrl']} alt='p_img' />
+            <div className='prf'>
+              <div id="prf_name">{prf['empName']}</div>
+              <div>{prf['compName']} / {prf['deptName']}</div>
+              <p>최근접속 : {prf['lastAccess']} || {prf['lastIp']}(현재: {prf['lastIp']})</p>
+            </div>
           </div>
-        </div>
-        <div id='tableName'><div> • 회사정보</div></div>
-        <PosiList />
-        <br />
-        <div id='modal_btn'>
-          <ExitBtn onClick={() => {props.api('profile');}}>취소</ExitBtn>
-          <DoneBtn onClick={() => {props.api('profile');}}>확인</DoneBtn>
-        </div>
-      </ModalView>
-    </ModalBackdrop>
-  );
+            <div id='tableName'><div> • 회사정보</div></div>
+            <PosiList empId={prf['empId']} modalOff={modalOff} profile={profile}/>
+          </ModalView>
+        </ModalBackdrop>
+      );
+    }
+  }
 }
 
 export const ModalBackdrop = styled.div`
-  // Modal이 떴을 때의 배경을 깔아주는 CSS를 구현
-  z-index: 1; //위치지정 요소
+  z-index: 1; 
   position: fixed;
   display : flex;
   justify-content : center;
@@ -47,95 +60,66 @@ export const ModalBackdrop = styled.div`
   height:100%;
 `;
 export const ModalView = styled.div`
-  // Modal창 CSS를 구현합니다.
+display: flex;
+position: relative;
+z-index: 2;
+top:-100px;
+right:-200px;
+align-items: center;
+flex-direction: column;
+border-radius: 5px;
+width: 600px;
+height: 400px;
+color: black;
+background-color: #ffffff;
+
+> .top_btn {
   display: flex;
-  position: relative;
-  z-index: 2;
-  top:-150px;
-  right:-200px;
-  align-items: center;
-  flex-direction: column;
-  border-radius: 5px;
-  width: 500px;
-  heigth: 200px;
-  color: black;
-  background-color: #ffffff;
+  justify-content: end;
+  padding: 20px;
+  padding-bottom: 0px;
+  
+  > svg {
+    width: 20px;
+    height: 20px;
+  }
+}
+> div {
+  padding: 20px;
+  padding-top: 0px;
+  display: flex;
+  justify-content: center;
+  width: 100%;
 
-  > div {
-    display: flex;
-
-    > img {
-      width:60px;
-      height:60px;
-      margin: 20px;
-    }
-
-    > div {
-      width: 350px;
-
-      > #profile_name {
+  > img {
+    width:70px;
+    height:70px;
+    margin-right: 20px;
+  }
+  > .prf {
+      > * {
+        margin: 5px;
+      }
+      > #prf_name {
         margin-top: 10px;
         font-size: 18px;
         font-weight: bold;
       }
-
-      > p {
-        color: grey;
-        font-size: 12px;
-        margin: 0;
-      }
     }
-
-    > PosiList {
-      width: 450px;
-    }
+  > p {
+    color: grey;
+    font-size: 12px;
+    margin: 0;
   }
+}
 
-  >#modal_btn {
-    display: flex;
-    justify-content: center;
-    width: 90%;
-    background-color: rgb(230,230,250);
-    margin-bottom: 10px;
-  }
 
-  > #tableName {
-    width: 85%;
-    align-items: left;
-    font-weight: bold;
-  }
 
-`;
-export const ModalBtn = styled.button`
-  display : flex;
-  justify-content : center;
-  background-color: var(--coz-purple-600);
-  text-decoration: none;
-  border: none;
-  padding: 20px;
-  border-radius: 10px;
-  cursor: grab;
-  width:100px;
-`;
-export const DoneBtn = styled(ModalBtn) `
-background-color : rgb(21,21,72);
-color: white;
-border-radius: 10px;
-text-decoration: none;
-margin: 10px;
-padding: 5px 10px;
-width: 100px;
-height: 40px;
-align-items : center;
-`;
-export const ExitBtn = styled(ModalBtn) `
-background-color : white;
-color: black;
-border-radius: 10px;
-text-decoration: none;
-margin: 10px;
-padding: 5px 10px;
-width: 100px;
-height: 40px;
-align-items : center;
+> #tableName {
+  width: 100%;
+  display: flex;
+  justify-content: start;
+  font-weight: bold;
+}
+
 `;

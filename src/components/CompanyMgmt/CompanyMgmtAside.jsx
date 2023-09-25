@@ -4,90 +4,107 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useEffect, useState } from 'react';
 import { axiosInstance } from '../../utils/axiosInstance';
 import { companyActions } from '../../utils/Slice';
+import { getCompanyDetailsById, getCompanyMgmtList } from '../../api/companymgmt';
 
 
 
 
 export default function CompanyMgmtAside({ onShowForm }) {
-  const dispatch = useDispatch(); 
+  const dispatch = useDispatch();
   const [companyDataList, setCompanyDataList] = useState([]);
   const [sortType, setSortType] = useState("default");
   const searchedCompanyDataList = useSelector(state => state.companyMgmt.searchList);
   const isSearchExecuted = useSelector(state => state.companyMgmt.isSearchExecuted);
+  const [selectedCompanyId, setSelectedCompanyId] = useState(null);
+  const isVisible = useSelector(state => state.companyMgmt.isVisible);
+
 
 
 
   useEffect(() => {
-    fetchData();
-    
+    async function fetchCompanies() {
+      const data = await getCompanyMgmtList();
+      setCompanyDataList(data);
+    }
+
+    fetchCompanies();
   }, [searchedCompanyDataList]);
 
-
-  
-  async function fetchData() {
-    try {
-
-      const response = await axiosInstance.get('/companies');
-      setCompanyDataList(response.data);
-
-    } catch (error) {
-      console.error("Error fetching company data:", error);
+  useEffect(() => {
+    if (!isVisible) {
+      setSelectedCompanyId(null);
     }
-  };
+  }, [isVisible]);
+  
+
   if (!companyDataList) {
     return <div>Loading...</div>;
   };
 
   function renderCompanyDataList(dataList) { //dataList는 배열
+
     let sortedDataList = Object.keys(dataList).map(key => dataList[key]);
-    
-   
+
+
     // sortType에 따라서 정렬
     if (sortType === "sortcode") {
       sortedDataList = sortedDataList.sort((a, b) => a.code.localeCompare(b.code));
     } else if (sortType === "sortname") {
       sortedDataList = sortedDataList.sort((a, b) => a.name.localeCompare(b.name));
     }
-   
-    
+
+
     const elements = sortedDataList.map((data, index) => {
-     
- 
+      const truncatedName = truncateString(data.name, 10);
+      const truncatedRepName = truncateString(data.repName, 6);
+
+
       const CorpTypeStyled = data.corpType === 1 ? CorpType1 : CorpType2;
       const CorpTypeName = data.corpType === 1 ? "개인" : "법인";
       return (
-        <Wrapper key={index} onClick={() => handleCompanyClick(data)}>
+        <Wrapper key={index} onClick={() => handleCompanyClick(data)}  isSelected={data.id === selectedCompanyId}>
           <CompanyInfo>
             <div>{data.code}</div>
-            <div>{data.name}</div>
+            <div>{truncatedName}</div>
           </CompanyInfo>
           <PersonInfo>
-            <div>{data.repName}</div>
+            <div>{truncatedRepName}</div>
             <CorpTypeStyled>{CorpTypeName}</CorpTypeStyled>
           </PersonInfo>
         </Wrapper>
       );
     });
-  
+
     return elements;
   }
 
+
+  function truncateString(str, maxLength) {
+    if (str.length > maxLength) {
+      return str.substring(0, maxLength - 3) + '...';  // -3은 '...'의 길이를 고려
+    }
+    return str;
+  }
+
+
   async function handleCompanyClick(companyMgmt) {
+    if (selectedCompanyId === companyMgmt.id) {
+      // 이미 선택된 직원을 다시 클릭한 경우 hideForm을 dispatch
+      dispatch(companyActions.hideForm());
+      setSelectedCompanyId(null); // 선택된 직원 ID를 초기화
+      return; // 이후 로직을 실행하지 않음
+  }
+    setSelectedCompanyId(companyMgmt.id);
     try {
       // 회사 정보를 가져옵니다.
       console.log(companyMgmt.id);
-      const response = await axiosInstance.get(`/companies/${companyMgmt.id}`);
-      console.log(response);
-      const fetchedCompanyData = response.data;
-      
-     console.log(fetchedCompanyData);
+      const fetchedCompanyData = await getCompanyDetailsById(companyMgmt.id);
+
+      console.log(fetchedCompanyData);
       // 가져온 회사 정보와 코드를 함께 showForm 액션에 전달합니다.
-      dispatch(companyActions.showForm({ companyInfo: fetchedCompanyData, id: fetchedCompanyData.id}));
-      
-      console.log("fetchdata:",fetchedCompanyData);
+      dispatch(companyActions.showForm({ companyInfo: fetchedCompanyData, id: fetchedCompanyData.id }));
 
-
-
+      console.log("fetchdata:", fetchedCompanyData);
     } catch (error) {
       console.error("Error fetching company data by code:", error);
     }
@@ -102,7 +119,7 @@ export default function CompanyMgmtAside({ onShowForm }) {
             <span style={{ color: "#308EFC", fontWeight: 600 }}>  {isSearchExecuted ? Object.keys(searchedCompanyDataList).length : Object.keys(companyDataList).length}</span>
             <span style={{ margin: "5px", fontWeight: 600 }}>건</span>
           </Element>
-          <SelectBox onChange={e => setSortType(e.target.value)}>  
+          <SelectBox onChange={e => setSortType(e.target.value)}>
             <option value="default">정렬순</option>
             <option value="sortcode">코드순</option>
             <option value="sortname">회사명순</option>
@@ -112,7 +129,7 @@ export default function CompanyMgmtAside({ onShowForm }) {
 
 
       <CompanyListArea>
-      {isSearchExecuted ? renderCompanyDataList(searchedCompanyDataList) : renderCompanyDataList(companyDataList)}
+        {isSearchExecuted ? renderCompanyDataList(searchedCompanyDataList) : renderCompanyDataList(companyDataList)}
       </CompanyListArea>
 
       <CompanyAddArea>
@@ -148,7 +165,6 @@ const NumberArea = styled.div`
   width: 100%;
   margin:10px;
   
-  
 `;
 const SelectBox = styled.select`
 &:focus {
@@ -178,7 +194,7 @@ const Wrapper = styled.div`
   cursor: pointer;
   border: 1.5px solid #CCCCCC;
   margin-bottom: 10px;
-  background-color: white;
+  background-color: ${props => props.isSelected ? '#EFEFEF' : 'white'};
   padding :10px;
 `;
 

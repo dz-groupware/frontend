@@ -6,7 +6,7 @@ import store from './utils/Store';
 import { Route, Routes } from 'react-router-dom';
 import Home from './pages/Home';
 import { Error } from './pages/VIEW';
-import {ErrorBoundary} from 'react-error-boundary';
+// import {ErrorBoundary} from 'react-error-boundary';
 
 
 const ErrorFallback = (err) => {
@@ -19,13 +19,13 @@ export default function App() {
       <GlobalStyle/>
       <Provider store={store}>
           <div className="App">
-            <ErrorBoundary FallbackComponent={ErrorFallback}>
+            {/* <ErrorBoundary FallbackComponent={ErrorFallback}> */}
               <Routes>
                 <Route path='/login' element={<LoginPage />} /> 
                 <Route path='/*' element={<Home/>}/>
                 <Route path='/error' element={<Error />} />
               </Routes>
-            </ErrorBoundary>
+            {/* </ErrorBoundary> */}
           </div>
       </Provider>
     </>

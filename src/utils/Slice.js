@@ -117,8 +117,8 @@ export const loginSlice = createSlice({
         hideForm: (state) => {
           state.isVisible = false;
           state.idForForm = null;
+          state.activeTab = initialState.activeTab;
         }
-        state.activeTab = initialState.activeTab;
 
       },
       hideForm: (state) => {
@@ -133,9 +133,6 @@ export const loginSlice = createSlice({
       setActiveTab: (state, action) => {
         state.activeTab = action.payload;
       },
-
-
-    }
   });
 }
 export const fetchAuthGroups = createAsyncThunk(

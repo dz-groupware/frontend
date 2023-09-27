@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import {  AiOutlineInfoCircle } from 'react-icons/ai';
 
 import styled from 'styled-components';
+import Swal from 'sweetalert2/dist/sweetalert2.js'
 
 import { getDepartemnt, getOptionCompList, getBasicDetailById, getEmpListByDeptId, findDeptNameAndCode } from '../api/department';
 import { FavorApi } from '../api/menu';
@@ -55,15 +56,22 @@ export default function Department({ menuId }) {
 
   const [noti, setNoti] = useState(false);
 
+  const swalWithBootstrapButtons = Swal.mixin({
+    customClass: {
+      confirmButton: 'btn btn-success',
+      cancelButton: 'btn btn-danger'
+    },
+    buttonsStyling: false
+  });
   useEffect(()=>{
     const loadDeptList = async () => {
       try {
         const menu = await getDepartemnt(menuId);
-        setResult(menu.data);
+        setResult(menu.data.data);
         const fav = await FavorApi('load', menuId);
-        setFavor(fav.data);
+        setFavor(fav.data.data);
         const opt = await getOptionCompList(menuId);
-        setOption(opt.data);
+        setOption(opt.data.data);
       } catch (error) {
         console.log(error);
       }
@@ -101,15 +109,13 @@ export default function Department({ menuId }) {
     //   setNoti
     //   // 날리기로 했으면 이후 로직 수행 아니면 건너 뜀
     // }
-
-
     if(detail.id === 0){
       setValue(initValue);
       setDetail({...detail, type: 'basic'});
     } else if (detail.type === 'basic') {
-      getBasicDetailById(detail.id).then(res => setValue(res.data));
+      getBasicDetailById(detail.id).then(res => setValue(res.data.data));
     } else if (detail.type === 'emp'){
-      getEmpListByDeptId(detail.id).then(res => setEmpList(res.data));
+      getEmpListByDeptId(detail.id).then(res => setEmpList(res.data.data));
     }
   }
 
@@ -123,7 +129,9 @@ export default function Department({ menuId }) {
     FavorApi('off', menuId).then(() => {
       setFavor(!favor);
     });
-  }
+  };
+
+  
   return(
     <ContentDept>
       <DeptTitle>
@@ -156,23 +164,46 @@ export default function Department({ menuId }) {
             <DetailEmp empList={empList} /> : null}
         </Detail>
       </DetailArea>
-      { noti && <Notification 
-      message="변경 내용이 삭제됩니다. 일괄등록 시 임시저장을 눌러주세요"
-      onTmpSave={handleTmpSave} />}
+      { noti && swalWithBootstrapButtons.fire({
+          title: 'Are you sure?',
+          text: "You won't be able to revert this!",
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonText: 'Yes, delete it!',
+          cancelButtonText: 'No, cancel!',
+          reverseButtons: true
+        }).then((result) => {
+          if (result.isConfirmed) {
+            swalWithBootstrapButtons.fire(
+              'Deleted!',
+              'Your file has been deleted.',
+              'success'
+            )
+          } else if (
+            /* Read more about handling dismissals below */
+            result.dismiss === Swal.DismissReason.cancel
+          ) {
+            swalWithBootstrapButtons.fire(
+              'Cancelled',
+              'Your imaginary file is safe :)',
+              'error'
+            )
+          }
+        })}
     </ContentDept>
   );
 };
 
-function Notification ({ message, onTmpSave, setNoti }){
-  return (
-    <div>
-      <p>{ message }</p>
-      <button onClick={onTmpSave}>임시저장</button>
-      <button onClick={() => setNoti(false)}>확인</button>
-      <button onClick={() => setNoti(false)}>취소</button>
-    </div>
-  );
-}
+// function Notification ({ message, onTmpSave, setNoti }){
+//   return (
+//     <div>
+//       <p>{ message }</p>
+//       <button onClick={onTmpSave}>임시저장</button>
+//       <button onClick={() => setNoti(false)}>확인</button>
+//       <button onClick={() => setNoti(false)}>취소</button>
+//     </div>
+//   );
+// }
 const ContentDept = styled.div`
 background-color: white;
 border: 1px solid rgb(171,172,178);
@@ -197,7 +228,6 @@ color: black;
   color: rgb(32,35,44);
 }
 `;
-
 const Info = styled.div`
 display: flex;
 justify-content: center;
@@ -248,8 +278,6 @@ color: black;
 }
 
 `;
-
-
 const Detail = styled.div`
 display: block;
 width: 100%;

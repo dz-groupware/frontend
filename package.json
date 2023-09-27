@@ -19,6 +19,7 @@
     "redux": "^4.2.1",
     "styled-components": "^6.0.7",
     "styled-reset": "^4.5.1",
+    "sweetalert2": "^11.7.29",
     "web-vitals": "^2.1.4"
   },
   "scripts": {

@@ -4,13 +4,16 @@ import styled from 'styled-components';
 import { AiOutlinePoweroff } from 'react-icons/ai';
 
 import PosiList from './PosiList';
+import { logOut } from '../../api/login';
 
-export default function ProfileModal({ profile, empId, profileModal, setProfileModal }) {
-  console.log()
+export default function ProfileModal({ profile, empId, setProfileModal }) {
 //  const navigate = useNavigate();
   const handleLogOut = () => {
-//    console.log('done')
-//    navigate('/');
+    logOut();
+    localStorage.setItem("empId", 0);
+    localStorage.setItem("compId", 0);
+    console.log('done')
+    window.location.href = '/login';
   }
 
   const modalOff = () => {
@@ -18,7 +21,7 @@ export default function ProfileModal({ profile, empId, profileModal, setProfileM
   }
 
   for (let prf of profile) {
-    if (prf['empId'] === empId) {
+    if (prf['empId']+"" === empId) {
       return (
         <ModalBackdrop onClick={modalOff}>
           <ModalView onClick={(e) => e.stopPropagation()}>

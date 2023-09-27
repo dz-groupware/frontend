@@ -1,14 +1,11 @@
 import { useState } from 'react';
-import { useDispatch } from 'react-redux';
 
 import styled from 'styled-components';
 
-import { newEmpId, newCompId } from '../../utils/Slice';
 import { changeEmpApi } from '../../api/login';
 
 export default function PosiList({ empId, modalOff, profile }) {
   const [radioEmpId, setRadioEmpId] = useState(empId);
-  const dispatch = useDispatch();
 
   const handleRadio = (e) => {
     setRadioEmpId(e.target.value);
@@ -16,11 +13,9 @@ export default function PosiList({ empId, modalOff, profile }) {
 
   const handleAnotherEmp = () => {
     changeEmpApi(radioEmpId).then(res => {
-      dispatch(newEmpId(res.data['empId']));
-      dispatch(newCompId(res.data['compId']));
-      localStorage.setItem('empId', res.data['empId']);
-      localStorage.setItem('compId', res.data['compId']);
-    }).then(modalOff);
+      localStorage.setItem('empId', radioEmpId);
+      window.location.href = '/';
+    })
   }
 
   return (

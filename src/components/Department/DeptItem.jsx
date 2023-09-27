@@ -18,6 +18,7 @@ export default function DeptItem({ dept, detail, setDetail, menuId  }){
     // setStatus({...status, status:'modify', detailType:'basic'});
     setDetail({ ...detail, state: dept['id'] });
   }
+  console.log('in deptItem : ', detail.state, typeof detail.state);
 
   useEffect(() =>{
     if(typeof detail.state === 'number') {

@@ -9,16 +9,17 @@ export default function DeptItem({ dept, detail, setDetail, menuId  }){
   const [open, setOpen] = useState(false);
   const [subItem, setSubItem] = useState([]);
 
+  console.log("dept : ", dept);
   const handleDetail = () => {
     if(subItem.length === 0) {
-      getDepartmentById(dept['id'], menuId).then(res => setSubItem(res.data));
+      getDepartmentById(dept['id'], menuId).then(res => setSubItem(res.data.data));
     }
     // setOpen(!open);
     // setId({...id, newDeptId:dept['id']});
     // setStatus({...status, status:'modify', detailType:'basic'});
-    setDetail({ ...detail, state: dept['id'] });
+    setDetail({ ...detail, state: dept['id'], type: 'basic' });
   }
-  console.log('in deptItem : ', detail.state, typeof detail.state);
+  console.log('in deptItem : ', detail.state, detail);
 
   useEffect(() =>{
     if(typeof detail.state === 'number') {

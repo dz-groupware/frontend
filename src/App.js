@@ -3,13 +3,12 @@ import { Provider } from 'react-redux';
 import LoginPage from "./pages/LoginPage";
 import GlobalStyle from './GlobalStyle';
 import store from './utils/Store';
-import { Route, Routes, useNavigate } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
 import Home from './pages/Home';
-import { Error, NotFound } from './pages/VIEW';
+import { Error, NotFound, Test } from './pages/VIEW';
 
 
 const ErrorFallback = (err) => {
-  const navigate = useNavigate();
   console.log('!!! : ', err);
   if(err.message === "ERR_CONNECTION_REFUSED"){
     console.log('네트워크 연결 안됨');
@@ -37,6 +36,7 @@ export default function App() {
                 <Route path='/login' element={<LoginPage />} /> 
                 <Route path='/*' element={<Home/>}/>
                 <Route path='/error' element={<Error />} />
+                <Route path='/test' element={<Test />} />
                 <Route element={<NotFound />} />
               </Routes>
             </ErrorBoundary>

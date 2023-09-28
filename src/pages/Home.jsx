@@ -17,7 +17,7 @@ export default function Home() {
   const navigate = useNavigate();
   const empId = localStorage.getItem("empId");
 
-  console.log('!! home !!  : ',empId )
+  // console.log('!! home !!  : ',empId )
   useEffect(() => {
     const basicInfo = async() => {
       try{

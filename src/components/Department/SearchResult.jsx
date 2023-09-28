@@ -4,6 +4,7 @@ import DeptItem from './DeptItem';
 
 // 재귀가 아니라 리스트로 할 수 있는지 찾아보기
 export default function SearchResult ({ result, detail, setDetail, menuId, state, setState }){
+  console.log("SearchResult : ", result)
   return (
     <ResultContent>
       {

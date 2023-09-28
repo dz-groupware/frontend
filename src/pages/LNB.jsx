@@ -18,15 +18,17 @@ export default function LNB() {
   const [lnbOpen, setLnbOpen] = useState(true);
   const [gnb, setGnb] = useState({ id: 0, name: '' });
   const [data, setData] = useState([]);
+  const [routeOn, setRouteOn] = useState(false);
   const [routeList, setRouteList] = useState(new Map([
     [`/`, { menuId: 0, gnbId: 0, gnbName: 'main', page: 'Main' }],]));
 
-  console.log('data : ',gnb.id, data);
+  // console.log('data : ',gnb.id, data);
+  // console.log("url : ",decodeURIComponent(location.pathname));
 
-  console.log("url : ",decodeURIComponent(location.pathname));
   useEffect(() => {
+    console.log('lnb useEffect []');
     const parseMenuList = (originMenuList) => {
-      console.log(originMenuList);
+      // console.log(originMenuList);
       const menuList = new Map();
       originMenuList.forEach(row => {
         const { menuId, gnbId, gnbName, nameTree, page } = row;
@@ -35,11 +37,20 @@ export default function LNB() {
       menuList.set(`/`, { menuId: 0, gnbId: 0, gnbName: 'main', page: 'Main' } );
       setRouteList(menuList);
     }
-    try {
-      getMenuList(0).then(res => parseMenuList(res.data.data));
-    } catch (err) {
-      console.log('getMenuList error : ',err);
+
+    const initRouteList = async () => {
+      try {
+        console.log('try getMenuList')
+        const res = await getMenuList(0);
+        parseMenuList(res.data.data);
+        setRouteOn(true);
+        // 컴포넌트 마운트 시 현재 경로를 기반으로 routeList 업데이트
+      } catch (err) {
+        console.log('getMenuList error : ',err);
+      }  
     }
+
+    initRouteList();
   }, []);
 
   useEffect(() => {
@@ -72,9 +83,10 @@ export default function LNB() {
           }
         </LNBList>
         <OutletArea id='route' className={`${location.pathname === '/' ? 'main' : 'lnb'} ${lnbOpen ? 'true' : 'false'}`} >
+          {routeOn &&
           <Routes>
             <Route path='/*' element={<Module gnb={gnb} setGnb={setGnb} routeList={routeList}/>} />
-          </Routes>
+          </Routes>}
         </OutletArea>
       </LnbArea>
     </Content>

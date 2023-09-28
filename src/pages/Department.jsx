@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import {  AiOutlineInfoCircle } from 'react-icons/ai';
 
 import styled from 'styled-components';
-import Swal from 'sweetalert2/dist/sweetalert2.js'
+import Swal from 'sweetalert2';
 
 import { getDepartemnt, getOptionCompList, getBasicDetailById, getEmpListByDeptId, findDeptNameAndCode } from '../api/department';
 import { FavorApi } from '../api/menu';
@@ -56,13 +56,49 @@ export default function Department({ menuId }) {
 
   const [noti, setNoti] = useState(false);
 
-  const swalWithBootstrapButtons = Swal.mixin({
-    customClass: {
-      confirmButton: 'btn btn-success',
-      cancelButton: 'btn btn-danger'
-    },
-    buttonsStyling: false
-  });
+  // const swalWithBootstrapButtons = Swal.mixin({
+  //   customClass: {
+  //     confirmButton: 'btn btn-success',
+  //     cancelButton: 'btn btn-danger'
+  //   },
+  //   buttonsStyling: false
+  // });
+
+  console.log(detail)
+  console.log(search)
+  console.log(value)
+
+  const handleModifyNoti = () => {
+    console.log(detail)
+    console.log(search)
+    console.log(value)
+  
+    // if (수정중){
+    //   setNoti
+    //   // 날리기로 했으면 이후 로직 수행 아니면 건너 뜀
+    // }
+    // 추가 버튼을 눌렀을 때
+    if(detail.id === 0){
+      setValue(initValue);
+      setDetail({...detail, type: 'basic'});
+    } else if (detail.type === 'basic') {
+      getBasicDetailById(detail.state).then(res => setValue(res.data.data));
+    } else if (detail.type === 'emp'){
+      getEmpListByDeptId(detail.state).then(res => setEmpList(res.data.data));
+    }
+  }
+
+  const handleTmpSave = () => {
+    console.log('임시 저장');
+    setNoti(false);
+  }
+
+  // 즐겨찾기 추가/삭제 요청
+  function FavorHandler(){
+    FavorApi('off', menuId).then(() => {
+      setFavor(!favor);
+    });
+  };
   useEffect(()=>{
     const loadDeptList = async () => {
       try {
@@ -80,9 +116,10 @@ export default function Department({ menuId }) {
   }, []);
 
   useEffect(() => {
+    // setValue(initValue);
     if(detail.state === 'add'){
       // 저장 요청 
-      handleModifyNoti()
+     
     }
     if(detail.state === 'modify'){
       // 수정 요청 
@@ -94,43 +131,43 @@ export default function Department({ menuId }) {
 
   // 부서 상세 정보 요청
   useEffect(()=>{ 
-    // 폼 수정 중에 다른 상세 정보를 요청한다면
-
-  },[detail.id]);
-
-  useEffect(()=>{
-    
-    setValue(initValue);
-  },[detail.save]);
-
-
-  const handleModifyNoti = () => {
-    // if (수정중){
-    //   setNoti
-    //   // 날리기로 했으면 이후 로직 수행 아니면 건너 뜀
-    // }
-    if(detail.id === 0){
-      setValue(initValue);
-      setDetail({...detail, type: 'basic'});
-    } else if (detail.type === 'basic') {
-      getBasicDetailById(detail.id).then(res => setValue(res.data.data));
-    } else if (detail.type === 'emp'){
-      getEmpListByDeptId(detail.id).then(res => setEmpList(res.data.data));
+    // 부서 트리에서 부서를 선택 했을 때
+    if(typeof detail.state === 'number') {
+      // setDetail({ ...detail, id: detail.state });
+      handleModifyNoti();
     }
-  }
+    // 폼 수정 중에 다른 상세 정보를 요청한다면
+    // if(수정중){}
+    // else {
+    //  handleModifyNoti() 
+    // }
+    
+  },[detail.id, detail.state]);
 
-  const handleTmpSave = () => {
-    console.log('임시 저장');
-    setNoti(false);
-  }
-
-  // 즐겨찾기 추가/삭제 요청
-  function FavorHandler(){
-    FavorApi('off', menuId).then(() => {
-      setFavor(!favor);
-    });
-  };
-
+  useEffect(() => {
+    console.log("noti : ", noti );
+    if (noti) {
+      console.log("알림창 뜸 ");
+      Swal.fire({
+        title: "페이지 이동",
+        text: "수정 중인 내용은 모두 삭제 됩니다.",
+        showDenyButton: true,
+        showCancelButton: true,
+        confirmButtonText: '임시저장',
+        denyButtonText: '확인',
+        cancelButtonText: '취소',
+      }).then((result) => {
+        /* Read more about isConfirmed, isDenied below */
+        if (result.isConfirmed) {
+          console.log('임시저장');
+          Swal.fire('임시저장 되었습니다', '', 'success')
+        } else if (result.isDenied) {
+          console.log('수정 삭제 후 이동');
+        }
+      })
+      setNoti(false);
+    }
+  }, [noti])
   
   return(
     <ContentDept>
@@ -159,37 +196,11 @@ export default function Department({ menuId }) {
         <Detail>
           <DetailTitle detail={detail} setDetail={setDetail} />
             {detail.type === 'basic' ? 
-            <DetailBasic data={value} setData={setValue} detail={detail} setDetail={setDetail} /> : null}
+            <DetailBasic data={value} setData={setValue} detail={detail} setDetail={setDetail} setNoti={setNoti}/> : null}
             {detail.type === 'emp' ? 
             <DetailEmp empList={empList} /> : null}
         </Detail>
       </DetailArea>
-      { noti && swalWithBootstrapButtons.fire({
-          title: 'Are you sure?',
-          text: "You won't be able to revert this!",
-          icon: 'warning',
-          showCancelButton: true,
-          confirmButtonText: 'Yes, delete it!',
-          cancelButtonText: 'No, cancel!',
-          reverseButtons: true
-        }).then((result) => {
-          if (result.isConfirmed) {
-            swalWithBootstrapButtons.fire(
-              'Deleted!',
-              'Your file has been deleted.',
-              'success'
-            )
-          } else if (
-            /* Read more about handling dismissals below */
-            result.dismiss === Swal.DismissReason.cancel
-          ) {
-            swalWithBootstrapButtons.fire(
-              'Cancelled',
-              'Your imaginary file is safe :)',
-              'error'
-            )
-          }
-        })}
     </ContentDept>
   );
 };

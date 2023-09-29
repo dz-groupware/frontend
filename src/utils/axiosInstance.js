@@ -1,7 +1,7 @@
 import axios from "axios";
 
 export const axiosInstance = axios.create({
-  baseURL: "http://dev.amaranth2023.site/api/v1",
+  baseURL: "https://dev.amaranth2023.site/api/v1",
   headers: { "Content-Type": "application/json" },
   withCredentials: true,
   timeout: 10000,

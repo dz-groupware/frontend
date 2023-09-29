@@ -1,5 +1,6 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { menuSlice, recentSlice, modalSlice, companyMgmtSlice, employeeMgmtSlice, authGroupSlice } from './Slice';
+import { uploadMiddleware } from './thunk';
 
 const store = configureStore({
     reducer:{
@@ -9,7 +10,15 @@ const store = configureStore({
         companyMgmt: companyMgmtSlice.reducer,
         employeeMgmt: employeeMgmtSlice.reducer,
         authGroupSlice: authGroupSlice.reducer,
-    }
+    },
+    middleware: (getDefaultMiddleware) =>[
+        ...getDefaultMiddleware({
+            serializableCheck: false,
+        }),
+        uploadMiddleware
+    ],
+
+    
 });
 
 export default store;

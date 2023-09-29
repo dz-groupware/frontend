@@ -58,7 +58,11 @@ const employeeMgmtInitialState = {
   idForForm: null,
   isVisible: false,
   searchList: JSON.parse('[{"":""}]'),
-  activeTab: 'basic'
+  activeTab: 'basic',
+  isDuplicated: false,
+  isSignUpChecked: false, 
+  uploadedFile: null,
+  
 }
 
 function getIdFormLocal(k, d) {
@@ -208,13 +212,29 @@ function createManagementSlice(initialState, sliceName) {
         state.idForForm = null;
       },
       resetState: (state) => {
-        state.isVisible = false;
-        state.idForForm = null;
-        return initialState;
+        state.employeeBasicInfo = { ...employeeMgmtInitialState.employeeBasicInfo };
+        state.employeeGroupInfo = [...employeeMgmtInitialState.employeeGroupInfo];
+        state.idForForm = employeeMgmtInitialState.idForForm;
+        state.isVisible = employeeMgmtInitialState.isVisible;
+        state.searchList = [...employeeMgmtInitialState.searchList];
+        state.activeTab = employeeMgmtInitialState.activeTab;
+        state.isDuplicated = employeeMgmtInitialState.isDuplicated;
+        state.isSignUpChecked = employeeMgmtInitialState.isSignUpChecked;
       },
       setActiveTab: (state, action) => {
         state.activeTab = action.payload;
       },
+
+      setDuplicated: (state, action) => {
+        state.isDuplicated = action.payload;
+      },
+      setSignUpChecked: (state, action) => {
+        state.isSignUpChecked = action.payload;
+      },
+      updateUploadedFileUrl: (state, action) => {
+        state.employeeBasicInfo.imageUrl = action.payload;
+    }
+      
 
 
     }

@@ -2,14 +2,13 @@ import styled from 'styled-components';
 import { AiOutlinePlusCircle } from "react-icons/ai";
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect, useState } from 'react';
-import { axiosInstance } from '../../utils/axiosInstance';
 import { companyActions } from '../../utils/Slice';
 import { getCompanyDetailsById, getCompanyMgmtList } from '../../api/companymgmt';
 
 
 
 
-export default function CompanyMgmtAside({ onShowForm }) {
+export default function CompanyMgmtAside() {
   const dispatch = useDispatch();
   const [companyDataList, setCompanyDataList] = useState([]);
   const [sortType, setSortType] = useState("default");

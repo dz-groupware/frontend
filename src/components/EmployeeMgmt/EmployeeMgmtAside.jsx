@@ -13,8 +13,8 @@ export default function EmployeeMgmtAside() {
   const [selectedEmployeeId, setSelectedEmployeeId] = useState(null);
   const isVisible = useSelector(state => state.employeeMgmt.isVisible);
   const reduxbasicInfo = useSelector(state => state.employeeMgmt.employeeBasicInfo);
-  const reduxgroupInfo = useSelector(state => state.employeeMgmt.employeeGroupInfo);
-  const [isSelected,setIsSelected]=useState(false);
+  
+
 
   useEffect(() => {
     async function fetchEmployees() {
@@ -28,16 +28,15 @@ export default function EmployeeMgmtAside() {
 
   useEffect(() => {
     
-    if (!isVisible) {
+    if (isVisible===false) {
+      console.log("이즈비지블 처리됏니");
       
       setSelectedEmployeeId(null);
     }
   }, [isVisible]);
 
 
-  // useEffect(() => {
-  //   setIsSelected()
-  // }, [setSelectedEmployeeId]);
+
 
   if (!employeeDataList) {
     return <div>Loading...</div>;
@@ -61,7 +60,7 @@ export default function EmployeeMgmtAside() {
       const truncatedName = truncateString(data.name, 6);
       // console.log("data.id", data.id);
       return (
-        <Wrapper key={index} onClick={() => handleEmployeeClick(data)} isselected={(data.id === selectedEmployeeId).toString()}>
+        <Wrapper key={index} onClick={() => handleEmployeeClick(data)} $isselected={(data.id === selectedEmployeeId).toString()}>
           <ImageAndName>
             <Image src={data.imageUrl} alt="Employee Image" />
             <EmployeeInfo>
@@ -97,7 +96,7 @@ export default function EmployeeMgmtAside() {
     
     try {
       const fetchedEmployeeData = await getEmployeeDetailsById(employeeMgmt.id);
-      
+      console.log(fetchedEmployeeData);
       if (!fetchedEmployeeData) {
         console.error("No data returned for employee ID:", employeeMgmt.id);
         return;
@@ -168,7 +167,8 @@ export default function EmployeeMgmtAside() {
         <NumberArea>
           <Element>
             <span style={{ margin: "5px", fontWeight: 600 }}>사용자: </span>
-            <span style={{ color: "#308EFC", fontWeight: 600 }}>  {isSearchExecuted ? Object.keys(searchedEmployeeDataList).length : Object.keys(employeeDataList).length}</span>
+            <span style={{ color: "#308EFC", fontWeight: 600 }}>  
+            {isSearchExecuted ? Object.keys(searchedEmployeeDataList).length : Object.keys(employeeDataList).length}</span>
             <span style={{ margin: "5px", fontWeight: 600 }}>명</span>
           </Element>
           <SelectBox onChange={e => setSortType(e.target.value)}>
@@ -274,7 +274,7 @@ const Wrapper = styled.div`
   cursor: pointer;
   border: 1.5px solid #CCCCCC;
   margin-bottom: 10px;
-  background-color: ${props => props.isselected === "true" ? '#EFEFEF' : 'white'};
+  background-color: ${props => props.$isselected === "true" ? '#EFEFEF' : 'white'};
 
   padding :10px;
 `;

@@ -3,7 +3,8 @@ import styled from 'styled-components';
 export default function Profile({ profile, empId }) {
 
   for (let prf of profile) {
-    if (prf['empId'] === empId) {
+    console.log(empId, profile)
+    if (prf['empId']+"" === empId) {
       return (
         <ProfileArea>
           <img src={prf['imageUrl']} alt='profileImg' />

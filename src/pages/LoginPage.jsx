@@ -2,9 +2,11 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import LoginForm from '../components/Login/LoginForm';
 
+import { logOut } from '../api/login';
 export default function LoginPage() {
   
-  
+  const empId = localStorage.getItem("empId");
+
   return (
     <Container>
       <ImageArea>
@@ -12,11 +14,54 @@ export default function LoginPage() {
         <ImageText>아마란스텐입니다.</ImageText>
       </ImageArea>
       <LoginArea>
-        <LoginForm/>
+      { empId > 0 ? <Hello /> : <LoginForm/>}
       </LoginArea>
     </Container>
   );
 }
+
+function Hello(){
+
+  const handleLogOut = () => {
+    logOut(); 
+    window.location.href='/login';
+    localStorage.setItem("empId", 0);
+  }
+
+
+  return (
+    <HelloContent>
+      <HelloTitle>반갑습니다.</HelloTitle>
+      <div>
+        <HelloSpan onClick={() => {window.location.href='/'}}>메인페이지</HelloSpan>
+        <HelloSpan onClick={handleLogOut}>로그아웃</HelloSpan>
+      </div>
+    </HelloContent>
+  )
+}
+
+const HelloContent = styled.div`
+text-align: left;
+width: 400px;
+padding: 20px;
+
+> div {
+  display: flex;
+  justify-content: space-between;
+  
+}
+`;
+const HelloTitle = styled.div`
+font-size : xx-large;
+font-weight: bold;
+margin: 20px;
+`;
+const HelloSpan = styled.div`
+font-size : large;
+font-weight: bold;
+color: rgb(22, 114, 225);
+margin: 20px;
+`;
 
 const Container = styled.div`
   display: flex;

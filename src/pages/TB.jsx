@@ -18,6 +18,7 @@ export default function TB({ profile, empId }) {
   const [orgModal, setOrgModal] = useState(false);
   const [setModal, setSetModal] = useState(false);
 
+  console.log('empId : ', empId)
   return (
     <TBArea>
         <Link to='/'>

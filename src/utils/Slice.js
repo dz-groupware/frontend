@@ -77,13 +77,9 @@ export const loginSlice = createSlice({
   name: 'loginInfo',
   initialState : {
     isLogin: false,
-    empId: getIdFormLocal('empId', ""),
-    compId: getIdFormLocal('compId', ""),
   },
   reducers: {
     isLogin:(state) => {state.isLogin = !state.isLogin;},
-    newEmpId:(state, action) => {state.empId = action.payload;},
-    newCompId:(state, action) => {state.compId = action.payload;},
   }
 });
 
@@ -119,7 +115,6 @@ export const loginSlice = createSlice({
           state.idForForm = null;
           state.activeTab = initialState.activeTab;
         }
-
       },
       hideForm: (state) => {
         state.isVisible = false;

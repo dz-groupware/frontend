@@ -18,10 +18,16 @@ export const loginApi = async ({ data }) => {
 export function changeEmpApi(empId) {
   if(empId !== undefined && empId) {
       return axiosInstance.post(
-          `/user/re-login`,
+          `/auth/re-login`,
           {
             empId,
           }
       )
   }
+}
+
+export function logOut() {
+  return axiosInstance.post(
+    `/auth/logout`, { headers: { 'menuId' : 0 } }
+  )
 }

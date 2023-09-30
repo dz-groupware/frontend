@@ -1,39 +1,46 @@
 import { axiosInstance } from '../utils/axiosInstance';
 
-export function GnbMenuApi(){    
+function header(pageId){
+  return {
+    headers: {
+      'menuId' : pageId
+    }
+  };
+}
+
+export function GnbMenuApi(pageId){    
   return axiosInstance.get(
-    `/menu/gnb`
+    `/menu/gnb`, header(pageId)
   )
 }
 
-export function GnbFavorApi(){  
+export function GnbFavorApi(pageId){  
   return axiosInstance.get(
-    `/menu/favor`
+    `/menu/favor`, header(pageId)
   )
 }
 
-export function GnbFavorDeleteApi(menuId){  
+export function GnbFavorDeleteApi(pageId, menuId){  
   if (menuId !== undefined && menuId !== null){
     return axiosInstance.delete(
       `/menu/favor`,{
         params: {
           menuId
         }
-      }
+      }, header(pageId)
     )
   }
 }
 
-export function profileAPI(){  
+export function profileAPI(pageId){  
   return axiosInstance.get(
-    `/modal/profile`
+    `/modal/profile`, header(pageId)
   )
 }
 
 
 
-export function searchMenuListAPI(menuId, compId) {
-  console.log('lnb request (menuId) : ', menuId);
+export function searchMenuListAPI(pageId, menuId, compId) {
   if(menuId !== undefined && menuId !== null && compId !== undefined && compId !== null) {
       return axiosInstance.get(
           `/menu/lnb`,{
@@ -41,16 +48,13 @@ export function searchMenuListAPI(menuId, compId) {
                   menuId,
                   compId
               }
-          }
+          }, header(pageId)
       )
   }
 }
 
-export function basicInfoApi(empId, menuId){
-  const headers = {
-    'menuId' : menuId
+export function basicInfoApi(empId, pageId){
+  if(empId !== undefined && empId !== null){
+    return axiosInstance.get(`/home`, header(pageId));
   }
-if(empId !== undefined && empId !== null){
-  return axiosInstance.get(`/home`, { headers });
-}
 }

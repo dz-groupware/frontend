@@ -31,7 +31,7 @@ export default function App() {
       <GlobalStyle/>
       <Provider store={store}>
           <div className="App">
-            <ErrorBoundary FallbackComponent={ErrorFallback}>
+            {/* <ErrorBoundary FallbackComponent={ErrorFallback}> */}
               <Routes>
                 <Route path='/login' element={<LoginPage />} /> 
                 <Route path='/*' element={<Home/>}/>
@@ -39,7 +39,7 @@ export default function App() {
                 <Route path='/test' element={<Test />} />
                 <Route element={<NotFound />} />
               </Routes>
-            </ErrorBoundary>
+            {/* </ErrorBoundary> */}
           </div>
       </Provider>
     </>

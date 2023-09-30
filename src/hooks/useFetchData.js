@@ -46,9 +46,13 @@ export const useFetchData = (apiFunction, { params = {}, paths = {}, data = {}, 
       }
       try {
         const response = await apiFunction({ params: currentParams, paths: currentPaths, data: currentData });
+        console.log(response);
         setFetchedData(response.data.data);
         setStatus(response.status);
       } catch (e) {
+        if(e.status === 401 || e.status === 403){
+          window.location.href="/login";
+        }
         setError(e);
       } finally {
         setIsLoading(false);

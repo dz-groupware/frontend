@@ -13,7 +13,7 @@ export default function IconImageList(props){
   
   useEffect(() => {
     iconListAPI().then(res => {
-      const [, ...list] = res;
+      const [, ...list] = res.data;
       setIconList(list);
     })
   }, []);

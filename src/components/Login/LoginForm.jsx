@@ -9,9 +9,6 @@ import { useFetchData } from '../../hooks/useFetchData';
 import { loginApi } from '../../api/login';
 import { useDispatch } from 'react-redux';
 
-// 추가 (김현주)
-import { newEmpId, newCompId } from '../../utils/Slice';
-
 export default function LoginForm() {
   const [loginValue, setLoginValue] = useState({
     loginId: "",
@@ -39,13 +36,8 @@ export default function LoginForm() {
     setShouldFetch(true);  // API 호출을 활성화
   };
 
-  // 추가(김현주)
-  const dispatch = useDispatch();
-
   useEffect(()=>{
     if(status===202){
-      localStorage.setItem('empId', data['empId']);
-      localStorage.setItem('compId', data['compId']);
       navigate('/',{state:{ menuId: "0" }});
     }
   },[status]);

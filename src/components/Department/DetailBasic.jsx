@@ -3,77 +3,110 @@ import styled from 'styled-components';
 
 import DeptModal from './DeptModal';
 
-export default function DetailBasic({ data, setData, detail, setDetail }){
+export default function DetailBasic({ data, setData, detail, setDetail, setNoti }){
   const [modalOn, setModalOn] = useState(false);
-  const [value, setValue] = useState('');
-  const { validText, isValid } = useValid(value);
-  const [noti, setNoti] = useState(false);
-
-
+  const [form, setForm] = useState('');
+  const { validText, isValid, validate } = useValid(form);
+  const [isModified, setIsModified] = useState(false);
+  console.log(isModified);
+  useEffect(()=>{
+    setForm(data);
+    setIsModified(false);
+  },[]);
+  
   useEffect(()=>{
     if (data !== undefined){
-      setValue(data);
-    } else {
+      console.log('data in');
+      console.log('data : ', data);
+      setForm(data);
     }
   },[data]);
 
-  const handleNotiClose = () => {
-    setNoti(false);
-  }
-
   useEffect(()=>{
-    if (detail.state === "add" || detail.state === "modify") {
-      
-      setNoti(true);
+    // 입력 중에 다른 변경이 감지되었다고 판단
+    // 유효성 검사
+    validate(form);
+    if (typeof detail.state === 'number'){
+      // 다른 상세로 변경되었다면 
+      // 수정 중인지 확인 :: setNoti
+      if(isModified){
+        console.log("수정 중")
+          // 변경되었으면, 변경된 데이터를 상위로 전달
+        setNoti(true);
+        setData(form); 
+        // 저장하는 상태
+        setDetail({...detail, save: true});
+      } else {
+        setData(form); 
+      }
+      setIsModified(false);
     }
-
+    if (detail.state === true) {
+      // 상위로 변경된 상태 저장
+      setData(form);
+      
+    }
   },[detail.state]);
 
   useEffect(() => {
+    
+    
+  },[detail.id]);
 
-  },[value]);
+  // const handleCompareData = () => {
+  //   if (data !== undefined) {
+  //     const keys = Object.keys(data);
+  //     for (let key of keys) {
+  //       if (data[key] !== form[key]) {
+  //         return false;
+  //       }
+  //       return true;
+  //     }  
+  //   }
+  // }
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    console.log("handleInputChange : ",value);
+    setForm({ ...form, [name]:value });
+    setIsModified(true);
+  }
 
   return (
     <Detail>
       <BasicForm>
         <form id='basic'>
         <table>
+          <tbody>
           <tr>
             <td>상위부서</td>
             <td colSpan="3">
-              <textarea defaultValue={value.parName} onClick={()=>setModalOn(true)} readOnly></textarea>
+              <textarea defaultValue={form.parName} onClick={()=>setModalOn(true)} readOnly></textarea>
             </td>
           </tr>
           <tr>
             <td>부서코드</td>
             <td colSpan="3">
-              <input 
-              placeholder='부서코드를 입력하세요'
-              value={value.code}
-              valuetType={'code'}
-              onChange={e => setValue({...value, code: e.target.value})}
-              valid={!isValid.code}/> <div>{validText.code}</div>
+              <input name='code' placeholder='부서코드를 입력하세요'
+              value={form.code} onChange={handleInputChange}
+              data-valid={!isValid.code}/> <div>{validText.code}</div>
               <button >중복 검사</button>
             </td>
           </tr>
           <tr>
             <td>부서명</td>
             <td colSpan="3">
-              <input 
-              placeholder='부서명을 입력하세요'
-              value={value.name} 
-              onChange={e => setValue({...value, name: e.target.value})} 
-              valid={!isValid.name}/> <div>{validText.name}</div>
+              <input  name='name' placeholder='부서명을 입력하세요'
+              value={form.name}  onChange={handleInputChange} 
+              data-valid={!isValid.name}/> <div>{validText.name}</div>
             </td>
           </tr>
           <tr>
             <td>부서약칭</td>
             <td colSpan="3">
-              <input 
-              placeholder='부서약칭을 입력하세요'
-              value={value.abbr} 
-              onChange={e => setValue({...value, abbr: e.target.value})}
-              valid={!isValid.abbr} /> <div>{validText.abbr}</div>
+              <input name='abbr' placeholder='부서약칭을 입력하세요'
+              value={form.abbr}  onChange={handleInputChange}
+              data-valid={!isValid.abbr} /> <div>{validText.abbr}</div>
             </td>
           </tr>
           <tr>
@@ -82,22 +115,22 @@ export default function DetailBasic({ data, setData, detail, setDetail }){
             </td>
             <td className="data">
               <input name='enabledYn' value="true" type='radio' 
-              checked={value.enabledYn === true } 
-              onChange={e => setValue({...value, enabledYn: true})}/>사용
+              checked={form.enabledYn === true } 
+              onChange={e => setForm({...form, enabledYn: true})}/>사용
               <input name='enabledYn' value="false" type='radio' 
-              checked={value.enabledYn === false} 
-              onChange={e => setValue({...value, enabledYn: false})}/>미사용
+              checked={form.enabledYn === false} 
+              onChange={e => setForm({...form, enabledYn: false})}/>미사용
             </td>
             <td className="field">
               관리부서
             </td>
             <td className="data">
               <input name='managementYn' value="true" type='radio' 
-              checked={value.managementYn === true} 
-              onChange={e => setValue({...value, managementYn: true})}/>설정
+              checked={form.managementYn === true} 
+              onChange={e => setForm({...form, managementYn: true})}/>설정
               <input name='managementYn' value="false" type='radio' 
-              checked={value.managementYn === false} 
-              onChange={e => setValue({...value, managementYn: false})}/>미설정
+              checked={form.managementYn === false} 
+              onChange={e => setForm({...form, managementYn: false})}/>미설정
             </td>
           </tr>
           <tr>
@@ -106,45 +139,32 @@ export default function DetailBasic({ data, setData, detail, setDetail }){
             </td>
             <td className="data">
               <input name='includedYn' value="true" type='radio' 
-              checked={value.includedYn === true} 
-              onChange={e => setValue({...value, includedYn: true})}/>표시
+              checked={form.includedYn === true} 
+              onChange={e => setForm({...form, includedYn: true})}/>표시
               <input name='includedYn' value="false" type='radio' 
-              checked={value.includedYn === false} 
-              onChange={e => setValue({...value, includedYn: false})}/>미표시
+              checked={form.includedYn === false} 
+              onChange={e => setForm({...form, includedYn: false})}/>미표시
             </td>
             <td className="field">
               정렬
             </td>
             <td className="data">
-              <input name='sortOrder' type="number" value={value.sortOrder}  
-              onChange={e => setValue({...value, sortOrder: parseInt(e.target.value, 10)})}  />
+              <input name='sortOrder' type="number" value={form.sortOrder}  
+              onChange={e => setForm({...form, sortOrder: parseInt(e.target.value, 10)})}  />
             </td>
           </tr>
+          </tbody>
         </table>
         </form>
       </BasicForm>
       {
-        modalOn && <DeptModal value={value} setModalOn={setModalOn} setValue={setValue}/>
+        modalOn && <DeptModal form={form} setModalOn={setModalOn} setForm={setForm}/>
       }
-      { noti && <Notification 
-      message="변경 내용이 삭제됩니다. 일괄등록 시 임시저장을 눌러주세요"
-      onClose={handleNotiClose} />}
     </Detail>
   )
 }
 
-function Notification ({ message, onClose }){
-  return (
-    <div>
-      <p>{ message }</p>
-      <button onClick={onClose}>임시저장</button>
-      <button onClick={onClose}>확인</button>
-      <button onClick={onClose}>취소</button>
-    </div>
-  );
-}
-
-function useValid(changeValue){
+function useValid(form){
   const initValid = {
     code: false,
     name: false,
@@ -153,40 +173,30 @@ function useValid(changeValue){
   const [validText, setText] = useState(initValid);
   const [isValid, setValid] = useState(initValid);
 
-  useEffect(() => {
-    const exp = /^[A-Za-z0-9]{8}$/;
-    if (!exp.test(changeValue.code)) {
-      setText({...validText, code: '8자리 :: 영어 대/소문자'})
-      setValid({ ...isValid, code: false });
-    } else {
-      setText({...validText, code: ''});
-      setValid({ ...isValid, code: true });
-    }
-  }, [changeValue.code]);
+  const validate = () => {
+    const codeExp = /^[A-Za-z0-9]{8}$/;
+    const nameExp = /^[A-Za-z0-9]+$/;
+    const abbrExp = /^[A-Za-z0-9]{6}$/;
 
-  useEffect(() => {
-    const exp = /^[A-Za-z0-9]+$/;
-    if (!exp.test(changeValue.name)) {
-      setText({...validText, name: '/ 제외 특수문자 불가'})
-      setValid({ ...isValid, name: false });
-    } else {
-      setText({...validText, name: ''});
-      setValid({ ...isValid, name: true });
-    }
-  }, [changeValue.name]);
+    const codeIsValid = codeExp.test(form.code);
+    const nameIsValid = nameExp.test(form.name);
+    const abbrIsValid = abbrExp.test(form.abbr);
 
-  useEffect(() => {
-    const exp = /^[A-Za-z0-9]{6}$/;
-    if (!exp.test(changeValue.abbr)) {
-      setText({...validText, abbr:'6자리 :: 영어 대문자 :: 숫자'})
-      setValid({ ...isValid, abbr: false });
-    } else {
-      setText({...validText, abbr:'8자리 :: 영어 대/소문자 :: 숫자'});
-      setValid({ ...isValid, abbr: true });
-    }
-  }, [changeValue.abbr]);
+    setValid({
+      code : codeIsValid,
+      name : nameIsValid,
+      abbr : abbrIsValid,
+    });
 
-  return { validText, isValid };
+    setText({
+      code : codeIsValid ? '' : '8자리 :: 영어 대/소문자',
+      name : nameIsValid ? '' : '/ 제외 특수문자 불가',
+      abbr : abbrIsValid ? '' : '6자리 :: 영어 대/소문자',
+    });
+
+    return {isValid : codeIsValid && nameIsValid && abbrIsValid};
+  }
+  return { validText, isValid, validate };
 }
 
 const Detail = styled.div`
@@ -201,6 +211,7 @@ width: 100%;
 height: calc(100% - 100px);
 > form {
 > table {
+  > tbody {
   min-width: 700px;
   border-collapse: collapse;
   > tr {
@@ -255,6 +266,7 @@ height: calc(100% - 100px);
     }
   }
   }  
+  }
 }
 
 > .detailEmpBody {

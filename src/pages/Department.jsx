@@ -48,7 +48,7 @@ export default function Department({ menuId }) {
   const [value, setValue] = useState(initValue);
 
   const [favor, setFavor] = useState(false);
-  const [form, setForm] = useState('[]');
+  const [form, setForm] = useState([]);
 
   const [option, setOption] = useState([]);
   const [result, setResult] = useState([]);
@@ -60,6 +60,7 @@ export default function Department({ menuId }) {
   // console.log(detail)
   // console.log(search)
   // console.log(value)
+  console.log(form);
 
   // console.log("!!", loading, response);
   const handleModifyNoti = () => {
@@ -112,8 +113,10 @@ export default function Department({ menuId }) {
           console.log('삭제 요청');
         } else {
           if(detail.state === 'tmpSave'){
-            console.log('tmpSave : ', value);
-            setForm(...form, value);
+            // 일괄등록
+            // console.log('tmpSave : ', value);
+            // setForm([ ...form, value ]);
+            // setDetail({ id: detail.state, type: detail.type, state: false, save: false, isChanging: '' })
           } 
           if(detail.state === 'save'){
             if(detail.id === 0){
@@ -191,7 +194,7 @@ export default function Department({ menuId }) {
         if (result.isConfirmed) {
           console.log('임시저장');
           Swal.fire('임시저장 되었습니다', '', 'success');
-          setDetail({...detail, id: detail.state});
+          setDetail({...detail, state: 'tmpSave', isChanging: detail.state });
         } else if (result.isDenied) {
           console.log('수정 삭제 후 이동');
           setDetail({ ...detail, id: detail.state, state: false });

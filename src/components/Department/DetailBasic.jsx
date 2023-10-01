@@ -104,9 +104,8 @@ export default function DetailBasic({ data, setData, detail, setDetail, setNoti,
     // 임시저장 눌렀을 때
     if (detail.state === 'tmpSave') {
       setData(form); 
-      setDetail({ ...detail, state: 'tmpSave', save: true }); // state: true? false?
+      setDetail({ ...detail, id: detail.isChanging, state: false, save: false }); // state: true? false?
     }
-
   },[detail.state]);
 
   useEffect(() => {

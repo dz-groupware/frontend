@@ -65,6 +65,7 @@ export const searchMenuListAPI = async (pageId, menuId, compId) => {
 
 export function basicInfoApi(empId, pageId){
   if(empId !== undefined && empId !== null){
-    return axiosInstance.get(`/home`, header(pageId));
+    axiosInstance.defaults.headers['menuId'] = pageId;
+    return axiosInstance.get(`/home`);
   }
 }

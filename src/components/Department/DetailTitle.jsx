@@ -3,15 +3,18 @@ import styled from 'styled-components';
 export default function DetailTitle ({ detail, setDetail }){
   return(
     <>
+      {detail.type && 
+      <>
       <TitleContent>
         <div>상세정보</div>
         <div>
-          <button onClick={() => setDetail({...detail, state: 'modify'})}>저장</button> 
-          <button onClick={() => setDetail({...detail, state: 'delete'})}>삭제</button> 
+          <button onClick={() => setDetail({...detail, state: 'save'})}>저장</button> 
+          <button onClick={() => setDetail({...detail, state: 'delete', type: false})}>삭제</button> 
           <div>|</div>
-          <div onClick={() => setDetail({...detail, type: false})}>X</div>
+          <div onClick={() => setDetail({...detail, type: false, state: false, save: false})}>X</div>
         </div> 
       </TitleContent>
+      
       <DetailType>
         <div className={detail.type === 'basic' ? 'on' : 'off'} 
         onClick={() => setDetail({...detail, type: 'basic'})}>기본 정보</div>
@@ -19,6 +22,8 @@ export default function DetailTitle ({ detail, setDetail }){
         <div className={detail.type === 'emp'  ? 'on' : 'off'} 
         onClick={() => setDetail({...detail, type: 'emp'})}>부서원 정보</div>
       </DetailType>
+      </>
+      }
     </>
   );
 };

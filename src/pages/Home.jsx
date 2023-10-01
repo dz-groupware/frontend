@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 
 import styled from 'styled-components';
 
@@ -14,30 +13,27 @@ export default function Home() {
   const [gnb, setGnb] = useState(JSON.parse(`[{}]`));
   const [favor, setFavor] = useState(JSON.parse(`[{}]`));
 
-  const navigate = useNavigate();
   const empId = localStorage.getItem("empId");
 
-  // console.log('!! home !!  : ',empId )
-  useEffect(() => {
-    const basicInfo = async() => {
-      try{
-        await basicInfoApi(empId, "0").then(res => {
-          setProfile(res.data.data.profile);
-          setGnb(res.data.data.menu);
-          setFavor(res.data.data.favor);         
-          localStorage.setItem('empId', res.data.data.empId);
-          localStorage.setItem('compId', res.data.data.compId);
-        });
-      } catch (error) {
-        console.log('basicInfoApi error : ', error);
-        if (error.status === 401 || error.status === 403) {
-          window.location.href='/login';
-        }
+  const basicInfo = async() => {
+    try{
+      const res = await basicInfoApi(empId, "0");
+      setProfile(res.data.data.profile);
+      setGnb(res.data.data.menu);
+      setFavor(res.data.data.favor);  
+      localStorage.setItem("empId", res.data.data.empId);
+      localStorage.setItem("compId", res.data.data.compId);
+    } catch (error) {
+      console.log(error);
+      if (error.status === 401) {
+        console.log('로그인 정보 없음 (in home)');
+        window.location.href="/login";
       }
     }
-    
-    basicInfo();
+  };
 
+  useEffect(() => {
+    basicInfo();
   }, [empId]);
 
   return (

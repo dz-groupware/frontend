@@ -40,28 +40,18 @@ export function profileAPI(pageId){
 
 
 
-export const searchMenuListAPI = async (pageId, menuId, compId) => {
-  if (menuId !== undefined && menuId !== null && compId !== undefined && compId !== null) {
-    try {
-      const response = await axiosInstance.get(
-        `/menu/lnb`,
-        {
-          params: {
-            menuId,
-            compId
-          }
-        },
-        header(pageId)
-      );
-      return response;
-    } catch (error) {
-      throw error;
-    }
-  } else {
-    throw new Error("Invalid parameters");
+export function searchMenuListAPI(pageId, menuId, compId) {
+  if(menuId !== undefined && menuId !== null && compId !== undefined && compId !== null) {
+      return axiosInstance.get(
+          `/menu/lnb`,{
+              params: {
+                  menuId,
+                  compId
+              }
+          }, header(pageId)
+      )
   }
-};
-
+}
 
 export function basicInfoApi(empId, pageId){
   if(empId !== undefined && empId !== null){

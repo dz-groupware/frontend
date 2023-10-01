@@ -3,12 +3,7 @@ import styled from 'styled-components';
 import LinkButon from '../../Commons/LinkButon';
 import ActionButton from '../../Commons/ActionButton';
 
-export default function MenuTreeTop() {
-  const [selectedKey, setSelectedKey] = useState(null);
-
-  const handleItemClick = (key) => {
-    setSelectedKey(selectedKey === key ? null : key);
-  };
+export default function MenuTreeTop({isEditMode, setIsEditMode, setIsSaveClicked, setIsDeleteClicked}) {
 
   return (
     <Container>
@@ -22,7 +17,34 @@ export default function MenuTreeTop() {
             showBorderLeft={true}
             showBorderRight={true}
         />
-        <ActionButton width={'3rem'}fontWeight={400} fontSize={'1.0rem'} name={'수정'}/>
+        <ActionButtonWrapper>
+          {isEditMode && (
+            <ActionButton 
+              width={'3rem'}
+              fontWeight={400} 
+              fontSize={'1.0rem'} 
+              name="저장"
+              onClick={() => setIsSaveClicked(true)}
+              // onClick={handleSaveClick}
+            />
+          )}
+          {isEditMode && (
+            <ActionButton 
+              width={'3rem'}
+              fontWeight={400} 
+              fontSize={'1.0rem'} 
+              name="삭제"
+              onClick={() => setIsDeleteClicked(true)}
+            />
+          )}
+          <ActionButton 
+            width={'3rem'}
+            fontWeight={400} 
+            fontSize={'1.0rem'} 
+            name={isEditMode ? '닫기' : '수정'}
+            onClick={() => setIsEditMode(prev => !prev)}
+          />
+        </ActionButtonWrapper>
       </HeaderWrapper>
       <SearchWrapper>
         <Element>
@@ -59,6 +81,9 @@ const SearchWrapper = styled.div`
   border: 1px solid lightgrey;
 `;
 
+const ActionButtonWrapper = styled.div`
+  
+`;
 const Element = styled.div`
   flex: 1;
   display: flex;

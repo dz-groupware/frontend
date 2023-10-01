@@ -1,13 +1,12 @@
 import { axiosInstance } from '../utils/axiosInstance';
    
-export function orgTreeApi(type = "", compId = "", deptId = "", empId = ""){  
+export function orgTreeApi(type = "", compId = "", deptId = ""){  
     return axiosInstance.get(
         `/modal/org/tree`,{
             params: {
                 type,
                 compId,
                 deptId,
-                empId,
             }
         }
     )
@@ -18,8 +17,8 @@ export function orgEmpListApi(type = "", compId = "", deptId=""){
     `/modal/org/empList`,{
       params: {
         type,
-        compId: compId,
-        deptId: deptId
+        compId,
+        deptId
       }
     }
   )

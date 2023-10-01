@@ -8,11 +8,11 @@ import { useState, useEffect } from 'react';
   @prop {boolean} shouldFetch - API 호출을 할지 말지 결정. 
 */
 export const useFetchData = (apiFunction, { params = {}, paths = {}, data = {}, shouldFetch = true } = {}) => {
-  const [fetchedData, setFetchedData] = useState(null);
+  const [fetchedData, setFetchedData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [shouldFetchState, setShouldFetch] = useState(shouldFetch); 
-  const [statusCode, setStatusCode] = useState(null);
+  const [status, setStatus] = useState(null);
 
   const [currentParams, setParams] = useState(params); 
   const [currentPaths, setPaths] = useState(paths); 
@@ -46,8 +46,8 @@ export const useFetchData = (apiFunction, { params = {}, paths = {}, data = {}, 
       }
       try {
         const response = await apiFunction({ params: currentParams, paths: currentPaths, data: currentData });
-        setFetchedData(response.data);
-        setStatusCode(response.status);
+        setFetchedData(response.data.data);
+        setStatus(response.status);
       } catch (e) {
         setError(e);
       } finally {
@@ -59,5 +59,5 @@ export const useFetchData = (apiFunction, { params = {}, paths = {}, data = {}, 
     fetchData();
   }, [apiFunction, currentParams, currentPaths, currentData, shouldFetchState]); 
 
-  return { data: fetchedData, setData: setFetchedData, isLoading, error, setShouldFetch, statusCode};  
+  return { data: fetchedData, setData: setFetchedData, isLoading, error, setShouldFetch, status, setStatus};  
 };

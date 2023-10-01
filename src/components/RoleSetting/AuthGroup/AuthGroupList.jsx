@@ -3,18 +3,18 @@
   import { styled } from 'styled-components';
   import { getAuthGroupApi } from '../../../api/authgroup';
 
-  export default function AuthGroupList({ activeAuthId, setActiveAuthId, orderBy, searchTerm }) {
+  export default function AuthGroupList({ activeAuthId, orderBy, searchTerm, refresh, showCloseRequest, handleItemClick }) {
     const [lastId, setLastId] = useState(99999999);
     const [lastAuthName, setLastAuthName] = useState(null);
     const [data, setData] = useState([]);
     const [hasMore, setHasMore] = useState(true);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null); // 에러 상태 변수 추가
+
     const lastElementRef = useRef();
-    
+
     const fetchMoreData = useCallback(async () => {
       if (isLoading || !hasMore) return;
-      console.log('lastName',lastAuthName)
       setIsLoading(true);
       
       let queryParam = { 
@@ -27,8 +27,8 @@
     
       
       try {
-        const response = await getAuthGroupApi({ params: queryParam });
-        
+        const res = await getAuthGroupApi({ params: queryParam });
+        const response = res.data;
         if (response.data && response.data.length > 0) {
           if(orderBy.includes('authName')) {
             setLastAuthName(response.data[response.data.length - 1].authName);
@@ -70,7 +70,7 @@
             setLastId(0); // ID 오름차순 정렬을 시작합니다.
         }
     }
-    }, [orderBy, searchTerm]);
+    }, [orderBy, searchTerm,refresh]);
 
     useEffect(() => {
       if(data.length === 0 && hasMore) {
@@ -100,19 +100,22 @@
     return (
       <Container>
         <div style={{ border: '1px solid #a9a9a9', height: '100%', overflowY: 'auto' }}>
-          {data.map((item, i) => (
-            <AuthGroupItem
-              key={item.id}
-              item={item}
-              onClick={() => {
-                setActiveAuthId(item.id);
-              }}
-              isActive={activeAuthId === item.id}
-              ref={i === data.length - 1 ? lastElementRef : null}
-            />
-            ))}
+          {data.length > 0 ? (
+            data.map((item, i) => (
+              <AuthGroupItem
+                key={item.id}
+                item={item}
+                onClick={() => handleItemClick(item.id)}
+                isActive={activeAuthId === item.id}
+                ref={i === data.length - 1 ? lastElementRef : null}
+              />
+            ))
+          ) : !isLoading && !hasMore ? (
+            <div>데이터가 없습니다.</div>
+          ) : null}
         </div>
         <div>
+          {showCloseRequest ? <div>닫기 버튼을 눌러주세요.</div> : null}
           {isLoading? (<div>로딩중입니다!...</div>) : null}
         </div>
       </Container>

@@ -1,4 +1,3 @@
-import { alert } from "../utils/Slice";
 import { axiosInstance } from "../utils/axiosInstance";
 
 export const getEmployeeMgmtList = async () => {

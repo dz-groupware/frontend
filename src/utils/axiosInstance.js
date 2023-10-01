@@ -30,16 +30,19 @@ axiosInstance.interceptors.request.use(
   //응답 인터셉터
 axiosInstance.interceptors.response.use(
   (response) => {
-    //응답에 대한 로직
-    const res = response.data;
-    return res;
+    // 응답에 대한 로직
+    const status = response.status;
+    const data = response.data;
+
+    return { status, data };
   },
   (err) => {
-    if (err.response && err.response.status === 401) {
-      throw new Error('UNAUTHORIZED');
-    }
-    if (err.response && err.response.status === 403) {
-      throw new Error('FORBIDDEN');
+    // 오류 응답의 상태 코드와 본문을 얻으려면 err.response.status와 err.response.data를 확인해야 합니다.
+    if (err.response) {
+      const errorStatus = err.response.status;
+      const errorData = err.response.data;
+
+      return Promise.reject({ status: errorStatus, data: errorData });
     }
     return Promise.reject(err);
   }

@@ -9,7 +9,6 @@ export default function MenuTree(props) {
 
   useEffect(() => {
     GnbListApi().then(res => {
-      console.log(res);
       setMenuTree(res.data);
     });
   }, []);
@@ -26,7 +25,7 @@ export default function MenuTree(props) {
           <div>
           {
             menuTree.map((a, i) => (
-              <MenuItem data={a} setModalOn={props.setModalOn} setValue={props.setValue} key={a['name']+'gnb'}/>
+              <MenuItem data={a} setModalOn={props.setModalOn} handleParMenu={props.handleParMenu} key={a['name']+'gnb'}/>
             ))
           }
           </div>
@@ -54,7 +53,7 @@ export function MenuItem(props) {
       .then(res => setSubItem(res.data));
     }
     setOpen(!open);
-    props.setValue(props.data);
+    props.handleParMenu(props.data)
   }
 
   return (
@@ -64,7 +63,7 @@ export function MenuItem(props) {
       </div>
       { subItem.length > 1 && open &&
         subItem.map((a, i) => (
-          <MenuItem data={a} setModalOn={props.setModalOn} setValue={props.setValue} key={a['name']+'lnb'}/>
+          <MenuItem data={a} setModalOn={props.setModalOn} handleParMenu={props.handleParMenu} key={a['name']+'lnb'}/>
         ))
       }
     </Menu>

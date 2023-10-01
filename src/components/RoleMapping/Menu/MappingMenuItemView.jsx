@@ -1,43 +1,43 @@
-import React, { useState } from 'react'
+import React, { useState } from 'react';
+import { FiPlus, FiMinus } from 'react-icons/fi';
+import { useFetchData } from '../../../hooks/useFetchData';
 import styled from 'styled-components';
-import { useFetchData } from '../../hooks/useFetchData';
-import { FiPlus, FiMinus } from 'react-icons/fi'
 
-export default function RoleModalMenuItem({ item, depth=1 ,hasMenu, fetchApi, paths}) {
-  const [expanded, setExpanded] = useState(false);
-  const { data: subMenuItems, setData:setSubMenuItems, isLoading, error } = useFetchData(fetchApi, { 
-    paths: { ...paths }
+export default function MappingMenuItemView({ item, depth = 1, fetchApi, paths }) {
+  const [expanded, setExpanded] = useState(true);
+  const { data: subMenuItems, setShouldFetch, isLoading, error } = useFetchData(fetchApi, { 
+    paths,
+    shouldFetch: true,
   });
-
-  const toggleSubMenu = async () => {
+  const toggleSubMenu = () => {
     if (expanded) {
-      setExpanded(false);
+      setExpanded((prev) => !prev);
       return;
     }
-
     if (subMenuItems.length === 0) {
-      const fetchedSubMenuItems = await fetchApi({paths:{ ...paths }});
-      setSubMenuItems(fetchedSubMenuItems);
+      setShouldFetch(true);
     }
     setExpanded(true);
   };
 
   return (
     <>
-      <StyledRow as="tr" $depth={depth} $childNodeYn={item.childNodeYn} $hasMenu={hasMenu}>
+      <StyledRow as="tr" $depth={depth} $hasMappedChild={item.hasMappedChild}>
         <td>
-          {item.childNodeYn ? (
-            <div style={{ width: '1em' }}></div>
-          ) : (
-            <div style={{ width: '1em' }}>
-              <StyledButton onClick={toggleSubMenu}>
-                {expanded ? <FiMinus/> : <FiPlus/>}
-              </StyledButton>
-            </div>
-          )}
-          <div>
+          {item.hasMappedChild ?  (
+              <div style={{ width: '1em' }}>
+                <StyledButton 
+                  onClick={toggleSubMenu}
+                >
+                  {expanded ? <FiMinus /> : <FiPlus />}
+                </StyledButton>
+              </div>
+            ): (
+              <div style={{ width: '1em' }}></div>
+            )}
+          {/* <div>
             {item.menuId}
-          </div>
+          </div> */}
           <div>
             {item.menuName}
           </div>
@@ -47,11 +47,10 @@ export default function RoleModalMenuItem({ item, depth=1 ,hasMenu, fetchApi, pa
       {expanded && subMenuItems.length > 0 && (
         <>
           {subMenuItems.map((subItem, subIndex) => (
-            <RoleModalMenuItem
+            <MappingMenuItemView
               key={subItem.menuId}
               item={subItem}
               depth={depth+1}
-              hasMenu={hasMenu}
               fetchApi={fetchApi}
               paths={{...paths, parId: subItem.menuId}}
             />
@@ -62,12 +61,13 @@ export default function RoleModalMenuItem({ item, depth=1 ,hasMenu, fetchApi, pa
   );
 }
 
+
 const StyledRow = styled.tr`
   height: 2rem;
-  background-color: ${({ $depth, $childNodeYn }) => 
-    $depth === 1 ? 'skyblue' : ($childNodeYn ? 'yellow' : 'white')};
-  color: ${({ $hasMenu }) => ($hasMenu ? 'red' : 'black')};
-  
+  background-color: ${({ $depth, $hasMappedChild }) => 
+    $depth === 1 ? '#d6ecf8' : ($hasMappedChild ? '#E3F4F7' : 'white'
+  )};
+
   td {
     height: 2rem;
     vertical-align: middle;
@@ -79,6 +79,7 @@ const StyledRow = styled.tr`
       gap: 1rem;
       border-left: 1px solid #ccc;
       border-right: 1px dashed #ccc;
+      position: relative;
       padding-left: ${({ $depth }) => `${$depth * 20}px`}; // 여기를 수정했습니다
     }
 
@@ -89,10 +90,7 @@ const StyledRow = styled.tr`
       border-right: 1px solid #ccc;
     }
   }
-  
 `;
-
-
 
 const StyledButton = styled.button`
   background-color: white;

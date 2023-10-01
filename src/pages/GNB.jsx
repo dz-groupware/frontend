@@ -1,6 +1,5 @@
 
 import { useState } from 'react';
-import { useSelector } from 'react-redux';
 
 import styled from 'styled-components';
 
@@ -9,12 +8,8 @@ import { BiSolidGrid } from "react-icons/bi";
 
 import { MenuList, FavList, IconList } from '../components/GNB/GnbList';
 
-export default function GNB(){
+export default function GNB({ gnb, favor, empId }){
   const [menuOn, setMenuOn] = useState([false, false]);
-
-  const menuData = useSelector(state => state.gnbMenu.menu);
-  const favorData = useSelector(state => state.gnbMenu.favor);
-  const empId = useSelector(state => state.gnbMenu.empId);
 
   return (
     <>
@@ -27,7 +22,7 @@ export default function GNB(){
           }
         }}/>
         <hr />
-        <IconList value={menuData}/>
+        <IconList gnb={gnb}/>
       </GNBIconArea>
       <GNBMenuArea id='gnbMenu' className={`menu main ${menuOn[0]} ? 'true' : 'false'}`}>
         <TopIconArea>
@@ -35,7 +30,7 @@ export default function GNB(){
           <AiOutlineStar onClick={() => {setMenuOn([false, true]);}} />
         </TopIconArea>
         <hr />
-        <MenuList value={menuData}/>
+        <MenuList gnb={gnb}/>
       </GNBMenuArea>
       <GNBFavArea id='gnbFav' className={`main ${menuOn[1]} ? 'true' : 'false'}`}>
         <TopIconArea>
@@ -43,7 +38,7 @@ export default function GNB(){
           <AiOutlineStar onClick={() => {setMenuOn([false, true]);}} />
         </TopIconArea>
         <hr />
-        <FavList value={favorData} empId={empId}/>
+        <FavList favor={favor} empId={empId}/>
       </GNBFavArea>
     </>
   )

@@ -12,7 +12,7 @@ import { axiosInstance } from '../../utils/axiosInstance';
 
 export function GnbDetail(props) {
   const [isDragging, setIsDragging] = useState(false);
-  
+  const [errorMessage, setErrorMessage] = useState("");
   const [menuId, setMenuId] = useState("");
   const [parId, setParId] = useState("");
   const [menuName, setMenuName] = useState("");
@@ -20,16 +20,11 @@ export function GnbDetail(props) {
   const [sortOrder, setSortOrder] = useState("");
   const [iconUrl, setIconUrl] = useState("");
   const [newIconFile, setNewIconFile] = useState("");
+  const [newIconUrl, setNewIconUrl] = useState("");
 
   const path = 'https://dz-test-image.s3.ap-northeast-2.amazonaws.com/';
+  const prefix = 'icon/';
 
-  const readImage = (image) => {
-    const reader = new FileReader();
-    reader.onload = function(e) {
-      setNewIconFile(String(e.target?.result));
-    };
-    reader.readAsDataURL(image);
-  }
   const onDragEnter = (e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -47,13 +42,21 @@ export function GnbDetail(props) {
       setIsDragging(true);
     }
   };
+  const readImage = (image) => {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      setNewIconUrl(e.target?.result);
+    };
+    reader.readAsDataURL(image);
+  }
   const onDrop = (e) => {
     e.preventDefault();
     e.stopPropagation();
     setIsDragging(false);
+    // readImage(e.dataTransfer.files[0]);
     readImage(e.dataTransfer.files[0]);
     setNewIconFile(e.dataTransfer.files[0]);
-    setIconUrl(path+e.dataTransfer.files[0]['name']);
+    setIconUrl(path+prefix+e.dataTransfer.files[0]['name']);
   };
 
   const updateMenu = async () => {
@@ -64,23 +67,31 @@ export function GnbDetail(props) {
       menu.set('name', menuName);
       menu.set('enabledYN', enabledYN);
       menu.set('sortOrder', sortOrder);
-      menu.set('iconUrl', path+iconUrl);
+      menu.set('iconUrl', iconUrl);
       await saveMenuAPI(menu, props.on);
-      console.log('insert done ...');
     } catch (error) {
       console.log('failed insert...');
+      setErrorMessage("다시 시도해주세요. (메뉴 수정/저장 실패)");
     }
 
-    if (newIconFile !== "") {
-      let formData = new FormData();
-      formData.append('images', newIconFile);
+    try{
+      if (newIconFile !== "") {
+        let formData = new FormData();
+        formData.append('images', newIconFile);
 
-      axiosInstance.post(
-        `/s3/img`, formData, {
-          headers: { 'Content-Type': 'multipart/form-data' },
-        }
-      ).then(setNewIconFile(""));
+        console.log('before upload : ', newIconFile['name']);
+  
+        axiosInstance.post(
+          `/s3/img`, formData, {
+            headers: { 'Content-Type': 'multipart/form-data' },
+          }
+        ).then(setNewIconFile(""));
+      }
+    } catch (error) {
+      console.log("fail to upload image ...");
+      setErrorMessage("다시 시도해주세요. (이미지 추가 실패)");
     }
+    
   }
 
   useEffect (() => {
@@ -100,7 +111,6 @@ export function GnbDetail(props) {
     setEnabledYn(e.target.value);
   };
 
-//  console.log('gnb detail : ', menuName, menuId, enabledYN, sortOrder, iconUrl);
   return (
     props.on &&
     <DetailDiv>
@@ -170,7 +180,7 @@ export function GnbDetail(props) {
               <div>
                 <textarea 
                 name='iconUrl' 
-                value={iconUrl === undefined || iconUrl === "" || iconUrl.length < path.length ? iconUrl : iconUrl.slice(path.length-5)} 
+                value={iconUrl === undefined || iconUrl === "" || iconUrl.length < path.length ? "not found" : iconUrl.slice(path.length+prefix.length)} 
                 onChange={() => {}} ></textarea>
                 <label htmlFor="iconFile" className='iconFileInput'>
                   <AiOutlinePaperClip/>
@@ -183,37 +193,42 @@ export function GnbDetail(props) {
               <hr/>
               <IconImageList 
               newIconFile={newIconFile} 
+              newIconUrl={newIconUrl}
               iconUrl={iconUrl} 
               setIconUrl={setIconUrl}/>
             </DnDBox>
           </td>
         </tr>
       </tbody>
-    </table>  
+    </table> 
+    {errorMessage && (
+        <div>
+          {errorMessage}
+        </div>
+      )} 
     </DetailDiv>
   );
 }
 
 export function MenuDetail(props) {
   const [menuId, setMenuId] = useState("");
-  const [parId, setParId] = useState("");
   const [menuName, setMenuName] = useState("");
+  const [parId, setParId] = useState("");
+  const [parName, setParName] = useState("");
   const [enabledYN, setEnabledYn] = useState("");
   const [sortOrder, setSortOrder] = useState("");
-
-  const [value, setValue] = useState();
+  
   const [modalOn, setModalOn] = useState(false);
 
   const updateMenu = async () => {
     const menu = new FormData();
     try {
       menu.set('id', menuId);
-      menu.set('parId', value['id'] === "" ? 0 : value['id']);
+      menu.set('parId', parId === "" ? 0 : parId);
       menu.set('name', menuName);
       menu.set('enabledYN', enabledYN);
       menu.set('sortOrder', sortOrder);
       await saveMenuAPI(menu, ((props.on)+2));
-      console.log('insert done ...');
     } catch (error) {
       console.log('failed insert...');
     }
@@ -229,8 +244,14 @@ export function MenuDetail(props) {
     setMenuName(props.value['name']);
     setEnabledYn(props.value['enabledYN']);
     setSortOrder(props.value['sortOrder']);
+    setParName(props.value['parName']);
   }, [props.value]);
   
+  const handleParMenu = (value) => {;
+    setParId(value['id']);
+    setParName(value['name']);
+  }
+
   return (
     props.on &&
     <DetailDiv>
@@ -247,9 +268,9 @@ export function MenuDetail(props) {
           <tr>
             <td>상위메뉴</td>
             <td>
-              <textarea value={value === undefined ? "" : value['name']} onClick={() => {setModalOn(true)}} readOnly></textarea>
-              <textarea name='parId' value={value === undefined ? "" : value['id']} style={{display: 'none'}} readOnly></textarea>
-              <textarea name='id' value={props.value === undefined ? "" : props.value['id']} style={{display: 'none'}} readOnly></textarea>
+              <textarea value={parName === undefined ? "" : parName} onClick={() => {setModalOn(true)}} readOnly></textarea>
+              <textarea className='readOnly' value={parId === undefined ? "" : parId} readOnly></textarea>
+              <textarea className='readOnly' value={menuId === undefined ? "" : menuId} readOnly></textarea>
             </td>
           </tr>
           <tr>
@@ -298,7 +319,7 @@ export function MenuDetail(props) {
           </tr>
         </tbody>
       </table>
-      {modalOn && <MenuTree setModalOn={setModalOn} setValue={setValue} />}
+      {modalOn && <MenuTree setModalOn={setModalOn} handleParMenu={handleParMenu}/>}
     </DetailDiv>
   );
 
@@ -355,6 +376,11 @@ height: calc(100% - 151px);
             margin: 5px;
           }
         }  
+      }
+      > td {
+        > .readOnly{
+          display: none;
+        }
       }
     }
     > :nth-child(4) {

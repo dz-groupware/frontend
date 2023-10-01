@@ -24,11 +24,10 @@ export default function LNB() {
 
   // console.log('data : ',gnb.id, data);
   // console.log("url : ",decodeURIComponent(location.pathname));
+  // console.log(routeList);
 
   useEffect(() => {
-    console.log('lnb useEffect []');
     const parseMenuList = (originMenuList) => {
-      // console.log(originMenuList);
       const menuList = new Map();
       originMenuList.forEach(row => {
         const { menuId, gnbId, gnbName, nameTree, page } = row;
@@ -40,16 +39,22 @@ export default function LNB() {
 
     const initRouteList = async () => {
       try {
-        console.log('try getMenuList')
         const res = await getMenuList(0);
         parseMenuList(res.data.data);
-        setRouteOn(true);
-        // 컴포넌트 마운트 시 현재 경로를 기반으로 routeList 업데이트
-      } catch (err) {
-        console.log('getMenuList error : ',err);
-      }  
+        setRouteOn(true);  
+      } catch (error) {
+        console.log('error in lnb');
+        if (error.status === 401) {
+          console.log('로그인 정보 없음');
+          window.location.href='/login';
+        }
+        if (error.status === 403) {
+          console.log('권한 없음');
+        }
+        console.log('unknown error : ', error);
+      }
+      // 컴포넌트 마운트 시 현재 경로를 기반으로 routeList 업데이트
     }
-
     initRouteList();
   }, []);
 
@@ -71,7 +76,7 @@ export default function LNB() {
       </LnbTitle>
       <LnbArea>
         <LNBList className={`${lnbOpen ? 'true' : 'false'}`}>
-          {
+          {data !== '' && data !== undefined && data !== null &&
             data.map((a, i) => {
               if (a['id'] !== a['parId']) {
                 return (

@@ -68,7 +68,7 @@ export function GnbDetail(props) {
       menu.set('enabledYN', enabledYN);
       menu.set('sortOrder', sortOrder);
       menu.set('iconUrl', iconUrl);
-      await saveMenuAPI(menu, props.on);
+      await saveMenuAPI(props.pageId, menu, props.on);
     } catch (error) {
       console.log('failed insert...');
       setErrorMessage("다시 시도해주세요. (메뉴 수정/저장 실패)");

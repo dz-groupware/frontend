@@ -20,7 +20,7 @@ export default function DetailEmp({ empList }){
         <tbody>
           {
             empList.map((a, i) => (
-              <tr>
+              <tr key={a['deptName']+a['position']+['empName']}>
                 <td>{a['deptName']}</td>
                 <td>{a['position']}</td>
                 <td>{a['empName']}</td>

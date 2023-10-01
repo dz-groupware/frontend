@@ -43,15 +43,15 @@ export function EmptyPage(props){
   )
 }
 
-export function NotFound(){
+export function UNAUTHORIZED(){
   useEffect(() => {
     setTimeout(() => window.location.href='/', 3000);
   }, []);
 
   return(
     <div style={{display:'block', backgroundColor:'white', color:'black'}}>
-      <div style={{fontSize: 'xx-large', margin: '20px'}}>없는 페이지 입니다.</div>
-      <div style={{fontSize: 'large', margin: '30px'}}> 잠시 후 메인 페이지로 이동합니다 ..</div>
+      <div style={{fontSize: 'xx-large', margin: '20px'}}>로그인 정보가 없습니다</div>
+      <div style={{fontSize: 'large', margin: '30px'}}> 잠시 후 로그인 페이지로 이동합니다 ..</div>
     </div>
   )
 }

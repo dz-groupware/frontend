@@ -3,55 +3,17 @@ import styled from 'styled-components';
 
 import DeptModal from './DeptModal';
 
-export default function DetailBasic({ data, setData, detail, setDetail, setNoti }){
+import { checkDeptCode } from '../../api/department';
+
+export default function DetailBasic({ data, setData, detail, setDetail, setNoti, menuId }){
   const [modalOn, setModalOn] = useState(false);
   const [form, setForm] = useState('');
   const { validText, isValid, validate } = useValid(form);
   const [isModified, setIsModified] = useState(false);
-  console.log(isModified);
-  useEffect(()=>{
-    setForm(data);
-    setIsModified(false);
-  },[]);
-  
-  useEffect(()=>{
-    if (data !== undefined){
-      console.log('data in');
-      console.log('data : ', data);
-      setForm(data);
-    }
-  },[data]);
+  const [useableCode, setUseableCode] = useState(false);
 
-  useEffect(()=>{
-    // 입력 중에 다른 변경이 감지되었다고 판단
-    // 유효성 검사
-    validate(form);
-    if (typeof detail.state === 'number'){
-      // 다른 상세로 변경되었다면 
-      // 수정 중인지 확인 :: setNoti
-      if(isModified){
-        console.log("수정 중")
-          // 변경되었으면, 변경된 데이터를 상위로 전달
-        setNoti(true);
-        setData(form); 
-        // 저장하는 상태
-        setDetail({...detail, save: true});
-      } else {
-        setData(form); 
-      }
-      setIsModified(false);
-    }
-    if (detail.state === true) {
-      // 상위로 변경된 상태 저장
-      setData(form);
-      
-    }
-  },[detail.state]);
-
-  useEffect(() => {
-    
-    
-  },[detail.id]);
+  // console.log("modify : ", isModified);
+  // console.log("useableCode : ", useableCode);
 
   // const handleCompareData = () => {
   //   if (data !== undefined) {
@@ -72,6 +34,86 @@ export default function DetailBasic({ data, setData, detail, setDetail, setNoti 
     setIsModified(true);
   }
 
+  const handleCheckCode = () => {
+    // 유효성 검사
+    validate(form);
+    if(isValid.code) {
+      console.log('중복검사 : 코드 유효성 충족');
+      try {
+        // api 요청
+        checkDeptCode(form.id, form.code, menuId).then(res => {
+          console.log("checkDeptCode : ", res);
+          if(res.data.data){
+            setUseableCode(true);
+          }
+        });
+      } catch (error) {
+        console.log('중복 검사 요청 에러 : ', error);
+      }  
+    } else {
+      console.log('중복검사 : 코드 유효성 불충족');
+    }
+  }
+
+  useEffect(()=>{
+    setForm(data);
+    setIsModified(false);
+    if(data.id !== 0) {
+      setUseableCode(true);
+    }
+  },[]);
+  
+  useEffect(()=>{
+    setUseableCode(false);
+    if (data !== undefined){
+      setForm(data);
+      if(data.id !== 0) {
+        setUseableCode(true);
+      }
+    }
+  },[data]);
+
+  useEffect(()=>{
+    // 다른 부서를 눌렀을 때
+    if (typeof detail.state === 'number'){
+      if(isModified){
+        console.log("수정 중")
+        setNoti(true);
+      } else {
+        setDetail({ ...detail, id: detail.state, state: false });
+      }
+    }
+    // 저장 버튼을 눌렀을 때
+    if (detail.state === 'save'){
+      if (isModified) {
+        validate(form);
+        if (isValid.code && isValid.abbr && isValid.name && useableCode) {
+          console.log('유효성 통과');
+          setData(form); 
+          setDetail({ ...detail, state: false, save: true }); // state: true? false?
+        } else {
+          console.log(isValid.code, isValid.abbr, isValid.name, useableCode);
+          console.log('유효성 검사 불충족');
+          setDetail({ ...detail, state: false, save: false });
+        }  
+      } else {
+        console.log('변경된 내용이 없습니다. (저장 하지 않음)');
+        setDetail({ ...detail, state: false, save: false });
+      }
+    }
+    // 임시저장 눌렀을 때
+    if (detail.state === 'tmpSave') {
+      setData(form); 
+      setDetail({ ...detail, state: 'tmpSave', save: true }); // state: true? false?
+    }
+
+  },[detail.state]);
+
+  useEffect(() => {
+  },[detail.id]);
+
+
+
   return (
     <Detail>
       <BasicForm>
@@ -89,8 +131,10 @@ export default function DetailBasic({ data, setData, detail, setDetail, setNoti 
             <td colSpan="3">
               <input name='code' placeholder='부서코드를 입력하세요'
               value={form.code} onChange={handleInputChange}
-              data-valid={!isValid.code}/> <div>{validText.code}</div>
-              <button >중복 검사</button>
+              data-valid={!isValid.code} disabled={useableCode} className={useableCode}/> 
+              {useableCode ? 
+              <CheckBtn onClick={() => setUseableCode(false)} >다른 부서 코드 사용</CheckBtn> 
+              : <CancelBtn onClick={handleCheckCode}>중복 검사</CancelBtn>}<div>{validText.code}</div>
             </td>
           </tr>
           <tr>
@@ -158,7 +202,7 @@ export default function DetailBasic({ data, setData, detail, setDetail, setNoti 
         </form>
       </BasicForm>
       {
-        modalOn && <DeptModal form={form} setModalOn={setModalOn} setForm={setForm}/>
+        modalOn && <DeptModal form={form} setModalOn={setModalOn} setForm={setForm} menuId={menuId}/>
       }
     </Detail>
   )
@@ -174,9 +218,9 @@ function useValid(form){
   const [isValid, setValid] = useState(initValid);
 
   const validate = () => {
-    const codeExp = /^[A-Za-z0-9]{8}$/;
-    const nameExp = /^[A-Za-z0-9]+$/;
-    const abbrExp = /^[A-Za-z0-9]{6}$/;
+    const codeExp = /^[A-Za-z0-9]{1,8}$/;
+    const nameExp = /^[A-Za-z0-9\d가-힣/]{1,10}$/;
+    const abbrExp = /^[A-Z0-9]{1,6}$/;
 
     const codeIsValid = codeExp.test(form.code);
     const nameIsValid = nameExp.test(form.name);
@@ -189,9 +233,9 @@ function useValid(form){
     });
 
     setText({
-      code : codeIsValid ? '' : '8자리 :: 영어 대/소문자',
-      name : nameIsValid ? '' : '/ 제외 특수문자 불가',
-      abbr : abbrIsValid ? '' : '6자리 :: 영어 대/소문자',
+      code : codeIsValid ? '' : '8자리 이하 :: 영어 대/소문자',
+      name : nameIsValid ? '' : '10잘자리 이하 :: / 제외 특수문자 불가',
+      abbr : abbrIsValid ? '' : '6자리 이하 :: 영어 대/소문자',
     });
 
     return {isValid : codeIsValid && nameIsValid && abbrIsValid};
@@ -209,63 +253,73 @@ color: black;
 const BasicForm = styled.div`
 width: 100%;
 height: calc(100% - 100px);
-> form {
-> table {
-  > tbody {
-  min-width: 700px;
-  border-collapse: collapse;
-  > tr {
-    > td:nth-child(1) {
-      background-color: rgb(240,245,248);
-      width: 20%;
-      min-width: 150px;
-      font-size: medium;
-      font-weight: bold;
-      padding: 10px;
-      text-align: right;
-      border-top: 1px solid gray;
-      border-bottom: 1px solid gray;
-    }
-    > td:nth-child(2) {
-      background-color:  white;
-      color: gray;
-      width: 80%;
-      min-width: 400px;
-      font-size: small;
-      padding: 10px;
-      text-align: left;
-      border-top: 1px solid gray;
-      border-bottom: 1px solid gray;
-    }
-    > td {
-      > .readOnly {
-        display: none;
+> #basic {
+  > table {
+    width: 100%;
+    > tbody {
+      min-width: 700px;
+      border-collapse: collapse;
+      > tr {
+        display: flex;
+        > td:nth-child(1) {
+          display: flex;
+          background-color: rgb(240,245,248);
+          width: 10%;
+          min-width: 150px;
+          font-size: medium;
+          font-weight: bold;
+          padding: 10px;
+          text-align: right;
+          border-top: 1px solid gray;
+          border-bottom: 1px solid gray;
+        }
+        > td:nth-child(2) {
+          display: flex;
+          background-color:  white;
+          color: gray;
+          width: 90%;
+          min-width: 300px;
+          font-size: small;
+          padding: 10px;
+          text-align: left;
+          border-top: 1px solid gray;
+          border-bottom: 1px solid gray;
+          > .true{
+            background-color: rgb(188,237,196);
+          }
+        }
+        > td {
+          display: flex;
+          > .readOnly {
+            display: none;
+          }
+        }
       }
-    }
-    }
-  > tr {
-    > .field{
-      background-color: rgb(240,245,248);
-      width: 20%;
-      min-width: 150px;
-      font-size: medium;
-      font-weight: bold;
-      padding: 10px;
-      text-align: right;
-      border-bottom: 1px solid gray;
-    }
-    > .data {
-      background-color:  white;
-      color: gray;
-      width: 80%;
-      min-width: 400px;
-      font-size: small;
-      padding: 10px;
-      text-align: left;
-      border-bottom: 1px solid gray;
-    }
-  }
-  }  
+      > tr {
+        > .field{
+          display: flex;
+          background-color: rgb(240,245,248);
+          width: 20%;
+          min-width: 150px;
+          font-size: medium;
+          font-weight: bold;
+          padding: 10px;
+          text-align: right;
+          border-bottom: 1px solid gray;
+        }
+        > .data {
+          display: flex;
+          background-color:  white;
+          color: gray;
+          width: 80%;
+          min-width: 300px;
+          font-size: small;
+          padding: 10px;
+          text-align: left;
+          border-bottom: 1px solid gray;
+        }
+      }
+    }  
   }
 }
 
@@ -282,6 +336,7 @@ height: calc(100% - 50px);
   text-align: center;
 
   > tr > td {
+    display: flex;
     width: 25%;
     min-width: 100px;
     padding: 10px;
@@ -306,10 +361,29 @@ height: calc(100% - 50px);
     border-bottom: 1px solid gray;
     height: 30px;
     > td {
+      display: flex;
       padding: 10px;
       width: 25%;
       min-width: 100px;
     }
   }
 }
+`;
+const CheckBtn = styled.div`
+background-color: rgb(214,236,248);
+color: black;
+border: 1px solid rgb(146,183,214);
+border-radius: 5px;
+margin-left: 20px;
+font-weight: 100;
+padding: 5px;
+`;
+const CancelBtn = styled.div`
+background-color: rgb(214,236,248);
+color: black;
+border: 1px solid rgb(146,183,214);
+border-radius: 5px;
+margin-left: 20px;
+font-weight: 100;
+padding: 5px;
 `;

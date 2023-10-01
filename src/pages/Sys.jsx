@@ -129,7 +129,7 @@ export default function Sys({ pageId }){
             </SearchResult>
           </div>
         </MenuTree>
-        { detail[0] && <GnbDetail value={menuDetail} detailOff={detailOff} on={detail[0]} compId={compId}/>}
+        { detail[0] && <GnbDetail pageId={pageId} value={menuDetail} detailOff={detailOff} on={detail[0]} compId={compId}/>}
         { detail[1] && <MenuDetail value={menuDetail} detailOff={detailOff} on={detail[1]} compId={compId}/>}
       </FormArea>
     </Module>

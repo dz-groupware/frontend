@@ -13,7 +13,7 @@ export default function Home() {
   const [gnb, setGnb] = useState(JSON.parse(`[{}]`));
   const [favor, setFavor] = useState(JSON.parse(`[{}]`));
 
-  const empId = localStorage.getItem("empId");
+  const empId = localStorage.getItem("empId") ?? 0;
 
   const basicInfo = async() => {
     try{

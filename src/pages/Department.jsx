@@ -5,7 +5,7 @@ import {  AiOutlineInfoCircle } from 'react-icons/ai';
 import styled from 'styled-components';
 import Swal from 'sweetalert2';
 
-import { getDepartemnt, getOptionCompList, getBasicDetailById, getEmpListByDeptId, findDeptNameAndCode } from '../api/department';
+import { getDepartemnt, getOptionCompList, getBasicDetailById, getEmpListByDeptId, findDeptNameAndCode, modifyDepartment} from '../api/department';
 import { FavorApi } from '../api/menu';
 
 import DetailBasic from '../components/Department/DetailBasic';
@@ -19,7 +19,7 @@ export default function Department({ menuId }) {
   // initialState
   const initSearch = {
     option: '',
-    test: '',
+    text: '',
     on: false,
   }
   const initDetail = {
@@ -48,43 +48,28 @@ export default function Department({ menuId }) {
   const [value, setValue] = useState(initValue);
 
   const [favor, setFavor] = useState(false);
-  const [form, setForm] = useState(JSON.parse('[]'));
+  const [form, setForm] = useState('[]');
 
   const [option, setOption] = useState([]);
   const [result, setResult] = useState([]);
   const [empList, setEmpList] = useState([]);
 
   const [noti, setNoti] = useState(false);
+  const [loading, setLoading] = useState({loading: false, response: false});
 
-  // const swalWithBootstrapButtons = Swal.mixin({
-  //   customClass: {
-  //     confirmButton: 'btn btn-success',
-  //     cancelButton: 'btn btn-danger'
-  //   },
-  //   buttonsStyling: false
-  // });
+  // console.log(detail)
+  // console.log(search)
+  // console.log(value)
 
-  console.log(detail)
-  console.log(search)
-  console.log(value)
-
+  // console.log("!!", loading, response);
   const handleModifyNoti = () => {
-    console.log(detail)
-    console.log(search)
-    console.log(value)
-  
-    // if (수정중){
-    //   setNoti
-    //   // 날리기로 했으면 이후 로직 수행 아니면 건너 뜀
-    // }
-    // 추가 버튼을 눌렀을 때
     if(detail.id === 0){
       setValue(initValue);
       setDetail({...detail, type: 'basic'});
     } else if (detail.type === 'basic') {
-      getBasicDetailById(detail.state).then(res => setValue(res.data.data));
+      getBasicDetailById(detail.id, menuId).then(res => setValue(res.data.data));
     } else if (detail.type === 'emp'){
-      getEmpListByDeptId(detail.state).then(res => setEmpList(res.data.data));
+      getEmpListByDeptId(detail.id, menuId).then(res => setEmpList(res.data.data));
     }
   }
 
@@ -94,18 +79,21 @@ export default function Department({ menuId }) {
   }
 
   // 즐겨찾기 추가/삭제 요청
-  function FavorHandler(){
-    FavorApi('off', menuId).then(() => {
+  const handleFavor = () => {
+    console.log(menuId, favor);
+    FavorApi(menuId, !favor).then(() => {
       setFavor(!favor);
     });
   };
+
   useEffect(()=>{
     const loadDeptList = async () => {
       try {
         const menu = await getDepartemnt(menuId);
         setResult(menu.data.data);
-        const fav = await FavorApi('load', menuId);
-        setFavor(fav.data.data);
+        const fav = await FavorApi(menuId, 'load');
+        console.log(fav, typeof fav);
+        setFavor(fav === 'undefined' ? false : fav.data.data );
         const opt = await getOptionCompList(menuId);
         setOption(opt.data.data);
       } catch (error) {
@@ -116,38 +104,79 @@ export default function Department({ menuId }) {
   }, []);
 
   useEffect(() => {
-    // setValue(initValue);
-    if(detail.state === 'add'){
-      // 저장 요청 
-     
+    console.log('저장 삭제 버튼 시작 : ', detail);
+    if (detail.save) {
+      try {
+        if(detail.state === 'delete'){
+          // 삭제 요청
+          console.log('삭제 요청');
+        } else {
+          if(detail.state === 'tmpSave'){
+            console.log('tmpSave : ', value);
+            setForm(...form, value);
+          } 
+          if(detail.state === 'save'){
+            if(detail.id === 0){
+              // 추가 요청 : 추가 api
+              console.log('추가 요청');
+            }
+            if(detail.id > 0) {
+              console.log('수정 요청');            
+              modifyDepartment(value, menuId).then(res => {
+                console.log(res);
+                // 결과 확인 알림창에 결과 전달
+                setLoading({ loading: true, response: (res.data.data === '1' || res.data.data === 1)});
+                setDetail({...detail, state: false, save: false });
+              });
+            }    
+          }
+        }
+      } catch (error) {
+        console.log('save error : ', error);
+      }
     }
-    if(detail.state === 'modify'){
-      // 수정 요청 
-    }
-    if(detail.state === 'delete'){
-      // 삭제 요청 
-    }
+    setDetail({ ...detail, state: false, save: false });
+    console.log('저장 삭제 버튼 마무리 : ', detail);
   }, [detail.save]);
 
   // 부서 상세 정보 요청
   useEffect(()=>{ 
-    // 부서 트리에서 부서를 선택 했을 때
-    if(typeof detail.state === 'number') {
-      // setDetail({ ...detail, id: detail.state });
-      handleModifyNoti();
+    handleModifyNoti();
+  },[detail.id, detail.type]);
+
+  useEffect(() => {
+    if (search.on){
+      // 검색 요청
+      //검색 결과 result에 반영
     }
-    // 폼 수정 중에 다른 상세 정보를 요청한다면
-    // if(수정중){}
-    // else {
-    //  handleModifyNoti() 
-    // }
-    
-  },[detail.id, detail.state]);
+
+  }, [search.on]);
+
+
+  useEffect(() => {
+    if (loading.loading) {
+      if (loading.response){
+        Swal.fire({
+          icon: 'success',
+          title: '완료되었습니다.',
+          showConfirmButton: false,
+          timer: 1500
+        });
+      } else {
+        Swal.fire({
+          icon: 'error',
+          title: '다시 시도해 주세요.',
+          showConfirmButton: false,
+          timer: 1500
+        });
+      }
+      setLoading(false);
+    }
+  }, [loading]);
 
   useEffect(() => {
     console.log("noti : ", noti );
     if (noti) {
-      console.log("알림창 뜸 ");
       Swal.fire({
         title: "페이지 이동",
         text: "수정 중인 내용은 모두 삭제 됩니다.",
@@ -158,11 +187,17 @@ export default function Department({ menuId }) {
         cancelButtonText: '취소',
       }).then((result) => {
         /* Read more about isConfirmed, isDenied below */
+        console.log(result)
         if (result.isConfirmed) {
           console.log('임시저장');
-          Swal.fire('임시저장 되었습니다', '', 'success')
+          Swal.fire('임시저장 되었습니다', '', 'success');
+          setDetail({...detail, id: detail.state});
         } else if (result.isDenied) {
           console.log('수정 삭제 후 이동');
+          setDetail({ ...detail, id: detail.state, state: false });
+        } else if (result.isDismissed) {
+          console.log('취소');
+          setDetail({ ...detail, state: false });
         }
       })
       setNoti(false);
@@ -173,7 +208,7 @@ export default function Department({ menuId }) {
     <ContentDept>
       <DeptTitle>
         <div id="deptTitle">부서관리</div>
-        <TitleBtn favor={favor} FavorHandler={FavorHandler} detail={detail} setDetail={setDetail}/>
+        <TitleBtn favor={favor} handleFavor={handleFavor} detail={detail} setDetail={setDetail} handleTmpSave={handleTmpSave} />
       </DeptTitle>
       <Info>
           <div>
@@ -182,7 +217,7 @@ export default function Department({ menuId }) {
       </Info>
       <DetailArea>
         <SearchResultArea>
-          <SearchForm option={option}/>
+          <SearchForm option={option} search={search} setSearch={setSearch} />
           <div>
             <span>조직도</span>
             <select name="filter">
@@ -196,7 +231,7 @@ export default function Department({ menuId }) {
         <Detail>
           <DetailTitle detail={detail} setDetail={setDetail} />
             {detail.type === 'basic' ? 
-            <DetailBasic data={value} setData={setValue} detail={detail} setDetail={setDetail} setNoti={setNoti}/> : null}
+            <DetailBasic data={value} setData={setValue} detail={detail} setDetail={setDetail} setNoti={setNoti} menuId={menuId}/> : null}
             {detail.type === 'emp' ? 
             <DetailEmp empList={empList} /> : null}
         </Detail>
@@ -296,4 +331,5 @@ height: 100%;
 min-width: 600px;
 color: black;
 margin: 10px;
+margin-right: 20px;
 `;

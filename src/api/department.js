@@ -39,8 +39,8 @@ export function getEmpListByDeptId(id, menuId){
   )
 }
 
-export function getDepartmentById(parId, menuId){    
-  console.log('in api (header) : ', header(menuId));
+export function getDepartmentById(parId, menuId){
+  console.log('in api!!!!!!!!!!!!!')
   return axiosInstance.get(
     `/department/dept-list?parId=${parId}`, header(menuId)
   )
@@ -67,7 +67,6 @@ export function saveAll(dept, menuId){
 
 
 export function getOptionCompList(menuId){   
- 
   return axiosInstance.get(
     `/department/option-comp`, header(menuId)
   )
@@ -76,5 +75,11 @@ export function getOptionCompList(menuId){
 export function findDeptNameAndCode(compId, text, menuId){
   return axiosInstance.get(
     `/department/dept?compId=${compId}&text=%25${text}%25`, header(menuId)
+  )
+}
+
+export function checkDeptCode(id, text, menuId){
+  return axiosInstance.get(
+    `/department/duplicate-test?id=${id}&text=${text}`, header(menuId)
   )
 }

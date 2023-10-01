@@ -1,19 +1,24 @@
 import styled from 'styled-components';
 
 import { AiOutlineSearch } from 'react-icons/ai';
+import { useState } from 'react';
 
-export default function SearchForm ({ option }){
+export default function SearchForm ({ option, search, setSearch }){
+  const [value, setValue] = useState({ option: '', text: '' });
+
   return(
     <SearchContent>
-      <select name='searchOption'>
+      <select name='searchOption' value={value.option} 
+      onChange={(e) => setValue({ ...value, option: e.target.value })}>
         {
           option.map((a, i) => (
             <option key={a['name']+a['compId']} value={a['compId']}>{a['name']}</option>
           ))
         }
       </select>
-      <input name='searchText' placeholder='코드/부서명을 입력하세요'/>
-      <AiOutlineSearch onClick={() => {}}/>
+      <input placeholder='코드/부서명을 입력하세요' value={value.text} 
+      onChange={(e) => setValue({ ...value, text: e.target.value })} />
+      <AiOutlineSearch onClick={() => {setSearch({ value, on: true })}}/>
     </SearchContent>
   );
 }

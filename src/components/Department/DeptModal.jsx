@@ -3,12 +3,12 @@ import styled from 'styled-components';
 
 import { getDepartemnt, getDepartmentList } from '../../api/department';
 
-export default function DeptModal({ form, setModalOn, setForm }){
+export default function DeptModal({ form, setModalOn, setForm, menuId }){
   const [item, setItem] = useState(JSON.parse('[{"":""}]'));
 
   useEffect(() => {
-    getDepartemnt().then(res => {
-      setItem(res.data);
+    getDepartemnt(menuId).then(res => {
+      setItem(res.data.data);
     });
   }, []);
 
@@ -48,7 +48,7 @@ function Item({ form, data, setModalOn, setForm }) {
   const handleMenuItem = (a) => {
     if(subItem.length === 0) {
       getDepartmentList(data['id'])
-      .then(res => setSubItem(res.data));
+      .then(res => setSubItem(res.data.data));
     }
     setOpen(!open);
     setForm({...form, parId: data['id'], parName: data['name']});

@@ -13,34 +13,23 @@ export function GnbApi(pageId){
         `/setting/menu/gnb`, header(pageId)
     )
 }
-export function FavorApi(pageId, type, menuId){
+export function FavorApi(menuId, type){
   if (type === 'load') {
-    console.log(typeof menuId);
-      return axiosInstance.get(
-          `/setting/favor`,{
-              params: {
-                  menuId
-              }
-          }, header(pageId)
-      )
+    return axiosInstance.get(`/setting/favor`,header(menuId));
   }
   if (type === false) {
-      return axiosInstance.delete(
-          `/setting/favor`,{
-              params: {
-                  menuId
-              }
-          }, header(pageId)
-      )
+    console.log('request off')
+    return axiosInstance.delete(`/setting/favor`,header(menuId));
   }
   if (type === true) {
-    return axiosInstance.post(
-      `/setting/favor`,{
-        menuId
-      }, header(pageId)
-    )
+    console.log('request on')
+    return axiosInstance.post(`/setting/favor`, null, {
+      header: {
+        'menuId' : menuId,
+      },
+    });
   }
-  return JSON.parse('[{"":""}]');
+  return JSON.parse('[{"data":"false"}]');
 }
 
 export function searchAPI(pageId, formData) {
@@ -103,8 +92,9 @@ export function deleteMenuApi(pageId, menuId){
 }
 
 export function getMenuList(pageId){
+  axiosInstance.defaults.headers['menuId'] = pageId;
   return axiosInstance.get(
-    `menu/menuList`, header(pageId)
+    `menu/menuList`
   )
 }
 

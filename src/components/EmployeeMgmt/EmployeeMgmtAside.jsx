@@ -13,13 +13,15 @@ export default function EmployeeMgmtAside() {
   const [selectedEmployeeId, setSelectedEmployeeId] = useState(null);
   const isVisible = useSelector(state => state.employeeMgmt.isVisible);
   const reduxbasicInfo = useSelector(state => state.employeeMgmt.employeeBasicInfo);
-  
+  const [currentPage, setCurrentPage] = useState(1);
+
+
 
 
   useEffect(() => {
     async function fetchEmployees() {
       const data = await getEmployeeMgmtList();
-      console.log("data" ,data);
+      console.log("data", data);
       setEmployeeDataList(data);
     }
 
@@ -27,10 +29,10 @@ export default function EmployeeMgmtAside() {
   }, [searchedEmployeeDataList]);
 
   useEffect(() => {
-    
-    if (isVisible===false) {
+
+    if (isVisible === false) {
       console.log("이즈비지블 처리됏니");
-      
+
       setSelectedEmployeeId(null);
     }
   }, [isVisible]);
@@ -42,19 +44,41 @@ export default function EmployeeMgmtAside() {
     return <div>Loading...</div>;
   };
 
- 
+  const itemsPerPage = 5;
+    const totalPages = Math.ceil(employeeDataList.length / itemsPerPage);
+
+  const renderPageNumbers = () => {
+    const pageNumbers = [];
+    for (let i = 1; i <= totalPages; i++) {
+      pageNumbers.push(
+        <PageNumber
+          key={i}
+          isSelected={i === currentPage}
+          onClick={() => setCurrentPage(i)}
+        >
+          {i}
+        </PageNumber>
+      );
+    }
+    return pageNumbers;
+  };
+
+
 
   function renderEmployeeDataList(dataList) { //dataList는 배열
+  
 
     let sortedDataList = Object.keys(dataList).map(key => dataList[key]);
-
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    sortedDataList = sortedDataList.slice(startIndex, endIndex);
     // sortType에 따라서 정렬
     if (sortType === "sortdate") {
       sortedDataList = sortedDataList.sort((a, b) => a.joinDate.localeCompare(b.joinDate));
     } else if (sortType === "sortname") {
       sortedDataList = sortedDataList.sort((a, b) => a.name.localeCompare(b.name));
     }
- 
+
     const elements = sortedDataList.map((data, index) => {
       const truncatedLoginId = truncateString(data.loginId, 7);
       const truncatedName = truncateString(data.name, 6);
@@ -91,9 +115,9 @@ export default function EmployeeMgmtAside() {
   async function handleEmployeeClick(employeeMgmt) {
     // setIsSelected(employeeMgmt.id);
     setSelectedEmployeeId(employeeMgmt.id);
-    console.log("selectedEmployeeId",selectedEmployeeId);
+    console.log("selectedEmployeeId", selectedEmployeeId);
 
-    
+
     try {
       const fetchedEmployeeData = await getEmployeeDetailsById(employeeMgmt.id);
       console.log(fetchedEmployeeData);
@@ -101,13 +125,13 @@ export default function EmployeeMgmtAside() {
         console.error("No data returned for employee ID:", employeeMgmt.id);
         return;
       }
-     
+
 
 
       const fetchedEmployeeArray = Object.values(fetchedEmployeeData);
       // 첫 번째 데이터로 basicInfo 생성
       const firstEmployee = fetchedEmployeeArray[0];
-      console.log("firstEmployee",firstEmployee);
+      console.log("firstEmployee", firstEmployee);
 
       const employeeBasicInfo = {
         id: firstEmployee.id,
@@ -167,8 +191,8 @@ export default function EmployeeMgmtAside() {
         <NumberArea>
           <Element>
             <span style={{ margin: "5px", fontWeight: 600 }}>사용자: </span>
-            <span style={{ color: "#308EFC", fontWeight: 600 }}>  
-            {isSearchExecuted ? Object.keys(searchedEmployeeDataList).length : Object.keys(employeeDataList).length}</span>
+            <span style={{ color: "#308EFC", fontWeight: 600 }}>
+              {isSearchExecuted ? Object.keys(searchedEmployeeDataList).length : Object.keys(employeeDataList).length}</span>
             <span style={{ margin: "5px", fontWeight: 600 }}>명</span>
           </Element>
           <SelectBox onChange={e => setSortType(e.target.value)}>
@@ -183,8 +207,9 @@ export default function EmployeeMgmtAside() {
         {isSearchExecuted ? renderEmployeeDataList(searchedEmployeeDataList) : renderEmployeeDataList(employeeDataList)}
       </EmployeeListArea>
       <EmployeeListPageNation>
-        페이지네이션구현예정
+        {renderPageNumbers()}
       </EmployeeListPageNation>
+
 
     </Container>
 
@@ -311,3 +336,9 @@ display: flex;
 align-items:center;
 justify-content:center;
 `
+const PageNumber = styled.span`
+  margin: 0 5px;
+  cursor: pointer;
+  color: ${props => (props.isSelected ? "blue" : "black")};
+  font-weight: ${props => (props.isSelected ? "bold" : "normal")};
+`;

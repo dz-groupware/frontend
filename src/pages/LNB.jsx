@@ -56,7 +56,8 @@ export default function LNB() {
   useEffect(() => {
     try{
       searchMenuListAPI(0, gnb.id, compId)
-      .then(res => setData(res.data.data));
+      .then(res => setData(res.data.data))
+      .catch(error => console.log('API 호출 에러:', error));
     } catch(error) {
       console.log('searchMenuListAPI error : ', error);
       if(error.message === 'INTERNEL_SERVER_ERROR'){}

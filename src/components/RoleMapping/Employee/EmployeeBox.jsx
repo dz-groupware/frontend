@@ -1,10 +1,14 @@
 import React, { useEffect } from 'react'
 import styled from 'styled-components';
 
-export default function EmployeeBox({ depth,id, name , position, masterYn, activeEmp, onClick, isEditMode}) {
+export default function EmployeeBox({ refresh,depth,id, name , position, masterYn, activeEmp, onClick, isEditMode}) {
+  useEffect(()=>{
+    console.log('employee', refresh);
+  },[refresh]);
   return (
     <NameBar $depth={depth}  onClick={onClick} >
       <StyledEmployeeInfo $isActive={id === activeEmp.id} $isEditMode={isEditMode}>
+        {masterYn}
         {masterYn ? <img src="/img/comp/master.png"width={15} alt="example" />:<img src="/img/comp/emp_64.png"width={20} alt="example" />}
         <p>{name} ({position})</p>
       </StyledEmployeeInfo>

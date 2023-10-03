@@ -34,14 +34,18 @@
     },[expanded,companyId]);
 
     useEffect(()=>{
+      // console.log('companyTreeBox');
       if(companyId){
+        // console.log('companyTreeBox-1');
         setEmpFetch(true);
       }
       if (companyId && !item.childNodeYn && companyItemList.length === 0) {
+        // console.log('companyTreeBox-2');
         setCompanyFetch(true);
       }
-
+      
       if (companyId && item.hasDepartment){
+        // console.log('companyTreeBox-3');
         setDepartmentFetch(true);
       } 
     },[refresh]);
@@ -106,6 +110,7 @@
                 <EmployeeBox 
                   key={"e-"+subItem.empId} 
                   id={subItem.empId}
+                  refresh={refresh}
                   name={subItem.empName} 
                   position={subItem.empPosition}
                   masterYn={subItem.empMasterYn}

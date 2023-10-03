@@ -23,7 +23,7 @@ export default function RoleMappingPage({ menuId }) {
     headers: { menuId },
     shouldFetch: false,
   }); 
-  const {data: updateMaster,isLoading: updateMasterYnLoading, error: updateMasterYnError, status: updateStatus, shouldFetch: updateFetch, setShouldFetch: setUpdateMasterYnFetch } = useFetchData(changeMasterYn, {
+  const {data: updateMaster,isLoading: updateMasterYnLoading, error: updateMasterYnError, status: updateStatus,setStatus: setUpdateStatus, shouldFetch: updateFetch, setShouldFetch: setUpdateMasterYnFetch } = useFetchData(changeMasterYn, {
     data: { empId: activeEmp.id, masterYn: activeEmp.masterYn },  // activeEmp의 id를 empId로 전달
     headers: { menuId },
     shouldFetch: false  // 처음 로드할 때 API를 호출할 것인지 여부
@@ -55,9 +55,6 @@ export default function RoleMappingPage({ menuId }) {
 
   const handleChangeMasterClick = () => {
     setUpdateMasterYnFetch(!updateFetch);
-    setRefresh(!refresh);
-    console.log('리프레시는',refresh)
-    console.log('api실행하겠습니다',updateFetch);
   }
 
   useEffect(()=>{
@@ -68,12 +65,6 @@ export default function RoleMappingPage({ menuId }) {
       setActiveAuthId(null);
     }
   },[status,updateStatus]);
-
-  useEffect(() => {
-    console.log('리프레시는1',refresh)
-    console.log('api실행하겠습니다1',updateFetch);
-    setRefresh(!refresh);
-  },[updateFetch]);
 
   const handleCheckboxChange = (authId) => {
     setSelectedAuthIds(prevSelectedAuthIds => {
@@ -87,9 +78,16 @@ export default function RoleMappingPage({ menuId }) {
     });
   };
 
+  useEffect(() => {
+    if(updateStatus === 200) { // API 호출이 성공적으로 끝났을 때
+      setRefresh(!refresh);  // refresh 상태를 업데이트
+      setUpdateStatus(null);
+    }
+  }, [updateStatus,refresh]);
+
   return (
     <Container>
-      <TopContainer>
+      <TopContainer key={refresh} >
         <TitleAndIconContainer>
           <h1>권한설정</h1>
           <IconWrapper>
@@ -102,7 +100,7 @@ export default function RoleMappingPage({ menuId }) {
             <MdOutlineMapsUgc fontSize={20} color='#939393'/>
           </IconWrapper>
         </TitleAndIconContainer>
-        <div>
+        <div key={refresh} >
           {activeEmp.id && (
             <>
               {activeEmp.masterYn ? (

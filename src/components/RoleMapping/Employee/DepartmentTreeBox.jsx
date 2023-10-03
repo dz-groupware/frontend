@@ -17,7 +17,8 @@ export function DepartmentTreeBox({ refresh, item, depth=0, companyId, activeEmp
     { 
       paths:{departmentId: item.departmentId}, 
       shouldFetch:false ,
-       headers });
+      headers 
+    });
 
   const toggleSubDepartment = async () => {
     if (expanded) {
@@ -40,10 +41,13 @@ export function DepartmentTreeBox({ refresh, item, depth=0, companyId, activeEmp
   },[departmentList]);
 
   useEffect(()=> {
+    // console.log('departmentTreeBox');
     if(item.childNodeYn){
+      // console.log('departmentTreeBox-1');
       setEmpFetch(true);
     }
     if (!item.childNodeYn && departmentList.length === 0) {
+      // console.log('departmentTreeBox-2');
       setDeptFetch(true);
     }
   },[refresh]);
@@ -83,6 +87,7 @@ export function DepartmentTreeBox({ refresh, item, depth=0, companyId, activeEmp
           {empList.map((subItem, subIndex) => (
             <EmployeeBox 
               key={"e-"+subItem.empId} 
+              refresh={refresh}
               id={subItem.empId}
               name={subItem.empName} 
               position={subItem.empPosition}

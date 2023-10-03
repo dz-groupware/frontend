@@ -1,37 +1,46 @@
 import React, { useEffect, useRef, useState } from 'react'
 import styled from 'styled-components';
-import { addAuthApi, getCompanyGnbListApi } from '../../api/authgroup';
+import { addAuthApi } from '../../api/authgroup';
 import { useFetchData } from '../../hooks/useFetchData';
-export default function RoleCreateModal({ isOpen, onClose,changeRefresh, setActiveAuthId, headers}) {
-  const { data, isLoading, error } = useFetchData(getCompanyGnbListApi, {headers});
-  const [usage, setUsage] = useState('사용');
+export default function RoleModal({ isOpen, modifyMode, onClose,changeRefresh, activeAuthId, setActiveAuthId, apiFunction, headers}) {
+  const [usage, setUsage] = useState(true);
+  const [authName, setAuthName] = useState('');
   const authNameRef = useRef();
-
+  const { data:result, isLoading, error, shouldFetch, setShouldFetch, status, setStatus } = useFetchData(apiFunction, {
+    data : {
+      authName: authNameRef.current ? authNameRef.current.value : '',
+      enabledYn: usage ? true : false,
+      ...(modifyMode && { id: activeAuthId }) 
+    },
+    headers,
+    shouldFetch: false // 초기에는 API 호출을 안 하므로 false로 설정
+  });
+  
   const handleSubmit = async () => {
-    try {
-      const data = {
-        authName: authNameRef.current.value, 
-        enabledYn: usage === '사용' ? true : false
-      };
+    const data = {
+      authName: authNameRef.current.value, 
+      enabledYn: usage ? true : false,
+      ...(modifyMode && { id: activeAuthId }) 
+    };
+    if(modifyMode){
+      setActiveAuthId(activeAuthId);
+    }
+    setShouldFetch(true);  // API 호출 트리거
 
-      // 직접 API 호출
-    const response = await addAuthApi({ data, headers });
-      if(response && response.data) {
-        setActiveAuthId(response.data.authId); // 권한의 ID를 반환 받았다고 가정
-      }
-
+  };
+  useEffect(()=>{
+    if(status===200 && !modifyMode){
+      setActiveAuthId(result.authId); // 권한의 ID를 반환 받았다고 가정
       changeRefresh();
       onClose(); // 모달 닫기
-    } catch (error) {
-      throw error;
     }
-  };
-  
-
-
-  if (isLoading) return <div>로딩중입니다!...</div>;
-  if (error) return <div>에러발생!...</div>;
-  if (!data) return null;
+    if(status===200){
+      console.log('불리나요');
+      changeRefresh();
+      onClose(); // 모달 닫기
+    }
+    setStatus(null);
+  },[status]);
   return (
     isOpen && (
       <ModalBackground>
@@ -40,16 +49,25 @@ export default function RoleCreateModal({ isOpen, onClose,changeRefresh, setActi
           <FormWrapper>
             <Label>
               <LabelText>권한명</LabelText>
-              <Input type="text" placeholder='권한명을 입력하세요.' ref={authNameRef}/>
+              <Input 
+                type="text" 
+                placeholder='권한명을 입력하세요.' 
+                ref={authNameRef}  
+                maxLength={20}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  setAuthName(value);
+                }}/>
             </Label>
+            {authName.length > 20 && <WarningText>권한명은 20자를 초과할 수 없습니다.</WarningText>}
             <Label>
               <LabelText>사용 여부</LabelText>
               <div style={{display: 'flex', gap: '2rem', flex: 4}}>
                 <label>
-                  <Radio type="radio" name="usage" value="사용" defaultChecked onChange={() => setUsage('사용')}/> 사용
+                  <Radio type="radio" name="usage" value="사용" defaultChecked onChange={() => setUsage(true)}/> 사용
                 </label>
                 <label>
-                  <Radio type="radio" name="usage" value="미사용" onChange={() => setUsage('미사용')}/> 미사용
+                  <Radio type="radio" name="usage" value="미사용" onChange={() => setUsage(false)}/> 미사용
                 </label>
               </div>
             </Label>
@@ -83,8 +101,8 @@ const Modal = styled.div`
   background-color: white;
   padding: 20px;
   border-radius: 10px;
-  width: 50%;
-  height: 80%;
+  width: 25%;
+  height: 50%;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
 `;
 const CloseButton = styled.button`
@@ -163,4 +181,8 @@ const Radio = styled.input`
   width: 20px;
   height: 20px;
   margin-right: 8px; /* 추가된 부분: 라디오 버튼과 라벨 텍스트 사이에 간격 추가 */
+`;
+
+const WarningText = styled.span`
+  color: red;
 `;

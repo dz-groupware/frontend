@@ -93,6 +93,14 @@ export const addAuthApi = async ({ data, headers }) => {
   .then(response => { return response; })
   .catch(error => { throw error; })
 }
+export const updateAuthApi = async ({ data, headers}) => {
+  axiosInstance.defaults.headers['menuId'] = headers.menuId;
+  console.log("data", data);
+  return axiosInstance.patch('/auth-group/auth', data)
+  .then(response => {
+    return response;
+  }).catch(error => { throw error; })
+}
 
 export const modifyMappedMenuOfAuthApi = async ({ paths, data, headers }) => {
   const { authId } = paths;
@@ -156,7 +164,7 @@ export const addEmployeeAuthApi = async ({ data, headers }) => {
   axiosInstance.defaults.headers['menuId'] = headers.menuId;
   return axiosInstance.post(`/auth-group/employee/auth`,data)
   .then(response => { 
-    console.log(response);
     return response; })
   .catch(error => { throw error; })
 }
+

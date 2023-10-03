@@ -40,6 +40,7 @@ export default function LoginForm() {
     if(status===202){
       navigate('/',{state:{ menuId: "0" }});
     }
+    console.log(error);
   },[status]);
 
   return (

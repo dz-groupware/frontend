@@ -32,6 +32,7 @@ export default function RoleSettingMain({refresh, activeAuthId, changeRefresh, i
         </StyledAuthGroupContainer>
         <StyledMenuTreeContainer $visible={visible} >
           <MenuTreeTop 
+            activeAuthId={activeAuthId}
             isEditMode={isEditMode} 
             setIsEditMode={setIsEditMode} 
             setIsSaveClicked={setIsSaveClicked}

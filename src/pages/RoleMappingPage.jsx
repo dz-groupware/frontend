@@ -87,7 +87,7 @@ export default function RoleMappingPage({ menuId }) {
 
   return (
     <Container>
-      <TopContainer key={refresh} >
+      <TopContainer >
         <TitleAndIconContainer>
           <h1>권한설정</h1>
           <IconWrapper>
@@ -100,7 +100,7 @@ export default function RoleMappingPage({ menuId }) {
             <MdOutlineMapsUgc fontSize={20} color='#939393'/>
           </IconWrapper>
         </TitleAndIconContainer>
-        <div key={refresh} >
+        <div>
           {activeEmp.id && (
             <>
               {activeEmp.masterYn ? (

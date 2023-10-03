@@ -7,7 +7,7 @@ import AuthGroupSection from './AuthGroup/AuthGroupSection';
 import MenuOfAuth from './Menu/MenuOfAuth';
 import MenuOfAuthEditor from './Menu/MenuOfAuthEditor';
 
-export default function RoleSettingMain({refresh, activeAuthId, changeRefresh, isEditMode, setIsEditMode, handleItemClick}) {
+export default function RoleSettingMain({refresh, activeAuthId, changeRefresh, isEditMode, setIsEditMode, handleItemClick, headers}) {
   const [visible, setVisible] = useState(true);
   const [isSaveClicked, setIsSaveClicked] = useState(false);
   const [isDeleteClicked, setIsDeleteClicked] = useState(false);
@@ -27,6 +27,7 @@ export default function RoleSettingMain({refresh, activeAuthId, changeRefresh, i
             activeAuthId={activeAuthId}
             isEditMode={isEditMode}
             handleItemClick={handleItemClick}
+            headers={headers}
           />
         </StyledAuthGroupContainer>
         <StyledMenuTreeContainer $visible={visible} >
@@ -47,12 +48,13 @@ export default function RoleSettingMain({refresh, activeAuthId, changeRefresh, i
               isDeleteClicked={isDeleteClicked}
               setIsDeleteClicked={setIsDeleteClicked}
               changeRefresh={changeRefresh}
+              headers={headers}
             /> : activeAuthId ? 
-              <MenuOfAuth authId={activeAuthId}/> : <div style={{ height: '100%' }} />
+              <MenuOfAuth authId={activeAuthId} headers={headers}/> : <div style={{ height: '100%' }} />
           }
         </StyledMenuTreeContainer>
         <StyledUserListContainer $visible={visible}>
-          <UserListSection authId={activeAuthId}/>
+          <UserListSection authId={activeAuthId} headers={headers}/>
         </StyledUserListContainer>
     </Container>
   );

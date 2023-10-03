@@ -4,10 +4,11 @@ import { useFetchData } from '../../../hooks/useFetchData';
 import UserListItem from './UserListItem';
 import { getUserListOfAuthApi } from '../../../api/authgroup';
 
-export default function UserListSection({ authId }) {
+export default function UserListSection({ authId, headers }) {
   const { data, isLoading, setShouldFetch, error } = useFetchData(getUserListOfAuthApi, {
     paths: { authId },  // paths 객체에 authId 추가
     shouldFetch: false,
+    headers: headers,
   });
   useEffect(() => {
     if(authId !== null && authId !== undefined) { // authId가 유효한지 검사

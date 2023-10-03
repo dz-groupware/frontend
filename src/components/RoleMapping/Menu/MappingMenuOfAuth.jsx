@@ -4,12 +4,13 @@ import styled from 'styled-components';
 import { useFetchData } from '../../../hooks/useFetchData';
 import MappingMenuItemView from './MappingMenuItemView';
 
-export default function MappingMenuOfAuth({ authId }) {
+export default function MappingMenuOfAuth({ authId, headers }) {
   const { data, isLoading, setShouldFetch, error } = useFetchData(getGnbListOfAuthApi,{
     paths: {
       authId,
     },
     shouldFetch:false,
+    headers,
   });
   useEffect(() => {
     if(authId !== null && authId !== undefined) { // authId가 유효한지 검사
@@ -40,6 +41,7 @@ export default function MappingMenuOfAuth({ authId }) {
               authId={authId}
               fetchApi={getLnbListOfAuthApi}
               paths={{authId, parId: item.menuId }}
+              headers={headers}
             />
           ))}
         </tbody>

@@ -2,8 +2,8 @@ import React, { useEffect, useRef, useState } from 'react'
 import styled from 'styled-components';
 import { addAuthApi, getCompanyGnbListApi } from '../../api/authgroup';
 import { useFetchData } from '../../hooks/useFetchData';
-export default function RoleCreateModal({ isOpen, onClose,changeRefresh, setActiveAuthId }) {
-  const { data, isLoading, error } = useFetchData(getCompanyGnbListApi);
+export default function RoleCreateModal({ isOpen, onClose,changeRefresh, setActiveAuthId, headers}) {
+  const { data, isLoading, error } = useFetchData(getCompanyGnbListApi, {headers});
   const [usage, setUsage] = useState('사용');
   const authNameRef = useRef();
 
@@ -15,7 +15,7 @@ export default function RoleCreateModal({ isOpen, onClose,changeRefresh, setActi
       };
 
       // 직접 API 호출
-    const response = await addAuthApi({ data });
+    const response = await addAuthApi({ data, headers });
       if(response && response.data) {
         setActiveAuthId(response.data.authId); // 권한의 ID를 반환 받았다고 가정
       }

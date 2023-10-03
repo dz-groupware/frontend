@@ -7,7 +7,7 @@ import { FiSearch } from 'react-icons/fi';
 import MappingAuthGroupList from './MappingAuthGroupList';
 import Line from '../../Commons/Line';
 
-export default function MappingAuthGroupSection({ activeAuthId, activeEmpId, handleAuthClick, isEditMode, selectedAuthIds, handleCheckboxChange ,setSelectedAuthIds}) {
+export default function MappingAuthGroupSection({ activeAuthId, activeEmp, handleAuthClick, isEditMode, selectedAuthIds, handleCheckboxChange ,setSelectedAuthIds, headers}) {
   const orderOptions = [
     // { label: '필터', value: 'none' },
     { label: '최신순', value: 'authDashboardIdDesc' },
@@ -18,33 +18,43 @@ export default function MappingAuthGroupSection({ activeAuthId, activeEmpId, han
   const [orderBy, setOrderBy] = useState(orderOptions[0].value);
   const [searchInput, setSearchInput] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
-
+  const [isFilterd, setIsFiltered] = useState(false);
 
   const { data: countData, isLoading: isLoadingCount, error: isErrorCount, statusCode, setShouldFetch} = useFetchData(isEditMode ? getCountAuthGroupApi : getEmpAuthCountApi,{
-    paths: isEditMode? null :{employeeId: activeEmpId},
-    shouldFetch:false
+    paths: isEditMode? null :{employeeId: activeEmp.id},
+    shouldFetch:false,
+    headers
   });
 
 
 
   const handleSearch = () => {
+    if(searchInput === null || searchInput === undefined || searchInput === '') return;
     setSearchTerm(searchInput);
     setSearchInput('');  // 초기화
+    setIsFiltered(true);
+  };
+
+  const handleRefresh = () => {
+    setSearchTerm();
+    setSearchInput('');  // 초기화
+    setIsFiltered(false);
   };
 
   useEffect(()=>{
-    if(activeEmpId){
+    if(activeEmp.id){
       setShouldFetch(true);
     }
     if(!isEditMode) {
       setSelectedAuthIds({});
     }
-  },[activeEmpId,isEditMode]);
+  },[activeEmp,isEditMode]);
 
   useEffect(() => {
     console.log(selectedAuthIds)
   },[selectedAuthIds]);
-  if (!activeEmpId) {
+  
+  if (!activeEmp.id) {
     return null;  
   }
 
@@ -63,7 +73,7 @@ export default function MappingAuthGroupSection({ activeAuthId, activeEmpId, han
             } 
           }}
         />
-        <ActionButton onClick={()=>handleSearch()} name={<FiSearch/>} ></ActionButton>
+        <ActionButton onClick={()=>handleSearch()} name={<FiSearch/>} />
       </SearchBar>
       <GroupCountFilter>
         <p>
@@ -93,12 +103,14 @@ export default function MappingAuthGroupSection({ activeAuthId, activeEmpId, han
         orderBy={orderBy}
         searchTerm={searchTerm}
         activeAuthId={activeAuthId}
-        activeEmpId={activeEmpId}
+        activeEmp={activeEmp}
         handleAuthClick={handleAuthClick}
         selectedAuthIds={selectedAuthIds}
         handleCheckboxChange={handleCheckboxChange}
         isEditMode={isEditMode}
+        headers={headers}
       />
+      {isFilterd && <ActionButton onClick={()=>handleRefresh()} name="필터 초기화" /> }
     </Container>
   );
 }

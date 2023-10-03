@@ -3,10 +3,11 @@ import { FiPlus, FiMinus } from 'react-icons/fi';
 import { useFetchData } from '../../../hooks/useFetchData';
 import styled from 'styled-components';
 
-export default function MenuItemView({ item, depth = 1, fetchApi, paths }) {
+export default function MenuItemView({ item, depth = 1, fetchApi, paths, headers }) {
   const [expanded, setExpanded] = useState(false);
   const { data: subMenuItems, setShouldFetch, isLoading, error } = useFetchData(fetchApi, { 
     paths,
+    headers,
     shouldFetch: false,
   });
   const toggleSubMenu = () => {
@@ -24,7 +25,6 @@ export default function MenuItemView({ item, depth = 1, fetchApi, paths }) {
     <>
       <StyledRow as="tr" $depth={depth} $hasMappedChild={item.hasMappedChild}>
         <td>
-          {console.log(item)}
           {item.hasMappedChild ?  (
               <div style={{ width: '1em' }}>
                 <StyledButton 
@@ -36,9 +36,6 @@ export default function MenuItemView({ item, depth = 1, fetchApi, paths }) {
             ): (
               <div style={{ width: '1em' }}></div>
             )}
-          {/* <div>
-            {item.menuId}
-          </div> */}
           <div>
             {item.menuName}
           </div>
@@ -54,6 +51,7 @@ export default function MenuItemView({ item, depth = 1, fetchApi, paths }) {
               depth={depth+1}
               fetchApi={fetchApi}
               paths={{...paths, parId: subItem.menuId}}
+              headers={headers}
             />
           ))}
         </>

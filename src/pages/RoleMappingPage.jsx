@@ -7,33 +7,59 @@ import LinkButon from '../components/Commons/LinkButon';
 import ActionButton from '../components/Commons/ActionButton';
 import { useFetchData } from '../hooks/useFetchData';
 import { addEmployeeAuthApi } from '../api/authgroup';
+import { changeMasterYn } from '../api/employee';
 
-export default function RoleMappingPage() {
+export default function RoleMappingPage({ menuId }) {
   const [activeAuthId, setActiveAuthId] = useState(null);
-  const [activeEmpId, setActiveEmpId] = useState(null);
+  const [activeEmp, setActiveEmp] = useState({id: null, masterYn: null});
   const [isEditMode, setIsEditMode] = useState(null);
+  const [refresh, setRefresh] = useState(false);
   const [selectedAuthIds, setSelectedAuthIds] = useState({});
   const {data, isLoading, error ,setShouldFetch, status, setStatus} = useFetchData(addEmployeeAuthApi, {
     data:{ 
-      employeeId: activeEmpId, 
-      selectedAuthIds}, 
-    shouldFetch:false}); 
+      employeeId: activeEmp.id, 
+      selectedAuthIds,
+    }, 
+    headers: { menuId },
+    shouldFetch: false,
+  }); 
+  const {data: updateMaster,isLoading: updateMasterYnLoading, error: updateMasterYnError, status: updateStatus, shouldFetch: updateFetch, setShouldFetch: setUpdateMasterYnFetch } = useFetchData(changeMasterYn, {
+    data: { empId: activeEmp.id, masterYn: activeEmp.masterYn },  // activeEmp의 id를 empId로 전달
+    headers: { menuId },
+    shouldFetch: false  // 처음 로드할 때 API를 호출할 것인지 여부
+  });
+
   const handleAuthClick = (authId) => {
     setActiveAuthId(authId);
   };
 
-  const handleEmpClick = (empId) => {
+  const handleEmpClick = ({id, masterYn}) => {
     if(isEditMode){
       alert('수정중에는 이동할 수 없습니다.');
+      return;
     }
-    setActiveEmpId(empId);
+    setActiveEmp((prev) => ({...prev, id, masterYn}));
   }
   const handleSaveClick = () => {
-    if (activeEmpId && selectedAuthIds) {
-      console.log(selectedAuthIds);
+    if (activeEmp.id && selectedAuthIds) {
       setShouldFetch(true);   
     }
   }
+  const handleEditModeClick = () => {
+    if (activeEmp.masterYn) {
+      alert('마스터 권한을 갖고 있는 계정은 권한을 더 부여할 수 없습니다.');
+      return;
+    }
+    setIsEditMode(true);
+  }
+
+  const handleChangeMasterClick = () => {
+    setUpdateMasterYnFetch(!updateFetch);
+    setRefresh(!refresh);
+    console.log('리프레시는',refresh)
+    console.log('api실행하겠습니다',updateFetch);
+  }
+
   useEffect(()=>{
     if(status === 200){
       alert('저장되었습니다.');
@@ -41,7 +67,13 @@ export default function RoleMappingPage() {
       setStatus(null);
       setActiveAuthId(null);
     }
-  },[status]);
+  },[status,updateStatus]);
+
+  useEffect(() => {
+    console.log('리프레시는1',refresh)
+    console.log('api실행하겠습니다1',updateFetch);
+    setRefresh(!refresh);
+  },[updateFetch]);
 
   const handleCheckboxChange = (authId) => {
     setSelectedAuthIds(prevSelectedAuthIds => {
@@ -55,9 +87,6 @@ export default function RoleMappingPage() {
     });
   };
 
-  useEffect(()=>{
-    console.log(activeAuthId);
-  },[activeAuthId])
   return (
     <Container>
       <TopContainer>
@@ -74,17 +103,40 @@ export default function RoleMappingPage() {
           </IconWrapper>
         </TitleAndIconContainer>
         <div>
-          {activeEmpId && (        
-            <ActionButton 
-              width={'5rem'}
-              height={'2.5rem'}
-              fontWeight={600} 
-              fontSize={'1.0rem'} 
-              name= {isEditMode ? "저장":"권한부여"}
-              onClick={() => isEditMode ? handleSaveClick() : setIsEditMode(true)}
-            />
+          {activeEmp.id && (
+            <>
+              {activeEmp.masterYn ? (
+                <ActionButton 
+                  width={'5rem'}
+                  height={'2.5rem'}
+                  fontWeight={600} 
+                  fontSize={'1.0rem'} 
+                  name="마스터권한해제"
+                  onClick={handleChangeMasterClick} 
+                />
+              ) : (
+                <>
+                  <ActionButton 
+                    width={'5rem'}
+                    height={'2.5rem'}
+                    fontWeight={600} 
+                    fontSize={'1.0rem'} 
+                    name={isEditMode ? "저장":"권한부여"}
+                    onClick={() => isEditMode ? handleSaveClick() : handleEditModeClick()}
+                  />
+                  {!isEditMode && <ActionButton 
+                    width={'5rem'}
+                    height={'2.5rem'}
+                    fontWeight={600} 
+                    fontSize={'1.0rem'} 
+                    name="마스터권한부여"
+                    onClick={handleChangeMasterClick} // 마스터 권한을 부여하는 함수
+                  />}
+                </>
+              )}
+            </>
           )}
-          {activeEmpId && isEditMode &&(        
+          {activeEmp.id && isEditMode &&(        
             <ActionButton 
               width={'5rem'}
               height={'2.5rem'}
@@ -95,7 +147,6 @@ export default function RoleMappingPage() {
             />)
           }
         </div>
-
       </TopContainer>
 
       <Line color="#f5f5f5" height="2px" bottom={"20px"}/>
@@ -113,14 +164,16 @@ export default function RoleMappingPage() {
       </div>
       <Line left={"1.2rem"}/>
       <RoleMappingMain 
+        refresh={refresh}
         activeAuthId={activeAuthId} 
         handleAuthClick={handleAuthClick}
-        activeEmpId={activeEmpId}
+        activeEmp={activeEmp}
         handleEmpClick={handleEmpClick}
         isEditMode={isEditMode}
         selectedAuthIds={selectedAuthIds}
         setSelectedAuthIds={setSelectedAuthIds}
         handleCheckboxChange={handleCheckboxChange}
+        headers={{menuId}}
       />
     </Container>
   );

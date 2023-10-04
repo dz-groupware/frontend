@@ -9,7 +9,7 @@ import RoleModal from '../components/RoleSetting/RoleModal';
 import ActionButton from '../components/Commons/ActionButton';
 import { addAuthApi, updateAuthApi } from '../api/authgroup';
 
-export default function RoleSettingPage({menuId}) {
+export default function RoleSettingPage({pageId}) {
   const [refresh, setRefresh] = useState(false);
   const [activeAuthId, setActiveAuthId] = useState(null);
   const [openCreateModal, setOpenCreateModal] = useState(false);
@@ -77,8 +77,8 @@ export default function RoleSettingPage({menuId}) {
           <PiCalendarCheck fontSize={26} color='C9C9C9'/>
           <PiStarBold fontSize={26} color='C9C9C9'/>
         </ActionsContainer>
-        <RoleModal isOpen={openCreateModal} onClose={() => setOpenCreateModal(false)} changeRefresh={changeRefresh} setActiveAuthId={setActiveAuthId} apiFunction={addAuthApi} headers={{menuId}}/>
-        <RoleModal isOpen={openModifyModal} onClose={() => setOpenModifyModal(false)} modifyMode={true} changeRefresh={changeRefresh} activeAuthId={activeAuthId} setActiveAuthId={setActiveAuthId} apiFunction={updateAuthApi} headers={{menuId}}/>
+        <RoleModal isOpen={openCreateModal} onClose={() => setOpenCreateModal(false)} changeRefresh={changeRefresh} setActiveAuthId={setActiveAuthId} apiFunction={addAuthApi} headers={{pageId}}/>
+        <RoleModal isOpen={openModifyModal} onClose={() => setOpenModifyModal(false)} modifyMode={true} changeRefresh={changeRefresh} activeAuthId={activeAuthId} setActiveAuthId={setActiveAuthId} apiFunction={updateAuthApi} headers={{pageId}}/>
       </TopContainer>
       <Line color="#f5f5f5" height="2px" bottom={"20px"}/>
       <div style={{  marginLeft: "1.2rem" }} >
@@ -101,7 +101,7 @@ export default function RoleSettingPage({menuId}) {
         isEditMode={isEditMode}
         setIsEditMode={setIsEditMode}
         handleItemClick={handleItemClick}
-        headers={{menuId}}
+        headers={{pageId}}
       />
     </Container>
   );

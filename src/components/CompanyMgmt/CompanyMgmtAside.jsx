@@ -2,14 +2,13 @@ import styled from 'styled-components';
 import { AiOutlinePlusCircle } from "react-icons/ai";
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect, useState } from 'react';
-import { axiosInstance } from '../../utils/axiosInstance';
 import { companyActions } from '../../utils/Slice';
 import { getCompanyDetailsById, getCompanyMgmtList } from '../../api/companymgmt';
 
 
 
 
-export default function CompanyMgmtAside({ onShowForm }) {
+export default function CompanyMgmtAside({ menuId }) {
   const dispatch = useDispatch();
   const [companyDataList, setCompanyDataList] = useState([]);
   const [sortType, setSortType] = useState("default");
@@ -17,13 +16,12 @@ export default function CompanyMgmtAside({ onShowForm }) {
   const isSearchExecuted = useSelector(state => state.companyMgmt.isSearchExecuted);
   const [selectedCompanyId, setSelectedCompanyId] = useState(null);
   const isVisible = useSelector(state => state.companyMgmt.isVisible);
-
-
+  const ddddddd = useSelector(state => state.companyMgmt.companyInfo);
 
 
   useEffect(() => {
     async function fetchCompanies() {
-      const data = await getCompanyMgmtList();
+      const data = await getCompanyMgmtList(menuId);
       setCompanyDataList(data);
     }
 
@@ -31,11 +29,18 @@ export default function CompanyMgmtAside({ onShowForm }) {
   }, [searchedCompanyDataList]);
 
   useEffect(() => {
-    if (!isVisible) {
+    console.log("뭐가 선택됏니12345648494", selectedCompanyId);
+  }, [selectedCompanyId]);
+  
+
+
+
+  useEffect(() => {
+    if (isVisible === false) {
       setSelectedCompanyId(null);
     }
   }, [isVisible]);
-  
+
 
   if (!companyDataList) {
     return <div>Loading...</div>;
@@ -58,11 +63,11 @@ export default function CompanyMgmtAside({ onShowForm }) {
       const truncatedName = truncateString(data.name, 10);
       const truncatedRepName = truncateString(data.repName, 6);
 
-
       const CorpTypeStyled = data.corpType === 1 ? CorpType1 : CorpType2;
       const CorpTypeName = data.corpType === 1 ? "개인" : "법인";
       return (
-        <Wrapper key={index} onClick={() => handleCompanyClick(data)}  isSelected={data.id === selectedCompanyId}>
+         <Wrapper key={index} onClick={() => handleCompanyClick(data)} $isselected={(data.id === selectedCompanyId).toString()}>
+        {/* <Wrapper key={index} onClick={() => handleCompanyClick(data)} $isSelected={data.id === selectedCompanyId}> */}
           <CompanyInfo>
             <div>{data.code}</div>
             <div>{truncatedName}</div>
@@ -80,6 +85,7 @@ export default function CompanyMgmtAside({ onShowForm }) {
 
 
   function truncateString(str, maxLength) {
+    
     if (str.length > maxLength) {
       return str.substring(0, maxLength - 3) + '...';  // -3은 '...'의 길이를 고려
     }
@@ -88,23 +94,34 @@ export default function CompanyMgmtAside({ onShowForm }) {
 
 
   async function handleCompanyClick(companyMgmt) {
-    if (selectedCompanyId === companyMgmt.id) {
-      // 이미 선택된 직원을 다시 클릭한 경우 hideForm을 dispatch
-      dispatch(companyActions.hideForm());
-      setSelectedCompanyId(null); // 선택된 직원 ID를 초기화
-      return; // 이후 로직을 실행하지 않음
-  }
     setSelectedCompanyId(companyMgmt.id);
+
+    //   if (selectedCompanyId === companyMgmt.id) {
+    //      setSelectedCompanyId(companyMgmt.id);
+    //     dispatch(companyActions.hideForm());
+    //     setSelectedCompanyId(null); // 선택된 직원 ID를 초기화
+    //     return; // 이후 로직을 실행하지 않음
+    // }
+
+    // if (selectedCompanyId === null || selectedCompanyId !== companyMgmt.id) {
+    //   setSelectedCompanyId(companyMgmt.id);
+    // } else {
+    //   // 선택된 회사의 ID가 이미 selectedCompanyId와 같다면 초기화합니다.
+    //   setSelectedCompanyId(null);
+    // }
+
     try {
       // 회사 정보를 가져옵니다.
-      console.log(companyMgmt.id);
-      const fetchedCompanyData = await getCompanyDetailsById(companyMgmt.id);
 
+      console.log(companyMgmt.id);
+      const fetchedCompanyData = await getCompanyDetailsById(companyMgmt.id, menuId); 
       console.log(fetchedCompanyData);
       // 가져온 회사 정보와 코드를 함께 showForm 액션에 전달합니다.
-      dispatch(companyActions.showForm({ companyInfo: fetchedCompanyData, id: fetchedCompanyData.id }));
-
+      
+      dispatch(companyActions.showForm({companyInfo: fetchedCompanyData, id: fetchedCompanyData.id }));
+      console.log("fetchdata.id",fetchedCompanyData.id);
       console.log("fetchdata:", fetchedCompanyData);
+      
     } catch (error) {
       console.error("Error fetching company data by code:", error);
     }
@@ -134,7 +151,15 @@ export default function CompanyMgmtAside({ onShowForm }) {
 
       <CompanyAddArea>
 
-        <FullWidthButton onClick={() => dispatch(companyActions.showForm())}>
+        <FullWidthButton onClick={() => {
+          dispatch(companyActions.resetState())
+          dispatch(companyActions.hideForm())
+
+          setTimeout(() => {
+            dispatch(companyActions.showForm())
+          },50);
+          
+        }}>
 
           <AiOutlinePlusCircle />추가
 
@@ -194,7 +219,9 @@ const Wrapper = styled.div`
   cursor: pointer;
   border: 1.5px solid #CCCCCC;
   margin-bottom: 10px;
-  background-color: ${props => props.isSelected ? '#EFEFEF' : 'white'};
+  background-color: ${props => props.$isselected === "true" ? '#EFEFEF' : 'white'};
+
+
   padding :10px;
 `;
 

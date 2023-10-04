@@ -8,20 +8,19 @@ import { useEffect } from 'react';
 import { useDispatch } from "react-redux";
 import { companyActions } from "../utils/Slice";
 
-export default function CompanyMgmtPage() {
+export default function CompanyMgmtPage({menuId}) {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    // 상태 초기화 로직
     dispatch(companyActions.resetState());
   }, []);
   
   return (
     <PageContainer children={
       <>
-        <CompanyMgmtHeader/>
-        <CompanyMgmtNav/>
-        <MgmtMain aside={<CompanyMgmtAside />} form={<CompanyMgmtForm />} />
+        <CompanyMgmtHeader />
+        <CompanyMgmtNav menuId={menuId}/>
+        <MgmtMain menuId={menuId} aside={<CompanyMgmtAside menuId={menuId} />} form={<CompanyMgmtForm menuId={menuId} />} />
       </>
     }>
     </PageContainer>

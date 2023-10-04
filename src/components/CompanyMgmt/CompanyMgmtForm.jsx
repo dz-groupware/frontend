@@ -15,7 +15,7 @@ import {
 import { companyActions } from '../../utils/Slice';
 import { addCompanyMgmt, getAllCompanyMgmtParList, modifyCompanyMgmt } from '../../api/companymgmt';
 
-export default function CompanyMgmtForm() {
+export default function CompanyMgmtForm({ menuId }) {
     const dispatch = useDispatch();
     const reduxCompanyInfo = useSelector(state => state.companyMgmt.companyInfo);
     const isVisible = useSelector(state => state.companyMgmt.isVisible);
@@ -23,24 +23,31 @@ export default function CompanyMgmtForm() {
     const [companyOptions, setCompanyOptions] = useState([]); // 회사 옵션을 담을 상태
     const [info, setInfo] = useState(reduxCompanyInfo);
 
+    useEffect(() => {
+        setInfo(reduxCompanyInfo);
+    }, [reduxCompanyInfo, isVisible]);
+
     const fetchCompanyOptions = async () => {
         try {
-            const companyList = await getAllCompanyMgmtParList();
+            const companyList = await getAllCompanyMgmtParList(menuId);
             setCompanyOptions(companyList);
         } catch (error) {
             console.error("Error fetching company data:", error);
         }
     };
-  
-    useEffect(() => {
-        setInfo(reduxCompanyInfo);
-    }, [reduxCompanyInfo, isVisible]);
+
+
 
     useEffect(() => {
         fetchCompanyOptions();
     }, []);
-    
+
     if (!isVisible) return null;
+
+
+
+    console.log("reduxCompanyInfo", reduxCompanyInfo);
+    console.log("info", info);
 
 
 
@@ -117,23 +124,23 @@ export default function CompanyMgmtForm() {
     const handleUpdate = async (e) => {
         if (idForForm) {
             try {
-                await modifyCompanyMgmt(info);
+                await modifyCompanyMgmt(info, menuId);
                 alert("회사 데이터가 수정되었습니다.");
                 dispatch(companyActions.hideForm());
                 window.location.reload();
             } catch (error) {
                 console.error("Error updating company data:", error);
             }
-    
 
-            
+
+
         } else {
             try {
-                await addCompanyMgmt(info);
+                await addCompanyMgmt(info, menuId);
                 alert("회사 데이터가 저장되었습니다.");
                 dispatch(companyActions.hideForm());
                 window.location.reload();
-            }catch (error) {
+            } catch (error) {
                 console.error("Error adding company data:", error);
             }
         }
@@ -187,7 +194,7 @@ export default function CompanyMgmtForm() {
 
     const handleSubmit = async (e) => {
         const requiredFields = [
-            'code', 'name','enabledYn',
+            'code', 'name', 'enabledYn',
             'repName', 'repIdNum', 'repTel',
             'businessNum', 'corpNum', 'establishmentDate',
             'openingDate', 'address'
@@ -239,9 +246,9 @@ export default function CompanyMgmtForm() {
             return;
         }
 
-        
+
         dispatch(companyActions.updateInfo(info));
-     
+
         handleUpdate(e);
         console.log(info);
 
@@ -254,10 +261,10 @@ export default function CompanyMgmtForm() {
     return (
         <Container>
 
-            <CompanyMgmtInfo handleSubmit={handleSubmit} isCodeDisabled={!!idForForm} idForForm={idForForm} />
+            <CompanyMgmtInfo handleSubmit={handleSubmit} isCodeDisabled={!!idForForm} idForForm={idForForm} menuId={menuId} />
             <InputContainer>
                 <Label>소속회사</Label>
-                <Select name="parId" value={info.parId ||''} onChange={handleChange}>
+                <Select name="parId" value={info.parId || ''} onChange={handleChange}>
                     <option value="">없음</option>
                     {companyOptions.map((company, index) => (
                         <option key={company.id} value={company.id}>{company.name}</option>

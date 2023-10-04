@@ -1,7 +1,7 @@
 import { axiosInstance } from "../utils/axiosInstance";
 
 export const getParentCompanyWithEmployeeCountApi = async ({ headers }) => {
-  axiosInstance.defaults.headers['menuId'] = headers.menuId;
+  axiosInstance.defaults.headers['menuId'] = headers.pageId;
   return axiosInstance.get(`/company/par`)
   .then(response =>{ return response; })
   .catch(error => { throw error; });
@@ -9,7 +9,7 @@ export const getParentCompanyWithEmployeeCountApi = async ({ headers }) => {
 
 export const getSubsidiaryCompaniesWithEmployeeCountApi = async ( {paths, headers} ) => {
   const {companyId} = paths;
-  axiosInstance.defaults.headers['menuId'] = headers.menuId;
+  axiosInstance.defaults.headers['menuId'] = headers.pageId;
   return axiosInstance.get(`/company/par/${companyId}/sub`)
   .then(response =>{ 
     console.log(response)
@@ -19,7 +19,7 @@ export const getSubsidiaryCompaniesWithEmployeeCountApi = async ( {paths, header
 
 export const getParDepartmentsWithEmployeeCountApi = async ( {paths, headers} ) => {
   const { companyId } = paths; 
-  axiosInstance.defaults.headers['menuId'] = headers.menuId;
+  axiosInstance.defaults.headers['menuId'] = headers.pageId;
   return axiosInstance.get(`/company/${companyId}/departments/par`)
   .then(response =>{ return response; })
   .catch(error => { throw error; });
@@ -27,7 +27,7 @@ export const getParDepartmentsWithEmployeeCountApi = async ( {paths, headers} ) 
 
 export const getSubsidiaryDepartmentsWithEmployeeCount = async ({paths, headers}) => {
   const { companyId, departmentId} = paths;
-  axiosInstance.defaults.headers['menuId'] = headers.menuId;
+  axiosInstance.defaults.headers['menuId'] = headers.pageId;
   return axiosInstance.get(`/company/${companyId}/departments/par/${departmentId}/sub`)
   .then(response =>{ 
     return response; })
@@ -38,7 +38,7 @@ export const getSubsidiaryDepartmentsWithEmployeeCount = async ({paths, headers}
 
 export const getEmployeeByDepartmentIdApi = async ({paths, headers}) => {
   const { departmentId } = paths;
-  axiosInstance.defaults.headers['menuId'] = headers.menuId;
+  axiosInstance.defaults.headers['menuId'] = headers.pageId;
   return axiosInstance.get(`/company/departments/${departmentId}/employees`)
   .then(response =>{ 
     return response; })
@@ -47,7 +47,7 @@ export const getEmployeeByDepartmentIdApi = async ({paths, headers}) => {
 
 export const getEmployeeNoDepartmentApi = async ({paths, headers}) => {
   const { companyId } = paths;
-  axiosInstance.defaults.headers['menuId'] = headers.menuId;
+  axiosInstance.defaults.headers['menuId'] = headers.pageId;
   return axiosInstance.get(`/company/${companyId}/employees`)
   .then(response =>{ 
     return response; })

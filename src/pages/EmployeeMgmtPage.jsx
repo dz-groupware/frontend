@@ -8,10 +8,10 @@ import React, { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { employeeActions } from '../utils/Slice';
 
-export default function EmployeeMgmtPage({menuId}) {
+export default function EmployeeMgmtPage({pageId}) {
   const dispatch = useDispatch();
   useEffect(() => {
-
+    console.log("페이지아이디확인",pageId);
     
     // 컴포넌트가 unmount 될 때 상태를 초기화하려면, useEffect의 클린업 함수를 사용합니다.
     return () => {
@@ -23,8 +23,8 @@ export default function EmployeeMgmtPage({menuId}) {
       <PageContainer children={
         <>
         <EmployeeMgmtHeader/>
-        <EmployeeMgmtNav menuId={menuId}/>
-      <MgmtMain aside={<EmployeeMgmtAside menuId={menuId} />} form={<EmployeeMgmtForm menuId={menuId} />} />
+        <EmployeeMgmtNav pageId={pageId}/>
+      <MgmtMain aside={<EmployeeMgmtAside pageId={pageId} />} form={<EmployeeMgmtForm pageId={pageId} />} />
       
       </>
     }>

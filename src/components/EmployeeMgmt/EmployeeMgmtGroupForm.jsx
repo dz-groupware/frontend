@@ -15,7 +15,7 @@ import { styled } from 'styled-components';
 import { employeeActions } from '../../utils/Slice';
 import StyledButton from '../Commons/StyledButton';
 
-export default function EmployeeMgmtGroupForm({menuId}) {
+export default function EmployeeMgmtGroupForm({pageId}) {
   const dispatch = useDispatch();
   const reduxEmployeeGroupInfo = useSelector(state => state.employeeMgmt.employeeGroupInfo);
   const isVisible = useSelector(state => state.employeeMgmt.isVisible);
@@ -29,9 +29,9 @@ export default function EmployeeMgmtGroupForm({menuId}) {
     // 회사 목록을 가져오는 함수
     const fetchCompanies = async () => {
       try {
-        console.log("가나다라마바사",menuId.menuId);
+        console.log("가나다라마바사",pageId.pageId);
        
-        axiosInstance.defaults.headers['menuId'] = menuId;
+        axiosInstance.defaults.headers['menuId'] = pageId;
         const response = await axiosInstance.get('/companies/');
         console.log("가나다라마바사",response);
         setCompanyOptions(response.data.data);
@@ -42,7 +42,7 @@ export default function EmployeeMgmtGroupForm({menuId}) {
     // 부서 목록을 가져오는 함수
     const fetchDepartments = async () => {
       try {
-        axiosInstance.defaults.headers['menuId'] = menuId;
+        axiosInstance.defaults.headers['menuId'] = pageId;
         const response = await axiosInstance.get('/employeemgmt/dep');
         setDepartmentOptions(response.data.data);
       } catch (error) {

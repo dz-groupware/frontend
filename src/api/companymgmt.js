@@ -1,9 +1,9 @@
 import { axiosInstance } from '../utils/axiosInstance';
 
-export const getCompanyMgmtList = async (menuId) => {
+export const getCompanyMgmtList = async ( pageId) => {
   try {
     
-    axiosInstance.defaults.headers['menuId'] = menuId;
+    axiosInstance.defaults.headers['menuId'] =  pageId;
     const response = await axiosInstance.get('/companies');
     return response.data.data;
   } catch (error) {
@@ -14,10 +14,10 @@ export const getCompanyMgmtList = async (menuId) => {
 };
 
 
-export const getCompanyDetailsById = async (companyId, menuId) => {
+export const getCompanyDetailsById = async (companyId,  pageId) => {
   try {
-    console.log("menuId",menuId);
-    axiosInstance.defaults.headers['menuId'] = menuId;
+    console.log("menuId", pageId);
+    axiosInstance.defaults.headers['menuId'] =  pageId;
 
     const response = await axiosInstance.get(`/companies/${companyId}`);
 
@@ -30,9 +30,9 @@ export const getCompanyDetailsById = async (companyId, menuId) => {
   }
 };
 
-export const modifyCompanyMgmt = async (info, menuId) => {
+export const modifyCompanyMgmt = async (info, pageId) => {
   try {
-    axiosInstance.defaults.headers['menuId'] = menuId;
+    axiosInstance.defaults.headers['menuId'] = pageId;
 
     const response = await axiosInstance.put(`/companies`, info);
     return response.data.data;
@@ -43,9 +43,9 @@ export const modifyCompanyMgmt = async (info, menuId) => {
   }
 };
 
-export const addCompanyMgmt = async (info, menuId) => {
+export const addCompanyMgmt = async (info, pageId) => {
   try {
-    axiosInstance.defaults.headers['menuId'] = menuId;
+    axiosInstance.defaults.headers['menuId'] = pageId;
 
     const response = await axiosInstance.post(`/companies`, info);
     return response.data.data;
@@ -56,9 +56,9 @@ export const addCompanyMgmt = async (info, menuId) => {
   }
 };
 
-export const deleteCompanyMgmt = async (id, companyInfo, menuId) => {
+export const deleteCompanyMgmt = async (id, companyInfo, pageId) => {
   try {
-    axiosInstance.defaults.headers['menuId'] = menuId;
+    axiosInstance.defaults.headers['menuId'] = pageId;
 
     const response = await axiosInstance.delete(`/companies/del/${id}`, companyInfo);
     return response.data.data;
@@ -67,9 +67,9 @@ export const deleteCompanyMgmt = async (id, companyInfo, menuId) => {
   }
 };
 
-export const findCompanyMgmtList = async (searchValue, selectedOption, menuId) => {
+export const findCompanyMgmtList = async (searchValue, selectedOption, pageId) => {
   try {
-    axiosInstance.defaults.headers['menuId'] = menuId;
+    axiosInstance.defaults.headers['menuId'] = pageId;
 
     const actualSearchValue = searchValue === "" ? "%25%25" : `%25${searchValue}%25`;
     const actualSelectedOption = selectedOption === "" ? 2 : `${selectedOption}`;
@@ -84,10 +84,10 @@ export const findCompanyMgmtList = async (searchValue, selectedOption, menuId) =
   }
 };
 
-export const getAllCompanyMgmtParList = async (menuId) => {
+export const getAllCompanyMgmtParList = async (pageId) => {
   try {
-    console.log("메뉴아이디",menuId);
-    axiosInstance.defaults.headers['menuId'] = menuId;
+    console.log("메뉴아이디",pageId);
+    axiosInstance.defaults.headers['menuId'] = pageId;
     const response = await axiosInstance.get('/companies/par');
     return response.data.data;
   } catch (error) {

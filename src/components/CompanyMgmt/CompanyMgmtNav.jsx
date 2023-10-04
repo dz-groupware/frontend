@@ -7,7 +7,7 @@ import { findCompanyMgmtList } from "../../api/companymgmt";
 
 
 
-export default function CompanyMgmtNav({menuId}) {
+export default function CompanyMgmtNav({pageId}) {
     const dispatch = useDispatch();
     const [searchValue, setSearchValue] = useState("");
     const [selectedOption, setSelectedOption] = useState("");
@@ -16,7 +16,7 @@ export default function CompanyMgmtNav({menuId}) {
       try {
           dispatch(companyActions.hideForm());
   
-          const responseData = await findCompanyMgmtList(searchValue, selectedOption,menuId);
+          const responseData = await findCompanyMgmtList(searchValue, selectedOption,pageId);
               
           // 응답 데이터 처리
           console.log("API Response:", responseData);

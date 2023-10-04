@@ -15,7 +15,7 @@ import {
 import { companyActions } from '../../utils/Slice';
 import { addCompanyMgmt, getAllCompanyMgmtParList, modifyCompanyMgmt } from '../../api/companymgmt';
 
-export default function CompanyMgmtForm({ menuId }) {
+export default function CompanyMgmtForm({ pageId }) {
     const dispatch = useDispatch();
     const reduxCompanyInfo = useSelector(state => state.companyMgmt.companyInfo);
     const isVisible = useSelector(state => state.companyMgmt.isVisible);
@@ -29,7 +29,7 @@ export default function CompanyMgmtForm({ menuId }) {
 
     const fetchCompanyOptions = async () => {
         try {
-            const companyList = await getAllCompanyMgmtParList(menuId);
+            const companyList = await getAllCompanyMgmtParList(pageId);
             setCompanyOptions(companyList);
         } catch (error) {
             console.error("Error fetching company data:", error);
@@ -124,7 +124,7 @@ export default function CompanyMgmtForm({ menuId }) {
     const handleUpdate = async (e) => {
         if (idForForm) {
             try {
-                await modifyCompanyMgmt(info, menuId);
+                await modifyCompanyMgmt(info, pageId);
                 alert("회사 데이터가 수정되었습니다.");
                 dispatch(companyActions.hideForm());
                 window.location.reload();
@@ -136,7 +136,7 @@ export default function CompanyMgmtForm({ menuId }) {
 
         } else {
             try {
-                await addCompanyMgmt(info, menuId);
+                await addCompanyMgmt(info, pageId);
                 alert("회사 데이터가 저장되었습니다.");
                 dispatch(companyActions.hideForm());
                 window.location.reload();
@@ -261,7 +261,7 @@ export default function CompanyMgmtForm({ menuId }) {
     return (
         <Container>
 
-            <CompanyMgmtInfo handleSubmit={handleSubmit} isCodeDisabled={!!idForForm} idForForm={idForForm} menuId={menuId} />
+            <CompanyMgmtInfo handleSubmit={handleSubmit} isCodeDisabled={!!idForForm} idForForm={idForForm} pageId={pageId} />
             <InputContainer>
                 <Label>소속회사</Label>
                 <Select name="parId" value={info.parId || ''} onChange={handleChange}>

@@ -4,7 +4,7 @@ import styled from "styled-components";
 import { employeeActions } from "../../utils/Slice";
 import { getEmployeeDetailsById, getEmployeeMgmtList } from "../../api/employeemgmt";
 
-export default function EmployeeMgmtAside({menuId}) {
+export default function EmployeeMgmtAside({pageId}) {
   const dispatch = useDispatch();
   const [employeeDataList, setEmployeeDataList] = useState([]);
   const [sortType, setSortType] = useState("default");
@@ -20,7 +20,7 @@ export default function EmployeeMgmtAside({menuId}) {
 
   useEffect(() => {
     async function fetchEmployees() {
-      const data = await getEmployeeMgmtList(menuId);
+      const data = await getEmployeeMgmtList(pageId);
       // console.log("data", data);
       setEmployeeDataList(data);
     }
@@ -119,7 +119,7 @@ console.log("너네 뭐니",employeeMgmt);
 
 
     try {
-      const fetchedEmployeeData = await getEmployeeDetailsById(employeeMgmt.id,menuId);
+      const fetchedEmployeeData = await getEmployeeDetailsById(employeeMgmt.id,pageId);
       console.log(fetchedEmployeeData);
       if (!fetchedEmployeeData) {
         console.error("No data returned for employee ID:", employeeMgmt.id);

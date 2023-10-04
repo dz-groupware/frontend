@@ -22,7 +22,7 @@ import { BsPersonBoundingBox } from 'react-icons/bs';
 import { checkDuplicates, checkLoginId, checkSignUp, getEmployeeDetailsById } from '../../api/employeemgmt';
 
 
-export default function EmployeeMgmtBasicForm({menuId}) {
+export default function EmployeeMgmtBasicForm({pageId}) {
     const dispatch = useDispatch();
     const reduxEmployeeBasicInfo = useSelector(state => state.employeeMgmt.employeeBasicInfo);
     // const idForForm = useSelector(state => state.companyMgmt.idForForm);
@@ -272,10 +272,10 @@ export default function EmployeeMgmtBasicForm({menuId}) {
         console.log("signUpInfo", signUpInfo);
 
 
-        console.log("이이이이이이잉빕",menuId.menuId);
+        console.log("이이이이이이잉빕",pageId.pageId);
 
         // 중복 확인 API 요청 로직 구현
-        const response = await checkSignUp(signUpInfo,menuId.menuId);
+        const response = await checkSignUp(signUpInfo,pageId.pageId);
         console.log("사인업체크 제대로 되는지 아마 안될듯", response);
         if (response == null) {
             return;
@@ -294,9 +294,9 @@ export default function EmployeeMgmtBasicForm({menuId}) {
             try {
                 console.log("가입된 아이디일시 ", response);
 
-                console.log("ㄱ가가가가가가가가이빕",menuId);
+                console.log("ㄱ가가가가가가가가이빕",pageId);
 
-                const fetchedEmployeeData = await getEmployeeDetailsById(response[0].id,menuId);
+                const fetchedEmployeeData = await getEmployeeDetailsById(response[0].id,pageId);
                 if (!fetchedEmployeeData) {
                     console.error("No data returned for employee ID:", response[0].id);
                     return;
@@ -374,9 +374,9 @@ export default function EmployeeMgmtBasicForm({menuId}) {
             return; // 여기서 함수를 종료하여 아래의 로직을 실행하지 않습니다.
         }
 
-        console.log("알아보자 메뉴아이디 :",menuId.menuId);
+        console.log("알아보자 메뉴아이디 :",pageId.pageId);
         // 중복 확인 API 요청 로직 구현
-        const response = await checkLoginId(info.loginId,menuId.menuId);
+        const response = await checkLoginId(info.loginId,pageId.pageId);
 
         if (response) {
             alert('중복된 아이디입니다. 다시 시도해주세요.');
@@ -411,7 +411,7 @@ export default function EmployeeMgmtBasicForm({menuId}) {
                 type: 'UPLOAD_TO_S3',
                 payload: {
                     file: file,
-                    menuId:menuId.menuId
+                    pageId:pageId.pageId
                 },
                 
             });

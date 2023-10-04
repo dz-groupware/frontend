@@ -8,7 +8,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { employeeActions } from '../../utils/Slice';
 import { getEmployeeDetailsById } from '../../api/employeemgmt';
 
-export default function EmployeeMgmtForm(menuId) {
+export default function EmployeeMgmtForm( pageId ) {
   const dispatch = useDispatch();
   const isVisible = useSelector(state => state.employeeMgmt.isVisible);
   const activeTab = useSelector(state => state.employeeMgmt.activeTab);
@@ -105,11 +105,11 @@ export default function EmployeeMgmtForm(menuId) {
 
   return (
     <Container>
-      <EmployeeMgmtInfo menuId={menuId} />
+      <EmployeeMgmtInfo pageId={pageId} />
       <MgmtInfoMenu activeTab={activeTab} setActiveTab={handleTabClick} />
 
-      {activeTab === "basic" && <EmployeeMgmtBasicForm  menuId={menuId} />}
-      {activeTab === "department" && <EmployeeMgmtGroupForm menuId={menuId} />}
+      {activeTab === "basic" && <EmployeeMgmtBasicForm  pageId={pageId} />}
+      {activeTab === "department" && <EmployeeMgmtGroupForm pageId={pageId} />}
 
 
     </Container>

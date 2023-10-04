@@ -7,7 +7,7 @@ import { addEmployeeMgmt, deleteEmployeeMgmt, modifyEmployeeMgmt,imageUpload } f
 
 
 
-export default function EmployeeMgmtInfo({menuId}) {
+export default function EmployeeMgmtInfo({pageId}) {
     const dispatch = useDispatch();
     const reduxEmployeeBasicInfo = useSelector(state => state.employeeMgmt.employeeBasicInfo);
     const reduxEmployeeGroupInfo = useSelector(state => state.employeeMgmt.employeeGroupInfo);
@@ -44,7 +44,7 @@ export default function EmployeeMgmtInfo({menuId}) {
                 
                 try {
                     console.log("퇴사 바디", info);
-                    await deleteEmployeeMgmt(info.id, info,menuId);
+                    await deleteEmployeeMgmt(info.id, info,pageId);
                     //image 업로드
                 } catch (error) {
                     console.error("Error deleting employee data for ID:", info.id, error);
@@ -73,7 +73,7 @@ export default function EmployeeMgmtInfo({menuId}) {
             for (const info of combinedEmployeeInfo) {
                 try {
                    
-                    await modifyEmployeeMgmt(info,menuId);
+                    await modifyEmployeeMgmt(info,pageId);
 
                     //여기서 이미지 upload api 요청하기 사원 이름+로그인아이디 해서 올려주기
                 } catch (error) {
@@ -91,7 +91,7 @@ export default function EmployeeMgmtInfo({menuId}) {
         } else {
             for (const info of combinedEmployeeInfo) {
                 try {
-                    await addEmployeeMgmt(info,menuId);
+                    await addEmployeeMgmt(info,pageId);
                     //여기서 이미지 upload api 요청하기
 
                 } catch (error) {

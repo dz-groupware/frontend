@@ -5,7 +5,7 @@ export const axiosInstance = axios.create({
   // baseURL: "http://43.200.45.200:8080/api/v1",
   baseURL: "https://f355-1-252-13-218.ngrok-free.app",
   // baseURL: "http://localhost:8010/api/v1",
-  headers: { "Content-Type": "application/json" },
+  headers: { "Content-Type": "application/json", "ngrok-skip-browser-warning": "1" },
   withCredentials: true,
   timeout: 20000,
 });

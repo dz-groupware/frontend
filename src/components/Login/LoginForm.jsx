@@ -36,9 +36,7 @@ export default function LoginForm() {
 
   useEffect(()=>{
     if(status===202){
-      // setTimeout(()=>{
         navigate('/',{state:{ menuId: "0" }});
-      // },1000);
     } else if (error && error.data && error.data.message) {  // error 객체에서 message 추출
       setErrorMessage(error.data.message);
     }

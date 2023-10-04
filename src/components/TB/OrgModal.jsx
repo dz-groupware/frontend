@@ -1,8 +1,6 @@
 import { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
 
 import styled from 'styled-components';
-
 import { AiOutlineSearch, AiOutlineTeam } from "react-icons/ai";
 import {LuBuilding2} from 'react-icons/lu';
 
@@ -11,11 +9,12 @@ import {orgTreeApi, orgEmpListApi, searchOrg} from '../../api/modal';
 import EmpList from './OrgModal/EmpList';
 import EmpDetail from './OrgModal/EmpDetail';
 
-export default function OrgModal(props){
+export default function OrgModal({ setOrgModal }){
   
   const [data, setData] = useState(JSON.parse('[]'));
   const [empList, setEmpList] = useState(JSON.parse('[]'));
-  const empId = useSelector(state => state.loginInfo.empId);
+
+  const empId = localStorage.getItem("empId");
 
   const [searchOption, setSearchOption] = useState("all", "");
   const [searchText, setSearchText] = useState("");
@@ -24,14 +23,14 @@ export default function OrgModal(props){
 
   useEffect(() => {
     async function LoadData(emp_id){
-      const res = await orgTreeApi('basic', "","", "");
+      const res = await orgTreeApi(0, 'basic', "","", "");
       setData(res.data.data);
     }
     LoadData(empId);
   }, [empId]);  
 
   async function loadEmpList(type, compId, deptId){
-    const res = await orgEmpListApi(type, compId, deptId);
+    const res = await orgEmpListApi(0, type, compId, deptId);
     setEmpList(res.data.data);
   }
 
@@ -47,7 +46,7 @@ export default function OrgModal(props){
   function searchHandler(){
     setData(JSON.parse('[]'));
     setEmpList(JSON.parse('[]'));
-    searchOrg(searchOption, searchText).then(res => {
+    searchOrg(0, searchOption, searchText).then(res => {
       if(searchOption === 'all'){
         if (res.data.data.Tree !== 0) {
           setData(res.data.data.Tree)
@@ -63,11 +62,11 @@ export default function OrgModal(props){
         setEmpList(res.data.data.data);
       }
     });
-  }
+  };
 
   const modalOff = () => {
-    props.setOrgModal(false);
-  }
+    setOrgModal(false);
+  };
 
   return (
     <ModalBackdrop onClick={modalOff}>
@@ -114,7 +113,7 @@ export function CompList(props) {
     if (props.value['type'] === 'comp') {
       props.value['id'] = ""
     }
-    orgTreeApi(props.value['type'], props.value['compId'], props.value['id']).then(res => setSubItem(res.data.data));
+    orgTreeApi(0, props.value['type'], props.value['compId'], props.value['id']).then(res => setSubItem(res.data.data));
     props.loadEmpList(props.value['type'], props.value['compId'], props.value['id']);
     setOpen(!open);
   }
@@ -146,7 +145,7 @@ export function DeptTree(props) {
     if (props.value['type'] === 'comp') {
       props.value['id'] = ""
     }
-    orgTreeApi(props.value['type'], props.value['compId'], props.value['id']).then(res => setSubItem(res.data.data));
+    orgTreeApi(0, props.value['type'], props.value['compId'], props.value['id']).then(res => setSubItem(res.data.data));
     props.loadEmpList(props.value['type'], props.value['compId'], props.value['id']);
     setOpen(!open);
   }

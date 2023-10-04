@@ -1,51 +1,52 @@
 import styled from 'styled-components';
-//import { useNavigate } from 'react-router';
 
 import { AiOutlinePoweroff } from 'react-icons/ai';
 
 import PosiList from './PosiList';
 import { logOut } from '../../api/login';
 
-export default function ProfileModal({ profile, empId, setProfileModal }) {
-//  const navigate = useNavigate();
+
+export default function ProfileModal({ profile, setProfileModal }) {
+
+  const empId = localStorage.getItem("empId");
+  const user = profile.find(prf => prf['empId']+"" === empId);
+
   const handleLogOut = () => {
     logOut();
     localStorage.setItem("empId", 0);
     localStorage.setItem("compId", 0);
     console.log('done')
     window.location.href = '/login';
-  }
+  };
 
   const modalOff = () => {
     setProfileModal(false);
-  }
+  };
 
-  for (let prf of profile) {
-    if (prf['empId']+"" === empId) {
-      return (
-        <ModalBackdrop onClick={modalOff}>
-          <ModalView onClick={(e) => e.stopPropagation()}>
-            <div className='top_btn'>
-              <div onClick={handleLogOut}>
-                <AiOutlinePoweroff />
-              </div>
-            </div>
-            <div>  
-            <img src={prf['imageUrl']} alt='p_img' />
-            <div className='prf'>
-              <div id="prf_name">{prf['empName']}</div>
-              <div>{prf['compName']} / {prf['deptName']}</div>
-              <p>최근접속 : {prf['lastAccess']} || {prf['lastIp']}(현재: {prf['lastIp']})</p>
+  if (user) {
+    return (
+      <ModalBackdrop onClick={modalOff}>
+        <ModalView onClick={(e) => e.stopPropagation()}>
+          <div className='top_btn'>
+            <div onClick={handleLogOut}>
+              <AiOutlinePoweroff />
             </div>
           </div>
-            <div id='tableName'><div> • 회사정보</div></div>
-            <PosiList empId={prf['empId']} modalOff={modalOff} profile={profile}/>
-          </ModalView>
-        </ModalBackdrop>
-      );
-    }
-  }
-}
+          <div>  
+          <img src={user['imageUrl']} alt='p_img' />
+          <div className='prf'>
+            <div id="prf_name">{user['empName']}</div>
+            <div>{user['compName']} / {user['deptName']}</div>
+            <p>최근접속 : {user['lastAccess']} || {user['lastIp']}(현재: {user['lastIp']})</p>
+          </div>
+        </div>
+          <div id='tableName'><div> • 회사정보</div></div>
+          <PosiList empId={user['empId']} modalOff={modalOff} profile={profile}/>
+        </ModalView>
+      </ModalBackdrop>
+    );
+  };
+};
 
 export const ModalBackdrop = styled.div`
   z-index: 1; 

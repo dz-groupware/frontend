@@ -46,12 +46,11 @@ export default function MenuTreeTop({isEditMode, setIsEditMode, setIsSaveClicked
           />
         </ActionButtonWrapper>
       </HeaderWrapper>
-      <SearchWrapper>
+      {/* <SearchWrapper>
         <Element>
           <span>대메뉴</span>
           <select>
             <option>전체</option>
-            {/* 다른 옵션 */}
           </select>
         </Element>
         <Element>
@@ -59,7 +58,7 @@ export default function MenuTreeTop({isEditMode, setIsEditMode, setIsSaveClicked
           <input placeholder="메뉴명을 입력하세요" />
           <button>🔍</button>
         </Element>
-      </SearchWrapper>
+      </SearchWrapper> */}
     </Container>
   );
 }

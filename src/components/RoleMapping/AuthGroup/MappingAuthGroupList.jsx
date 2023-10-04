@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { getEmpAuthGroupApi, getEmpAuthGroupEditApi } from '../../../api/authgroup';
 import MappingAuthGroupItem from './MappingAuthGroupItem';
 
-export default function MappingAuthGroupList({ activeAuthId,activeEmpId, orderBy, searchTerm, showCloseRequest, handleAuthClick, selectedAuthIds, handleCheckboxChange, isEditMode }) {
+export default function MappingAuthGroupList({ activeAuthId, activeEmp, orderBy, searchTerm, showCloseRequest, handleAuthClick, selectedAuthIds, handleCheckboxChange, isEditMode, headers }) {
   const [lastId, setLastId] = useState(99999999);
   const [lastAuthName, setLastAuthName] = useState(null);
   const [data, setData] = useState([]);
@@ -13,22 +13,25 @@ export default function MappingAuthGroupList({ activeAuthId,activeEmpId, orderBy
 
   const lastElementRef = useRef();
 
-  const fetchMoreData = useCallback(async () => {
-    if (isLoading || !hasMore || !activeEmpId) return;
+  const fetchMoreData = async () => {
+    if (isLoading || !hasMore || !activeEmp) return;
     console.log('lastName',lastAuthName)
     setIsLoading(true);
     
     let apiFunction = isEditMode ? getEmpAuthGroupEditApi : getEmpAuthGroupApi;
 
     try {
-      const res = await apiFunction({ params: { 
-        employeeId: activeEmpId,
-        pageSize: 8, 
-        orderBy, 
-        searchTerm,
-        ...(lastAuthName !== null && orderBy.includes('authName') && { lastAuthName: encodeURIComponent(lastAuthName) }),
-        ...(lastId !== null && !orderBy.includes('authName') && { lastId }),
-      } });
+      const res = await apiFunction({ 
+        params: { 
+          employeeId: activeEmp.id,
+          pageSize: 8, 
+          orderBy, 
+          searchTerm,
+          ...(lastAuthName !== null && orderBy.includes('authName') && { lastAuthName: encodeURIComponent(lastAuthName) }),
+          ...(lastId !== null && !orderBy.includes('authName') && { lastId }),
+        },
+        headers 
+      });
       const response = res.data;
       
       if (response.data && response.data.length > 0) {
@@ -52,7 +55,7 @@ export default function MappingAuthGroupList({ activeAuthId,activeEmpId, orderBy
     } finally {
       setIsLoading(false);
     }
-  }, [lastId, lastAuthName, orderBy, searchTerm, isLoading, hasMore, activeEmpId]);
+  };
 
   useEffect(() => {
     setData([]);
@@ -73,7 +76,7 @@ export default function MappingAuthGroupList({ activeAuthId,activeEmpId, orderBy
           setLastId(0); // ID 오름차순 정렬을 시작합니다.
       }
   }
-  }, [orderBy, searchTerm,  activeEmpId, isEditMode]);
+  }, [orderBy, searchTerm,  activeEmp.id, isEditMode]);
 
   useEffect(() => {
     if(data.length === 0 && hasMore) {
@@ -115,15 +118,16 @@ export default function MappingAuthGroupList({ activeAuthId,activeEmpId, orderBy
               selectedAuthIds={selectedAuthIds}
               handleCheckboxChange={handleCheckboxChange}
               hasAuth={item.hasAuth}
+              headers={headers}
             />
           ))
         ) : !isLoading && !hasMore ? (
           <div>데이터가 없습니다.</div>
         ) : null}
+        {isLoading? (<div>로딩중입니다!...</div>) : null}
       </div>
       <div>
         {showCloseRequest ? <div>닫기 버튼을 눌러주세요.</div> : null}
-        {isLoading? (<div>로딩중입니다!...</div>) : null}
       </div>
     </Container>
   );

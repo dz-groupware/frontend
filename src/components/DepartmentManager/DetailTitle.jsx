@@ -9,7 +9,7 @@ export default function DetailTitle ({ detail, setDetail }){
         <div>상세정보</div>
         <div>
           <button onClick={() => setDetail({...detail, state: 'save'})}>저장</button> 
-          <button onClick={() => setDetail({...detail, state: 'delete', type: false})}>삭제</button> 
+          <button onClick={() => setDetail({...detail, state: 'delete', type: false, save: true})}>삭제</button> 
           <div>|</div>
           <div onClick={() => setDetail({...detail, type: false, state: false, save: false})}>X</div>
         </div> 

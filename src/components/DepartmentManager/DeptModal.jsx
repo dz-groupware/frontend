@@ -1,31 +1,29 @@
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
-import { GnbListApi, LnbListApi } from '../../api/menu';
-//import { useSelector } from 'react-redux';
+import { getDepartemnt, getDepartmentList } from '../../api/department';
 
-export default function MenuTree(props) {
-  const [menuTree, setMenuTree] = useState(JSON.parse('[{"":""}]'));
+export default function DeptModal({ form, setModalOn, setForm, pageId }){
+  const [item, setItem] = useState(JSON.parse('[{"":""}]'));
 
   useEffect(() => {
-    GnbListApi().then(res => {
-      setMenuTree(res.data);
+    getDepartemnt(pageId).then(res => {
+      setItem(res.data.data);
     });
   }, []);
 
-
   return (
-    <ModalBackdrop onClick={() => props.setModalOn(false)}>
+    <ModalBackdrop onClick={() => setModalOn(false)}>
       <ModalView onClick={(e) => e.stopPropagation()}>
         <div id='menuTitle'>
-          <div>상위메뉴</div>
-          <span onClick={() => props.setModalOn(false)}>x</span>
+          <div>상위부서</div>
+          <span onClick={() => setModalOn(false)}>x</span>
         </div>
         <MenuArea>
           <div>
           {
-            menuTree.map((a, i) => (
-              <MenuItem data={a} setModalOn={props.setModalOn} handleParMenu={props.handleParMenu} key={a['name']+'gnb'}/>
+            item.map((a, i) => (
+              <Item form={form} data={a} setModalOn={setModalOn} setForm={setForm} key={a['name']+'gnb'}/>
             ))
           }
           </div>
@@ -36,34 +34,34 @@ export default function MenuTree(props) {
   );
 }
 
-export function MenuItem(props) {
+function Item({ form, data, setModalOn, setForm }) {
   const [open, setOpen] = useState(false);
   const [subItem, setSubItem] = useState([]);
 
   useEffect(() => {
-    if(props.data !== undefined){
+    if(data !== undefined){
       setSubItem([]);
       setOpen(false);
     }
-  }, [props.data]);
+  }, [data]);
 
   const handleMenuItem = (a) => {
     if(subItem.length === 0) {
-      LnbListApi(props.data['id'])
-      .then(res => setSubItem(res.data));
+      getDepartmentList(data['id'])
+      .then(res => setSubItem(res.data.data));
     }
     setOpen(!open);
-    props.handleParMenu(props.data)
+    setForm({...form, parId: data['id'], parName: data['name']});
   }
 
   return (
     <Menu>
       <div onClick={handleMenuItem}>
-        └{props.data['name']}
+        └{data['name']}
       </div>
       { subItem.length > 1 && open &&
         subItem.map((a, i) => (
-          <MenuItem data={a} setModalOn={props.setModalOn} handleParMenu={props.handleParMenu} key={a['name']+'lnb'}/>
+          <Item form={form} data={a} setModalOn={setModalOn} setForm={setForm} key={a['name']+'lnb'}/>
         ))
       }
     </Menu>

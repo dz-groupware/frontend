@@ -76,17 +76,6 @@ function getIdFormLocal(k, d) {
     return d;
   }
 }
-
-export const loginSlice = createSlice({
-  name: 'loginInfo',
-  initialState : {
-    isLogin: false,
-  },
-  reducers: {
-    isLogin:(state) => {state.isLogin = !state.isLogin;},
-  }
-});
-
   
   export const companyMgmtSlice = createManagementSlice(companyMgmtInitialState, 'companyMgmt');
   export const employeeMgmtSlice = createManagementSlice(employeeMgmtInitialState, 'employeeMgmt');
@@ -230,7 +219,5 @@ export const authGroupSlice = createSlice({
   },
 });
 
-export const { isLogin, newEmpId, newCompId } = loginSlice.actions;
 export const companyActions = companyMgmtSlice.actions;
 export const employeeActions = employeeMgmtSlice.actions;
-

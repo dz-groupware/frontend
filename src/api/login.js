@@ -9,13 +9,12 @@ export const loginApi = async ({ data }) => {
     console.log(response);
     return response;
   } catch (error) {
-    console.error(error)
-    console.error('로그인 실패');
     throw error; // 오류를 throw하여 상위로 전달합니다.
   }
 }
 
-export function changeEmpApi(empId) {
+export function changeEmpApi(pageId, empId) {
+  axiosInstance.defaults.headers['menuId'] = pageId;
   if(empId !== undefined && empId) {
       return axiosInstance.post(
           `/auth/re-login`,

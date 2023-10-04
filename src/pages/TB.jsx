@@ -1,46 +1,36 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import styled from 'styled-components';
-import { AiOutlineSearch, AiOutlineBell, AiOutlineMore, AiOutlineDeploymentUnit } from "react-icons/ai";
+import { AiOutlineDeploymentUnit } from "react-icons/ai";
 
+import Recent from '../components/TB/Recent';
 import Profile from '../components/TB/Profile';
 import ProfileModal from '../components/TB/ProfileModal';
 import OrgModal from '../components/TB/OrgModal';
-import { SearchModal, AlertModal, SetModal } from '../components/TB/Modal';
-import { useState } from 'react';
 
 
-export default function TB({ profile, empId }) {
+export default function TB({ profile }) {
 
   const [profileModal, setProfileModal] = useState(false);
-  const [searchModal , setSearchModal] = useState(false);
-  const [alertModal, setAlertModal] = useState(false);
   const [orgModal, setOrgModal] = useState(false);
-  const [setModal, setSetModal] = useState(false);
 
-  console.log('empId : ', empId)
   return (
     <TBArea>
-        <Link to='/'>
-          Amaranth10
-        </Link>
-
+      <Link to='/'>
+        Amaranth10
+      </Link>
+      <Recent />
       <div>
         <ProfileArea id='prf' onClick={() => {setProfileModal(true)}}>        
-          <Profile profile={profile} empId={empId}/>
-          {profileModal && <ProfileModal profile={profile} empId={empId} profileModal={profileModal} setProfileModal={setProfileModal}/>}
+          <Profile profile={profile}/>
+          {profileModal && <ProfileModal profile={profile} profileModal={profileModal} setProfileModal={setProfileModal}/>}
         </ProfileArea>
 
         <IconArea>
-          <AiOutlineSearch onClick={() => {setSearchModal(true)}}/>
-          <AiOutlineBell onClick={() => {setAlertModal(true)}}/>
           <AiOutlineDeploymentUnit onClick={() => {setOrgModal(true)}}/>
-          <AiOutlineMore onClick={() => {setSetModal(true)}}/>
         </IconArea>
-        {searchModal && <SearchModal setSearchModal={setSearchModal} />}
-        {alertModal && <AlertModal setAlertModal={setAlertModal}/>}
         {orgModal && <OrgModal setOrgModal={setOrgModal}/>}
-        {setModal && <SetModal setSetModal={setSetModal}/>}
       </div>
     </TBArea>
   );
@@ -76,7 +66,7 @@ width: 250px;
 `;
 export const IconArea = styled.div`
 padding-top: 10px;
-width:220px;
+width:60px;
 position: relative;
 right:50px;
 color: rgb(7, 10, 69);

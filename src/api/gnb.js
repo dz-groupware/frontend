@@ -8,17 +8,17 @@ function header(pageId){
   };
 }
 
-export function GnbMenuApi(pageId){    
-  return axiosInstance.get(
-    `/menu/gnb`, header(pageId)
-  )
+
+export function basicInfoApi(empId, pageId){
+  if(empId !== undefined && empId !== null){
+    return axiosInstance.get(`/home`, {
+      headers: {
+        "Content-Type": "application/json",
+      'menuId' : pageId
+    }});
+  }
 }
 
-export function GnbFavorApi(pageId){  
-  return axiosInstance.get(
-    `/menu/favor`, header(pageId)
-  )
-}
 
 export function GnbFavorDeleteApi(pageId, menuId){  
   if (menuId !== undefined && menuId !== null){
@@ -27,14 +27,43 @@ export function GnbFavorDeleteApi(pageId, menuId){
         params: {
           menuId
         }
-      }, header(pageId)
-    )
-  }
+      }, {
+      headers: {
+      "Content-Type": "application/json",
+      'menuId' : pageId
+    }});
+  };
 }
+
+
+// *
+
+
+export function GnbMenuApi(pageId){    
+  return axiosInstance.get(
+    `/menu/gnb`, {
+      headers: {
+      'menuId' : pageId
+    }}
+  )
+}
+
+export function GnbFavorApi(pageId){  
+  return axiosInstance.get(
+    `/menu/favor`, {
+      headers: {
+      'menuId' : pageId
+    }}
+  )
+}
+
 
 export function profileAPI(pageId){  
   return axiosInstance.get(
-    `/modal/profile`, header(pageId)
+    `/modal/profile`, {
+      headers: {
+      'menuId' : pageId
+    }}
   )
 }
 
@@ -42,20 +71,15 @@ export function profileAPI(pageId){
 
 export function searchMenuListAPI(pageId, menuId, compId) {
   if(menuId !== undefined && menuId !== null && compId !== undefined && compId !== null) {
-      return axiosInstance.get(
-          `/menu/lnb`,{
-              params: {
-                  menuId,
-                  compId
-              }
-          }, header(pageId)
-      )
-  }
-}
-
-export function basicInfoApi(empId, pageId){
-  if(empId !== undefined && empId !== null){
-    axiosInstance.defaults.headers['menuId'] = pageId;
-    return axiosInstance.get(`/home`);
+    return axiosInstance.get(
+      `/menu/lnb`,{
+        params: {
+          menuId,
+          compId
+        }, 
+        headers: {
+          "Content-Type": "application/json",
+          'menuId' : pageId
+    }});
   }
 }

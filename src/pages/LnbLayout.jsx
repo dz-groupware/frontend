@@ -9,9 +9,8 @@ import { getMenuList } from '../api/menu';
 
 import Module from './Module';
 
-export default function LNB() {
+export default function LnbLayout() {
   const location = useLocation();
-  const navigate = useNavigate();
 
   const compId = localStorage.getItem("compId");
 
@@ -20,7 +19,8 @@ export default function LNB() {
   const [data, setData] = useState([]);
   const [routeOn, setRouteOn] = useState(false);
   const [routeList, setRouteList] = useState(new Map([
-    [`/`, { menuId: 0, gnbId: 0, gnbName: 'main', page: 'Main' }],]));
+    [`/`, { menuId: 0, gnbId: 0, gnbName: 'main', page: 'Main' }],
+    [`/FORBIDDEN`, { menuId: 0, gnbId: 0, gnbName: '403', page: 'FORBIDDEN' }],]));
 
   // console.log('data : ',gnb.id, data);
   // console.log("url : ",decodeURIComponent(location.pathname));
@@ -31,9 +31,10 @@ export default function LNB() {
       const menuList = new Map();
       originMenuList.forEach(row => {
         const { menuId, gnbId, gnbName, nameTree, page } = row;
-        menuList.set(`/${nameTree}`, { menuId, gnbId, gnbName, page } );
+        menuList.set(`/${nameTree}`, { menuId, gnbId, gnbName, page });
       });
-      menuList.set(`/`, { menuId: 0, gnbId: 0, gnbName: 'main', page: 'Main' } );
+      menuList.set(`/`, { menuId: 0, gnbId: 0, gnbName: 'main', page: 'Main' });
+      menuList.set(`/FORBIDDEN`, { menuId: 0, gnbId: 0, gnbName: '403', page: 'FORBIDDEN' });
       setRouteList(menuList);
     }
 
@@ -45,28 +46,37 @@ export default function LNB() {
       } catch (error) {
         console.log('error in lnb');
         if (error.status === 401) {
-          console.log('로그인 정보 없음');
+          console.log('로그인 정보 없음 (in lnb)');
+          localStorage.setItem("empId", 0);
+          localStorage.setItem("compId", 0);
           window.location.href='/login';
-        }
+        };
         if (error.status === 403) {
           console.log('권한 없음');
-        }
+        };
         console.log('unknown error : ', error);
-      }
+      };
       // 컴포넌트 마운트 시 현재 경로를 기반으로 routeList 업데이트
-    }
+    };
     initRouteList();
   }, []);
 
   useEffect(() => {
     try{
-      searchMenuListAPI(0, gnb.id, compId)
-      .then(res => setData(res.data.data));
+      const res = searchMenuListAPI(0, gnb.id, compId);
+      if (res !== undefined) {
+        res.then(res => setData(res.data.data));
+      }
     } catch(error) {
+      if (error.status === 401) {
+        console.log('로그인 정보 없음 (in LNB)');
+        localStorage.setItem("empId", 0);
+        localStorage.setItem("compId", 0);
+        window.location.href="/login";
+      }
       console.log('searchMenuListAPI error : ', error);
-      if(error.message === 'INTERNEL_SERVER_ERROR'){}
     }
-  }, [gnb.id, compId, navigate]);
+  }, [gnb.id, compId]);
 
   return (
     <Content>
@@ -120,6 +130,12 @@ export function MenuTree({ menu, param, compId, gnb }){
       // menuId를 넘기지 않고 gnbId를 넘긴다. LNB() 컴포넌트는 GNB 메뉴 ID가 필요함.
       navigate(`/${menu['nameTree']}`);  
     } catch(error) {
+      if (error.status === 401) {
+        console.log('로그인 정보 없음 (in MenuTree)');
+        localStorage.setItem("empId", 0);
+        localStorage.setItem("compId", 0);
+        window.location.href="/login";
+      } 
       console.log('searchMenuListAPI error : ',error);
     }
   }

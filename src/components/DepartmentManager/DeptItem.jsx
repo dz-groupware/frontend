@@ -1,35 +1,25 @@
 import { useState } from 'react';
 import styled from 'styled-components';
 
-import { getDepartmentById } from '../../api/department';
 import { AiFillProfile, AiFillFolderOpen, AiFillFolder, AiOutlineProfile } from 'react-icons/ai';
 
-export default function DeptItem({ dept, detail, setDetail, menuId }){
-  const [open, setOpen] = useState(false);
-  const [subItem, setSubItem] = useState([]);
 
-  // console.log("dept : ", dept);
+export default function DeptItem({ dept, setItem, detail, setDetail }){
+  const [open, setOpen] = useState(false);
+
+  // console.log("dept : ", dept.subItem);
   const handleDetail = () => {
-    console.log('subItem.length : ', subItem.length);
-    if(subItem.length === 0) {
-      getDepartmentById(dept['id'], menuId).then(res => setSubItem(res.data.data));
+    if(!open && !dept.subItem) {
+      console.log('request subItem : ', dept['id']);
+      setItem(dept['id']);
     }
     setOpen(!open);
-    // setId({...id, newDeptId:dept['id']});
-    // setStatus({...status, status:'modify', detailType:'basic'});
-    // setDetail({ ...detail, state: dept['id'], type: 'basic' });
     if (detail.id === '' ){
       setDetail({ ...detail, id: dept['id'], type: 'basic'});
     } else {
       setDetail({ ...detail, state: dept['id'] , type: detail.type ? detail.type : 'basic'});
     }
   }
-
-  // useEffect(() =>{
-  //   if(typeof detail.state === 'number') {
-  //     setDetail({id: dept['id'], type:'basic', state: 'modify', save: false });
-  //   }
-  // }, [detail.state]);
 
   return (
     <> 
@@ -46,10 +36,10 @@ export default function DeptItem({ dept, detail, setDetail, menuId }){
       </div>
       </div>
       {
-        open && subItem.map((a, i) => {
+        open && dept.subItem && dept.subItem.map((a, i) => {
           if (a['id'] !== a['parId']) {
             return (
-              <DeptItem dept={a} detail={detail} setDetail={setDetail} menuId={menuId} key={a['name']+a['id']}/>
+              <DeptItem dept={a} setItem={setItem} detail={detail} setDetail={setDetail} key={'item::'+a['name']}/>
             )
           }
           return null;

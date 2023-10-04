@@ -5,78 +5,78 @@ import styled from 'styled-components';
 
 import { AiOutlineStar, AiOutlineInfoCircle, AiOutlineSearch, AiFillStar } from 'react-icons/ai';
 
-import {GnbApi, FavorApi, searchAPI} from '../api/menu';
+import {GnbApi, FavorApi, searchAPI, PageListApi} from '../api/menu';
 
-import MenuList from '../components/Sys/MenuList';
-import { GnbDetail, MenuDetail } from '../components/Sys/Detail';
+import MenuList from '../components/MenuEditor/MenuList';
+import { GnbDetail, MenuDetail } from '../components/MenuEditor/Detail';
 
-export default function Sys({ pageId }){
+export default function MenuEditor({ pageId }){
   const [gnbList, setGnbList] = useState([]);
   const [result, setResult] = useState([]);
+  const [page, setPage] = useState([]);
+
   const [favor, setFavor] = useState(false);
+  const [reRender, setReRender] = useState(true);
 
   const [detail, setDetail] = useState([false, false]);
   const [menuDetail, setMenuDetail] = useState("");
 
-  const empId = useSelector(state => state.loginInfo.empId);
-  const compId = useSelector(state => state.loginInfo.compId);
-  const menuId = 8;  // 현재 페이지 id 가져오기 (나중에)
-
-    useEffect(() => {
+  useEffect(() => {
+    if(reRender){
       // gnb 리스트 가져오기
       GnbApi(pageId).then(res => {setGnbList(res.data.data)});
       // 즐겨찾기 가져오기
-      FavorApi(pageId, 'load', menuId).then(res => {setFavor(res.data.data)});
-    }, [empId, menuId]);
+      FavorApi(pageId, 'load', pageId).then(res => {setFavor(res.data.data === "true")});
+      PageListApi(pageId).then(res => {setPage(res.data.data)});
+      searchHandler();
+    }
+    setReRender(false);
+  }, [pageId, reRender]);
 
-    // 대메뉴/메뉴 디테일 on/off
-    function menuDetailHandler(type, detail){
-      if (detail === ""){
-        detail = JSON.parse('{ "enabledYN": "", "iconUrl": "", "id": "", "name": "", "parId": "", "sortOrder": "" }');
-      }
-      if (type === 'newGnb') {
-        setDetail([1, false]);
-      }
-      if (type === 'newMenu') {
-        setDetail([false, 1]);
-      }
-      if (type === 'gnbDetail') {
-        setDetail([2, false]);
-      }
-      if (type === 'menuDetail') {
-        setDetail([false, 2]);
-      }
+  // 대메뉴/메뉴 디테일 on/off
+  function menuDetailHandler(type, detail){
+    if (detail === ""){
+      detail = JSON.parse('{ }');
+    }
+    if (type === 'newGnb') {
+      setDetail([1, false]);
+      setMenuDetail({ id: 0, name: '', enabledYn: true, sortOrder: 0, iconUrl: 'default.png' });
+    }
+    if (type === 'newMenu') {
+      setDetail([false, 1]);
+      setMenuDetail({ enabledYn: true, id: 0, name: "", parId: 0, sortOrder: 0 });
+    }
+    if (type === 'gnbDetail') {
+      setDetail([2, false]);
       setMenuDetail(detail);
     }
-
-    // X 버튼
-    const detailOff = () =>{
-      setDetail([false, false]);
+    if (type === 'menuDetail') {
+      setDetail([false, 2]);
+      setMenuDetail(detail);
     }
+  }
 
-    // 메뉴 검색 결과
-    function searchHandler(event){
+  // X 버튼
+  const detailOff = () =>{
+    setDetail([false, false]);
+  }
+
+  // 메뉴 검색 결과
+  function searchHandler(event){
+    if(event !== undefined){
       event.preventDefault();
-      const formData = new FormData(document.getElementById('searchForm'));
-      
-      searchAPI(pageId, formData).then(res => {
-        setResult(res.data.data);
-      });
     }
+    const formData = new FormData(document.getElementById('searchForm'));
+    console.log(formData.get("gnbName"))
+    searchAPI(pageId, formData).then(res => {
+      console.log('rerender: ', res.data.data);
+      setResult(res.data.data);
+    });
+  }
 
-    // 즐겨찾기 추가/삭제 요청
-    function FavorHandler(){
-      if (favor) {
-        // 즐겨찾기가 되어 있으면 삭제 요청
-        FavorApi('off', empId, menuId).then(() => {
-        setFavor(!favor);
-      });
-    } else {
-      // 즐겨찾기가 안되어 있으면 즐겨찾기 추가 요청
-      FavorApi('on', empId, menuId).then(() => {
-        setFavor(!favor);
-      });
-    }
+  // 즐겨찾기 추가/삭제 요청
+  function FavorHandler(){
+    FavorApi(pageId, favor).then(() => {setFavor(!favor);});
   }
 
   return (
@@ -129,8 +129,8 @@ export default function Sys({ pageId }){
             </SearchResult>
           </div>
         </MenuTree>
-        { detail[0] && <GnbDetail pageId={pageId} value={menuDetail} detailOff={detailOff} on={detail[0]} compId={compId}/>}
-        { detail[1] && <MenuDetail value={menuDetail} detailOff={detailOff} on={detail[1]} compId={compId}/>}
+        { detail[0] && <GnbDetail pageId={pageId} value={menuDetail} detailOff={detailOff} on={detail[0]} setReRender={setReRender}/>}
+        { detail[1] && <MenuDetail pageId={pageId} value={menuDetail} detailOff={detailOff} on={detail[1]} setReRender={setReRender} page={page}/>}
       </FormArea>
     </Module>
   );

@@ -6,11 +6,11 @@ import styled from 'styled-components';
 import { AiOutlineMenu, AiOutlineStar } from "react-icons/ai";
 import { BiSolidGrid } from "react-icons/bi";
 
-import { MenuList, FavList, IconList } from '../components/GNB/GnbList';
+import { MenuList, FavList, IconList } from './GnbList';
 
-export default function GNB({ gnb, favor, empId }){
+
+export default function GNB({ gnb, favor }){
   const [menuOn, setMenuOn] = useState([false, false]);
-
   console.log('gnb : ', gnb);
   return (
     <>
@@ -39,7 +39,7 @@ export default function GNB({ gnb, favor, empId }){
           <AiOutlineStar onClick={() => {setMenuOn([false, true]);}} />
         </TopIconArea>
         <hr />
-        <FavList favor={favor} empId={empId}/>
+        <FavList favor={favor} />
       </GNBFavArea>
     </>
   )

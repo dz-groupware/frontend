@@ -2,10 +2,11 @@ import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
 import DeptModal from './DeptModal';
+import Swal from 'sweetalert2';
 
 import { checkDeptCode } from '../../api/department';
 
-export default function DetailBasic({ data, setData, detail, setDetail, setNoti, menuId }){
+export default function DetailBasic({ data, setData, detail, setDetail, setNoti, pageId }){
   const [modalOn, setModalOn] = useState(false);
   const [form, setForm] = useState('');
   const { validText, isValid, validate } = useValid(form);
@@ -41,7 +42,7 @@ export default function DetailBasic({ data, setData, detail, setDetail, setNoti,
       console.log('중복검사 : 코드 유효성 충족');
       try {
         // api 요청
-        checkDeptCode(form.id, form.code, menuId).then(res => {
+        checkDeptCode(form.id, form.code, pageId).then(res => {
           console.log("checkDeptCode : ", res);
           if(res.data.data){
             setUseableCode(true);
@@ -54,6 +55,20 @@ export default function DetailBasic({ data, setData, detail, setDetail, setNoti,
       console.log('중복검사 : 코드 유효성 불충족');
     }
   }
+
+  const handleNotModified = () => {
+    let timerInterval
+    Swal.fire({
+      title: '수정 사항이 없습니다',
+      html: '저장되지 않음',
+      timer: 1500,
+      timerProgressBar: false,
+      willClose: () => {
+        clearInterval(timerInterval)
+      }
+    })
+  };
+
 
   useEffect(()=>{
     setForm(data);
@@ -77,7 +92,7 @@ export default function DetailBasic({ data, setData, detail, setDetail, setNoti,
     // 다른 부서를 눌렀을 때
     if (typeof detail.state === 'number'){
       if(isModified){
-        console.log("수정 중")
+        console.log("수정 중 : ", isModified)
         setNoti(true);
       } else {
         setDetail({ ...detail, id: detail.state, state: false });
@@ -90,14 +105,15 @@ export default function DetailBasic({ data, setData, detail, setDetail, setNoti,
         if (isValid.code && isValid.abbr && isValid.name && useableCode) {
           console.log('유효성 통과');
           setData(form); 
-          setDetail({ ...detail, state: false, save: true }); // state: true? false?
+          setDetail({ ...detail, state: 'save', save: true }); // state: true? false?
+          setIsModified(false);
         } else {
           console.log(isValid.code, isValid.abbr, isValid.name, useableCode);
           console.log('유효성 검사 불충족');
           setDetail({ ...detail, state: false, save: false });
         }  
       } else {
-        console.log('변경된 내용이 없습니다. (저장 하지 않음)');
+        handleNotModified();
         setDetail({ ...detail, state: false, save: false });
       }
     }
@@ -105,6 +121,7 @@ export default function DetailBasic({ data, setData, detail, setDetail, setNoti,
     if (detail.state === 'tmpSave') {
       setData(form); 
       setDetail({ ...detail, id: detail.isChanging, state: false, save: false }); // state: true? false?
+      setIsModified(false);
     }
   },[detail.state]);
 
@@ -201,7 +218,7 @@ export default function DetailBasic({ data, setData, detail, setDetail, setNoti,
         </form>
       </BasicForm>
       {
-        modalOn && <DeptModal form={form} setModalOn={setModalOn} setForm={setForm} menuId={menuId}/>
+        modalOn && <DeptModal form={form} setModalOn={setModalOn} setForm={setForm} pageId={pageId}/>
       }
     </Detail>
   )

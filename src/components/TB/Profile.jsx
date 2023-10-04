@@ -1,10 +1,10 @@
 import styled from 'styled-components';
 
-export default function Profile({ profile, empId }) {
+export default function Profile({ profile }) {
+  const empId = localStorage.getItem("empId");
 
   for (let prf of profile) {
-    console.log(empId, profile)
-    if (prf['empId']+"" === empId) {
+    if (empId !== null && empId !== undefined && empId !== 0 && prf['empId']+"" === empId) {
       return (
         <ProfileArea>
           <img src={prf['imageUrl']} alt='profileImg' />

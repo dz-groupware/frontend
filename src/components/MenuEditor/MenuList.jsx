@@ -1,12 +1,13 @@
 import styled from 'styled-components';
 
 export default function MenuList(props) {
+  console.log(props.value);
   return (
     <ListArea>
       <div>
       {
         props.value.map((a, i) => (
-          <MenuItem key={i} onClick={()=>{props.api('gnbDetail', a)}}>
+          <MenuItem key={'gnbInMenuEditor'+i} onClick={()=>{props.api('gnbDetail', a)}}>
           <img src={a['iconUrl']} alt='i'/><div id='menuitemname'>{a['name']}</div>
           </MenuItem>
         ))

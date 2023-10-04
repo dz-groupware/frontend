@@ -21,18 +21,28 @@ export function MenuList({ gnb }) {
   );
 }
 
-export function FavList({ favor, empId }) {
+export function FavList({ favor }) {
   const [favorList, setFavorList] = useState(JSON.parse(`[{}]`));
-  const param = '즐겨찾기'
+  const empId = localStorage.getItem("empId");
 
+  //?
   useEffect(()=> {
     setFavorList(favor);
-  }, [empId]);
+  }, [favor]);
 
   const handleFavor = (menuId) => {
-    GnbFavorDeleteApi(empId, menuId)
-    .then(GnbFavorApi(empId)
-    .then(res => setFavorList(res.data)));
+    try {
+      GnbFavorDeleteApi(empId, menuId)
+      .then(GnbFavorApi(empId)
+      .then(res => setFavorList(res.data)));  
+    } catch (error){
+      if (error.status === 401) {
+        console.log('로그인 정보 없음 (in FavList)');
+        localStorage.setItem("empId", 0);
+        localStorage.setItem("compId", 0);
+        window.location.href="/login";
+      }
+    }
   }
 
   return (

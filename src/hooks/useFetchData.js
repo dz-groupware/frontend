@@ -7,7 +7,7 @@ import { useState, useEffect } from 'react';
   @prop {object} data - request body
   @prop {boolean} shouldFetch - API 호출을 할지 말지 결정. 
 */
-export const useFetchData = (apiFunction, { params = {}, paths = {}, data = {}, shouldFetch = true } = {}) => {
+export const useFetchData = (apiFunction, { params = {}, paths = {}, data = {}, headers = {},shouldFetch = true } = {}) => {
   const [fetchedData, setFetchedData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -17,6 +17,7 @@ export const useFetchData = (apiFunction, { params = {}, paths = {}, data = {}, 
   const [currentParams, setParams] = useState(params); 
   const [currentPaths, setPaths] = useState(paths); 
   const [currentData, setData] = useState(data); 
+  const [currentHeaders, setHeaders] = useState(headers); 
 
   useEffect(() => {
     if (JSON.stringify(params) !== JSON.stringify(currentParams)) {
@@ -28,7 +29,10 @@ export const useFetchData = (apiFunction, { params = {}, paths = {}, data = {}, 
     if (JSON.stringify(data) !== JSON.stringify(currentData)) {
       setData(data);
     }
-  }, [params, paths, data]);
+    if (JSON.stringify(headers) !== JSON.stringify(currentHeaders)) {
+      setHeaders(headers);
+    }
+  }, [params, paths, data, headers]);
 
   useEffect(() => {
     if (shouldFetch !== shouldFetchState) {
@@ -45,8 +49,7 @@ export const useFetchData = (apiFunction, { params = {}, paths = {}, data = {}, 
         return;
       }
       try {
-        const response = await apiFunction({ params: currentParams, paths: currentPaths, data: currentData });
-        console.log(response);
+        const response = await apiFunction({ params: currentParams, paths: currentPaths, data: currentData, headers: currentHeaders });
         setFetchedData(response.data.data);
         setStatus(response.status);
       } catch (e) {
@@ -61,7 +64,7 @@ export const useFetchData = (apiFunction, { params = {}, paths = {}, data = {}, 
     };
     
     fetchData();
-  }, [apiFunction, currentParams, currentPaths, currentData, shouldFetchState]); 
+  }, [apiFunction, currentParams, currentPaths, currentData, currentHeaders, shouldFetchState]); 
 
-  return { data: fetchedData, setData: setFetchedData, isLoading, error, setShouldFetch, status, setStatus};  
+  return { data: fetchedData, setData: setFetchedData, isLoading, error, shouldFetch, setShouldFetch, status, setStatus};  
 };

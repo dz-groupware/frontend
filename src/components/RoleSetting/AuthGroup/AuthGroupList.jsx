@@ -3,7 +3,7 @@
   import { styled } from 'styled-components';
   import { getAuthGroupApi } from '../../../api/authgroup';
 
-  export default function AuthGroupList({ activeAuthId, orderBy, searchTerm, refresh, showCloseRequest, handleItemClick }) {
+  export default function AuthGroupList({ activeAuthId, orderBy, searchTerm, refresh, showCloseRequest, handleItemClick, headers, isEditMode }) {
     const [lastId, setLastId] = useState(99999999);
     const [lastAuthName, setLastAuthName] = useState(null);
     const [data, setData] = useState([]);
@@ -27,7 +27,7 @@
     
       
       try {
-        const res = await getAuthGroupApi({ params: queryParam });
+        const res = await getAuthGroupApi({ params: queryParam, headers });
         const response = res.data;
         if (response.data && response.data.length > 0) {
           if(orderBy.includes('authName')) {
@@ -108,15 +108,16 @@
                 onClick={() => handleItemClick(item.id)}
                 isActive={activeAuthId === item.id}
                 ref={i === data.length - 1 ? lastElementRef : null}
+                isEditMode={isEditMode}
               />
             ))
           ) : !isLoading && !hasMore ? (
             <div>데이터가 없습니다.</div>
           ) : null}
+          {isLoading? (<div>로딩중입니다!...</div>) : null}
         </div>
         <div>
           {showCloseRequest ? <div>닫기 버튼을 눌러주세요.</div> : null}
-          {isLoading? (<div>로딩중입니다!...</div>) : null}
         </div>
       </Container>
     );

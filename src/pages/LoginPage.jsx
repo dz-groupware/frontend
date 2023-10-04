@@ -14,7 +14,8 @@ export default function LoginPage() {
         <ImageText>아마란스2023입니다.</ImageText>
       </ImageArea>
       <LoginArea>
-      { empId > 0 ? <Hello /> : <LoginForm/>}
+      {/* { empId > 0 ? <Hello /> : <LoginForm/>} */}
+      <LoginForm/>
       </LoginArea>
     </Container>
   );

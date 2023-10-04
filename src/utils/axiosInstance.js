@@ -1,8 +1,8 @@
 import axios from "axios";
 
 export const axiosInstance = axios.create({
-  baseURL: "https://dev.amaranth2023.site/api/v1",
-  // baseURL: "http://localhost:8010/api/v1",
+  // baseURL: "https://dev.amaranth2023.site/api/v1",
+  baseURL: "http://localhost:8010/api/v1",
   headers: { "Content-Type": "application/json" },
   withCredentials: true,
   timeout: 20000,
@@ -14,6 +14,7 @@ axiosInstance.interceptors.request.use(
     return config;
   },
   (err) => {
+    console.log("에러발생", err);
     if (err.response && err.response.status === 400) {
       console.log('Error : BAD_REQUEST');
       // window.location.href="/BAD_REQUEST"; // 다시시도
@@ -24,6 +25,7 @@ axiosInstance.interceptors.request.use(
       localStorage.setItem("compId", 0);
       window.location.href="/login";
     }
+
     if (err.response && err.response.status === 403) {
       console.log('Error : UNAUTHORIZED');
       window.location.href="/FORBIDDEN";
@@ -61,6 +63,10 @@ axiosInstance.interceptors.response.use(
       localStorage.setItem("compId", 0);
       window.location.href="/login";
     };
+    if (err.response && err.response.status === 402) {
+      console.log("에러",err);
+      return Promise.reject(err.response);
+    }
     if (err.response && err.response.status === 403) {
       console.log('Error : FORBIDDEN');
       window.location.href="/FORBIDDEN";

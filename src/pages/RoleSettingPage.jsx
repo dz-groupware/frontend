@@ -30,6 +30,9 @@ export default function RoleSettingPage({pageId}) {
     }
   };
 
+  useEffect(()=>{
+    console.log("페이지 아이디 출력하겠습니다", pageId);
+  },[]);
   return (
     <Container>
       <TopContainer>

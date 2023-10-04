@@ -9,7 +9,7 @@ import { useFetchData } from '../hooks/useFetchData';
 import { addEmployeeAuthApi } from '../api/authgroup';
 import { changeMasterYn } from '../api/employee';
 
-export default function RoleMappingPage({ menuId }) {
+export default function RoleMappingPage({ pageId }) {
   const [activeAuthId, setActiveAuthId] = useState(null);
   const [activeEmp, setActiveEmp] = useState({id: null, masterYn: null});
   const [isEditMode, setIsEditMode] = useState(null);
@@ -20,12 +20,12 @@ export default function RoleMappingPage({ menuId }) {
       employeeId: activeEmp.id, 
       selectedAuthIds,
     }, 
-    headers: { menuId },
+    headers: { pageId },
     shouldFetch: false,
   }); 
   const {data: updateMaster,isLoading: updateMasterYnLoading, error: updateMasterYnError, status: updateStatus,setStatus: setUpdateStatus, shouldFetch: updateFetch, setShouldFetch: setUpdateMasterYnFetch } = useFetchData(changeMasterYn, {
     data: { empId: activeEmp.id, masterYn: activeEmp.masterYn },  // activeEmp의 id를 empId로 전달
-    headers: { menuId },
+    headers: { pageId },
     shouldFetch: false  // 처음 로드할 때 API를 호출할 것인지 여부
   });
 
@@ -171,7 +171,7 @@ export default function RoleMappingPage({ menuId }) {
         selectedAuthIds={selectedAuthIds}
         setSelectedAuthIds={setSelectedAuthIds}
         handleCheckboxChange={handleCheckboxChange}
-        headers={{menuId}}
+        headers={{pageId}}
       />
     </Container>
   );

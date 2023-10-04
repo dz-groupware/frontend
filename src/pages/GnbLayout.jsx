@@ -34,9 +34,12 @@ export default function GnbLayout() {
 
   useEffect(() => {
     const empId = localStorage.getItem("empId");
-    if (empId === null || empId === undefined){
+    if (empId === null || empId === undefined || empId === "0" || empId === 0){
       // 로그인 정보 없음.
-
+      //????
+      // 로컬 스토리지 값 초기화하고
+      // /login 으로 이동
+      // 요청 보내기 전에 확인 하기 위함 
     } else {
       basicInfo(empId);
     }

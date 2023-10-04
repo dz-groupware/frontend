@@ -26,7 +26,7 @@ export default function TmpSaveModal({ modalOff, form, pageId }) {
         <div>
           모든 상세 정보 수정 완료를 눌러 주세요 
         </div>
-        {
+        {form.length === 0 ? <div>임시저장 중인 데이터가 없습니다 </div> :
           form.map((a, i) => (
             <>
             <div>

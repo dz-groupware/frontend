@@ -120,7 +120,13 @@ export default function DetailBasic({ data, setData, detail, setDetail, setNoti,
     // 임시저장 눌렀을 때
     if (detail.state === 'tmpSave') {
       setData(form); 
-      setDetail({ ...detail, id: detail.isChanging, state: false, save: false }); // state: true? false?
+      setDetail({ ...detail, state:'tmp', save: false }); // state: true? false?
+      setIsModified(false);
+    }
+    if (detail.state === 'tmpSaveButton') {
+      console.log('tlqkf wlsWk wpqkf')
+      setData(form); 
+      setDetail({ ...detail, state:'tmp', save: true }); // state: true? false?
       setIsModified(false);
     }
   },[detail.state]);

@@ -26,7 +26,7 @@ axiosInstance.interceptors.request.use(
     }
     if (err.response && err.response.status === 403) {
       console.log('Error : UNAUTHORIZED');
-      window.location.href="/FORBIDDEN";
+      // window.location.href="/FORBIDDEN";
     }
     if (err.message === 'timeout of 20000ms exceeded') {
       window.location.href="/";
@@ -63,7 +63,7 @@ axiosInstance.interceptors.response.use(
     };
     if (err.response && err.response.status === 403) {
       console.log('Error : FORBIDDEN');
-      window.location.href="/FORBIDDEN";
+      // window.location.href="/FORBIDDEN";
     } 
     if (err.response && err.response.status === 500) {
       console.log('Error : INTERNAL_SERVER_ERROR');

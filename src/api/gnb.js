@@ -14,7 +14,7 @@ export function basicInfoApi(empId, pageId){
     return axiosInstance.get(`/home`, {
       headers: {
         "Content-Type": "application/json",
-      'menuId' : pageId
+        'menuId' : pageId
     }});
   }
 }

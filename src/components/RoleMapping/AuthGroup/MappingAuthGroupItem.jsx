@@ -11,6 +11,7 @@ const MappingAuthGroupItem  = forwardRef(({ item, hasAuth, onClick, isActive, se
     <Container 
       ref={ref} 
       $isActive={isActive} 
+      $isEditMode={isEditMode}
       onClick={onClick}
     >
       {isEditMode && (
@@ -38,17 +39,21 @@ const Container = styled.div`
   margin: 5px 0;
   height: 100px;
   transition: background-color 0.2s ease, border-color 0.2s ease;  
-  &:hover {
-    border-width: 2px;
-    background-color: #d0cece84;  
-    border-color: #d0cece84;          
-  }
+  ${props => !props.$isEditMode && `
+    &:hover {
+      border-width: 2px;
+      background-color: #d0cece84;  
+      border-color: #d0cece84;          
+    }
+  `}
 
-  &:active {
-    border-width: 2px;
-    background-color: #5dc3fb;  
-    border-color: #5dc3fb;  
-  }
+  ${props => !props.$isEditMode && `
+    &:active {
+      border-width: 2px;
+      background-color: #5dc3fb;  
+      border-color: #5dc3fb;  
+    }
+  `}
   background-color: ${props => props.$isActive ? '#e6f4ff' : 'transparent'};
   border-color: ${props => props.$isActive ? '#7BAAF1' : '#ccc'};
 `;

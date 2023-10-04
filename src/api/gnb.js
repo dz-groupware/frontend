@@ -67,8 +67,6 @@ export function profileAPI(pageId){
   )
 }
 
-
-
 export function searchMenuListAPI(pageId, menuId, compId) {
   if(menuId !== undefined && menuId !== null && compId !== undefined && compId !== null) {
     return axiosInstance.get(

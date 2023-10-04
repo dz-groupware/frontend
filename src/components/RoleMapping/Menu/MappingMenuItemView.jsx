@@ -3,11 +3,12 @@ import { FiPlus, FiMinus } from 'react-icons/fi';
 import { useFetchData } from '../../../hooks/useFetchData';
 import styled from 'styled-components';
 
-export default function MappingMenuItemView({ item, depth = 1, fetchApi, paths }) {
+export default function MappingMenuItemView({ item, depth = 1, fetchApi, paths, headers }) {
   const [expanded, setExpanded] = useState(true);
   const { data: subMenuItems, setShouldFetch, isLoading, error } = useFetchData(fetchApi, { 
     paths,
     shouldFetch: true,
+    headers,
   });
   const toggleSubMenu = () => {
     if (expanded) {
@@ -53,6 +54,7 @@ export default function MappingMenuItemView({ item, depth = 1, fetchApi, paths }
               depth={depth+1}
               fetchApi={fetchApi}
               paths={{...paths, parId: subItem.menuId}}
+              headers={headers}
             />
           ))}
         </>

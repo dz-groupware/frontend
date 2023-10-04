@@ -3,12 +3,13 @@ import { VscChevronDown, VscChevronRight } from "react-icons/vsc";
 import styled from 'styled-components';
 import { useFetchData } from '../../../hooks/useFetchData';
 
-export default function MenuItemEditor({ item, depth=1 , fetchApi, paths, checkedItems, setCheckedItems, curChecked, hasMappedChild}) {
+export default function MenuItemEditor({ item, depth=1 , fetchApi, paths, checkedItems, setCheckedItems, curChecked, hasMappedChild, headers}) {
   const [expanded, setExpanded] = useState(item.hasMenu);
   const [checked, setChecked] = useState(curChecked);
   const { data: subMenuItems, setShouldFetch, isLoading, error } = useFetchData(fetchApi, { 
     paths: { ...paths },
     shouldFetch: false,
+    headers
   });
   const handleCheckboxChange = (e) => {
     const isChecked = e.target.checked;
@@ -93,6 +94,7 @@ export default function MenuItemEditor({ item, depth=1 , fetchApi, paths, checke
               paths={{...paths, parId: subItem.menuId}}
               checkedItems={checkedItems}
               setCheckedItems={setCheckedItems}
+              headers={headers}
             />
           ))}
         </>

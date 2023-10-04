@@ -4,12 +4,13 @@ import { useFetchData } from '../../../hooks/useFetchData';
 import { deleteAuthApi, getGnbListOfAuthWithAllApi, getLnbListOfAuthWithAllApi, modifyMappedMenuOfAuthApi } from '../../../api/authgroup';
 import MenuItemEditor from './MenuItemEditor';
 
-export default function MenuOfAuthEditor({ authId , isSaveClicked, setIsSaveClicked, isEditMode,setIsEditMode, isDeleteClicked, setIsDeleteClicked, changeRefresh}) {
+export default function MenuOfAuthEditor({ authId , isSaveClicked, setIsSaveClicked, isEditMode,setIsEditMode, isDeleteClicked, setIsDeleteClicked, changeRefresh, headers}) {
   const [checkedItems, setCheckedItems] = useState({});
   const { data, isLoading, setShouldFetch, error } = useFetchData(getGnbListOfAuthWithAllApi,{
     paths: {
       authId,
     },
+    headers
   });
 
   const {setShouldFetch: setModifyShouldFetch, status: saveStatus } = useFetchData(
@@ -17,14 +18,16 @@ export default function MenuOfAuthEditor({ authId , isSaveClicked, setIsSaveClic
     { 
       paths: {authId}, 
       data: checkedItems, 
-      shouldFetch:false
+      shouldFetch:false,
+      headers
     },
   );
   const {setShouldFetch: setDelteShouldFetch, status: deleteStatus } = useFetchData(
     deleteAuthApi,
     { 
       paths: {authId}, 
-      shouldFetch:false
+      shouldFetch:false,
+      headers
     },
   );
   useEffect(() =>{
@@ -106,6 +109,7 @@ export default function MenuOfAuthEditor({ authId , isSaveClicked, setIsSaveClic
               checkedItems={checkedItems}
               setCheckedItems={setCheckedItems}
               curChecked={item.hasMenu}
+              headers={headers}
             />
           ))}
         </tbody>

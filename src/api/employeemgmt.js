@@ -1,10 +1,18 @@
 import { axiosInstance } from "../utils/axiosInstance";
 
-export const getEmployeeMgmtList = async (menuId) => {
+export const getEmployeeMgmtList = async (pageId) => {
+  console.log("페이지아이디 확인좀 하자",pageId);
+  axiosInstance.defaults.headers['menuId'] = pageId;
   try {
-    axiosInstance.defaults.headers['menuId'] = menuId;
-    const response = await axiosInstance.get('/employeemgmt');
-    // console.log("ffffffffffffffff",response);
+    const response = await axiosInstance.get('/employeemgmt',
+    // {
+    //   headers:{
+    //     'Content-Type': "application/json",
+    //     'menuId': pageId 
+    //   },
+    // }
+      
+    );
     return response.data.data;
   } catch (error) {
     console.error("Error fetching employee data:", error);
@@ -13,9 +21,9 @@ export const getEmployeeMgmtList = async (menuId) => {
   }
 };
 
-export const getEmployeeDetailsById = async (employeeMgmtId,menuId) => {
+export const getEmployeeDetailsById = async (employeeMgmtId,pageId) => {
   try {
-    axiosInstance.defaults.headers['menuId'] = menuId;
+    axiosInstance.defaults.headers['menuId'] = pageId;
     const response = await axiosInstance.get(`/employeemgmt/${employeeMgmtId}`);
 
     console.log("리스폰스",response);
@@ -30,9 +38,9 @@ export const getEmployeeDetailsById = async (employeeMgmtId,menuId) => {
 };
 
 
-export const getAllDepartmentMgmtList = async (menuId) => {
+export const getAllDepartmentMgmtList = async (pageId) => {
   try {
-    axiosInstance.defaults.headers['menuId'] = menuId;
+    axiosInstance.defaults.headers['menuId'] = pageId;
     const response = await axiosInstance.get('/employeemgmt/dep');
     return response.data.data;
   } catch (error) {
@@ -42,9 +50,9 @@ export const getAllDepartmentMgmtList = async (menuId) => {
   }
 };
 
-export const findEmployeeMgmtList = async (searchValue, selectedOption, menuId) => {
+export const findEmployeeMgmtList = async (searchValue, selectedOption, pageId) => {
   try {
-    axiosInstance.defaults.headers['menuId'] = menuId;
+    axiosInstance.defaults.headers['menuId'] = pageId;
     let actualSelectedOption = selectedOption === "0" ? 0 : parseInt(selectedOption);
     if (isNaN(actualSelectedOption)) {
       actualSelectedOption = 0; // 또는 원하는 기본값을 설정하세요.
@@ -65,9 +73,9 @@ export const findEmployeeMgmtList = async (searchValue, selectedOption, menuId) 
 
 
 
-export const addEmployeeMgmt = async (employeeInfo, menuId) => {
+export const addEmployeeMgmt = async (employeeInfo, pageId) => {
   try {
-    axiosInstance.defaults.headers['menuId'] = menuId;
+    axiosInstance.defaults.headers['menuId'] = pageId;
     // console.log("담아졋나", employeeInfo);
     const response = await axiosInstance.post(`/employeemgmt`, employeeInfo);
     return response.data.data;
@@ -79,9 +87,9 @@ export const addEmployeeMgmt = async (employeeInfo, menuId) => {
 };
 
 
-export const modifyEmployeeMgmt = async (employeeInfo, menuId) => {
+export const modifyEmployeeMgmt = async (employeeInfo, pageId) => {
   try {
-    axiosInstance.defaults.headers['menuId'] = menuId;
+    axiosInstance.defaults.headers['menuId'] = pageId;
     const response = await axiosInstance.put(`/employeemgmt`, employeeInfo);
     return response.data.data;
   } catch (error) {
@@ -95,9 +103,9 @@ export const modifyEmployeeMgmt = async (employeeInfo, menuId) => {
 
 
 
-export const deleteEmployeeMgmt = async (id, employeeInfo, menuId) => {
+export const deleteEmployeeMgmt = async (id, employeeInfo, pageId) => {
   try {
-    axiosInstance.defaults.headers['menuId'] = menuId;
+    axiosInstance.defaults.headers['menuId'] = pageId;
     const response = await axiosInstance.put(`/employeemgmt/del/${id}`, employeeInfo);
     return response.data.data;
   } catch (error) {
@@ -107,9 +115,9 @@ export const deleteEmployeeMgmt = async (id, employeeInfo, menuId) => {
 };
 
 
-export const checkLoginId = async (loginId, menuId) => {
+export const checkLoginId = async (loginId, pageId) => {
   try {
-    axiosInstance.defaults.headers['menuId'] = menuId;
+    axiosInstance.defaults.headers['menuId'] = pageId;
     const response = await axiosInstance.post(`/employeemgmt/idcheck/${loginId}`);
     return response.data.data;
   } catch (error) {
@@ -118,10 +126,10 @@ export const checkLoginId = async (loginId, menuId) => {
   }
 };
 
-export const checkSignUp = async (signUpInfo, menuId) => {
+export const checkSignUp = async (signUpInfo, pageId) => {
 
   try {
-    axiosInstance.defaults.headers['menuId'] = menuId;
+    axiosInstance.defaults.headers['menuId'] = pageId;
     const response = await axiosInstance.post(`/employeemgmt/signupcheck`, signUpInfo);
     return response.data.data;
 
@@ -143,7 +151,7 @@ export const checkSignUp = async (signUpInfo, menuId) => {
 };
 
 
-export const imageUpload = async (imageFile, menuId) => {
+export const imageUpload = async (imageFile, pageId) => {
   try {
     if (imageFile !== "") {
       let formData = new FormData();
@@ -153,7 +161,7 @@ export const imageUpload = async (imageFile, menuId) => {
         `/s3/profile`, formData,
         {
           headers: { 'Content-Type': 'multipart/form-data',
-                        'menuId': menuId },
+                        'menuId': pageId },
         }
       );
     

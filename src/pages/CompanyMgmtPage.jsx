@@ -8,10 +8,11 @@ import { useEffect } from 'react';
 import { useDispatch } from "react-redux";
 import { companyActions } from "../utils/Slice";
 
-export default function CompanyMgmtPage({menuId}) {
+export default function CompanyMgmtPage({pageId}) {
   const dispatch = useDispatch();
 
   useEffect(() => {
+    console.log("페이지아이디확인",pageId);
     dispatch(companyActions.resetState());
   }, []);
   
@@ -19,8 +20,8 @@ export default function CompanyMgmtPage({menuId}) {
     <PageContainer children={
       <>
         <CompanyMgmtHeader />
-        <CompanyMgmtNav menuId={menuId}/>
-        <MgmtMain menuId={menuId} aside={<CompanyMgmtAside menuId={menuId} />} form={<CompanyMgmtForm menuId={menuId} />} />
+        <CompanyMgmtNav pageId={pageId}/>
+        <MgmtMain pageId={pageId} aside={<CompanyMgmtAside pageId={pageId} />} form={<CompanyMgmtForm pageId={pageId} />} />
       </>
     }>
     </PageContainer>

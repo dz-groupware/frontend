@@ -8,10 +8,10 @@ export const uploadMiddleware = store => next => async action => {
 
 if (action.type === 'UPLOAD_TO_S3') {
     
-      const { file, menuId } = action.payload;
+      const { file, pageId } = action.payload;
       // console.log("file이 뭐니",file);
       try {
-          const uploadedUrl = await imageUpload(file,menuId);
+          const uploadedUrl = await imageUpload(file,pageId);
       // console.log("uploadUrl이 뭐냐",uploadedUrl);
 
           return uploadedUrl;

@@ -8,7 +8,7 @@ import { getCompanyDetailsById, getCompanyMgmtList } from '../../api/companymgmt
 
 
 
-export default function CompanyMgmtAside({ menuId }) {
+export default function CompanyMgmtAside({ pageId }) {
   const dispatch = useDispatch();
   const [companyDataList, setCompanyDataList] = useState([]);
   const [sortType, setSortType] = useState("default");
@@ -21,7 +21,7 @@ export default function CompanyMgmtAside({ menuId }) {
 
   useEffect(() => {
     async function fetchCompanies() {
-      const data = await getCompanyMgmtList(menuId);
+      const data = await getCompanyMgmtList(pageId);
       setCompanyDataList(data);
     }
 
@@ -114,7 +114,7 @@ export default function CompanyMgmtAside({ menuId }) {
       // 회사 정보를 가져옵니다.
 
       console.log(companyMgmt.id);
-      const fetchedCompanyData = await getCompanyDetailsById(companyMgmt.id, menuId); 
+      const fetchedCompanyData = await getCompanyDetailsById(companyMgmt.id, pageId); 
       console.log(fetchedCompanyData);
       // 가져온 회사 정보와 코드를 함께 showForm 액션에 전달합니다.
       

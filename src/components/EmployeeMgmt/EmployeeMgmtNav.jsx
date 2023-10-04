@@ -9,7 +9,7 @@ import { findEmployeeMgmtList } from '../../api/employeemgmt';
 //회사 목록 선택시 보내는 Search 부분 api 변경해야함 선택 옵션도 달라져야함 
 
 
-export default function EmployeeMgmtNav({menuId}) {
+export default function EmployeeMgmtNav({pageId}) {
   const dispatch = useDispatch();
   const [searchValue, setSearchValue] = useState("");
   const [selectedOption, setSelectedOption] = useState("");
@@ -18,7 +18,7 @@ export default function EmployeeMgmtNav({menuId}) {
 
   const fetchCompanies = async () => {
     try {
-        const companyList = await getCompanyMgmtList(menuId);
+        const companyList = await getCompanyMgmtList(pageId);
         setCompanyOptions(companyList);
     } catch (error) {
         console.error("Error fetching company data:", error);
@@ -35,7 +35,7 @@ export default function EmployeeMgmtNav({menuId}) {
     try {
         dispatch(employeeActions.hideForm());
         
-        const responseData = await findEmployeeMgmtList(searchValue, selectedOption,menuId);
+        const responseData = await findEmployeeMgmtList(searchValue, selectedOption,pageId);
             
         // 응답 데이터 처리
         console.log("API Response:", responseData);

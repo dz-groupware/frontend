@@ -22,7 +22,7 @@ import { BsPersonBoundingBox } from 'react-icons/bs';
 import { checkDuplicates, checkLoginId, checkSignUp, getEmployeeDetailsById } from '../../api/employeemgmt';
 
 
-export default function EmployeeMgmtBasicForm() {
+export default function EmployeeMgmtBasicForm({menuId}) {
     const dispatch = useDispatch();
     const reduxEmployeeBasicInfo = useSelector(state => state.employeeMgmt.employeeBasicInfo);
     // const idForForm = useSelector(state => state.companyMgmt.idForForm);
@@ -114,7 +114,7 @@ export default function EmployeeMgmtBasicForm() {
                 [name]: finalValue,
 
             };
-            console.log(updatedInfo);
+          
 
             return updatedInfo;
         });
@@ -271,24 +271,32 @@ export default function EmployeeMgmtBasicForm() {
         };
         console.log("signUpInfo", signUpInfo);
 
+
+        console.log("이이이이이이잉빕",menuId.menuId);
+
         // 중복 확인 API 요청 로직 구현
-        const response = await checkSignUp(signUpInfo);
+        const response = await checkSignUp(signUpInfo,menuId.menuId);
+        console.log("사인업체크 제대로 되는지 아마 안될듯", response);
         if (response == null) {
             return;
         };
 
 
 
-        if (response === "FORBIDDEN") {
+        if (response === 403) {
 
             dispatch(employeeActions.setSignUpChecked(true)); // 중복 확인된 경우 리덕스 상태 업데이트
             return;
         } else if (response[0].id !== null) {
+
             alert('이미 가입된 유저 입니다.');
             dispatch(employeeActions.setSignUpChecked(true));
             try {
                 console.log("가입된 아이디일시 ", response);
-                const fetchedEmployeeData = await getEmployeeDetailsById(response[0].id);
+
+                console.log("ㄱ가가가가가가가가이빕",menuId);
+
+                const fetchedEmployeeData = await getEmployeeDetailsById(response[0].id,menuId);
                 if (!fetchedEmployeeData) {
                     console.error("No data returned for employee ID:", response[0].id);
                     return;
@@ -314,16 +322,31 @@ export default function EmployeeMgmtBasicForm() {
                     resignationDate: firstEmployee.resignationDate
                 };
 
-                const employeeGroupInfo = fetchedEmployeeArray.map(employee => ({
-                    departmentId: employee.departmentId,
-                    position: employee.position,
-                    compId: employee.compId,
-                    deptId: employee.deptId,
-                    transferredYn: employee.transferredYn,
-                    edjoinDate: employee.edjoinDate,
-                    leftDate: employee.leftDate,
-                    deletedYn: employee.deletedYn
-                }));
+                const employeeGroupInfo = fetchedEmployeeArray.map(employee => {
+                    if (employee.leftDate) {
+                        return {
+                            departmentId: null,
+                            position: null,
+                            deptId: null,
+                            transferredYn: null,
+                            edjoinDate: null,
+                            leftDate: employee.leftDate,
+                            deletedYn: employee.deletedYn,
+                            compId: employee.compId
+                        };
+                    } else {
+                        return {
+                            departmentId: employee.departmentId,
+                            position: employee.position,
+                            compId: employee.compId,
+                            deptId: employee.deptId,
+                            transferredYn: employee.transferredYn,
+                            edjoinDate: employee.edjoinDate,
+                            leftDate: employee.leftDate,
+                            deletedYn: employee.deletedYn
+                        };
+                    }
+                });
 
                 dispatch(employeeActions.updateBasicInfo(employeeBasicInfo));
                 dispatch(employeeActions.updateGroupInfo(employeeGroupInfo));
@@ -351,8 +374,9 @@ export default function EmployeeMgmtBasicForm() {
             return; // 여기서 함수를 종료하여 아래의 로직을 실행하지 않습니다.
         }
 
+        console.log("알아보자 메뉴아이디 :",menuId.menuId);
         // 중복 확인 API 요청 로직 구현
-        const response = await checkLoginId(info.loginId);
+        const response = await checkLoginId(info.loginId,menuId.menuId);
 
         if (response) {
             alert('중복된 아이디입니다. 다시 시도해주세요.');
@@ -373,6 +397,7 @@ export default function EmployeeMgmtBasicForm() {
     };
 
    const handleFileChange = async (e) => {
+    
         const file = e.target.files[0];
         if (file) {
             // Read the selected file using FileReader
@@ -382,17 +407,17 @@ export default function EmployeeMgmtBasicForm() {
                 setPreviewImage(reader.result);
             }
             reader.readAsDataURL(file);
-            console.log("너 왜 안와3333333333333333333",file);
             const uploadUrl = await dispatch({
                 type: 'UPLOAD_TO_S3',
                 payload: {
-                    file: file
-                }
+                    file: file,
+                    menuId:menuId.menuId
+                },
+                
             });
-            console.log("ㅕㅕㅕㅕㅕㅕㅕㅕㅕㅕㅕㅕ",uploadUrl);
 
             
-            dispatch(employeeActions.updateUploadedFileUrl(uploadUrl));   
+            dispatch(employeeActions.updateUploadedFile(uploadUrl));   
         }
     };
  
@@ -487,7 +512,7 @@ export default function EmployeeMgmtBasicForm() {
                                     ? <img src={info.imageUrl} alt="Existing" style={{ width: '120px', height: '120px' }} />
                                     : <BsPersonBoundingBox style={{ width: '110px', height: '110px', color: 'gray' }} />
                         }
-                        <StyledButton onClick={handleButtonClick} style={{ width: "50px", height: "50px", margin: "10px" }}><MdOutlineAttachFile style={{ width: "30px", height: "30px" }} /></StyledButton>
+                        <StyledButton onClick={handleButtonClick} style={{ width: "50px", height: "50px", margin: "10px" }} disabled={!isSignUpChecked}><MdOutlineAttachFile style={{ width: "30px", height: "30px" }}  /></StyledButton>
                         <input type="file" ref={fileInput} onChange={handleFileChange} style={{ display: "none" }} disabled={!isSignUpChecked} />
                     </ImageContainer>
                 </HalfInputContainer>

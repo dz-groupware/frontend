@@ -3,12 +3,12 @@ import styled from 'styled-components';
 
 import { getDepartemnt, getDepartmentList } from '../../api/department';
 
-export default function DeptModal({ value, setModalOn, setValue }){
+export default function DeptModal({ form, setModalOn, setForm, menuId }){
   const [item, setItem] = useState(JSON.parse('[{"":""}]'));
 
   useEffect(() => {
-    getDepartemnt().then(res => {
-      setItem(res.data);
+    getDepartemnt(menuId).then(res => {
+      setItem(res.data.data);
     });
   }, []);
 
@@ -23,7 +23,7 @@ export default function DeptModal({ value, setModalOn, setValue }){
           <div>
           {
             item.map((a, i) => (
-              <Item value={value} data={a} setModalOn={setModalOn} setValue={setValue} key={a['name']+'gnb'}/>
+              <Item form={form} data={a} setModalOn={setModalOn} setForm={setForm} key={a['name']+'gnb'}/>
             ))
           }
           </div>
@@ -34,7 +34,7 @@ export default function DeptModal({ value, setModalOn, setValue }){
   );
 }
 
-function Item({ value, data, setModalOn, setValue }) {
+function Item({ form, data, setModalOn, setForm }) {
   const [open, setOpen] = useState(false);
   const [subItem, setSubItem] = useState([]);
 
@@ -48,10 +48,10 @@ function Item({ value, data, setModalOn, setValue }) {
   const handleMenuItem = (a) => {
     if(subItem.length === 0) {
       getDepartmentList(data['id'])
-      .then(res => setSubItem(res.data));
+      .then(res => setSubItem(res.data.data));
     }
     setOpen(!open);
-    setValue({...value, parId: data['id'], parName: data['name']});
+    setForm({...form, parId: data['id'], parName: data['name']});
   }
 
   return (
@@ -61,7 +61,7 @@ function Item({ value, data, setModalOn, setValue }) {
       </div>
       { subItem.length > 1 && open &&
         subItem.map((a, i) => (
-          <Item value={value} data={a} setModalOn={setModalOn} setValue={setValue} key={a['name']+'lnb'}/>
+          <Item form={form} data={a} setModalOn={setModalOn} setForm={setForm} key={a['name']+'lnb'}/>
         ))
       }
     </Menu>

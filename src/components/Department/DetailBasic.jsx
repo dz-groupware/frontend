@@ -3,77 +3,154 @@ import styled from 'styled-components';
 
 import DeptModal from './DeptModal';
 
-export default function DetailBasic({ data, setData, detail, setDetail }){
+import { checkDeptCode } from '../../api/department';
+
+export default function DetailBasic({ data, setData, detail, setDetail, setNoti, menuId }){
   const [modalOn, setModalOn] = useState(false);
-  const [value, setValue] = useState('');
-  const { validText, isValid } = useValid(value);
-  const [noti, setNoti] = useState(false);
+  const [form, setForm] = useState('');
+  const { validText, isValid, validate } = useValid(form);
+  const [isModified, setIsModified] = useState(false);
+  const [useableCode, setUseableCode] = useState(false);
 
+  // console.log("modify : ", isModified);
+  // console.log("useableCode : ", useableCode);
 
-  useEffect(()=>{
-    if (data !== undefined){
-      setValue(data);
+  // const handleCompareData = () => {
+  //   if (data !== undefined) {
+  //     const keys = Object.keys(data);
+  //     for (let key of keys) {
+  //       if (data[key] !== form[key]) {
+  //         return false;
+  //       }
+  //       return true;
+  //     }  
+  //   }
+  // }
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    console.log("handleInputChange : ",value);
+    setForm({ ...form, [name]:value });
+    setIsModified(true);
+  }
+
+  const handleCheckCode = () => {
+    // 유효성 검사
+    validate(form);
+    if(isValid.code) {
+      console.log('중복검사 : 코드 유효성 충족');
+      try {
+        // api 요청
+        checkDeptCode(form.id, form.code, menuId).then(res => {
+          console.log("checkDeptCode : ", res);
+          if(res.data.data){
+            setUseableCode(true);
+          }
+        });
+      } catch (error) {
+        console.log('중복 검사 요청 에러 : ', error);
+      }  
     } else {
+      console.log('중복검사 : 코드 유효성 불충족');
     }
-  },[data]);
-
-  const handleNotiClose = () => {
-    setNoti(false);
   }
 
   useEffect(()=>{
-    if (detail.state === "add" || detail.state === "modify") {
-      
-      setNoti(true);
+    setForm(data);
+    setIsModified(false);
+    if(data.id !== 0) {
+      setUseableCode(true);
+    }
+  },[]);
+  
+  useEffect(()=>{
+    setUseableCode(false);
+    if (data !== undefined){
+      setForm(data);
+      if(data.id !== 0) {
+        setUseableCode(true);
+      }
+    }
+  },[data]);
+
+  useEffect(()=>{
+    // 다른 부서를 눌렀을 때
+    if (typeof detail.state === 'number'){
+      if(isModified){
+        console.log("수정 중")
+        setNoti(true);
+      } else {
+        setDetail({ ...detail, id: detail.state, state: false });
+      }
+    }
+    // 저장 버튼을 눌렀을 때
+    if (detail.state === 'save'){
+      if (isModified) {
+        validate(form);
+        if (isValid.code && isValid.abbr && isValid.name && useableCode) {
+          console.log('유효성 통과');
+          setData(form); 
+          setDetail({ ...detail, state: false, save: true }); // state: true? false?
+        } else {
+          console.log(isValid.code, isValid.abbr, isValid.name, useableCode);
+          console.log('유효성 검사 불충족');
+          setDetail({ ...detail, state: false, save: false });
+        }  
+      } else {
+        console.log('변경된 내용이 없습니다. (저장 하지 않음)');
+        setDetail({ ...detail, state: false, save: false });
+      }
+    }
+    // 임시저장 눌렀을 때
+    if (detail.state === 'tmpSave') {
+      setData(form); 
+      setDetail({ ...detail, state: 'tmpSave', save: true }); // state: true? false?
     }
 
   },[detail.state]);
 
   useEffect(() => {
+  },[detail.id]);
 
-  },[value]);
+
 
   return (
     <Detail>
       <BasicForm>
         <form id='basic'>
         <table>
+          <tbody>
           <tr>
             <td>상위부서</td>
             <td colSpan="3">
-              <textarea defaultValue={value.parName} onClick={()=>setModalOn(true)} readOnly></textarea>
+              <textarea defaultValue={form.parName} onClick={()=>setModalOn(true)} readOnly></textarea>
             </td>
           </tr>
           <tr>
             <td>부서코드</td>
             <td colSpan="3">
-              <input 
-              placeholder='부서코드를 입력하세요'
-              value={value.code}
-              valuetType={'code'}
-              onChange={e => setValue({...value, code: e.target.value})}
-              valid={!isValid.code}/> <div>{validText.code}</div>
-              <button >중복 검사</button>
+              <input name='code' placeholder='부서코드를 입력하세요'
+              value={form.code} onChange={handleInputChange}
+              data-valid={!isValid.code} disabled={useableCode} className={useableCode}/> 
+              {useableCode ? 
+              <CheckBtn onClick={() => setUseableCode(false)} >다른 부서 코드 사용</CheckBtn> 
+              : <CancelBtn onClick={handleCheckCode}>중복 검사</CancelBtn>}<div>{validText.code}</div>
             </td>
           </tr>
           <tr>
             <td>부서명</td>
             <td colSpan="3">
-              <input 
-              placeholder='부서명을 입력하세요'
-              value={value.name} 
-              onChange={e => setValue({...value, name: e.target.value})} 
-              valid={!isValid.name}/> <div>{validText.name}</div>
+              <input  name='name' placeholder='부서명을 입력하세요'
+              value={form.name}  onChange={handleInputChange} 
+              data-valid={!isValid.name}/> <div>{validText.name}</div>
             </td>
           </tr>
           <tr>
             <td>부서약칭</td>
             <td colSpan="3">
-              <input 
-              placeholder='부서약칭을 입력하세요'
-              value={value.abbr} 
-              onChange={e => setValue({...value, abbr: e.target.value})}
-              valid={!isValid.abbr} /> <div>{validText.abbr}</div>
+              <input name='abbr' placeholder='부서약칭을 입력하세요'
+              value={form.abbr}  onChange={handleInputChange}
+              data-valid={!isValid.abbr} /> <div>{validText.abbr}</div>
             </td>
           </tr>
           <tr>
@@ -82,22 +159,22 @@ export default function DetailBasic({ data, setData, detail, setDetail }){
             </td>
             <td className="data">
               <input name='enabledYn' value="true" type='radio' 
-              checked={value.enabledYn === true } 
-              onChange={e => setValue({...value, enabledYn: true})}/>사용
+              checked={form.enabledYn === true } 
+              onChange={e => setForm({...form, enabledYn: true})}/>사용
               <input name='enabledYn' value="false" type='radio' 
-              checked={value.enabledYn === false} 
-              onChange={e => setValue({...value, enabledYn: false})}/>미사용
+              checked={form.enabledYn === false} 
+              onChange={e => setForm({...form, enabledYn: false})}/>미사용
             </td>
             <td className="field">
               관리부서
             </td>
             <td className="data">
               <input name='managementYn' value="true" type='radio' 
-              checked={value.managementYn === true} 
-              onChange={e => setValue({...value, managementYn: true})}/>설정
+              checked={form.managementYn === true} 
+              onChange={e => setForm({...form, managementYn: true})}/>설정
               <input name='managementYn' value="false" type='radio' 
-              checked={value.managementYn === false} 
-              onChange={e => setValue({...value, managementYn: false})}/>미설정
+              checked={form.managementYn === false} 
+              onChange={e => setForm({...form, managementYn: false})}/>미설정
             </td>
           </tr>
           <tr>
@@ -106,45 +183,32 @@ export default function DetailBasic({ data, setData, detail, setDetail }){
             </td>
             <td className="data">
               <input name='includedYn' value="true" type='radio' 
-              checked={value.includedYn === true} 
-              onChange={e => setValue({...value, includedYn: true})}/>표시
+              checked={form.includedYn === true} 
+              onChange={e => setForm({...form, includedYn: true})}/>표시
               <input name='includedYn' value="false" type='radio' 
-              checked={value.includedYn === false} 
-              onChange={e => setValue({...value, includedYn: false})}/>미표시
+              checked={form.includedYn === false} 
+              onChange={e => setForm({...form, includedYn: false})}/>미표시
             </td>
             <td className="field">
               정렬
             </td>
             <td className="data">
-              <input name='sortOrder' type="number" value={value.sortOrder}  
-              onChange={e => setValue({...value, sortOrder: parseInt(e.target.value, 10)})}  />
+              <input name='sortOrder' type="number" value={form.sortOrder}  
+              onChange={e => setForm({...form, sortOrder: parseInt(e.target.value, 10)})}  />
             </td>
           </tr>
+          </tbody>
         </table>
         </form>
       </BasicForm>
       {
-        modalOn && <DeptModal value={value} setModalOn={setModalOn} setValue={setValue}/>
+        modalOn && <DeptModal form={form} setModalOn={setModalOn} setForm={setForm} menuId={menuId}/>
       }
-      { noti && <Notification 
-      message="변경 내용이 삭제됩니다. 일괄등록 시 임시저장을 눌러주세요"
-      onClose={handleNotiClose} />}
     </Detail>
   )
 }
 
-function Notification ({ message, onClose }){
-  return (
-    <div>
-      <p>{ message }</p>
-      <button onClick={onClose}>임시저장</button>
-      <button onClick={onClose}>확인</button>
-      <button onClick={onClose}>취소</button>
-    </div>
-  );
-}
-
-function useValid(changeValue){
+function useValid(form){
   const initValid = {
     code: false,
     name: false,
@@ -153,40 +217,30 @@ function useValid(changeValue){
   const [validText, setText] = useState(initValid);
   const [isValid, setValid] = useState(initValid);
 
-  useEffect(() => {
-    const exp = /^[A-Za-z0-9]{8}$/;
-    if (!exp.test(changeValue.code)) {
-      setText({...validText, code: '8자리 :: 영어 대/소문자'})
-      setValid({ ...isValid, code: false });
-    } else {
-      setText({...validText, code: ''});
-      setValid({ ...isValid, code: true });
-    }
-  }, [changeValue.code]);
+  const validate = () => {
+    const codeExp = /^[A-Za-z0-9]{1,8}$/;
+    const nameExp = /^[A-Za-z0-9\d가-힣/]{1,10}$/;
+    const abbrExp = /^[A-Z0-9]{1,6}$/;
 
-  useEffect(() => {
-    const exp = /^[A-Za-z0-9]+$/;
-    if (!exp.test(changeValue.name)) {
-      setText({...validText, name: '/ 제외 특수문자 불가'})
-      setValid({ ...isValid, name: false });
-    } else {
-      setText({...validText, name: ''});
-      setValid({ ...isValid, name: true });
-    }
-  }, [changeValue.name]);
+    const codeIsValid = codeExp.test(form.code);
+    const nameIsValid = nameExp.test(form.name);
+    const abbrIsValid = abbrExp.test(form.abbr);
 
-  useEffect(() => {
-    const exp = /^[A-Za-z0-9]{6}$/;
-    if (!exp.test(changeValue.abbr)) {
-      setText({...validText, abbr:'6자리 :: 영어 대문자 :: 숫자'})
-      setValid({ ...isValid, abbr: false });
-    } else {
-      setText({...validText, abbr:'8자리 :: 영어 대/소문자 :: 숫자'});
-      setValid({ ...isValid, abbr: true });
-    }
-  }, [changeValue.abbr]);
+    setValid({
+      code : codeIsValid,
+      name : nameIsValid,
+      abbr : abbrIsValid,
+    });
 
-  return { validText, isValid };
+    setText({
+      code : codeIsValid ? '' : '8자리 이하 :: 영어 대/소문자',
+      name : nameIsValid ? '' : '10잘자리 이하 :: / 제외 특수문자 불가',
+      abbr : abbrIsValid ? '' : '6자리 이하 :: 영어 대/소문자',
+    });
+
+    return {isValid : codeIsValid && nameIsValid && abbrIsValid};
+  }
+  return { validText, isValid, validate };
 }
 
 const Detail = styled.div`
@@ -199,62 +253,74 @@ color: black;
 const BasicForm = styled.div`
 width: 100%;
 height: calc(100% - 100px);
-> form {
-> table {
-  min-width: 700px;
-  border-collapse: collapse;
-  > tr {
-    > td:nth-child(1) {
-      background-color: rgb(240,245,248);
-      width: 20%;
-      min-width: 150px;
-      font-size: medium;
-      font-weight: bold;
-      padding: 10px;
-      text-align: right;
-      border-top: 1px solid gray;
-      border-bottom: 1px solid gray;
-    }
-    > td:nth-child(2) {
-      background-color:  white;
-      color: gray;
-      width: 80%;
-      min-width: 400px;
-      font-size: small;
-      padding: 10px;
-      text-align: left;
-      border-top: 1px solid gray;
-      border-bottom: 1px solid gray;
-    }
-    > td {
-      > .readOnly {
-        display: none;
+> #basic {
+  > table {
+    width: 100%;
+    > tbody {
+      min-width: 700px;
+      border-collapse: collapse;
+      > tr {
+        display: flex;
+        > td:nth-child(1) {
+          display: flex;
+          background-color: rgb(240,245,248);
+          width: 10%;
+          min-width: 150px;
+          font-size: medium;
+          font-weight: bold;
+          padding: 10px;
+          text-align: right;
+          border-top: 1px solid gray;
+          border-bottom: 1px solid gray;
+        }
+        > td:nth-child(2) {
+          display: flex;
+          background-color:  white;
+          color: gray;
+          width: 90%;
+          min-width: 300px;
+          font-size: small;
+          padding: 10px;
+          text-align: left;
+          border-top: 1px solid gray;
+          border-bottom: 1px solid gray;
+          > .true{
+            background-color: rgb(188,237,196);
+          }
+        }
+        > td {
+          display: flex;
+          > .readOnly {
+            display: none;
+          }
+        }
       }
-    }
-    }
-  > tr {
-    > .field{
-      background-color: rgb(240,245,248);
-      width: 20%;
-      min-width: 150px;
-      font-size: medium;
-      font-weight: bold;
-      padding: 10px;
-      text-align: right;
-      border-bottom: 1px solid gray;
-    }
-    > .data {
-      background-color:  white;
-      color: gray;
-      width: 80%;
-      min-width: 400px;
-      font-size: small;
-      padding: 10px;
-      text-align: left;
-      border-bottom: 1px solid gray;
-    }
+      > tr {
+        > .field{
+          display: flex;
+          background-color: rgb(240,245,248);
+          width: 20%;
+          min-width: 150px;
+          font-size: medium;
+          font-weight: bold;
+          padding: 10px;
+          text-align: right;
+          border-bottom: 1px solid gray;
+        }
+        > .data {
+          display: flex;
+          background-color:  white;
+          color: gray;
+          width: 80%;
+          min-width: 300px;
+          font-size: small;
+          padding: 10px;
+          text-align: left;
+          border-bottom: 1px solid gray;
+        }
+      }
+    }  
   }
-  }  
 }
 
 > .detailEmpBody {
@@ -270,6 +336,7 @@ height: calc(100% - 50px);
   text-align: center;
 
   > tr > td {
+    display: flex;
     width: 25%;
     min-width: 100px;
     padding: 10px;
@@ -294,10 +361,29 @@ height: calc(100% - 50px);
     border-bottom: 1px solid gray;
     height: 30px;
     > td {
+      display: flex;
       padding: 10px;
       width: 25%;
       min-width: 100px;
     }
   }
 }
+`;
+const CheckBtn = styled.div`
+background-color: rgb(214,236,248);
+color: black;
+border: 1px solid rgb(146,183,214);
+border-radius: 5px;
+margin-left: 20px;
+font-weight: 100;
+padding: 5px;
+`;
+const CancelBtn = styled.div`
+background-color: rgb(214,236,248);
+color: black;
+border: 1px solid rgb(146,183,214);
+border-radius: 5px;
+margin-left: 20px;
+font-weight: 100;
+padding: 5px;
 `;

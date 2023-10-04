@@ -25,14 +25,14 @@ export default function OrgModal(props){
   useEffect(() => {
     async function LoadData(emp_id){
       const res = await orgTreeApi('basic', "","", "");
-      setData(res.data);
+      setData(res.data.data);
     }
     LoadData(empId);
   }, [empId]);  
 
   async function loadEmpList(type, compId, deptId){
     const res = await orgEmpListApi(type, compId, deptId);
-    setEmpList(res.data);
+    setEmpList(res.data.data);
   }
 
   function EmpDetailHandler(detailData){
@@ -49,18 +49,18 @@ export default function OrgModal(props){
     setEmpList(JSON.parse('[]'));
     searchOrg(searchOption, searchText).then(res => {
       if(searchOption === 'all'){
-        if (res.data.Tree !== 0) {
-          setData(res.data.Tree)
+        if (res.data.data.Tree !== 0) {
+          setData(res.data.data.Tree)
         }
-        if (res.data.List !== 1) {
-          setEmpList(res.data.List)
+        if (res.data.data.List !== 1) {
+          setEmpList(res.data.data.List)
         }
       }
       if(searchOption === 'dept'){
-        setData(res.data.data);
+        setData(res.data.data.data);
       }
       if(searchOption === 'emp'){
-        setEmpList(res.data.data);
+        setEmpList(res.data.data.data);
       }
     });
   }
@@ -114,7 +114,7 @@ export function CompList(props) {
     if (props.value['type'] === 'comp') {
       props.value['id'] = ""
     }
-    orgTreeApi(props.value['type'], props.value['compId'], props.value['id']).then(res => setSubItem(res.data));
+    orgTreeApi(props.value['type'], props.value['compId'], props.value['id']).then(res => setSubItem(res.data.data));
     props.loadEmpList(props.value['type'], props.value['compId'], props.value['id']);
     setOpen(!open);
   }
@@ -146,7 +146,7 @@ export function DeptTree(props) {
     if (props.value['type'] === 'comp') {
       props.value['id'] = ""
     }
-    orgTreeApi(props.value['type'], props.value['compId'], props.value['id']).then(res => setSubItem(res.data));
+    orgTreeApi(props.value['type'], props.value['compId'], props.value['id']).then(res => setSubItem(res.data.data));
     props.loadEmpList(props.value['type'], props.value['compId'], props.value['id']);
     setOpen(!open);
   }

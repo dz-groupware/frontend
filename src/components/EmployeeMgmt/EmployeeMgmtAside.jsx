@@ -4,7 +4,7 @@ import styled from "styled-components";
 import { employeeActions } from "../../utils/Slice";
 import { getEmployeeDetailsById, getEmployeeMgmtList } from "../../api/employeemgmt";
 
-export default function EmployeeMgmtAside() {
+export default function EmployeeMgmtAside({menuId}) {
   const dispatch = useDispatch();
   const [employeeDataList, setEmployeeDataList] = useState([]);
   const [sortType, setSortType] = useState("default");
@@ -20,8 +20,8 @@ export default function EmployeeMgmtAside() {
 
   useEffect(() => {
     async function fetchEmployees() {
-      const data = await getEmployeeMgmtList();
-      console.log("data", data);
+      const data = await getEmployeeMgmtList(menuId);
+      // console.log("data", data);
       setEmployeeDataList(data);
     }
 
@@ -31,7 +31,7 @@ export default function EmployeeMgmtAside() {
   useEffect(() => {
 
     if (isVisible === false) {
-      console.log("이즈비지블 처리됏니");
+      // console.log("이즈비지블 처리됏니");
 
       setSelectedEmployeeId(null);
     }
@@ -44,24 +44,24 @@ export default function EmployeeMgmtAside() {
     return <div>Loading...</div>;
   };
 
-  const itemsPerPage = 5;
-    const totalPages = Math.ceil(employeeDataList.length / itemsPerPage);
+  // const itemsPerPage = 5;
+  //   const totalPages = Math.ceil(employeeDataList.length / itemsPerPage);
 
-  const renderPageNumbers = () => {
-    const pageNumbers = [];
-    for (let i = 1; i <= totalPages; i++) {
-      pageNumbers.push(
-        <PageNumber
-          key={i}
-          isSelected={i === currentPage}
-          onClick={() => setCurrentPage(i)}
-        >
-          {i}
-        </PageNumber>
-      );
-    }
-    return pageNumbers;
-  };
+  // const renderPageNumbers = () => {
+  //   const pageNumbers = [];
+  //   for (let i = 1; i <= totalPages; i++) {
+  //     pageNumbers.push(
+  //       <PageNumber
+  //         key={i}
+  //         isSelected={i === currentPage}
+  //         onClick={() => setCurrentPage(i)}
+  //       >
+  //         {i}
+  //       </PageNumber>
+  //     );
+  //   }
+  //   return pageNumbers;
+  // };
 
 
 
@@ -69,9 +69,9 @@ export default function EmployeeMgmtAside() {
   
 
     let sortedDataList = Object.keys(dataList).map(key => dataList[key]);
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    const endIndex = startIndex + itemsPerPage;
-    sortedDataList = sortedDataList.slice(startIndex, endIndex);
+    // const startIndex = (currentPage - 1) * itemsPerPage;
+    // const endIndex = startIndex + itemsPerPage;
+    // sortedDataList = sortedDataList.slice(startIndex, endIndex);
     // sortType에 따라서 정렬
     if (sortType === "sortdate") {
       sortedDataList = sortedDataList.sort((a, b) => a.joinDate.localeCompare(b.joinDate));
@@ -113,13 +113,13 @@ export default function EmployeeMgmtAside() {
 
 
   async function handleEmployeeClick(employeeMgmt) {
-    // setIsSelected(employeeMgmt.id);
+console.log("너네 뭐니",employeeMgmt);
     setSelectedEmployeeId(employeeMgmt.id);
-    console.log("selectedEmployeeId", selectedEmployeeId);
+    // console.log("selectedEmployeeId", selectedEmployeeId);
 
 
     try {
-      const fetchedEmployeeData = await getEmployeeDetailsById(employeeMgmt.id);
+      const fetchedEmployeeData = await getEmployeeDetailsById(employeeMgmt.id,menuId);
       console.log(fetchedEmployeeData);
       if (!fetchedEmployeeData) {
         console.error("No data returned for employee ID:", employeeMgmt.id);
@@ -131,7 +131,7 @@ export default function EmployeeMgmtAside() {
       const fetchedEmployeeArray = Object.values(fetchedEmployeeData);
       // 첫 번째 데이터로 basicInfo 생성
       const firstEmployee = fetchedEmployeeArray[0];
-      console.log("firstEmployee", firstEmployee);
+      // console.log("firstEmployee", firstEmployee);
 
       const employeeBasicInfo = {
         id: firstEmployee.id,
@@ -207,7 +207,7 @@ export default function EmployeeMgmtAside() {
         {isSearchExecuted ? renderEmployeeDataList(searchedEmployeeDataList) : renderEmployeeDataList(employeeDataList)}
       </EmployeeListArea>
       <EmployeeListPageNation>
-        {renderPageNumbers()}
+        {/* {renderPageNumbers()} */}
       </EmployeeListPageNation>
 
 

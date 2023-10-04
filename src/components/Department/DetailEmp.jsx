@@ -5,19 +5,22 @@ export default function DetailEmp({ empList }){
     <BasicForm>
       <div>
         <table>
+          <tbody>
           <tr className="detailEmpTitle">
             <td>부서</td>
             <td>직책</td>
             <td>사용자명</td>
             <td>정렬순서</td>
           </tr>
+          </tbody>
         </table>
       </div>
       <div className="detailEmpBody">
         <table>
+        <tbody>
           {
             empList.map((a, i) => (
-              <tr>
+              <tr key={a['deptName']+a['position']+['empName']}>
                 <td>{a['deptName']}</td>
                 <td>{a['position']}</td>
                 <td>{a['empName']}</td>
@@ -25,6 +28,7 @@ export default function DetailEmp({ empList }){
               </tr>
             ))
           }
+          </tbody>
         </table>
       </div>
     </BasicForm>
@@ -38,7 +42,7 @@ height: calc(100% - 100px);
 > table {
   min-width: 700px;
   border-collapse: collapse;
-  > tr {
+  > tbody > tr {
     > td:nth-child(1) {
       background-color: rgb(240,245,248);
       width: 20%;
@@ -62,7 +66,7 @@ height: calc(100% - 100px);
       border-bottom: 1px solid gray;
     }
     }
-  > tr {
+    > tbody > tr {
     > .field{
       background-color: rgb(240,245,248);
       width: 20%;
@@ -99,7 +103,7 @@ height: calc(100% - 50px);
   border-collapse: collapse;
   text-align: center;
 
-  > tr > td {
+  > tbody > tr > td {
     width: 25%;
     min-width: 100px;
     padding: 10px;
@@ -113,7 +117,7 @@ height: calc(100% - 50px);
   min-width: 700px;
   border-collapse: collapse;
   text-align: center;
-  > .detailEmpTitle { 
+  > tbody > .detailEmpTitle { 
     background-color: rgb(240,245,248);
     width: 100%;
     min-width: 400px;

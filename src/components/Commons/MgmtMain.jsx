@@ -4,7 +4,7 @@ import styled from "styled-components";
 
 
 
-export default function MgmtMain({ aside, form }) {
+export default function MgmtMain({ aside, form, menuId }) {
     
 
 

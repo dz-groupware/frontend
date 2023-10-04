@@ -81,13 +81,9 @@ export const loginSlice = createSlice({
   name: 'loginInfo',
   initialState : {
     isLogin: false,
-    empId: getIdFormLocal('empId', ""),
-    compId: getIdFormLocal('compId', ""),
   },
   reducers: {
     isLogin:(state) => {state.isLogin = !state.isLogin;},
-    newEmpId:(state, action) => {state.empId = action.payload;},
-    newCompId:(state, action) => {state.compId = action.payload;},
   }
 });
 
@@ -108,50 +104,83 @@ export const loginSlice = createSlice({
           state.isSearchExecuted = true;
         },
         updateInfo: (state, action) => {
+  
           state[infoKey] = action.payload; // 수정
+  
         },
+        updateBasicInfo: (state, action) => {
+          state.employeeBasicInfo = action.payload;
+        },
+        updateGroupInfo: (state, action) => {
+          if (Array.isArray(action.payload)) {  // 전달된 payload가 배열인지 확인
+            state.employeeGroupInfo = action.payload.map(data => ({
+              departmentId: data.departmentId,
+              position: data.position,
+              compId: data.compId,
+              deptId: data.deptId,
+              transferredYn: data.transferredYn,
+              edjoinDate: data.edjoinDate,
+              leftDate: data.leftDate,
+              deletedYn: data.deletedYn
+            }));
+          } else {
+            console.warn("Expected an array for updateGroupInfo but received:", action.payload);
+          }
+        },
+  
+        clearInfo: (state) => {
+          // 현재 활성화된 탭에 따라 정보를 초기화
+          if (state.activeTab === 'basic') {
+            state.employeeBasicInfo = { ...initialState.employeeBasicInfo };
+          } else if (state.activeTab === 'group') {
+            state.employeeGroupInfo = { ...initialState.employeeGroupInfo };
+          }
+        },
+  
         showForm: (state, action) => {
           state.isVisible = true;
-          state[infoKey] = action.payload && action.payload[infoKey]
-            ? { ...state[infoKey], ...action.payload[infoKey] } // 수정
-            : { ...initialState[infoKey] }; // 수정
-          state.idForForm = action.payload ? action.payload[infoKey].id : null;
+          if (Array.isArray(action.payload)) { // 배열로 받아온 경우
+            const firstItem = action.payload[0];
+            state[infoKey] = {
+              ...state[infoKey],
+              ...firstItem,
+            };
+  
+            state.idForForm = firstItem.id;
+          } else if (action.payload && action.payload[infoKey]) {
+            
+            state[infoKey] = {
+              ...state[infoKey],
+              ...action.payload[infoKey],
+            };
+            
+            state.idForForm = action.payload[infoKey].id;
+          } else {
+            state.idForForm = null;
+          }
           state.activeTab = initialState.activeTab;
+
         },
         hideForm: (state) => {
           state.isVisible = false;
           state.idForForm = null;
-        
-        state.activeTab = initialState.activeTab;
-
-      },
-      hideForm: (state) => {
-        state.isVisible = false;
-        state.idForForm = null;
-      },
-      resetState: (state) => {
-        state.employeeBasicInfo = { ...employeeMgmtInitialState.employeeBasicInfo };
-        state.employeeGroupInfo = [...employeeMgmtInitialState.employeeGroupInfo];
-        state.idForForm = employeeMgmtInitialState.idForForm;
-        state.isVisible = employeeMgmtInitialState.isVisible;
-        state.searchList = [...employeeMgmtInitialState.searchList];
-        state.activeTab = employeeMgmtInitialState.activeTab;
-        state.isDuplicated = employeeMgmtInitialState.isDuplicated;
-        state.isSignUpChecked = employeeMgmtInitialState.isSignUpChecked;
-      },
-      setActiveTab: (state, action) => {
-        state.activeTab = action.payload;
-      },
-
-      setDuplicated: (state, action) => {
-        state.isDuplicated = action.payload;
-      },
-      setSignUpChecked: (state, action) => {
-        state.isSignUpChecked = action.payload;
-      },
-      updateUploadedFileUrl: (state, action) => {
-        state.employeeBasicInfo.imageUrl = action.payload;
-    }
+        },
+        resetState: (state) => {
+          return { ...initialState };
+        },
+        setActiveTab: (state, action) => {
+          state.activeTab = action.payload;
+        },
+  
+        setDuplicated: (state, action) => {
+          state.isDuplicated = action.payload;
+        },
+        setSignUpChecked: (state, action) => {
+          state.isSignUpChecked = action.payload;
+        },
+        updateUploadedFile: (state, action) => {
+          state.uploadedFile = action.payload;
+        }
       
 
 

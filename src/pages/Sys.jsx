@@ -10,7 +10,7 @@ import {GnbApi, FavorApi, searchAPI} from '../api/menu';
 import MenuList from '../components/Sys/MenuList';
 import { GnbDetail, MenuDetail } from '../components/Sys/Detail';
 
-export default function Sys(){
+export default function Sys({ pageId }){
   const [gnbList, setGnbList] = useState([]);
   const [result, setResult] = useState([]);
   const [favor, setFavor] = useState(false);
@@ -24,9 +24,9 @@ export default function Sys(){
 
     useEffect(() => {
       // gnb 리스트 가져오기
-      GnbApi().then(res => {setGnbList(res.data)});
+      GnbApi(pageId).then(res => {setGnbList(res.data.data)});
       // 즐겨찾기 가져오기
-      FavorApi('load', empId, menuId).then(res => {setFavor(res.data)});
+      FavorApi(pageId, 'load', menuId).then(res => {setFavor(res.data.data)});
     }, [empId, menuId]);
 
     // 대메뉴/메뉴 디테일 on/off
@@ -59,8 +59,8 @@ export default function Sys(){
       event.preventDefault();
       const formData = new FormData(document.getElementById('searchForm'));
       
-      searchAPI(formData).then(res => {
-        setResult(res.data);
+      searchAPI(pageId, formData).then(res => {
+        setResult(res.data.data);
       });
     }
 
@@ -129,7 +129,7 @@ export default function Sys(){
             </SearchResult>
           </div>
         </MenuTree>
-        { detail[0] && <GnbDetail value={menuDetail} detailOff={detailOff} on={detail[0]} compId={compId}/>}
+        { detail[0] && <GnbDetail pageId={pageId} value={menuDetail} detailOff={detailOff} on={detail[0]} compId={compId}/>}
         { detail[1] && <MenuDetail value={menuDetail} detailOff={detailOff} on={detail[1]} compId={compId}/>}
       </FormArea>
     </Module>

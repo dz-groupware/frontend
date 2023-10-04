@@ -1,26 +1,37 @@
-import styled from 'styled-components';
-import { AiOutlineSearch } from "react-icons/ai";
 import { useNavigate } from 'react-router';
 import { useEffect } from 'react';
-// display:'none',
-export function Main() {
-  return (
-    <MainArea id="Main">
-        <img src="https://dz-test-image.s3.ap-northeast-2.amazonaws.com/bgi/mainBgi.jpg" alt="bgiMain" />
-        <SearchArea>
-            <div>
-              <p>기업의 지속가능한 성장을 위해 디지털 혁신을 완성한다.</p>
-            </div>
-            <div>
-              <div>
-                <input type='text' id='searchBar'/>
-                <AiOutlineSearch/>
-              </div>
-            </div>
-        </SearchArea>
-    </MainArea>
+import styled, { keyframes } from 'styled-components';
+import Swal from 'sweetalert2';
+
+export function Loading(){
+  return(
+    <LoadingContent>
+      <LoadingSpinner></LoadingSpinner>
+    </LoadingContent>
   );
 }
+
+const spin = keyframes`
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+`;
+
+const LoadingContent = styled.div`
+width: 100%;
+height: 100%;
+display: flex;
+justify-content: center;
+align-items: center;
+background-color: rgba(182, 222, 255, 0.5);
+`;
+const LoadingSpinner = styled.div`
+border: 4px solid rgba(255, 255, 255, 0.3);
+border-top: 4px solid #3498db;
+border-radius: 50%;
+width: 40px;
+height: 40px;
+animation: ${spin} 1s linear infinite;
+`;
 
 export function EmptyPage(props){
   return(
@@ -32,22 +43,76 @@ export function EmptyPage(props){
   )
 }
 
-export function Error(){
-  const navigate = useNavigate();
-
+export function UNAUTHORIZED(){
   useEffect(() => {
-    setTimeout(() => navigate('/'), 3000);
-  }, [navigate]);
+    setTimeout(() => window.location.href='/', 3000);
+  }, []);
 
-  // 우선은 main 페이지로 이동하도록 했는데, 
-  // 로그인 하지 않은 상태에서 main 페이지로 이동하면 안되므로, 
-  // main 페이지 이동시 토큰이 없다면 login 페이지로 이동하는걸 추가하면 될 듯.
+  return(
+    <div style={{display:'block', backgroundColor:'white', color:'black'}}>
+      <div style={{fontSize: 'xx-large', margin: '20px'}}>로그인 정보가 없습니다</div>
+      <div style={{fontSize: 'large', margin: '30px'}}> 잠시 후 로그인 페이지로 이동합니다 ..</div>
+    </div>
+  )
+}
+
+export function Error(){
+  useEffect(() => {
+    setTimeout(() => window.location.href='/', 3000);
+  }, []);
+
   return(
     <div style={{display:'block', backgroundColor:'white', color:'black'}}>
       <div style={{fontSize: 'xx-large', margin: '20px'}}>잘못된 접근입니다.</div>
       <div style={{fontSize: 'large', margin: '30px'}}> 잠시 후 메인 페이지로 이동합니다 ..</div>
     </div>
   )
+}
+
+export function Test(){
+
+  const swalWithBootstrapButtons = Swal.mixin({
+    customClass: {
+      confirmButton: 'btn btn-success',
+      cancelButton: 'btn btn-danger'
+    },
+    buttonsStyling: false
+  });
+
+  useEffect(() => {
+      Swal.fire({
+        title: 'Are you sure?',
+        text: "You won't be able to revert this!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, delete it!',
+        cancelButtonText: 'No, cancel!',
+        reverseButtons: true
+      }).then((result) => {
+        if (result.isConfirmed) {
+          Swal.fire(
+            'Deleted!',
+            'Your file has been deleted.',
+            'success'
+          )
+        } else if (
+          /* Read more about handling dismissals below */
+          result.dismiss === Swal.DismissReason.cancel
+        ) {
+          Swal.fire(
+            'Cancelled',
+            'Your imaginary file is safe :)',
+            'error'
+          )
+        }
+      });
+  }, []);
+  return (
+    <>
+    <h1>테스트 페이지 </h1>
+    </>
+  )
+
 }
 export function Error404(){
   const navigate = useNavigate();
@@ -56,9 +121,6 @@ export function Error404(){
     setTimeout(() => navigate('/'), 3000);
   }, []);
 
-  // 우선은 main 페이지로 이동하도록 했는데, 
-  // 로그인 하지 않은 상태에서 main 페이지로 이동하면 안되므로, 
-  // main 페이지 이동시 토큰이 없다면 login 페이지로 이동하는걸 추가하면 될 듯.
   return(
     <div style={{display:'block', backgroundColor:'white', color:'black'}}>
       <div style={{fontSize: 'xx-large', margin: '20px'}}>없는 페이지 입니다.</div>
@@ -66,75 +128,3 @@ export function Error404(){
     </div>
   )
 }
-const MainArea = styled.div`
-position: relative;
-background-color: #bbbbbb;
-background-repeat: no-repeat;
-background-size: cover;
-width: 100%;
-height: 100%;
-
-> img {
-  width:100%;
-  position: absolute;
-  opacity: 0.7;
-}
-`;
-
-const SearchArea = styled.div`
-position: absolute;
-display: block;
-justify-content: center;
-z-index: 1;
-top: 30%; 
-bottom: 40%;
-left: 20%;
-right: 20%;
-
-> div {
-  display: flex;
-  justify-content: center;
-  
-  > p {
-    color: white;
-    font-size: x-large;
-    font-weight: bold;
-    margin-bottom: 70px;
-
-    @media (max-width: 1290px){
-      font-size: large;
-    }
-
-    @media (max-width: 1000px){
-      font-size: medium;
-    }
-
-    @media (max-width: 800px){
-      font-size: small;
-    }
-  }
-  
-  > div {
-    display: flex;
-    justify-content: center;
-  
-    > input {
-      border-radius: 100px;
-      box-shadow: 0px 0px 30px 30px rgba(8, 8, 8, 0.2) ;
-      width: 600px;
-      height: 70px;
-      background-color: white;
-      font-size: x-large;
-    }
-    > svg {
-      width: 50px;
-      height: 50px;
-      position: relative;
-      color: black;
-      left: -70px;
-      top: 17px;
-      z-index: 2;
-    }
-  }
-}
-`;

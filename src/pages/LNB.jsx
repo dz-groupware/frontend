@@ -1,130 +1,126 @@
 import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
-import { Outlet, useLocation, useNavigate, useParams } from "react-router-dom";
+import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
 
 import styled from 'styled-components';
 import { AiFillFolder, AiFillFolderOpen, AiOutlineProfile, AiFillProfile, AiOutlineMenu } from "react-icons/ai";
 
 import { searchMenuListAPI } from '../api/gnb';
+import { getMenuList } from '../api/menu';
+
+import Module from './Module';
 
 export default function LNB() {
-
-  const { param } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
 
-  const compId = useSelector(state => state.loginInfo.compId);
+  const compId = localStorage.getItem("compId");
 
   const [lnbOpen, setLnbOpen] = useState(true);
-  const [gnbId, setGnbId] = useState('');
-  const [data, setData] = useState(JSON.parse('[{"name":""}]'));
-  console.log(lnbOpen);
+  const [gnb, setGnb] = useState({ id: 0, name: '' });
+  const [data, setData] = useState([]);
+  const [routeOn, setRouteOn] = useState(false);
+  const [routeList, setRouteList] = useState(new Map([
+    [`/`, { menuId: 0, gnbId: 0, gnbName: 'main', page: 'Main' }],]));
+
+  // console.log('data : ',gnb.id, data);
+  // console.log("url : ",decodeURIComponent(location.pathname));
+  // console.log(routeList);
+
+  useEffect(() => {
+    const parseMenuList = (originMenuList) => {
+      const menuList = new Map();
+      originMenuList.forEach(row => {
+        const { menuId, gnbId, gnbName, nameTree, page } = row;
+        menuList.set(`/${nameTree}`, { menuId, gnbId, gnbName, page } );
+      });
+      menuList.set(`/`, { menuId: 0, gnbId: 0, gnbName: 'main', page: 'Main' } );
+      setRouteList(menuList);
+    }
+
+    const initRouteList = async () => {
+      try {
+        const res = await getMenuList(0);
+        parseMenuList(res.data.data);
+        setRouteOn(true);  
+      } catch (error) {
+        console.log('error in lnb');
+        if (error.status === 401) {
+          console.log('로그인 정보 없음');
+          window.location.href='/login';
+        }
+        if (error.status === 403) {
+          console.log('권한 없음');
+        }
+        console.log('unknown error : ', error);
+      }
+      // 컴포넌트 마운트 시 현재 경로를 기반으로 routeList 업데이트
+    }
+    initRouteList();
+  }, []);
 
   useEffect(() => {
     try{
-      const gnbId = location.state.gnbId;
-      console.log('in lnb (gnbId) : ', gnbId);
-      searchMenuListAPI(gnbId, compId)
-      .then(res => setData(res.data));
-      setGnbId(gnbId);
+      searchMenuListAPI(0, gnb.id, compId)
+      .then(res => setData(res.data.data));
     } catch(error) {
-      if(error.message === 'UNAUTHORIZED'){
-        navigate('/login');
-      }
-      if(error.message === 'FORBIDDEN'){
-        navigate('/login');
-      }
+      console.log('searchMenuListAPI error : ', error);
       if(error.message === 'INTERNEL_SERVER_ERROR'){}
-      navigate('/error');
-      console.log(error.message);
     }
+  }, [gnb.id, compId, navigate]);
 
-/*
-    if (location.state === null) {
-      // 부적절한 이동 시도
-      navigate('./error');
-    } else {
-      
-      if(menuId !== undefined && compId !== undefined && compId !== null){
-        searchMenuListAPI(menuId, compId).then(res => {
-          if(res.status === 401 || res.status === 403) {
-            navigate('/login');
-          } else {
-            setData(res.data);
-          }
-        });
-        setGnbId(menuId);
-        
-      } else {
-        navigate('./error404');
-      }
-        // 지금은 이동한 메뉴(GNB)에 맞는 LNB 리스트를 저장하고 있음.
-        // 즐겨찾기에서 눌렀을 경우 즐겨찾기 리스트를 저장하도록 수정할 예정
-        // 현재는 이름만 즐겨찾기로 바뀌어 있음.
-    }
-
-
-    
-    */
-
-  }, [compId, location, navigate]);
-//    const data = JSON.parse('[{"name":"조직관리"}, {"naem":"메뉴설정"}]');
   return (
     <Content>
-      <LnbTitle>
+      <LnbTitle className={`${location.pathname === '/' ? 'main' : 'lnb' }`}>
         <AiOutlineMenu onClick={() => {setLnbOpen(!lnbOpen)}}/>
-        <p>{param}</p>
+        <p>{gnb.name}</p>
       </LnbTitle>
       <LnbArea>
-        <LNBList className={`lnb ${lnbOpen} ? 'true' : 'false'`}>
-          {
+        <LNBList className={`${lnbOpen ? 'true' : 'false'}`}>
+          {data !== '' && data !== undefined && data !== null &&
             data.map((a, i) => {
               if (a['id'] !== a['parId']) {
                 return (
-                  <MenuTree menu={a} param={param} compId={compId} gnbId={gnbId} key={a['name']+a['id']}/>                                    
+                  <MenuTree menu={a} compId={compId} gnb={gnb} key={a['name']+a['id']}/>                                    
                 )
               }
               return null;
             })
           }
         </LNBList>
-        <OutletArea className={`outlet ${lnbOpen} ? 'true' : 'false'`}>
-          <Outlet />
+        <OutletArea id='route' className={`${location.pathname === '/' ? 'main' : 'lnb'} ${lnbOpen ? 'true' : 'false'}`} >
+          {routeOn &&
+          <Routes>
+            <Route path='/*' element={<Module gnb={gnb} setGnb={setGnb} routeList={routeList}/>} />
+          </Routes>}
         </OutletArea>
       </LnbArea>
     </Content>
   );
 }
 
-export function MenuTree({ menu, param, compId, gnbId }){
+export function MenuTree({ menu, param, compId, gnb }){
   const [open, setOpen] = useState(false);
   const [subItem, setSubItem] = useState([]);
   const navigate = useNavigate();
     
   useEffect(() => {
-    if(gnbId !== undefined){
+    if(gnb.id !== undefined){
       setSubItem([]);
       setOpen(false);
     }
-  }, [compId, gnbId]);
+  }, [compId, gnb.id]);
 
   function handleMenuItem() {
     try{
       if(subItem.length === 0) {
-        searchMenuListAPI(menu['id'], compId)
-        .then(res => setSubItem(res.data));
+        searchMenuListAPI(menu['id'], menu['id'], compId)
+        .then(res => setSubItem(res.data.data));
       }
       setOpen(!open);
       // menuId를 넘기지 않고 gnbId를 넘긴다. LNB() 컴포넌트는 GNB 메뉴 ID가 필요함.
-      navigate(`/${param}/${menu['name']}`, {state: {gnbId: gnbId, menuId : menu['id']}});  
+      navigate(`/${menu['nameTree']}`);  
     } catch(error) {
-      if(error.message === 'UNAUTHORIZED'){
-        navigate('/login');
-      }
-      if(error.message === 'FORBIDDEN'){
-        navigate('/login');
-      }
-      console.log(error);
+      console.log('searchMenuListAPI error : ',error);
     }
   }
 
@@ -143,7 +139,7 @@ export function MenuTree({ menu, param, compId, gnbId }){
         open && subItem.map((a, i) => {
           if (a['id'] !== a['parId']) {
             return (
-              <MenuTree menu={a} param={`${param}/${menu['name']}`} compId={compId} gnbId={gnbId} key={a['name']+a['id']}/>
+              <MenuTree menu={a} param={`${param}/${menu['name']}`} compId={compId} gnb={gnb} key={a['name']+a['id']}/>
             )
           }
           return null;
@@ -172,6 +168,12 @@ height: calc(100% - 50px);
 &.false {
   left: 50px;
   width: calc(100% - 50px);
+}
+&.main {
+top: 80px;
+left: 50px;
+width: calc(100% - 50px);
+height: 100%;
 }
 `;
 const LNBList = styled.div`
@@ -208,6 +210,10 @@ display:flex;
 }
 > p {
   margin-top:15px;
+}
+
+&.main {
+  display: none;
 }
 `
 const LnbArea = styled.div`

@@ -1,9 +1,11 @@
 import { axiosInstance } from "../utils/axiosInstance";
 
-export const getEmployeeMgmtList = async () => {
+export const getEmployeeMgmtList = async (menuId) => {
   try {
+    axiosInstance.defaults.headers['menuId'] = menuId;
     const response = await axiosInstance.get('/employeemgmt');
-    return response.data;
+    // console.log("ffffffffffffffff",response);
+    return response.data.data;
   } catch (error) {
     console.error("Error fetching employee data:", error);
     alert("오류가 발생했습니다.");  // 사용자에게 오류 메시지를 표시합니다.
@@ -11,10 +13,15 @@ export const getEmployeeMgmtList = async () => {
   }
 };
 
-export const getEmployeeDetailsById = async (employeeMgmtId) => {
+export const getEmployeeDetailsById = async (employeeMgmtId,menuId) => {
   try {
+    axiosInstance.defaults.headers['menuId'] = menuId;
     const response = await axiosInstance.get(`/employeemgmt/${employeeMgmtId}`);
-    return response.data;
+
+    console.log("리스폰스",response);
+    console.log("리스폰스",response.data);
+    console.log("리스폰스",response.data.data);
+    return response.data.data;
   } catch (error) {
     console.error("Error fetching employee data by id:", error);
     alert("오류가 발생했습니다.");  // 사용자에게 오류 메시지를 표시합니다.
@@ -23,11 +30,11 @@ export const getEmployeeDetailsById = async (employeeMgmtId) => {
 };
 
 
-export const getAllDepartmentMgmtList = async () => {
+export const getAllDepartmentMgmtList = async (menuId) => {
   try {
+    axiosInstance.defaults.headers['menuId'] = menuId;
     const response = await axiosInstance.get('/employeemgmt/dep');
-    console.log(response.data);
-    return response.data;
+    return response.data.data;
   } catch (error) {
     console.error("Error fetching company data:", error);
     alert("오류가 발생했습니다.");  // 사용자에게 오류 메시지를 표시합니다.
@@ -35,18 +42,18 @@ export const getAllDepartmentMgmtList = async () => {
   }
 };
 
-export const findEmployeeMgmtList = async (searchValue, selectedOption) => {
+export const findEmployeeMgmtList = async (searchValue, selectedOption, menuId) => {
   try {
-
+    axiosInstance.defaults.headers['menuId'] = menuId;
     let actualSelectedOption = selectedOption === "0" ? 0 : parseInt(selectedOption);
     if (isNaN(actualSelectedOption)) {
       actualSelectedOption = 0; // 또는 원하는 기본값을 설정하세요.
     }
     const actualSearchValue = searchValue === "" ? "%25%25" : `%25${searchValue}%25`;
-    console.log("actualSelectedOption:", actualSelectedOption);
+    // console.log("actualSelectedOption:", actualSelectedOption);
 
     const response = await axiosInstance.get(`/employeemgmt/employee-list?compId=${actualSelectedOption}&text=${actualSearchValue}`);
-    return response.data;
+    return response.data.data;
   } catch (error) {
     console.error("API Error:", error);
     alert("오류가 발생했습니다.");  // 사용자에게 오류 메시지를 표시합니다.
@@ -58,11 +65,12 @@ export const findEmployeeMgmtList = async (searchValue, selectedOption) => {
 
 
 
-export const addEmployeeMgmt = async (employeeInfo) => {
+export const addEmployeeMgmt = async (employeeInfo, menuId) => {
   try {
-    console.log("담아졋나", employeeInfo);
+    axiosInstance.defaults.headers['menuId'] = menuId;
+    // console.log("담아졋나", employeeInfo);
     const response = await axiosInstance.post(`/employeemgmt`, employeeInfo);
-    return response.data;
+    return response.data.data;
   } catch (error) {
     console.error("Error adding employeebasic data:", error);
     alert("오류가 발생했습니다.");  // 사용자에게 오류 메시지를 표시합니다.
@@ -71,10 +79,11 @@ export const addEmployeeMgmt = async (employeeInfo) => {
 };
 
 
-export const modifyEmployeeMgmt = async (employeeInfo) => {
+export const modifyEmployeeMgmt = async (employeeInfo, menuId) => {
   try {
+    axiosInstance.defaults.headers['menuId'] = menuId;
     const response = await axiosInstance.put(`/employeemgmt`, employeeInfo);
-    return response.data;
+    return response.data.data;
   } catch (error) {
     console.error("Error adding company data:", error);
     alert("오류가 발생했습니다.");  // 사용자에게 오류 메시지를 표시합니다.
@@ -86,64 +95,72 @@ export const modifyEmployeeMgmt = async (employeeInfo) => {
 
 
 
-export const deleteEmployeeMgmt = async (id, employeeInfo) => {
+export const deleteEmployeeMgmt = async (id, employeeInfo, menuId) => {
   try {
+    axiosInstance.defaults.headers['menuId'] = menuId;
     const response = await axiosInstance.put(`/employeemgmt/del/${id}`, employeeInfo);
-    return response.data;
+    return response.data.data;
   } catch (error) {
     console.error("Error deleting company data:", error);
+    throw error;
   }
 };
 
 
-export const checkLoginId = async (loginId) => {
+export const checkLoginId = async (loginId, menuId) => {
   try {
+    axiosInstance.defaults.headers['menuId'] = menuId;
     const response = await axiosInstance.post(`/employeemgmt/idcheck/${loginId}`);
-    return response.data;
+    return response.data.data;
   } catch (error) {
     console.error("Error deleting company data:", error);
+    throw error;
   }
 };
 
-export const checkSignUp = async (signUpInfo) => {
+export const checkSignUp = async (signUpInfo, menuId) => {
+
   try {
+    axiosInstance.defaults.headers['menuId'] = menuId;
     const response = await axiosInstance.post(`/employeemgmt/signupcheck`, signUpInfo);
-    return response.data;
+    return response.data.data;
 
   } catch (error) {
+    console.log("eeeerrrrrorrr",error);
 
-    if (error.message == "Request failed with status code 404") {
+    if (error.status == 404) {
       alert("이미 사용중인 정보가 있습니다.");
       return null; // 또는 적절한 에러 처리
     }
-    if (error.message == "FORBIDDEN") {
+    if (error.status == 403) {
       alert('가입되지 않았습니다. 입력된 정보로 가입하기위해 인증이 진행됩니다.');
-      return error.message; // 또는 적절한 에러 처리
+      return error.status; // 또는 적절한 에러 처리
     }
     console.error("Error checking sign up:", error);
     alert("An error occurred while checking sign up. Please try again later.");
+    throw error;
   }
 };
 
 
-export const imageUpload = async (imageFile) => {
+export const imageUpload = async (imageFile, menuId) => {
   try {
     if (imageFile !== "") {
       let formData = new FormData();
-      formData.append('profileImage', imageFile);
+      formData.append('profileImage', imageFile); 
       console.log("imageFile",imageFile);
       const response = await axiosInstance.post(
         `/s3/profile`, formData,
         {
-          headers: { 'Content-Type': 'multipart/form-data' },
+          headers: { 'Content-Type': 'multipart/form-data',
+                        'menuId': menuId },
         }
       );
-      console.log(response);
-
+    
       // 서버에서 반환하는 S3 이미지 URL을 반환합니다.
       // 아래 코드는 반환된 데이터 구조에 따라 달라질 수 있습니다.
       // 예를 들어, response.data.url 혹은 response.data.imageUrl 등의 형태일 수 있습니다.
-      return response;
+      return response.data;
     }
   } catch (error) {
     console.log("fail to upload image ...", error);

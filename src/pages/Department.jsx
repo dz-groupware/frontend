@@ -3,8 +3,9 @@ import { useEffect, useState } from "react";
 import {  AiOutlineInfoCircle } from 'react-icons/ai';
 
 import styled from 'styled-components';
+import Swal from 'sweetalert2';
 
-import { getDepartemnt, getOptionCompList, getBasicDetailById, getEmpListByDeptId, findDeptNameAndCode } from '../api/department';
+import { getDepartemnt, getOptionCompList, getBasicDetailById, getEmpListByDeptId, findDeptNameAndCode, modifyDepartment} from '../api/department';
 import { FavorApi } from '../api/menu';
 
 import DetailBasic from '../components/Department/DetailBasic';
@@ -18,7 +19,7 @@ export default function Department({ menuId }) {
   // initialState
   const initSearch = {
     option: '',
-    test: '',
+    text: '',
     on: false,
   }
   const initDetail = {
@@ -40,27 +41,61 @@ export default function Department({ menuId }) {
     managementYn: false,
     includedYn: true,
   }
+
   // 컴포넌트에서 보내는 상태
   const [search, setSearch] = useState(initSearch);
   const [detail, setDetail] = useState(initDetail);
   const [value, setValue] = useState(initValue);
 
   const [favor, setFavor] = useState(false);
-  const [form, setForm] = useState(JSON.parse('[]'));
+  const [form, setForm] = useState('[]');
 
   const [option, setOption] = useState([]);
   const [result, setResult] = useState([]);
   const [empList, setEmpList] = useState([]);
 
+  const [noti, setNoti] = useState(false);
+  const [loading, setLoading] = useState({loading: false, response: false});
+
+  // console.log(detail)
+  // console.log(search)
+  // console.log(value)
+
+  // console.log("!!", loading, response);
+  const handleModifyNoti = () => {
+    if(detail.id === 0){
+      setValue(initValue);
+      setDetail({...detail, type: 'basic'});
+    } else if (detail.type === 'basic') {
+      getBasicDetailById(detail.id, menuId).then(res => setValue(res.data.data));
+    } else if (detail.type === 'emp'){
+      getEmpListByDeptId(detail.id, menuId).then(res => setEmpList(res.data.data));
+    }
+  }
+
+  const handleTmpSave = () => {
+    console.log('임시 저장');
+    setNoti(false);
+  }
+
+  // 즐겨찾기 추가/삭제 요청
+  const handleFavor = () => {
+    console.log(menuId, favor);
+    FavorApi(menuId, !favor).then(() => {
+      setFavor(!favor);
+    });
+  };
+
   useEffect(()=>{
     const loadDeptList = async () => {
       try {
         const menu = await getDepartemnt(menuId);
-        setResult(menu.data);
-        const fav = await FavorApi('load', menuId);
-        setFavor(fav.data);
+        setResult(menu.data.data);
+        const fav = await FavorApi(menuId, 'load');
+        console.log(fav, typeof fav);
+        setFavor(fav === 'undefined' ? false : fav.data.data );
         const opt = await getOptionCompList(menuId);
-        setOption(opt.data);
+        setOption(opt.data.data);
       } catch (error) {
         console.log(error);
       }
@@ -68,34 +103,112 @@ export default function Department({ menuId }) {
     loadDeptList();
   }, []);
 
+  useEffect(() => {
+    console.log('저장 삭제 버튼 시작 : ', detail);
+    if (detail.save) {
+      try {
+        if(detail.state === 'delete'){
+          // 삭제 요청
+          console.log('삭제 요청');
+        } else {
+          if(detail.state === 'tmpSave'){
+            console.log('tmpSave : ', value);
+            setForm(...form, value);
+          } 
+          if(detail.state === 'save'){
+            if(detail.id === 0){
+              // 추가 요청 : 추가 api
+              console.log('추가 요청');
+            }
+            if(detail.id > 0) {
+              console.log('수정 요청');            
+              modifyDepartment(value, menuId).then(res => {
+                console.log(res);
+                // 결과 확인 알림창에 결과 전달
+                setLoading({ loading: true, response: (res.data.data === '1' || res.data.data === 1)});
+                setDetail({...detail, state: false, save: false });
+              });
+            }    
+          }
+        }
+      } catch (error) {
+        console.log('save error : ', error);
+      }
+    }
+    setDetail({ ...detail, state: false, save: false });
+    console.log('저장 삭제 버튼 마무리 : ', detail);
+  }, [detail.save]);
+
   // 부서 상세 정보 요청
   useEffect(()=>{ 
-    if(detail.type === 'basic') {
-      getBasicDetailById(detail.id).then(res => setValue(res.data));
+    handleModifyNoti();
+  },[detail.id, detail.type]);
+
+  useEffect(() => {
+    if (search.on){
+      // 검색 요청
+      //검색 결과 result에 반영
     }
-    if (detail.type === 'emp'){
-      getEmpListByDeptId(detail.id).then(res => setEmpList(res.data));
+
+  }, [search.on]);
+
+
+  useEffect(() => {
+    if (loading.loading) {
+      if (loading.response){
+        Swal.fire({
+          icon: 'success',
+          title: '완료되었습니다.',
+          showConfirmButton: false,
+          timer: 1500
+        });
+      } else {
+        Swal.fire({
+          icon: 'error',
+          title: '다시 시도해 주세요.',
+          showConfirmButton: false,
+          timer: 1500
+        });
+      }
+      setLoading(false);
     }
-  },[detail.id]);
+  }, [loading]);
 
-
-  useEffect(()=>{
-    
-    setValue(initValue);
-  },[detail.save]);
-
-
-  // 즐겨찾기 추가/삭제 요청
-  function FavorHandler(){
-    FavorApi('off', menuId).then(() => {
-      setFavor(!favor);
-    });
-  }
+  useEffect(() => {
+    console.log("noti : ", noti );
+    if (noti) {
+      Swal.fire({
+        title: "페이지 이동",
+        text: "수정 중인 내용은 모두 삭제 됩니다.",
+        showDenyButton: true,
+        showCancelButton: true,
+        confirmButtonText: '임시저장',
+        denyButtonText: '확인',
+        cancelButtonText: '취소',
+      }).then((result) => {
+        /* Read more about isConfirmed, isDenied below */
+        console.log(result)
+        if (result.isConfirmed) {
+          console.log('임시저장');
+          Swal.fire('임시저장 되었습니다', '', 'success');
+          setDetail({...detail, id: detail.state});
+        } else if (result.isDenied) {
+          console.log('수정 삭제 후 이동');
+          setDetail({ ...detail, id: detail.state, state: false });
+        } else if (result.isDismissed) {
+          console.log('취소');
+          setDetail({ ...detail, state: false });
+        }
+      })
+      setNoti(false);
+    }
+  }, [noti])
+  
   return(
     <ContentDept>
       <DeptTitle>
         <div id="deptTitle">부서관리</div>
-        <TitleBtn favor={favor} FavorHandler={FavorHandler} detail={detail} setDetail={setDetail}/>
+        <TitleBtn favor={favor} handleFavor={handleFavor} detail={detail} setDetail={setDetail} handleTmpSave={handleTmpSave} />
       </DeptTitle>
       <Info>
           <div>
@@ -104,7 +217,7 @@ export default function Department({ menuId }) {
       </Info>
       <DetailArea>
         <SearchResultArea>
-          <SearchForm option={option}/>
+          <SearchForm option={option} search={search} setSearch={setSearch} />
           <div>
             <span>조직도</span>
             <select name="filter">
@@ -113,12 +226,12 @@ export default function Department({ menuId }) {
               <option value='general'>사용자 사용자</option>
             </select>
           </div>
-          <SearchResult result={result} detail={detail} setDetail={setDetail} menuId={menuId}/>
+          <SearchResult result={result} detail={detail} setDetail={setDetail} menuId={menuId} />
         </SearchResultArea>
         <Detail>
           <DetailTitle detail={detail} setDetail={setDetail} />
             {detail.type === 'basic' ? 
-            <DetailBasic data={value} setData={setValue} detail={detail} setDetail={setDetail} /> : null}
+            <DetailBasic data={value} setData={setValue} detail={detail} setDetail={setDetail} setNoti={setNoti} menuId={menuId}/> : null}
             {detail.type === 'emp' ? 
             <DetailEmp empList={empList} /> : null}
         </Detail>
@@ -127,7 +240,16 @@ export default function Department({ menuId }) {
   );
 };
 
-
+// function Notification ({ message, onTmpSave, setNoti }){
+//   return (
+//     <div>
+//       <p>{ message }</p>
+//       <button onClick={onTmpSave}>임시저장</button>
+//       <button onClick={() => setNoti(false)}>확인</button>
+//       <button onClick={() => setNoti(false)}>취소</button>
+//     </div>
+//   );
+// }
 const ContentDept = styled.div`
 background-color: white;
 border: 1px solid rgb(171,172,178);
@@ -152,7 +274,6 @@ color: black;
   color: rgb(32,35,44);
 }
 `;
-
 const Info = styled.div`
 display: flex;
 justify-content: center;
@@ -203,8 +324,6 @@ color: black;
 }
 
 `;
-
-
 const Detail = styled.div`
 display: block;
 width: 100%;
@@ -212,4 +331,5 @@ height: 100%;
 min-width: 600px;
 color: black;
 margin: 10px;
+margin-right: 20px;
 `;

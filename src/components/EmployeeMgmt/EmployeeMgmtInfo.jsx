@@ -7,7 +7,7 @@ import { addEmployeeMgmt, deleteEmployeeMgmt, modifyEmployeeMgmt,imageUpload } f
 
 
 
-export default function EmployeeMgmtInfo() {
+export default function EmployeeMgmtInfo({menuId}) {
     const dispatch = useDispatch();
     const reduxEmployeeBasicInfo = useSelector(state => state.employeeMgmt.employeeBasicInfo);
     const reduxEmployeeGroupInfo = useSelector(state => state.employeeMgmt.employeeGroupInfo);
@@ -44,7 +44,7 @@ export default function EmployeeMgmtInfo() {
                 
                 try {
                     console.log("퇴사 바디", info);
-                    await deleteEmployeeMgmt(info.id, info);
+                    await deleteEmployeeMgmt(info.id, info,menuId);
                     //image 업로드
                 } catch (error) {
                     console.error("Error deleting employee data for ID:", info.id, error);
@@ -73,7 +73,7 @@ export default function EmployeeMgmtInfo() {
             for (const info of combinedEmployeeInfo) {
                 try {
                    
-                    await modifyEmployeeMgmt(info);
+                    await modifyEmployeeMgmt(info,menuId);
 
                     //여기서 이미지 upload api 요청하기 사원 이름+로그인아이디 해서 올려주기
                 } catch (error) {
@@ -91,7 +91,7 @@ export default function EmployeeMgmtInfo() {
         } else {
             for (const info of combinedEmployeeInfo) {
                 try {
-                    await addEmployeeMgmt(info);
+                    await addEmployeeMgmt(info,menuId);
                     //여기서 이미지 upload api 요청하기
 
                 } catch (error) {
@@ -102,7 +102,8 @@ export default function EmployeeMgmtInfo() {
             if (!isErrorOccurred) {
             alert("사원 데이터가 저장되었습니다.");
             dispatch(employeeActions.hideForm());
-            window.location.reload();
+
+            // window.location.reload();
             }
         }
     };
@@ -111,6 +112,7 @@ export default function EmployeeMgmtInfo() {
 
 
     const handleSubmit = async (e) => {
+      
 
         if (!isDataFetched) {
             console.log("isSignUpChecked", isSignUpChecked);

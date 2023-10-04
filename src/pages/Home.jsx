@@ -1,6 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
-import { Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 
 import styled from 'styled-components';
 
@@ -9,51 +7,40 @@ import { basicInfoApi } from '../api/gnb';
 import TB from './TB';
 import GNB from './GNB';
 import LNB from './LNB';
-import Module from './Module';
-import { Main } from './VIEW';
 
 export default function Home() {
   const [profile, setProfile] = useState(JSON.parse(`[{}]`));
   const [gnb, setGnb] = useState(JSON.parse(`[{}]`));
   const [favor, setFavor] = useState(JSON.parse(`[{}]`));
 
-  const navigate = useNavigate();
-  const location = useLocation();
-  const gnbId = location.state?.gnbId || "11";
-  const empId = useSelector(state => state.loginInfo.empId);
+  const empId = localStorage.getItem("empId") ?? 0;
 
-  useEffect(() => {
-    const basicInfo = async() => {
-      try{
-        await basicInfoApi(empId, gnbId).then(res => {
-          setProfile(res.data.profile);
-          setGnb(res.data.menu);
-          setFavor(res.data.favor);           
-        });
-      } catch (error) {
-        console.log(error);
-        if(error.message === 'UNAUTHORIZED' || error.message === 'FORBIDDEN'){
-          navigate('/login');
-        }
+  const basicInfo = async() => {
+    try{
+      const res = await basicInfoApi(empId, "0");
+      setProfile(res.data.data.profile);
+      setGnb(res.data.data.menu);
+      setFavor(res.data.data.favor);  
+      localStorage.setItem("empId", res.data.data.empId);
+      localStorage.setItem("compId", res.data.data.compId);
+    } catch (error) {
+      console.log(error);
+      if (error.status === 401) {
+        console.log('로그인 정보 없음 (in home)');
+        window.location.href="/login";
       }
     }
-    
-    basicInfo();
+  };
 
-  }, [empId, navigate]);
+  useEffect(() => {
+    basicInfo();
+  }, [empId]);
 
   return (
     <>
       <Content>
         <TB profile={profile} empId={empId}/>
-        <RouteArea id='route'>
-          <Routes>
-            <Route path='/' element={<Main />} />
-            <Route path='/:param/*' element={<LNB />}>
-              <Route path=':menuName/*' element={<Module />} />
-            </Route> 
-          </Routes>
-        </RouteArea>
+        <LNB />
       </Content>
       <GNB gnb={gnb} favor={favor} empId={empId}/>
     </>

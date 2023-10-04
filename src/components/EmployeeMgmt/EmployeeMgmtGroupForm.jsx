@@ -15,7 +15,7 @@ import { styled } from 'styled-components';
 import { employeeActions } from '../../utils/Slice';
 import StyledButton from '../Commons/StyledButton';
 
-export default function EmployeeMgmtGroupForm() {
+export default function EmployeeMgmtGroupForm({menuId}) {
   const dispatch = useDispatch();
   const reduxEmployeeGroupInfo = useSelector(state => state.employeeMgmt.employeeGroupInfo);
   const isVisible = useSelector(state => state.employeeMgmt.isVisible);
@@ -29,8 +29,12 @@ export default function EmployeeMgmtGroupForm() {
     // 회사 목록을 가져오는 함수
     const fetchCompanies = async () => {
       try {
+        console.log("가나다라마바사",menuId.menuId);
+       
+        axiosInstance.defaults.headers['menuId'] = menuId;
         const response = await axiosInstance.get('/companies/');
-        setCompanyOptions(response.data);
+        console.log("가나다라마바사",response);
+        setCompanyOptions(response.data.data);
       } catch (error) {
         console.error("API Error:", error);
       }
@@ -38,8 +42,9 @@ export default function EmployeeMgmtGroupForm() {
     // 부서 목록을 가져오는 함수
     const fetchDepartments = async () => {
       try {
+        axiosInstance.defaults.headers['menuId'] = menuId;
         const response = await axiosInstance.get('/employeemgmt/dep');
-        setDepartmentOptions(response.data);
+        setDepartmentOptions(response.data.data);
       } catch (error) {
         console.error("API Error:", error);
       }
@@ -86,6 +91,8 @@ export default function EmployeeMgmtGroupForm() {
       [propName]: finalValue
     };
     setGroupsInfo(updatedGroups);
+
+    
 };
 
 
@@ -162,7 +169,7 @@ const addNewGroup = () => {
                   <Input
                     type="radio"
                     name={`transferredYn-${idx}`}
-                    value="true"
+                    value={"true"||""}
                     checked={group.transferredYn === true}
                     onChange={(e) => handleChange(e, idx)}
                     onBlur={handleBlur}
@@ -173,7 +180,7 @@ const addNewGroup = () => {
                   <Input
                     type="radio"
                     name={`transferredYn-${idx}`}
-                    value="false"
+                    value={"false"||""}
                     checked={group.transferredYn === false}
                     onChange={(e) => handleChange(e, idx)}
                     onBlur={handleBlur}

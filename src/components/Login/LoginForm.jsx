@@ -42,7 +42,7 @@ export default function LoginForm() {
       setApiErrorMessage(error.data.message);
     }
     console.log(error);
-  },[status, error]);
+  },[]);
 
   return (
     <StyledForm onSubmit={handleLoginAction}>

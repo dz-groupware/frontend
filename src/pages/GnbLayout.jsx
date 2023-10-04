@@ -5,17 +5,15 @@ import styled from 'styled-components';
 import { basicInfoApi } from '../api/gnb';
 
 import TB from './TB';
-import GNB from './GNB';
-import LNB from './LNB';
+import GNB from '../components/GNB/GNB';
+import LNB from './LnbLayout';
 
-export default function Home() {
+export default function GnbLayout() {
   const [profile, setProfile] = useState(JSON.parse(`[{}]`));
   const [gnb, setGnb] = useState(JSON.parse(`[{}]`));
   const [favor, setFavor] = useState(JSON.parse(`[{}]`));
 
-  const empId = localStorage.getItem("empId") ?? 0;
-
-  const basicInfo = async() => {
+  const basicInfo = async(empId) => {
     try{
       const res = await basicInfoApi(empId, "0");
       setProfile(res.data.data.profile);
@@ -25,24 +23,32 @@ export default function Home() {
       localStorage.setItem("compId", res.data.data.compId);
     } catch (error) {
       console.log(error);
-      if (error.status === 401) {
-        console.log('로그인 정보 없음 (in home)');
-        window.location.href="/login";
-      }
+      // if (error.status === 401) {
+      //   console.log('로그인 정보 없음 (in home)');
+      //   localStorage.setItem("empId", 0);
+      //   localStorage.setItem("compId", 0);
+      //   window.location.href="/login";
+      // }
     }
   };
 
   useEffect(() => {
-    basicInfo();
-  }, [empId]);
+    const empId = localStorage.getItem("empId");
+    if (empId === null || empId === undefined){
+      // 로그인 정보 없음.
+
+    } else {
+      basicInfo(empId);
+    }
+  }, [])
 
   return (
     <>
       <Content>
-        <TB profile={profile} empId={empId}/>
+        <TB profile={profile}/>
         <LNB />
       </Content>
-      <GNB gnb={gnb} favor={favor} empId={empId}/>
+      <GNB gnb={gnb} favor={favor}/>
     </>
   );
 }

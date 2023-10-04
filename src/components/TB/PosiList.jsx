@@ -12,7 +12,7 @@ export default function PosiList({ empId, modalOff, profile }) {
   }
 
   const handleAnotherEmp = () => {
-    changeEmpApi(radioEmpId).then(res => {
+    changeEmpApi(0, radioEmpId).then(res => {
       localStorage.setItem('empId', radioEmpId);
       window.location.href = '/';
     })

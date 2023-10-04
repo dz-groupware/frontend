@@ -5,20 +5,25 @@ import styled from 'styled-components';
 import { AiOutlinePaperClip } from 'react-icons/ai';
 import { MdOutlineRefresh } from 'react-icons/md';
 
-import { saveMenuAPI, deleteMenuApi } from '../../api/menu';
+import { saveMenuAPI, deleteMenuApi, deleteMenuLnbApi, saveIconAPI } from '../../api/menu';
 import IconImageList from './IconImageList';
 import MenuTree from './MenuTree';
-import { axiosInstance } from '../../utils/axiosInstance';
 
-export function GnbDetail(props) {
+export function GnbDetail({ pageId, value, detailOff, on, setReRender }) {
+
   const [isDragging, setIsDragging] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-  const [menuId, setMenuId] = useState("");
-  const [parId, setParId] = useState("");
-  const [menuName, setMenuName] = useState("");
-  const [enabledYN, setEnabledYn] = useState("");
-  const [sortOrder, setSortOrder] = useState("");
-  const [iconUrl, setIconUrl] = useState("");
+
+  const initValue = {
+    id: '',
+    parId: '',
+    name: '',
+    enabledYn: '',
+    sortOrder: '',
+    iconUrl: '',
+  };
+  const [detail, setDetail] = useState(initValue);
+
   const [newIconFile, setNewIconFile] = useState("");
   const [newIconUrl, setNewIconUrl] = useState("");
 
@@ -43,6 +48,7 @@ export function GnbDetail(props) {
     }
   };
   const readImage = (image) => {
+
     const reader = new FileReader();
     reader.onload = function(e) {
       setNewIconUrl(e.target?.result);
@@ -53,22 +59,25 @@ export function GnbDetail(props) {
     e.preventDefault();
     e.stopPropagation();
     setIsDragging(false);
-    // readImage(e.dataTransfer.files[0]);
-    readImage(e.dataTransfer.files[0]);
-    setNewIconFile(e.dataTransfer.files[0]);
-    setIconUrl(path+prefix+e.dataTransfer.files[0]['name']);
+
+    if ((e.dataTransfer.files[0] instanceof Blob)) {
+      console.error('image is not a Blob');
+      readImage(e.dataTransfer.files[0]);
+      setNewIconFile(e.dataTransfer.files[0]);
+      setDetail({ ...detail, iconUrl: path+prefix+e.dataTransfer.files[0]['name']});
+    }
   };
 
   const updateMenu = async () => {
     const menu = new FormData();
     try {
-      menu.set('id', menuId);
-      menu.set('parId', menuId);
-      menu.set('name', menuName);
-      menu.set('enabledYN', enabledYN);
-      menu.set('sortOrder', sortOrder);
-      menu.set('iconUrl', iconUrl);
-      await saveMenuAPI(props.pageId, menu, props.on);
+      for (const key in detail) {
+        if (detail.hasOwnProperty(key)) {
+          console.log(key, "::", detail[key]);
+          menu.set(key, detail[key]);
+        }
+      }
+      await saveMenuAPI(pageId, menu, on);
     } catch (error) {
       console.log('failed insert...');
       setErrorMessage("다시 시도해주세요. (메뉴 수정/저장 실패)");
@@ -80,39 +89,44 @@ export function GnbDetail(props) {
         formData.append('images', newIconFile);
 
         console.log('before upload : ', newIconFile['name']);
-  
-        axiosInstance.post(
-          `/s3/img`, formData, {
-            headers: { 'Content-Type': 'multipart/form-data' },
-          }
-        ).then(setNewIconFile(""));
+        saveIconAPI(pageId, formData).then(res => setNewIconFile(""));
       }
     } catch (error) {
       console.log("fail to upload image ...");
       setErrorMessage("다시 시도해주세요. (이미지 추가 실패)");
+    } finally {
+      setReRender(true);
     }
     
   }
 
+  console.log(newIconFile);
   useEffect (() => {
-    setMenuId(props.value['id']);
-    setParId(props.value['parId']);
-    setMenuName(props.value['name']);
-    setEnabledYn(props.value['enabledYN']);
-    setSortOrder(props.value['sortOrder']);
-    setIconUrl(props.value['iconUrl']);
-  }, [props.value]);
+    console.log('value -> detail : ', value);
+    setDetail({ 
+      id: value['id'], 
+      parId: value['id'], 
+      name: value['name'], 
+      enabledYn: value['enabledYn'] === 1 || value['enabledYn'] === true, 
+      sortOrder: value['sortOrder'], 
+      iconUrl: value['iconUrl'].length < path.length ? (path+prefix+value['iconUrl']) : value['iconUrl'], 
+    })
+  }, [value]);
   
   const deleteMenu = () => {
-    deleteMenuApi(menuId);
+    deleteMenuApi(pageId, detail.id);
+    setReRender(true);
+    detailOff();
   }
   
   const handleRadio = (e) => {
-    setEnabledYn(e.target.value);
+    setDetail({ ...detail, enabledYn: e.target.value === "true"});
   };
 
+  console.log('detail : ', detail);
+
   return (
-    props.on &&
+    on &&
     <DetailDiv>
       <DetailTitle> 
         <span>•대메뉴 정보</span>
@@ -120,7 +134,7 @@ export function GnbDetail(props) {
           <div onClick={deleteMenu}>삭제</div>
           <div onClick={updateMenu}>저장</div>
           <hr /> 
-          <span onClick={props.detailOff}>X</span>
+          <span onClick={detailOff}>X</span>
         </div>
       </DetailTitle>
       <table>
@@ -130,9 +144,9 @@ export function GnbDetail(props) {
             <td>
               <input 
               type='text' 
-              value={menuName} 
+              value={detail.name} 
               onChange={(e) => {
-                setMenuName(e.target.value);
+                setDetail({ ...detail, name: e.target.value });
               }}/>
             </td>
           </tr>
@@ -143,16 +157,16 @@ export function GnbDetail(props) {
                 <input 
                   className='radio' 
                   type='radio' 
-                  value='1'
-                  checked={enabledYN === 1 || enabledYN === '1'}
-                  onChange={handleRadio}
+                  value='true'
+                  checked={detail.enabledYn === true}
+                  onClick={handleRadio}
                 />사용
                 <input 
                   className='radio' 
                   type='radio' 
-                  value='0'
-                  checked={enabledYN === 0 || enabledYN === '0'}
-                  onChange={handleRadio}
+                  value='false'
+                  checked={detail.enabledYn === false}
+                  onClick={handleRadio}
                 />미사용
               </div>
             </td>
@@ -163,8 +177,8 @@ export function GnbDetail(props) {
               <input 
               type='number' 
               placeholder='숫자가 작을수록 위에 보입니다' 
-              value={sortOrder}
-              onChange={(e) => setSortOrder(e.target.value)}
+              value={detail.sortOrder}
+              onChange={(e) => setDetail({ ...detail, sortOrder: e.target.value })}
               />
             </td>
           </tr>
@@ -180,22 +194,29 @@ export function GnbDetail(props) {
               <div>
                 <textarea 
                 name='iconUrl' 
-                value={iconUrl === undefined || iconUrl === "" || iconUrl.length < path.length ? "not found" : iconUrl.slice(path.length+prefix.length)} 
-                onChange={() => {}} ></textarea>
+                value={detail.iconUrl === undefined || detail.iconUrl === "" || detail.iconUrl.length < path.length ? "not found" : detail.iconUrl.slice(path.length+prefix.length)} 
+                onChange={() => {}} readOnly></textarea>
                 <label htmlFor="iconFile" className='iconFileInput'>
                   <AiOutlinePaperClip/>
                   <input 
                   type='file' 
                   id="iconFile" 
-                  onChange={(e) => newIconFile(e.target.files[0])}/>
+                  onChange={(e) => {
+                    readImage(e.target.files[0]);
+                    setNewIconFile(e.target.files[0]);
+                    setDetail({ ...detail, iconUrl: path+prefix+e.target.files[0]['name']});
+                    setNewIconUrl(path+prefix+e.target.files[0]['name']);
+                    }}/>
                 </label>
               </div>
               <hr/>
               <IconImageList 
+              pageId={pageId}
               newIconFile={newIconFile} 
               newIconUrl={newIconUrl}
-              iconUrl={iconUrl} 
-              setIconUrl={setIconUrl}/>
+              iconUrl={detail.iconUrl}
+              detail={detail} 
+              setDetail={setDetail}/>
             </DnDBox>
           </td>
         </tr>
@@ -210,57 +231,71 @@ export function GnbDetail(props) {
   );
 }
 
-export function MenuDetail(props) {
-  const [menuId, setMenuId] = useState("");
-  const [menuName, setMenuName] = useState("");
-  const [parId, setParId] = useState("");
-  const [parName, setParName] = useState("");
-  const [enabledYN, setEnabledYn] = useState("");
-  const [sortOrder, setSortOrder] = useState("");
-  
+export function MenuDetail({ pageId, value, detailOff, on, setReRender, page }) {
+  const initValue = {
+    id: 0,
+    parId: 0,
+    name: '',
+    parName: '', 
+    enabledYn: true,
+    sortOrder: 0,
+    pageId: 0,
+  }
+  const [detail, setDetail] = useState(initValue);  
   const [modalOn, setModalOn] = useState(false);
 
+  console.log('detail : ', detail);
   const updateMenu = async () => {
     const menu = new FormData();
     try {
-      menu.set('id', menuId);
-      menu.set('parId', parId === "" ? 0 : parId);
-      menu.set('name', menuName);
-      menu.set('enabledYN', enabledYN);
-      menu.set('sortOrder', sortOrder);
-      await saveMenuAPI(menu, ((props.on)+2));
+      menu.set('id', detail.id);
+      menu.set('parId', detail.parId === "" ? 0 : detail.parId);
+      menu.set('name', detail.name);
+      menu.set('enabledYn', detail.enabledYn);
+      menu.set('sortOrder', detail.sortOrder);
+      menu.set('pageId', detail.pageId);
+      await saveMenuAPI(pageId, menu, ((on)+2));
     } catch (error) {
       console.log('failed insert...');
     }
   }
 
   const handleRadio = (e) => {
-    setEnabledYn(e.target.value);
+    setDetail({ ...detail, enabledYn: e.target.value === "true"});
   };
 
   useEffect (() => {
-    setMenuId(props.value['id']);
-    setParId(props.value['parId']);
-    setMenuName(props.value['name']);
-    setEnabledYn(props.value['enabledYN']);
-    setSortOrder(props.value['sortOrder']);
-    setParName(props.value['parName']);
-  }, [props.value]);
+    setDetail({ 
+      id: value.id || 0,
+      parId: value.parId || 0,
+      name: value.name || '',
+      parName: value.parName || '',
+      enabledYn: value.enabledYn || true,
+      sortOrder: value.sortOrder || 0,
+      pageId: value.pageId || 1,
+    })
+  }, [value]);
   
   const handleParMenu = (value) => {;
-    setParId(value['id']);
-    setParName(value['name']);
+    setDetail({ ...detail, parId: value['id'], parName: value['name'] });
+  }
+
+  const deleteMenu = () => {
+    deleteMenuLnbApi(pageId, detail.id);
+    setReRender(true);
+    detailOff();
   }
 
   return (
-    props.on &&
+    on &&
     <DetailDiv>
       <DetailTitle> 
         <span>•메뉴 정보</span>
         <div>
+          <button onClick={deleteMenu}>삭제</button>
           <button onClick={updateMenu}>저장</button>
           <hr /> 
-          <span onClick={props.detailOff}>X</span>
+          <span onClick={detailOff}>X</span>
         </div>
       </DetailTitle>
       <table>
@@ -268,9 +303,9 @@ export function MenuDetail(props) {
           <tr>
             <td>상위메뉴</td>
             <td>
-              <textarea value={parName === undefined ? "" : parName} onClick={() => {setModalOn(true)}} readOnly></textarea>
-              <textarea className='readOnly' value={parId === undefined ? "" : parId} readOnly></textarea>
-              <textarea className='readOnly' value={menuId === undefined ? "" : menuId} readOnly></textarea>
+              <textarea value={detail.parName === undefined ? "" : detail.parName} onClick={() => {setModalOn(true)}} readOnly></textarea>
+              <textarea className='readOnly' value={detail.parId === undefined ? "" : detail.parId} readOnly></textarea>
+              <textarea className='readOnly' value={detail.id === undefined ? "" : detail.id} readOnly></textarea>
             </td>
           </tr>
           <tr>
@@ -279,10 +314,24 @@ export function MenuDetail(props) {
               <input 
               name='name' 
               type='text' 
-              value={menuName} 
+              value={detail.name} 
               onChange={(e) => {
-                setMenuName(e.target.value);
+                setDetail({ ...detail, name:e.target.value });
               }}/>
+            </td>
+          </tr>          
+          <tr>
+            <td>기본페이지</td>
+            <td>
+              <select onChange={(e) => {setDetail({ ...detail, pageId: e.target.value})}}>
+                {
+                  page.map((a, i) => (
+                    <option value={a['id']}>
+                      {a['name']}
+                    </option>
+                  ))
+                }
+              </select>
             </td>
           </tr>
           <tr>
@@ -292,15 +341,15 @@ export function MenuDetail(props) {
                 <input 
                   className='radio' 
                   type='radio' 
-                  value='1'
-                  checked={enabledYN === 1 || enabledYN === '1'}
+                  value='true'
+                  checked={detail.enabledYn === true}
                   onChange={handleRadio}
                 />사용
                 <input 
                   className='radio' 
                   type='radio' 
-                  value='0'
-                  checked={enabledYN === 0 || enabledYN === '0'}
+                  value='false'
+                  checked={detail.enabledYn === false}
                   onChange={handleRadio}
                 />미사용
               </div>
@@ -312,14 +361,14 @@ export function MenuDetail(props) {
               <input 
               type='number' 
               placeholder='숫자가 작을수록 위에 보입니다' 
-              value={sortOrder}
-              onChange={(e) => setSortOrder(e.target.value)}
+              value={detail.sortOrder}
+              onChange={(e) => setDetail({ ...detail, sortOrder: e.target.value })}
               />
             </td>             
           </tr>
         </tbody>
       </table>
-      {modalOn && <MenuTree setModalOn={setModalOn} handleParMenu={handleParMenu}/>}
+      {modalOn && <MenuTree pageId={pageId} setModalOn={setModalOn} handleParMenu={handleParMenu}/>}
     </DetailDiv>
   );
 

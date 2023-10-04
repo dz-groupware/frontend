@@ -4,10 +4,10 @@ import { AiFillStar, AiOutlineStar } from 'react-icons/ai';
 export default function TitleBtn({ favor, handleFavor, detail, setDetail, handleTmpSave }){
   return(
     <BtnContent>
-      <button onClick={() => {setDetail({...detail, state:'tmpSave'})}}>일괄등록</button>
+      <button onClick={() => {setDetail({...detail, id: 0, state:'tmpSave', save: true})}}>일괄등록</button>
       <button onClick={() => {setDetail({...detail, id: 0, state:'add'})}}>추가</button>
-      <button onClick={() => {}}>변경이력</button>
-      <div onClick={handleFavor}>{favor === "true" ? <AiFillStar /> : <AiOutlineStar/>}</div>
+      <button onClick={() => {}} style={{display: 'none'}}>변경이력</button>
+      <div onClick={handleFavor}>{favor === true ? <AiFillStar /> : <AiOutlineStar/>}</div>
     </BtnContent>
   );
 };

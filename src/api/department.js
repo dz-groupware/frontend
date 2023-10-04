@@ -1,85 +1,124 @@
 import { axiosInstance } from '../utils/axiosInstance';
 
-function header(menuId){
-  return {
+export function getDepartemnt(pageId){  
+  console.log('getDepartemnt : ',pageId);  
+  return axiosInstance.get(`/department`, {
     headers: {
-      'menuId' : menuId
-    }
-  };
+      "Content-Type": "application/json",
+      'menuId' : pageId
+    }  
+  });
 }
 
-export function addDepartment(dept, menuId){    
+export function getOptionCompList(pageId){   
+  return axiosInstance.get(
+    `/department/option-comp`, {
+  headers: {
+  "Content-Type": "application/json",
+  'menuId' : pageId
+}}
+  )
+}
+
+export function getBasicDetailById(id, pageId){    
+  return axiosInstance.get(
+    `/department/detail-basic?id=${id}`, {
+  headers: {
+  "Content-Type": "application/json",
+  'menuId' : pageId
+}}
+  )
+}
+
+export function getEmpListByDeptId(id, pageId){   
+  console.log('reqeust emp list : ', id); 
+  return axiosInstance.get(
+    `/department/detail-emp?id=${id}`, {
+  headers: {
+  "Content-Type": "application/json",
+  'menuId' : pageId
+}}
+  )
+}
+
+export function modifyDepartment(dept, pageId){    
   return axiosInstance.post(
-    `/department/dept-all`, dept, header(menuId)
+    `/department/dept-modify`, dept, {
+  headers: {
+  "Content-Type": "application/json",
+  'menuId' : pageId
+}}
   )
 }
 
-export function getDepartemnt(menuId){    
+export function getDepartmentById(parId, pageId){
   return axiosInstance.get(
-    `/department`, header(menuId)
+    `/department/dept-list?parId=${parId}`, {
+  headers: {
+  "Content-Type": "application/json",
+  'menuId' : pageId
+}}
   )
 }
 
-export function getDepartmentList(parId, menuId){    
-  console.log('in api (header) : ', header(menuId));
-  return axiosInstance.get(
-    `/department/dept-list?parId=${parId}`, header(menuId)
-  )
-}
 
-export function getBasicDetailById(id, menuId){    
-  return axiosInstance.get(
-    `/department/detail-basic?id=${id}`, header(menuId)
-  )
-}
+//*
 
-export function getEmpListByDeptId(id, menuId){    
-  return axiosInstance.get(
-    `/department/detail-emp?id=${id}`, header(menuId)
-  )
-}
-
-export function getDepartmentById(parId, menuId){
-  console.log('in api!!!!!!!!!!!!!')
-  return axiosInstance.get(
-    `/department/dept-list?parId=${parId}`, header(menuId)
-  )
-}
-
-export function modifyDepartment(dept, menuId){    
+export function addDepartment(dept, pageId){    
   return axiosInstance.post(
-    `/department/dept-modify`, dept, header(menuId)
-  )
+    `/department/dept-all`, dept, {
+  headers: {
+  "Content-Type": "application/json",
+  'menuId' : pageId
+}})
 }
 
-export function deleteDepartment(id, menuId){    
+
+
+export function getDepartmentList(parId, pageId){    
+  return axiosInstance.get(
+    `/department/dept-list?parId=${parId}`, {
+  headers: {
+  "Content-Type": "application/json",
+  'menuId' : pageId
+}})
+}
+
+
+export function deleteDepartment(id, pageId){    
   return axiosInstance.delete(
-    `/department/dept?id=${id}`, header(menuId)
-  )
+    `/department/dept?id=${id}`, {
+  headers: {
+  "Content-Type": "application/json",
+  'menuId' : pageId
+}})
 }
 
-export function saveAll(dept, menuId){    
+export function saveAll(dept, pageId){    
   console.log(dept, typeof(dept));
   return axiosInstance.post(
-    `/department/dept-all`, dept, header(menuId)
-  )
+    `/department/dept-all`, dept, {
+  headers: {
+  "Content-Type": "application/json",
+  'menuId' : pageId
+}})
 }
 
 
-export function getOptionCompList(menuId){   
+export function findDeptNameAndCode(compId, text, pageId){
   return axiosInstance.get(
-    `/department/option-comp`, header(menuId)
-  )
+    `/department/dept?compId=${compId}&text=%25${text}%25`, {
+  headers: {
+  "Content-Type": "application/json",
+  'menuId' : pageId
+}})
 }
 
-export function findDeptNameAndCode(compId, text, menuId){
+export function checkDeptCode(id, text, pageId){
   return axiosInstance.get(
-    `/department/dept?compId=${compId}&text=%25${text}%25`, header(menuId)
-  )
-}
-
-export function checkDeptCode(id, text, menuId){
-  return axiosInstance.get(
-    `/department/duplicate-test?id=${id}&text=${text}`, header(menuId)
-  )
+    `/department/duplicate-test?id=${id}&text=${text}`, {
+  headers: {
+  "Content-Type": "application/json",
+  'menuId' : pageId
+}})
 }

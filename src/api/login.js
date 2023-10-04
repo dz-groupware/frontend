@@ -13,7 +13,8 @@ export const loginApi = async ({ data }) => {
   }
 }
 
-export function changeEmpApi(empId) {
+export function changeEmpApi(pageId, empId) {
+  axiosInstance.defaults.headers['menuId'] = pageId;
   if(empId !== undefined && empId) {
       return axiosInstance.post(
           `/auth/re-login`,

@@ -1,40 +1,41 @@
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
-import { getDepartemnt, getDepartmentList } from '../../api/department';
+import { GnbListApi, LnbListApi } from '../../api/menu';
 
-export default function DeptModal({ form, setModalOn, setForm, menuId }){
-  const [item, setItem] = useState(JSON.parse('[{"":""}]'));
+export default function MenuTree({ pageId, setModalOn, handleParMenu }) {
+  const [menuTree, setMenuTree] = useState(JSON.parse('[{"":""}]'));
 
   useEffect(() => {
-    getDepartemnt(menuId).then(res => {
-      setItem(res.data.data);
+    GnbListApi(pageId).then(res => {
+      console.log(res);
+      setMenuTree(res.data.data);
     });
   }, []);
+
 
   return (
     <ModalBackdrop onClick={() => setModalOn(false)}>
       <ModalView onClick={(e) => e.stopPropagation()}>
         <div id='menuTitle'>
-          <div>상위부서</div>
+          <div>상위메뉴</div>
           <span onClick={() => setModalOn(false)}>x</span>
         </div>
         <MenuArea>
           <div>
           {
-            item.map((a, i) => (
-              <Item form={form} data={a} setModalOn={setModalOn} setForm={setForm} key={a['name']+'gnb'}/>
+            menuTree.map((a, i) => (
+              <MenuItem pageId={pageId} data={a} setModalOn={setModalOn} handleParMenu={handleParMenu} key={a['name']+'gnb'}/>
             ))
           }
           </div>
         </MenuArea>
       </ModalView>
     </ModalBackdrop>
-
   );
-}
+};
 
-function Item({ form, data, setModalOn, setForm }) {
+export function MenuItem({ pageId, data, setModalOn, handleParMenu }) {
   const [open, setOpen] = useState(false);
   const [subItem, setSubItem] = useState([]);
 
@@ -47,11 +48,11 @@ function Item({ form, data, setModalOn, setForm }) {
 
   const handleMenuItem = (a) => {
     if(subItem.length === 0) {
-      getDepartmentList(data['id'])
+      LnbListApi(pageId, data['id'])
       .then(res => setSubItem(res.data.data));
     }
     setOpen(!open);
-    setForm({...form, parId: data['id'], parName: data['name']});
+    handleParMenu(data)
   }
 
   return (
@@ -61,12 +62,12 @@ function Item({ form, data, setModalOn, setForm }) {
       </div>
       { subItem.length > 1 && open &&
         subItem.map((a, i) => (
-          <Item form={form} data={a} setModalOn={setModalOn} setForm={setForm} key={a['name']+'lnb'}/>
+          <MenuItem pageId={pageId} data={a} setModalOn={setModalOn} handleParMenu={handleParMenu} key={a['name']+'lnb'}/>
         ))
       }
     </Menu>
-  )    
-}
+  );
+};
 
 export const ModalBackdrop = styled.div`
 z-index: 1; 

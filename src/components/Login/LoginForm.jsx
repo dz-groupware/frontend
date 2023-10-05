@@ -35,7 +35,9 @@ export default function LoginForm() {
   };
 
   useEffect(()=>{
+    console.log('로그인폼 요청 몇번되지');
     if(status===202){
+      console.log('로그임폼 202일때요청')
         navigate('/',{state:{ menuId: "0" }});
     } else if (error && error.data && error.data.message) {  // error 객체에서 message 추출
       setErrorMessage(error.data.message);

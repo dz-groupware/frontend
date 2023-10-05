@@ -5,46 +5,15 @@ import styled from 'styled-components';
 import { AiFillFolder, AiFillFolderOpen, AiOutlineProfile, AiFillProfile, AiOutlineMenu } from "react-icons/ai";
 
 import { searchMenuListAPI } from '../api/gnb';
-import { getMenuList } from '../api/menu';
 
 import Module from './Module';
 
-export default function LnbLayout() {
+export default function LnbLayout({ routeList }) {
   const location = useLocation();
-
   const [gnb, setGnb] = useState({ id: 0, name: '' });
   const [lnbOpen, setLnbOpen] = useState(true);
 
   const [data, setData] = useState([]);
-  const [routeOn, setRouteOn] = useState(false);
-  const [routeList, setRouteList] = useState(new Map([
-    [`/`, { menuId: 0, gnbId: 0, gnbName: 'main', page: 'Main' }],
-    [`/FORBIDDEN`, { menuId: 0, gnbId: 0, gnbName: '403', page: 'FORBIDDEN' }],]));
-
-  useEffect(() => {
-    const parseMenuList = (originMenuList) => {
-      const menuList = new Map();
-      originMenuList.forEach(row => {
-        const { menuId, gnbId, gnbName, nameTree, page } = row;
-        menuList.set(`/${nameTree}`, { menuId, gnbId, gnbName, page });
-      });
-      menuList.set(`/`, { menuId: 0, gnbId: 0, gnbName: 'main', page: 'Main' });
-      menuList.set(`/FORBIDDEN`, { menuId: 0, gnbId: 0, gnbName: '403', page: 'FORBIDDEN' });
-      setRouteList(menuList);
-    }
-
-    const initRouteList = async () => {
-      try {
-        const res = await getMenuList(0);
-        parseMenuList(res.data.data);
-        setRouteOn(true);  
-      } catch (error) {
-        console.log('error in lnb');
-      };
-      // 컴포넌트 마운트 시 현재 경로를 기반으로 routeList 업데이트
-    };
-    initRouteList();
-  }, []);
 
   useEffect(() => {
     try{
@@ -81,10 +50,9 @@ export default function LnbLayout() {
           }
         </LNBList>
         <OutletArea id='route' className={`${location.pathname === '/' ? 'main' : 'lnb'} ${lnbOpen ? 'true' : 'false'}`} >
-          {routeOn &&
           <Routes>
             <Route path='/*' element={<Module gnb={gnb} setGnb={setGnb} routeList={routeList}/>} />
-          </Routes>}
+          </Routes>
         </OutletArea>
       </LnbArea>
     </Content>

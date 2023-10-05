@@ -1,5 +1,4 @@
 import { axiosInstance } from "../utils/axiosInstance"
-import { isUnAuthorized } from '../common/Error/Error';
 
 export const loginApi = async ({ data }) => {
   try {
@@ -13,9 +12,7 @@ export const loginApi = async ({ data }) => {
   }
 }
 
-export function changeEmpApi() {
-  const empId = localStorage.setItem("empId", 0);
-  isUnAuthorized(empId);
+export function changeEmpApi(empId) {
   return axiosInstance.post(`/auth/re-login`, {
       empId,
       headers: {

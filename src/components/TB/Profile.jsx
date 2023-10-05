@@ -1,12 +1,7 @@
 import styled from 'styled-components';
-import { UnAuthorized } from '../../common/Error/Error';
 
-export default function Profile({ profile }) {
-  const empId = localStorage.getItem("empId");
-  console.log('profile : ', empId);
-  console.log('profile : ', profile);
-  
-  const user = profile.find(prf => prf['empId']+"" === empId);
+export default function Profile({ profile, empId }) {
+  const user = profile.find(prf => prf['empId'] === empId);
 
   if(user) {
     return (
@@ -18,9 +13,6 @@ export default function Profile({ profile }) {
         </div>
       </ProfileArea>
     );
-  } else {
-    console.log('사용자 정보가 일치하지 않습니다.');
-    UnAuthorized();
   }
 }
 

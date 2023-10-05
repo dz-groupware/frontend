@@ -11,7 +11,7 @@ import { MenuList, FavList, IconList } from './GnbList';
 
 export default function GNB({ gnb, favor }){
   const [menuOn, setMenuOn] = useState([false, false]);
-
+  
   return (
     <>
       <GNBIconArea id='gnbIcon'>   

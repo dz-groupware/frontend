@@ -8,14 +8,14 @@ import {
   FormInput,
   Select
 } from '../Commons/StyledForm';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { axiosInstance } from '../../utils/axiosInstance';
 import { styled } from 'styled-components';
 import { employeeActions } from '../../utils/Slice';
 import StyledButton from '../Commons/StyledButton';
 
-export default function EmployeeMgmtGroupForm({pageId}) {
+export default function EmployeeMgmtGroupForm({ pageId }) {
   const dispatch = useDispatch();
   const reduxEmployeeGroupInfo = useSelector(state => state.employeeMgmt.employeeGroupInfo);
   const isVisible = useSelector(state => state.employeeMgmt.isVisible);
@@ -23,17 +23,18 @@ export default function EmployeeMgmtGroupForm({pageId}) {
   const [companyOptions, setCompanyOptions] = useState([]);
   const [departmentOptions, setDepartmentOptions] = useState([]);
   const [groupsInfo, setGroupsInfo] = useState([reduxEmployeeGroupInfo]);
-  
+  const previousGroupsInfo = useRef([]);
+
 
   useEffect(() => {
     // 회사 목록을 가져오는 함수
     const fetchCompanies = async () => {
       try {
-        console.log("가나다라마바사",pageId.pageId);
-       
+        // console.log("가나다라마바사", pageId.pageId);
+
         axiosInstance.defaults.headers['menuId'] = pageId;
         const response = await axiosInstance.get('/companies/');
-        console.log("가나다라마바사",response);
+        // console.log("가나다라마바사", response);
         setCompanyOptions(response.data.data);
       } catch (error) {
         console.error("API Error:", error);
@@ -55,8 +56,8 @@ export default function EmployeeMgmtGroupForm({pageId}) {
 
 
   useEffect(() => {
-    console.log("groupsInfo has changed:", groupsInfo);
-}, [groupsInfo]);
+    // console.log("groupsInfo has changed:", groupsInfo);
+  }, [groupsInfo]);
 
   useEffect(() => {
     // info가 배열인 경우에 대한 처리
@@ -92,18 +93,24 @@ export default function EmployeeMgmtGroupForm({pageId}) {
     };
     setGroupsInfo(updatedGroups);
 
-    
-};
 
-
-const addNewGroup = () => {
-  const newGroup = {
-    deletedYn: false
   };
-  setGroupsInfo([...groupsInfo, newGroup]);
+
+  const addNewGroup = () => {
+    previousGroupsInfo.current.push([...groupsInfo]);
+    const newGroup = {
+        deletedYn: false
+    };
+    setGroupsInfo([...groupsInfo, newGroup]);
 };
 
 
+const removeGroup = () => {
+  if (previousGroupsInfo.current.length > 0) {
+      const prevState = previousGroupsInfo.current.pop();
+      setGroupsInfo(prevState);
+  }
+};
 
   const handleBlur = () => {
     dispatch(employeeActions.updateGroupInfo(groupsInfo));
@@ -113,6 +120,7 @@ const addNewGroup = () => {
     <Container>
       {groupsInfo.map((group, idx) => (
         <EmployeeMgmtGroupInputForm key={idx}>
+           {!group.deptId && idx !== 0 && <CloseButton  onClick={() => removeGroup(idx)}>x</CloseButton >}
           <InputContainer>
             <Label>회사</Label>
 
@@ -151,78 +159,83 @@ const addNewGroup = () => {
               <Label>부서</Label>
               <Select
                 name="deptId"
-                value={group.deptId}
+                value={group.deptId || ""}
                 onChange={(e) => handleChange(e, idx)}
                 onBlur={handleBlur}
               >
                 <option value="direct">선택</option>
                 {departmentOptions && departmentOptions.map((department, index) => (
                   <option key={index} value={department.id}>{department.name}</option>
-                  ))}
-                  </Select>
-                </InputContainer>
-              </HalfInputContainer>
-    
-              <InputContainer>
-                <Label>인사이동유무</Label>
-                <label>
-                  <Input
-                    type="radio"
-                    name={`transferredYn-${idx}`}
-                    value={"true"||""}
-                    checked={group.transferredYn === true}
-                    onChange={(e) => handleChange(e, idx)}
-                    onBlur={handleBlur}
-                  />
-                  이동
-                </label>
-                <label>
-                  <Input
-                    type="radio"
-                    name={`transferredYn-${idx}`}
-                    value={"false"||""}
-                    checked={group.transferredYn === false}
-                    onChange={(e) => handleChange(e, idx)}
-                    onBlur={handleBlur}
-                  />
-                  미이동
-                </label>
-              </InputContainer>
-    
-              <HalfInputContainer>
-                <FormInput
-                  label="부서 배정일"
-                  name="edjoinDate"
-                  type="date"
-                  value={group.edjoinDate || ''}
-                  onChange={(e) => handleChange(e, idx)}
-                  onBlur={handleBlur}
-                  
+                ))}
+              </Select>
+            </InputContainer>
+          </HalfInputContainer>
 
-                />
-                <FormInput
-                  label="부서 이동일"
-                  name="leftDate"
-                  type="date"
-                  value={group.leftDate || ''}
-                  onChange={(e) => handleChange(e, idx)}
-                  onBlur={handleBlur}
+          <InputContainer>
+            <Label>인사이동유무</Label>
+            <label>
+              <Input
+                type="radio"
+                name={`transferredYn-${idx}`}
+                value={"true" || ""}
+                checked={group.transferredYn === true}
+                onChange={(e) => handleChange(e, idx)}
+                onBlur={handleBlur}
+              />
+              이동
+            </label>
+            <label>
+              <Input
+                type="radio"
+                name={`transferredYn-${idx}`}
+                value={"false" || ""}
+                checked={group.transferredYn === false}
+                onChange={(e) => handleChange(e, idx)}
+                onBlur={handleBlur}
+              />
+              미이동
+            </label>
+          </InputContainer>
 
-                  disabled={group.transferredYn !== true}
-                />
-              </HalfInputContainer>
+          <HalfInputContainer>
+            <FormInput
+              label="부서 배정일"
+              name="edjoinDate"
+              type="date"
+              value={group.edjoinDate || ''}
+              onChange={(e) => handleChange(e, idx)}
+              onBlur={handleBlur}
 
-            </EmployeeMgmtGroupInputForm>
-          ))}
-          <StyledButton onClick={addNewGroup}>소속 부서 추가</StyledButton>
-        </Container>
-      );
-    }
-    
-    const EmployeeMgmtGroupInputForm = styled.div`
+
+            />
+            <FormInput
+              label="부서 이동일"
+              name="leftDate"
+              type="date"
+              value={group.leftDate || ''}
+              onChange={(e) => handleChange(e, idx)}
+              onBlur={handleBlur}
+
+              disabled={group.transferredYn !== true}
+            />
+          </HalfInputContainer>
+
+        </EmployeeMgmtGroupInputForm>
+      ))}
+      <StyledButton onClick={addNewGroup}>소속 부서 추가</StyledButton>
+    </Container>
+  );
+}
+
+const EmployeeMgmtGroupInputForm = styled.div`
       border-top: 2px solid black;
       margin-top: 10px;
       width: 100%;
       background-color: white;
     `;
-    
+
+    const CloseButton = styled(StyledButton)`
+    cursor: pointer;
+    font-size: 15px;
+   
+  `;

@@ -61,7 +61,7 @@ const employeeMgmtInitialState = {
   activeTab: 'basic',
   isDuplicated: false,
   isSignUpChecked: false, 
-  uploadedFile: null,
+  // uploadedFile: null,
   
 }
 
@@ -168,9 +168,17 @@ function getIdFormLocal(k, d) {
           state.isSignUpChecked = action.payload;
         },
         updateUploadedFile: (state, action) => {
-          state.uploadedFile = action.payload;
-        }
-      
+          // state.uploadedFile = action.payload;
+          state.employeeBasicInfo.imageUrl = action.payload;
+        },
+        setPreviousGroupsInfo: (state, action) => {
+          state.previousGroupsInfo = action.payload;
+      },
+      restorePreviousGroupsInfo: (state) => {
+          if (state.previousGroupsInfo) {
+              state.employeeGroupInfo = state.previousGroupsInfo;
+          }
+      },
 
 
     }

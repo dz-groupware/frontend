@@ -1,4 +1,5 @@
 import { axiosInstance } from "../utils/axiosInstance"
+import { isUnAuthorized } from '../common/Error/Error';
 
 export const loginApi = async ({ data }) => {
   try {
@@ -9,26 +10,25 @@ export const loginApi = async ({ data }) => {
     console.log(response);
     return response;
   } catch (error) {
-    console.error(error)
-    console.error('로그인 실패');
     throw error; // 오류를 throw하여 상위로 전달합니다.
   }
 }
 
-export function changeEmpApi(pageId, empId) {
-  axiosInstance.defaults.headers['menuId'] = pageId;
-  if(empId !== undefined && empId) {
-      return axiosInstance.post(
-          `/auth/re-login`,
-          {
-            empId,
-          }
-      )
-  }
+export function changeEmpApi() {
+  const empId = localStorage.setItem("empId", 0);
+  isUnAuthorized(empId);
+  return axiosInstance.post(`/auth/re-login`, {
+      empId,
+      headers: {
+        "Content-Type": "application/json",
+        "menuId" : "0",
+      }
+    }
+  );
 }
 
 export function logOut() {
   return axiosInstance.post(
-    `/auth/logout`, { headers: { 'menuId' : 0 } }
+    `/auth/logout`, { headers: { 'pageId' : 0 } }
   )
 }

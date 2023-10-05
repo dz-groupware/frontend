@@ -26,7 +26,7 @@ export default function SignInput(props) {
         onKeyUp={() => checkValidate(props.value)}
         value={props.value}
       />
-      <ErrorMassage show={`${errShow}`}>{props.errorMessage}</ErrorMassage>
+      <WarnMessage show={`${errShow}`}>{props.errorMessage}</WarnMessage>
     </Container>
   )
 }
@@ -56,9 +56,9 @@ const StyledInput = styled.input`
     color: #999;
   }
 `;
-  const ErrorMassage = styled.div`
+  const WarnMessage = styled.div`
     height: 14px;
-    color: #eb5252;
+    color: yellow;
     font-size: 14px;
 
     margin-left: 10px;

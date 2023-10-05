@@ -10,11 +10,12 @@ export default function LoginPage() {
   return (
     <Container>
       <ImageArea>
-        <img src= {`${process.env.PUBLIC_URL}/assets/images/login_banner.jpg`} alt="아마란스텐 이미지" />
-        <ImageText>아마란스텐입니다.</ImageText>
+        <img src= {`${process.env.PUBLIC_URL}/img/login_banner.jpg`} alt="아마란스텐 이미지" />
+        <ImageText>아마란스2023입니다.</ImageText>
       </ImageArea>
       <LoginArea>
-      { empId > 0 ? <Hello /> : <LoginForm/>}
+      {/* { empId > 0 ? <Hello /> : <LoginForm/>} */}
+      <LoginForm/>
       </LoginArea>
     </Container>
   );

@@ -5,12 +5,20 @@ import { useEffect, useState } from "react";
 import { getEmployeeByDepartmentIdApi, getSubsidiaryDepartmentsWithEmployeeCount } from "../../../api/company";
 import EmployeeBox from "./EmployeeBox";
 
-export function DepartmentTreeBox({ item, depth=0, companyId, activeEmpId, handleEmpClick }) {
+export function DepartmentTreeBox({ refresh, item, depth=0, companyId, activeEmp, handleEmpClick, headers, isEditMode }) {
   const [expanded, setExpanded] = useState(false);
   const { data: departmentList, isLoading: departmentLoading, error: departmentError, setShouldFetch: setDeptFetch } = useFetchData(getSubsidiaryDepartmentsWithEmployeeCount,
-    {paths:{departmentId: item.departmentId, companyId}, shouldFetch:false});
+    { 
+      paths:{departmentId: item.departmentId, companyId}, 
+      shouldFetch:false, 
+      headers 
+    });
   const { data: empList, isLoading: empLoading, error: empError, setShouldFetch: setEmpFetch } = useFetchData(getEmployeeByDepartmentIdApi,
-    {paths:{departmentId: item.departmentId}, shouldFetch:false });
+    { 
+      paths:{departmentId: item.departmentId}, 
+      shouldFetch:false ,
+      headers 
+    });
 
   const toggleSubDepartment = async () => {
     if (expanded) {
@@ -25,11 +33,26 @@ export function DepartmentTreeBox({ item, depth=0, companyId, activeEmpId, handl
     }
     setExpanded(true);
   };
+
   useEffect(()=> {
     if(item.childNodeYn){
       setEmpFetch(true);
     }
-  },[departmentList])
+  },[departmentList]);
+
+  useEffect(()=> {
+    // console.log('departmentTreeBox');
+    if(item.childNodeYn){
+      // console.log('departmentTreeBox-1');
+      setEmpFetch(true);
+    }
+    if (!item.childNodeYn && departmentList.length === 0) {
+      // console.log('departmentTreeBox-2');
+      setDeptFetch(true);
+    }
+  },[refresh]);
+
+
   return (
     <>
       <NameBar $depth={depth}>
@@ -46,16 +69,16 @@ export function DepartmentTreeBox({ item, depth=0, companyId, activeEmpId, handl
       {expanded && departmentList.length > 0 && (
         <>
           {departmentList.map((subItem) => (
-            <div>
               <DepartmentTreeBox 
                 key={"d-"+subItem.departmentId}
                 item={subItem} 
                 depth={depth+1}
                 companyId={companyId}
-                activeEmpId={activeEmpId}
+                activeEmp={activeEmp}
                 handleEmpClick={handleEmpClick}
+                headers={headers}
+                isEditMode={isEditMode}
               />
-            </div>
           ))}
         </>
       )}
@@ -64,13 +87,15 @@ export function DepartmentTreeBox({ item, depth=0, companyId, activeEmpId, handl
           {empList.map((subItem, subIndex) => (
             <EmployeeBox 
               key={"e-"+subItem.empId} 
+              refresh={refresh}
               id={subItem.empId}
               name={subItem.empName} 
               position={subItem.empPosition}
               masterYn={subItem.empMasterYn}
               depth={depth+1}
-              activeEmpId={activeEmpId}
-              onClick={() => handleEmpClick(subItem.empId)}
+              activeEmp={activeEmp}
+              onClick={() => handleEmpClick({id: subItem.empId, masterYn: subItem.empMasterYn})}
+              isEditMode={isEditMode}
             />
           ))}
         </>

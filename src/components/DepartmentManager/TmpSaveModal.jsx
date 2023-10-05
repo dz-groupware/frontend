@@ -15,7 +15,7 @@ export default function TmpSaveModal({ modalOff, form, pageId }) {
   const [detail, setDetail] = useState(initDetail);
   // 이건 임시저장용 noti (수정 중이고, detail.state가 바뀌면 alert를 띄움).
   // detail은 여기 detail인데 흠..
-  const [noti, setNoti] = useState(false);
+
   const handleSaveAll = () => {
     // form
   }
@@ -32,7 +32,7 @@ export default function TmpSaveModal({ modalOff, form, pageId }) {
             <div>
               <div>삭제</div><div>수정완료</div>
             </div>
-            <DetailBasic data={a} detail={detail} setDetail={setDetail} pageId={pageId} setNoti={setNoti} />
+            <DetailBasic data={a} detail={detail} setDetail={setDetail} pageId={pageId} />
             </>
           ))
         }

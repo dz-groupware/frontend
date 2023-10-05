@@ -6,7 +6,7 @@ import { basicInfoApi } from '../api/gnb';
 
 import TB from './TB';
 import GNB from '../components/GNB/GNB';
-import LNB from './LnbLayout';
+import LnbLayout from './LnbLayout';
 
 export default function GnbLayout() {
   const [profile, setProfile] = useState(JSON.parse(`[{}]`));
@@ -15,41 +15,50 @@ export default function GnbLayout() {
 
   const basicInfo = async(empId) => {
     try{
-      const res = await basicInfoApi(empId, "0");
-      setProfile(res.data.data.profile);
-      setGnb(res.data.data.menu);
-      setFavor(res.data.data.favor);  
+      const res = await basicInfoApi(empId);
+      if (Array.isArray(res.data.data.profile)) {
+        setProfile(res.data.data.profile);
+      } else {
+        console.log(":: error : profile is null ::");
+      }
+      if (Array.isArray(res.data.data.menu)) {
+        setGnb(res.data.data.menu);
+      } else {
+        console.log(":: error : GNB is null ::");
+      }
+      if (Array.isArray(res.data.data.favor)) {
+        setFavor(res.data.data.favor);  
+      }
+      console.log(res.data.data.empId, res.data.data.compId)
       localStorage.setItem("empId", res.data.data.empId);
       localStorage.setItem("compId", res.data.data.compId);
     } catch (error) {
       console.log(error);
-      // if (error.status === 401) {
-      //   console.log('로그인 정보 없음 (in home)');
-      //   localStorage.setItem("empId", 0);
-      //   localStorage.setItem("compId", 0);
-      //   window.location.href="/login";
-      // }
     }
   };
 
   useEffect(() => {
     const empId = localStorage.getItem("empId");
-    if (empId === null || empId === undefined || empId === "0" || empId === 0){
-      // 로그인 정보 없음.
-      //????
-      // 로컬 스토리지 값 초기화하고
-      // /login 으로 이동
-      // 요청 보내기 전에 확인 하기 위함 
-    } else {
-      basicInfo(empId);
+    try {
+      if (empId) {
+        basicInfo(empId);
+      } else {
+        basicInfo(0);
+      }  
+    } catch (error) {
+      console.log("E! Gnb : ", error);
+      window.location.href="/login";
+
     }
+
+
   }, [])
 
   return (
     <>
       <Content>
         <TB profile={profile}/>
-        <LNB />
+        <LnbLayout />
       </Content>
       <GNB gnb={gnb} favor={favor}/>
     </>

@@ -15,7 +15,7 @@ import SearchResult from '../components/DepartmentManager/SearchResult';
 import DetailTitle from '../components/DepartmentManager/DetailTitle';
 import TmpSaveModal from '../components/DepartmentManager/TmpSaveModal';
 import { Loading } from './VIEW';
-import Retry from '../components/Error/Retry';
+import Retry from '../common/Error/Retry';
 
 
 export default function DepartmentManager({ pageId }) {
@@ -58,7 +58,6 @@ export default function DepartmentManager({ pageId }) {
   const [result, setResult] = useState([]);
   const [empList, setEmpList] = useState([]);
 
-  const [noti, setNoti] = useState(false);
   const [loading, setLoading] = useState({loading: false, response: false});
   const [modalOn, setModalOn] = useState(false);
 
@@ -293,36 +292,6 @@ export default function DepartmentManager({ pageId }) {
     }
   }, [loading]);
 
-  useEffect(() => {
-    console.log("noti : ", noti );
-    if (noti) {
-      Swal.fire({
-        title: "페이지 이동",
-        text: "수정 중인 내용은 모두 삭제 됩니다.",
-        showDenyButton: true,
-        showCancelButton: true,
-        confirmButtonText: '임시저장',
-        denyButtonText: '확인',
-        cancelButtonText: '취소',
-      }).then((result) => {
-        /* Read more about isConfirmed, isDenied below */
-        console.log(result)
-        if (result.isConfirmed) {
-          console.log('임시저장');
-          Swal.fire('임시저장 되었습니다', '', 'success');
-          // setForm([ ...form, value ]);
-          setDetail({ ...detail, isChanging: detail.state, state: 'tmpSave', save:false }); // state는 남기고 save는 false 특수하게 DetailBasic에서 isModified를 false 해줘야 하기 때문에
-        } else if (result.isDenied) {
-          console.log('수정 삭제 후 이동');
-          setDetail({ ...detail, id: detail.state, state: false });
-        } else if (result.isDismissed) {
-          console.log('취소');
-          setDetail({ ...detail, state: false });
-        }
-      })
-      setNoti(false);
-    }
-  }, [noti])
 
   useEffect(() => {
     if (item > 0 ){
@@ -379,7 +348,7 @@ export default function DepartmentManager({ pageId }) {
           {
             detail.type === 'basic' ? 
             ( !error.value ? 
-              <DetailBasic data={value} setData={setValue} detail={detail} setDetail={setDetail} setNoti={setNoti} pageId={pageId} />
+              <DetailBasic data={value} setData={setValue} detail={detail} setDetail={setDetail} pageId={pageId} />
               :  <Retry /> )
             : null
           }
@@ -391,7 +360,7 @@ export default function DepartmentManager({ pageId }) {
             : null
           }
         </Detail>
-        { modalOn && <TmpSaveModal modalOff={modalOff} form={form} pageId={pageId} setNoti={setNoti} />}
+        { modalOn && <TmpSaveModal modalOff={modalOff} form={form} pageId={pageId} />}
       </DetailArea>
     </ContentDept>
   );

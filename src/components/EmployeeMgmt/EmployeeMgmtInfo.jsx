@@ -3,18 +3,21 @@ import React, { useEffect, useState } from 'react';
 
 import MgmtInfo from "../Commons/MgmtInfo";
 import { employeeActions } from "../../utils/Slice";
-import { addEmployeeMgmt, deleteEmployeeMgmt, modifyEmployeeMgmt } from "../../api/employeemgmt";
+import { addEmployeeMgmt, deleteEmployeeMgmt, modifyEmployeeMgmt,imageUpload } from "../../api/employeemgmt";
 
 
 
-export default function EmployeeMgmtInfo() {
+export default function EmployeeMgmtInfo({pageId}) {
     const dispatch = useDispatch();
     const reduxEmployeeBasicInfo = useSelector(state => state.employeeMgmt.employeeBasicInfo);
     const reduxEmployeeGroupInfo = useSelector(state => state.employeeMgmt.employeeGroupInfo);
     const [basicInfo, basicSetInfo] = useState(reduxEmployeeBasicInfo);
     const [groupInfo, groupSetInfo] = useState(reduxEmployeeGroupInfo);
-    const activeTab = useSelector(state => state.employeeMgmt.activeTab);
     const idForForm = useSelector(state => state.employeeMgmt.idForForm);
+    const isDuplicated = useSelector(state => state.employeeMgmt.isDuplicated);
+    const isSignUpChecked = useSelector(state => state.employeeMgmt.isSignUpChecked);
+    const isDataFetched = useSelector(state => state.employeeMgmt.idForForm);
+    const newImageFile = useSelector(state => state.employeeMgmt.uploadedFile);
 
 
 
@@ -41,7 +44,8 @@ export default function EmployeeMgmtInfo() {
                 
                 try {
                     console.log("퇴사 바디", info);
-                    await deleteEmployeeMgmt(info.id, info);
+                    await deleteEmployeeMgmt(info.id, info,pageId);
+                    //image 업로드
                 } catch (error) {
                     console.error("Error deleting employee data for ID:", info.id, error);
                     // 여기서 실패한 경우에 대한 추가 처리를 고려할 수 있습니다.
@@ -63,30 +67,44 @@ export default function EmployeeMgmtInfo() {
 
 
     const handleUpdate = async (e) => {
+        let isErrorOccurred = false;
+        
         if (idForForm) {
             for (const info of combinedEmployeeInfo) {
                 try {
-                    await modifyEmployeeMgmt(info);
+                   
+                    await modifyEmployeeMgmt(info,pageId);
+
+                    //여기서 이미지 upload api 요청하기 사원 이름+로그인아이디 해서 올려주기
                 } catch (error) {
                     console.error("Error updating employee data for ID:", info.id, error);
+                    isErrorOccurred = true;
                     // 여기서 실패한 경우에 대한 추가 처리를 고려할 수 있습니다.
                 }
             }
+            if (!isErrorOccurred) {
             alert("사원 데이터가 수정되었습니다.");
             dispatch(employeeActions.hideForm());
-            window.location.reload();
+            // window.location.reload();
+            }
     
         } else {
             for (const info of combinedEmployeeInfo) {
                 try {
-                    await addEmployeeMgmt(info);
+                    await addEmployeeMgmt(info,pageId);
+                    //여기서 이미지 upload api 요청하기
+
                 } catch (error) {
                     console.error("Error adding employee data for ID:", info.id, error);
+                    isErrorOccurred = true;
                 }
             }
+            if (!isErrorOccurred) {
             alert("사원 데이터가 저장되었습니다.");
             dispatch(employeeActions.hideForm());
-            window.location.reload();
+
+            // window.location.reload();
+            }
         }
     };
     
@@ -94,8 +112,21 @@ export default function EmployeeMgmtInfo() {
 
 
     const handleSubmit = async (e) => {
+      
 
-
+        if (!isDataFetched) {
+            console.log("isSignUpChecked", isSignUpChecked);
+            if (isSignUpChecked === false) {
+                alert("가입확인을 해주세요.");
+                return;
+            }
+        
+            console.log("isDuplicated", isDuplicated);
+            if (isDuplicated === false) {
+                alert("아이디 중복확인을 해주세요.");
+                return;
+            }
+        }
 
         console.log("employee", combinedEmployeeInfo);
         const requiredFields = [

@@ -5,12 +5,15 @@ import Line from '../components/Commons/Line';
 import RoleSettingMain from '../components/RoleSetting/RoleSettingMain';
 import { MdDisplaySettings, MdSmartDisplay, MdOutlineMapsUgc } from 'react-icons/md'
 import { PiCalendarCheck, PiStarBold } from 'react-icons/pi'
-import RoleCreateModal from '../components/RoleSetting/RoleCreateModal';
+import RoleModal from '../components/RoleSetting/RoleModal';
+import ActionButton from '../components/Commons/ActionButton';
+import { addAuthApi, updateAuthApi } from '../api/authgroup';
 
-export default function RoleSettingPage() {
+export default function RoleSettingPage({pageId}) {
   const [refresh, setRefresh] = useState(false);
   const [activeAuthId, setActiveAuthId] = useState(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [openCreateModal, setOpenCreateModal] = useState(false);
+  const [openModifyModal, setOpenModifyModal] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
   
   const changeRefresh = () => {
@@ -27,6 +30,9 @@ export default function RoleSettingPage() {
     }
   };
 
+  useEffect(()=>{
+    console.log("페이지 아이디 출력하겠습니다", pageId);
+  },[]);
   return (
     <Container>
       <TopContainer>
@@ -43,20 +49,39 @@ export default function RoleSettingPage() {
           </IconWrapper>
         </TitleAndIconContainer>
         <ActionsContainer>
-          <StyledButton 
+          <ActionButton 
+            width={'3rem'}
+            fontWeight={400} 
+            fontSize={'1.0rem'} 
+            name="추가"
             onClick={() =>{ 
               if(!isEditMode){
-                setIsModalOpen(true); 
+                setOpenCreateModal(true); 
               }else {
                 alert('수정중에는 추가할 수 없습니다.')
               }
-            }}>추가</StyledButton>
-          <StyledButton>변경이력</StyledButton>
+            }}/> 
+            {activeAuthId &&(         
+              <ActionButton 
+                width={'3rem'}
+                fontWeight={400} 
+                fontSize={'1.0rem'} 
+                name="수정"
+                onClick={() =>{ 
+                  if(!isEditMode){
+                    setOpenModifyModal(true); 
+                  }else {
+                    alert('수정중에는 추가할 수 없습니다.')
+                  }
+                }}
+              />
+            )}
           <VerticalLine/>
           <PiCalendarCheck fontSize={26} color='C9C9C9'/>
           <PiStarBold fontSize={26} color='C9C9C9'/>
         </ActionsContainer>
-        <RoleCreateModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} changeRefresh={changeRefresh} setActiveAuthId={setActiveAuthId} />
+        <RoleModal isOpen={openCreateModal} onClose={() => setOpenCreateModal(false)} changeRefresh={changeRefresh} setActiveAuthId={setActiveAuthId} apiFunction={addAuthApi} headers={{pageId}}/>
+        <RoleModal isOpen={openModifyModal} onClose={() => setOpenModifyModal(false)} modifyMode={true} changeRefresh={changeRefresh} activeAuthId={activeAuthId} setActiveAuthId={setActiveAuthId} apiFunction={updateAuthApi} headers={{pageId}}/>
       </TopContainer>
       <Line color="#f5f5f5" height="2px" bottom={"20px"}/>
       <div style={{  marginLeft: "1.2rem" }} >
@@ -79,6 +104,7 @@ export default function RoleSettingPage() {
         isEditMode={isEditMode}
         setIsEditMode={setIsEditMode}
         handleItemClick={handleItemClick}
+        headers={{pageId}}
       />
     </Container>
   );
@@ -125,16 +151,6 @@ const IconWrapper = styled.div`
   height: 30px; 
   border-radius: 50%; 
 `;
-const StyledButton = styled.button`
-  width: fit-content;
-  height: fit-content;
-  font-weight: 600;
-  background: linear-gradient(to bottom, #ffffff,#ffffff,#e4e4e4); 
-  padding: 7px;
-  margin-left: 3px;
-  border: 1px solid #C9C9C9;
-  border-radius: 5px;
-`
 const VerticalLine = styled.div`
   height: 20px; 
   width: 1px;

@@ -4,25 +4,27 @@ import EmployeeMgmtNav from '../components/EmployeeMgmt/EmployeeMgmtNav';
 import EmployeeMgmtForm from '../components/EmployeeMgmt/EmployeeMgmtForm';
 import EmployeeMgmtAside from '../components/EmployeeMgmt/EmployeeMgmtAside';
 import PageContainer from '../components/Commons/PageContainer';
+import React, { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
-import { useEffect } from 'react';
 import { employeeActions } from '../utils/Slice';
 
-
-
-export default function EmployeeMgmtPage() {
-  // const dispatch = useDispatch();
-
-  // useEffect(() => {
-  //   // 상태 초기화 로직
-  //   dispatch(employeeActions.resetState());
-  // }, []);
+export default function EmployeeMgmtPage({pageId}) {
+  const dispatch = useDispatch();
+  useEffect(() => {
+    console.log("페이지아이디확인",pageId);
+    
+    // 컴포넌트가 unmount 될 때 상태를 초기화하려면, useEffect의 클린업 함수를 사용합니다.
+    return () => {
+      dispatch(employeeActions.resetState());
+    };
+  }, []);
+ 
     return (
       <PageContainer children={
         <>
         <EmployeeMgmtHeader/>
-        <EmployeeMgmtNav/>
-      <MgmtMain aside={<EmployeeMgmtAside />} form={<EmployeeMgmtForm />} />
+        <EmployeeMgmtNav pageId={pageId}/>
+      <MgmtMain aside={<EmployeeMgmtAside pageId={pageId} />} form={<EmployeeMgmtForm pageId={pageId} />} />
       
       </>
     }>

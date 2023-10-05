@@ -7,8 +7,7 @@ import ActionButton from '../../Commons/ActionButton';
 import { useFetchData } from '../../../hooks/useFetchData';
 import { getCountAuthGroupApi } from '../../../api/authgroup';
 
-export default function AuthGroupSection({ activeAuthId, setActiveAuthId, refresh, isEditMode, handleItemClick}) {
-  const rangeOptions = ['전체', '사용', '미사용'];  // 필터 옵션을 배열로 정의
+export default function AuthGroupSection({ activeAuthId, setActiveAuthId, refresh, isEditMode, handleItemClick, headers}) {
   const orderOptions = [
     // { label: '필터', value: 'none' },
     { label: '최신순', value: 'authDashboardIdDesc' },
@@ -16,28 +15,29 @@ export default function AuthGroupSection({ activeAuthId, setActiveAuthId, refres
     { label: '권한명순', value: 'authNameAsc' },
     { label: '권한명역순', value: 'authNameDesc'},
   ];
-  const [rangeOp, setRangeOp] = useState(rangeOptions[0]);
   const [orderBy, setOrderBy] = useState(orderOptions[0].value);
   const [searchInput, setSearchInput] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
-  const { data: countData, isLoading: isLoadingCount, error: isErrorCount, setShouldFetch} = useFetchData(getCountAuthGroupApi);
+  const { data: countData, isLoading: isLoadingCount, error: isErrorCount, setShouldFetch} = useFetchData(getCountAuthGroupApi, {headers});
+  const [isFilterd, setIsFiltered] = useState(false);
   
   const handleSearch = () => {
+    if(searchInput === null || searchInput === undefined || searchInput === '') return;
     setSearchTerm(searchInput);
     setSearchInput('');  // 초기화
+    setIsFiltered(true);
   };
+  const handleRefresh = () => {
+    setSearchTerm();
+    setSearchInput('');  // 초기화
+    setIsFiltered(false);
+  };
+
   useEffect(()=>{
     setShouldFetch(true);
   },[refresh]);
   return (
     <Container>
-      <StyledSelect onChange={e => setRangeOp(e.target.value)}>
-        {rangeOptions.map((option, index) => (
-          <option key={index} value={option}>
-            {option}
-          </option>
-        ))}
-      </StyledSelect>
       <SearchBar>
         <StyledInput
           type="text"
@@ -84,7 +84,9 @@ export default function AuthGroupSection({ activeAuthId, setActiveAuthId, refres
         searchTerm={searchTerm}
         isEditMode={isEditMode}
         handleItemClick={handleItemClick}
+        headers={headers}
       />
+      {isFilterd && <ActionButton onClick={()=>handleRefresh()} name="필터 초기화" /> }
     </Container>
   );
 }

@@ -1,40 +1,55 @@
 import { axiosInstance } from '../utils/axiosInstance';
+import { isUnAuthorized } from '../common/Error/Error';
 
-function header(pageId){
-  return {
+export function basicInfoApi(empId){
+  return axiosInstance.get(`/home`, {
     headers: {
-      'menuId' : pageId
+      "Content-Type": "application/json",
+      "menuId" : "0",
     }
-  };
+  });
 }
 
-
-export function basicInfoApi(empId, pageId){
-  if(empId !== undefined && empId !== null){
-    return axiosInstance.get(`/home`, {
+export function searchMenuListAPI(menuId) {
+  const compId = localStorage.getItem("compId");
+  isUnAuthorized(compId);
+  if (menuId) {
+    return axiosInstance.get(`/menu/lnb`, {
+      params: {
+        menuId,
+        compId,
+      }, 
       headers: {
         "Content-Type": "application/json",
-        'menuId' : pageId
-    }});
+        "menuId" : "0",
+      }
+    });
   }
 }
 
 
-export function GnbFavorDeleteApi(pageId, menuId){  
+export function GnbFavorDeleteApi(menuId){  
   if (menuId !== undefined && menuId !== null){
-    return axiosInstance.delete(
-      `/menu/favor`,{
-        params: {
-          menuId
-        }
-      }, {
+    return axiosInstance.delete(`/menu/favor`, {
+      params: {
+        menuId
+      }, 
       headers: {
-      "Content-Type": "application/json",
-      'menuId' : pageId
-    }});
+        "Content-Type": "application/json",
+        "menuId" : "0"
+      }
+    });
   };
 }
 
+export function GnbFavorApi(){  
+  return axiosInstance.get(`/menu/favor`, {
+    headers: {
+      "Content-Type": "application/json",
+      'menuId' : "0"
+    }
+  });
+}
 
 // *
 
@@ -48,14 +63,7 @@ export function GnbMenuApi(pageId){
   )
 }
 
-export function GnbFavorApi(pageId){  
-  return axiosInstance.get(
-    `/menu/favor`, {
-      headers: {
-      'menuId' : pageId
-    }}
-  )
-}
+
 
 
 export function profileAPI(pageId){  
@@ -65,21 +73,4 @@ export function profileAPI(pageId){
       'menuId' : pageId
     }}
   )
-}
-
-
-
-export function searchMenuListAPI(pageId, menuId, compId) {
-  if(menuId !== undefined && menuId !== null && compId !== undefined && compId !== null) {
-    return axiosInstance.get(
-      `/menu/lnb`,{
-        params: {
-          menuId,
-          compId
-        }, 
-        headers: {
-          "Content-Type": "application/json",
-          'menuId' : pageId
-    }});
-  }
 }

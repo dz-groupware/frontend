@@ -4,12 +4,13 @@
   import { useFetchData } from '../../../hooks/useFetchData';
 import MenuItemView from './MenuItemView';
 
-  export default function MenuOfAuth({ authId }) {
+  export default function MenuOfAuth({ authId, headers }) {
     const { data, isLoading, setShouldFetch, error } = useFetchData(getGnbListOfAuthApi,{
       paths: {
         authId,
       },
       shouldFetch:false,
+      headers,
     });
     useEffect(() => {
       if(authId !== null && authId !== undefined) { // authId가 유효한지 검사
@@ -18,7 +19,7 @@ import MenuItemView from './MenuItemView';
     }, [authId]);
 
     if (isLoading) return <div>로딩중입니다!...</div>;
-    if (error) return <div>{console.log(error)}</div>;
+    if (error) return <div>에러가 발생하였습니다...</div>;
     if (!data) return null;
 
     return (
@@ -38,6 +39,7 @@ import MenuItemView from './MenuItemView';
                 authId={authId}
                 fetchApi={getLnbListOfAuthApi}
                 paths={{authId, parId: item.menuId }}
+                headers={headers}
               />
             ))}
           </tbody>

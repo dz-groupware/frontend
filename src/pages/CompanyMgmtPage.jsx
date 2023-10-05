@@ -8,20 +8,20 @@ import { useEffect } from 'react';
 import { useDispatch } from "react-redux";
 import { companyActions } from "../utils/Slice";
 
-export default function CompanyMgmtPage() {
+export default function CompanyMgmtPage({pageId}) {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    // 상태 초기화 로직
+    console.log("페이지아이디확인",pageId);
     dispatch(companyActions.resetState());
   }, []);
   
   return (
     <PageContainer children={
       <>
-        <CompanyMgmtHeader/>
-        <CompanyMgmtNav/>
-        <MgmtMain aside={<CompanyMgmtAside />} form={<CompanyMgmtForm />} />
+        <CompanyMgmtHeader />
+        <CompanyMgmtNav pageId={pageId}/>
+        <MgmtMain pageId={pageId} aside={<CompanyMgmtAside pageId={pageId} />} form={<CompanyMgmtForm pageId={pageId} />} />
       </>
     }>
     </PageContainer>

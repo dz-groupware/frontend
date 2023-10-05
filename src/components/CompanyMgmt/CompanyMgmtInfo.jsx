@@ -5,13 +5,14 @@ import { deleteCompanyMgmt } from "../../api/companymgmt";
 
 
 
-export default function CompanyMgmtInfo({ handleSubmit, isCodeDisabled, idForForm,formData }) {
+export default function CompanyMgmtInfo({ handleSubmit, isCodeDisabled, idForForm,pageId}) {
     const dispatch = useDispatch();
     const getReduxForm = useSelector(state => state.companyMgmt.companyInfo);
     const handleDelete = async (e) => {
         if (isCodeDisabled) {
+            console.log("ㄷㄷㄷㄷㄷㄷㄷㄷㄷㄷ",pageId)
             try {
-               await deleteCompanyMgmt(idForForm, {...getReduxForm});
+               await deleteCompanyMgmt(idForForm, {...getReduxForm},pageId);
               
                alert("회사 데이터가 삭제되었습니다.");
                window.location.reload();

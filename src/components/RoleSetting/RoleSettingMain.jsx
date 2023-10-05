@@ -38,7 +38,6 @@ export default function RoleSettingMain({refresh, activeAuthId, changeRefresh, i
             setIsSaveClicked={setIsSaveClicked}
             setIsDeleteClicked={setIsDeleteClicked}
           />
-          <Line color="black"/>
           {isEditMode ? 
             <MenuOfAuthEditor 
               authId={activeAuthId} 

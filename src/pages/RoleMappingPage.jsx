@@ -16,7 +16,7 @@ export default function RoleMappingPage({ pageId }) {
   const [isEditMode, setIsEditMode] = useState(null);
   const [refresh, setRefresh] = useState(false);
   const [selectedAuthIds, setSelectedAuthIds] = useState({});
-  const {data, isLoading, error ,setShouldFetch, status, setStatus} = useFetchData(addEmployeeAuthApi, {
+  const {data, isLoading, setShouldFetch, status, setStatus} = useFetchData(addEmployeeAuthApi, {
     data:{ 
       employeeId: activeEmp.id, 
       selectedAuthIds,
@@ -55,8 +55,19 @@ export default function RoleMappingPage({ pageId }) {
   }
 
   const handleChangeMasterClick = () => {
-    setUpdateMasterYnFetch(!updateFetch);
-  }
+    if (!activeEmp.masterYn) {
+      const confirmChange = window.confirm("마스터로 지정하시겠습니까?");
+      if (confirmChange) {
+        setUpdateMasterYnFetch(!updateFetch);
+      }
+    } 
+    else {
+      const confirmChange = window.confirm("마스터를 해제하시겠습니까?");
+      if (confirmChange) {
+        setUpdateMasterYnFetch(!updateFetch);
+      }
+    }
+  };
 
 
   useEffect(()=>{
@@ -67,6 +78,7 @@ export default function RoleMappingPage({ pageId }) {
       setActiveAuthId(null);
     }
   },[status]);
+
   const handleCheckboxChange = (authId) => {
     setSelectedAuthIds(prevSelectedAuthIds => {
       const newState = { ...prevSelectedAuthIds };
@@ -80,13 +92,21 @@ export default function RoleMappingPage({ pageId }) {
   };
 
   useEffect(() => {
-    if(updateStatus === 200) { // API 호출이 성공적으로 끝났을 때
+    if(updateMaster && updateStatus === 200) { // API 호출이 성공적으로 끝났을 때
       console.log("엑티브는",activeEmp);
       setRefresh(!refresh);  // refresh 상태를 업데이트
+      setActiveEmp({id: updateMaster.id, masterYn: updateMaster.masterYn})
       setUpdateStatus(null);
     }
-  }, [updateStatus,refresh]);
 
+    setUpdateStatus(null);
+  }, [updateStatus]);
+
+  useEffect(()=>{
+    if(updateMasterYnError && updateMasterYnError.data && updateMasterYnError.data.message){
+      alert(updateMasterYnError.data.message);
+    }
+  },[updateMasterYnError]);
   return (
     <Container>
       <RoleTopContainer

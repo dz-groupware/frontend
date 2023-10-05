@@ -52,7 +52,7 @@
 
     return (
       <Container>
-        <NameBar $depth={depth} >
+        <NameBar $depth={depth} onClick={toggleSubCompany}>
           {item.childNodeYn ? (
             <>
               <div style={{ width: '1em' }}></div>
@@ -60,7 +60,7 @@
             </>
             ) : (
               <>
-                <StyledButton onClick={toggleSubCompany}>
+                <StyledButton>
                 <div style={{ width: '1em' }} >
                   {expanded ? <VscChevronDown style={{ fontWeight: 'bold' }}/> : <VscChevronRight style={{ fontWeight: 'bold' }}/>}
                 </div>
@@ -135,6 +135,22 @@
     padding-left: ${({ $depth }) => `${$depth * 15}px`}; // 여기를 수정했습니다
     align-items: center;
     margin-bottom: 4px;
+
+  ${props => !props.$isEditMode && `
+    &:hover {
+      border-width: 2px;
+      background-color: #d0cece84;  
+      border-color: #d0cece84;          
+    }
+  `}
+
+  ${props => !props.$isEditMode && `
+    &:active {
+      border-width: 2px;
+      background-color: #5dc3fb;  
+      border-color: #5dc3fb;  
+    }
+  `}
   `;
 
   const StyledButton = styled.button`

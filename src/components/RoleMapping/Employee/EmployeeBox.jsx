@@ -20,21 +20,9 @@ export default function EmployeeBox({ refresh,depth,id, name , position, masterY
 const NameBar = styled.div`
   display: flex;
   flex-direction: row;
-  margin-left: ${({ $depth }) => `${$depth * 15}px`};
+  padding-left: ${({ $depth }) => `${$depth * 15}px`};
   align-items: center;
   margin-bottom: 4px;
-  `;
-
-const StyledEmployeeInfo = styled.div`
-  border: 1px solid transparent;
-  display: flex;
-  align-items: center;  // 가로 방향으로 중앙 정렬
-  border-radius: 5px;
-
-  img {
-    align-self: flex-start; // flex 시작점에 이미지를 정렬
-  }
-  
 
   ${props => !props.$isEditMode && `
     &:hover {
@@ -51,6 +39,17 @@ const StyledEmployeeInfo = styled.div`
       border-color: #5dc3fb;  
     }
   `}
+`;
+
+const StyledEmployeeInfo = styled.div`
+  border: 1px solid transparent;
+  display: flex;
+  align-items: center;  // 가로 방향으로 중앙 정렬
+  border-radius: 5px;
+
+  img {
+    align-self: flex-start; // flex 시작점에 이미지를 정렬
+  }
 
   background-color: ${props => props.$isActive ? '#e6f4ff' : 'transparent'};
 `;

@@ -123,7 +123,7 @@ export default function RoleMappingPage({ pageId }) {
         <LinkButon
           cursor="none"
           onClick={(e)=>e.preventDefault()}
-          name="사용자 기준"
+          name="직원 기준"
           selected={true}
           padding={"0.1rem 1.2rem 0.5rem"}
           showBorderBottom={true}

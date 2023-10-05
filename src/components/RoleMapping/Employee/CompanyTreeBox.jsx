@@ -51,7 +51,7 @@
     },[refresh]);
 
     return (
-      <>
+      <Container>
         <NameBar $depth={depth} >
           {item.childNodeYn ? (
             <>
@@ -122,10 +122,12 @@
             ))}
           </>
         )}
-      </>
+      </Container>
     );
   }
 
+  const Container = styled.div`
+  `;
 
   const NameBar = styled.div`
     display: flex;

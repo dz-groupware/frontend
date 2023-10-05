@@ -156,6 +156,7 @@ top: 130px;
 left: 250px;
 width: calc(100% - 250px);
 height: calc(100% - 50px);
+overflow-y: auto;  
 
 &.true {
   left: 250px;

@@ -8,14 +8,12 @@ import {orgTreeApi, orgEmpListApi, searchOrg} from '../../api/modal';
 
 import EmpList from './OrgModal/EmpList';
 import EmpDetail from './OrgModal/EmpDetail';
-import { ModalBackdrop, ModalView } from '../../common/Modal/Modal';
 
-export default function OrgModal({ setOrgModal }){
+export default function OrgModal({ setOrgModal, empId }){
 
   const [data, setData] = useState(JSON.parse('[]'));
   const [empList, setEmpList] = useState(JSON.parse('[]'));
 
-  const empId = localStorage.getItem("empId");
 
   const [searchOption, setSearchOption] = useState("all", "");
   const [searchText, setSearchText] = useState("");
@@ -180,59 +178,87 @@ export function DeptTree({ value, loadEmpList }) {
   );
 }
 
-const OrgModalView = styled(ModalView)`  
-> #nav {
+export const ModalBackdrop = styled.div`
+  // Modal이 떴을 때의 배경을 깔아주는 CSS를 구현
+  z-index: 1; //위치지정 요소
+  position: fixed;
+  display : flex;
+  justify-content : center;
+  align-items : center;
+  background-color: rgba(0,0,0,0.4);
+  border-radius: 10px;
+  top : 0;
+  left : 0;
+  right : 0;
+  bottom : 0;
+`;
+export const OrgModalView = styled.div`  
+  // Modal창 CSS를 구현합니다.
   display: flex;
-  justify-content: space-between;
-  width: 100%;
-  > h3 {
-    font-size: x-large;
-    font-weight: bold;
-  }
-  > div {
-    font-size: x-large;
-    font-weight: bold;
-  }
-}
-> div > span {
-  position : right;
-}
-> div > #search {
-  display: flex;
-  justify-content: space-between;
-  width: 100%;
-  border: 1px solid gray;  
-  margin-top: 20px;
-  margin-bottom: 10px;
-  height: 50px;
-
-  > div {
-    > select {
-      width: 200px;
-      height: 25px;
-      margin: 10px;
+  position: relative;
+  top:0px;
+  right:0px;
+  align-items: center;
+  flex-direction: column;
+  border-radius: 5px;
+  width: 1000px;
+  height: 550px;
+  color: black;
+  background-color: #ffffff;
+  padding: 20px;
+  > #nav {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    > h3 {
+      font-size: x-large;
+      font-weight: bold;
     }
-    > input {
-      height: 25px;
-      width: 600px;
-      margin: 10px;
+    > div {
+      font-size: x-large;
+      font-weight: bold;
     }
   }
-  > svg {
-    width: 25px;
-    height: 25px;
-    border: 1px solid gray;
-    border-radius: 5px;
-    margin: 10px;
-    padding: 5px;
+  > div > span {
+    position : right;
   }
+  
+  > div > #search {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    border: 1px solid gray;  
+    margin-top: 20px;
+    margin-bottom: 10px;
+    height: 50px;
+    > div {
+      > select {
+        width: 200px;
+        height: 25px;
+        margin: 10px;
+      }
+  
+      > input {
+        height: 25px;
+        width: 600px;
+        margin: 10px;
+      }
+    }
+    > svg {
+      width: 25px;
+      height: 25px;
+      border: 1px solid gray;
+      border-radius: 5px;
+      margin: 10px;
+      padding: 5px;
+    }
 }
-> div > #content {
-  display: flex;
-  justify-content: center;
-  height: 400px;
-  width: 100%;
-}
+  > div > #content {
+    display: flex;
+    justify-content: center;
+    height: 400px;
+    width: 100%;
+  }
 `;
 const DeptList = styled.div`
 margin-top : 5px;

@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
 import { basicInfoApi } from '../api/gnb';
+import { getMenuList } from '../api/menu';
 
 import TB from './TB';
 import GNB from '../components/GNB/GNB';
@@ -12,53 +13,83 @@ export default function GnbLayout() {
   const [profile, setProfile] = useState(JSON.parse(`[{}]`));
   const [gnb, setGnb] = useState(JSON.parse(`[{}]`));
   const [favor, setFavor] = useState(JSON.parse(`[{}]`));
+  const [routeList, setRouteList] = useState(new Map([
+    [`/`, { menuId: 0, gnbId: 0, gnbName: 'main', page: 'Main' }],
+    [`/FORBIDDEN`, { menuId: 0, gnbId: 0, gnbName: '403', page: 'FORBIDDEN' }],]));
+
+  const [empId, setEmpId] = useState(localStorage.getItem("empId"));
+  const [routeOn, setRouteOn] = useState(false);
+    
+  const parseMenuList = (originMenuList) => {
+    const menuList = new Map();
+    originMenuList.forEach(row => {
+      const { menuId, gnbId, gnbName, nameTree, page } = row;
+      menuList.set(`/${nameTree}`, { menuId, gnbId, gnbName, page });
+    });
+    menuList.set(`/`, { menuId: 0, gnbId: 0, gnbName: 'main', page: 'Main' });
+    menuList.set(`/FORBIDDEN`, { menuId: 0, gnbId: 0, gnbName: '403', page: 'FORBIDDEN' });
+    setRouteList(menuList);
+  }
+
+  const initRouteList = async () => {
+    try {
+      const res = await getMenuList(0);
+      parseMenuList(res.data.data);
+    } catch (error) {
+      console.log('error in RouteList');
+    };
+    // 컴포넌트 마운트 시 현재 경로를 기반으로 routeList 업데이트
+  };
 
   const basicInfo = async(empId) => {
     try{
-      const res = await basicInfoApi(empId);
-      if (Array.isArray(res.data.data.profile)) {
+      await basicInfoApi(empId).then(res => {
+        console.log('save home data', res);
         setProfile(res.data.data.profile);
-      } else {
-        console.log(":: error : profile is null ::");
-      }
-      if (Array.isArray(res.data.data.menu)) {
         setGnb(res.data.data.menu);
-      } else {
-        console.log(":: error : GNB is null ::");
-      }
-      if (Array.isArray(res.data.data.favor)) {
         setFavor(res.data.data.favor);  
-      }
-      console.log(res.data.data.empId, res.data.data.compId)
-      localStorage.setItem("empId", res.data.data.empId);
-      localStorage.setItem("compId", res.data.data.compId);
+        console.log(res.data.data.empId, res.data.data.compId)
+        setEmpId(res.data.data.empId);
+        localStorage.setItem("empId", res.data.data.empId);
+        localStorage.setItem("compId", res.data.data.compId);
+  
+        console.log('request route-list');
+        initRouteList();
+      });
     } catch (error) {
       console.log(error);
+      window.location.href="/login";
     }
   };
 
   useEffect(() => {
-    const empId = localStorage.getItem("empId");
-    try {
-      if (empId) {
-        basicInfo(empId);
-      } else {
-        basicInfo(0);
-      }  
-    } catch (error) {
-      console.log("E! Gnb : ", error);
-      window.location.href="/login";
+    if (empId) {
+      console.log("empid is not null ")
+      basicInfo(empId);
+    } else {
+      console.log("empid is null ")
+      basicInfo(0);
+    }  
+  }, [empId]);
 
+
+  useEffect(() => {
+    try{
+      initRouteList().then(()=>{
+        setRouteOn(true);
+      });
+      
+    }catch (error) {
+      console.log('route-list : ',error);
     }
-
-
-  }, [])
+  }, []);
+  console.log('in gnb')
 
   return (
     <>
       <Content>
-        <TB profile={profile}/>
-        <LnbLayout />
+        <TB profile={profile} empId={empId}/>
+        { routeOn && <LnbLayout routeList={routeList}/> }
       </Content>
       <GNB gnb={gnb} favor={favor}/>
     </>

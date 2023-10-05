@@ -1,8 +1,8 @@
 import axios from "axios";
 
 export const axiosInstance = axios.create({
-  baseURL: "https://dev.amaranth2023.site/api/v1",
-  //baseURL: "http://localhost:8010/api/v1",
+  // baseURL: "https://dev.amaranth2023.site/api/v1",
+  baseURL: "http://localhost:8010/api/v1",
   headers: { "Content-Type": "application/json", "ngrok-skip-browser-warning": "1" },
   withCredentials: true,
   timeout: 20000,
@@ -16,6 +16,7 @@ axiosInstance.interceptors.request.use(
     return config;
   },
   (err) => {
+    console.log('request Error : ', err);
     //요청 에러 시 수행 로직
     if (err.response && err.response.status === 401) {
       throw new Error('UNAUTHORIZED');
@@ -23,7 +24,6 @@ axiosInstance.interceptors.request.use(
     if (err.response && err.response.status === 403) {
       throw new Error('FORBIDDEN');
     }
-    
     return Promise.reject(err);
   }
 );
@@ -38,6 +38,7 @@ axiosInstance.interceptors.response.use(
     return { status, data };
   },
   (err) => {
+    console.log('response Error : ', err);
     // 오류 응답의 상태 코드와 본문을 얻으려면 err.response.status와 err.response.data를 확인해야 합니다.
     if (err.response) {
       const errorStatus = err.response.status;

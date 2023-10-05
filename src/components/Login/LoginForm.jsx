@@ -13,17 +13,16 @@ export default function LoginForm() {
     password: "",
   }); 
   const [inputValid, setInputValid] = useState(false);
-  const [apiErrorMessage, setApiErrorMessage] = useState(null);
-  
+  const [errorMessage, setErrorMessage] = useState(null);
   const navigate = useNavigate();
-  const { data, isLoading, error, setData, setShouldFetch, status } = useFetchData(loginApi,{data: {
+  const { data, isLoading, error, setData, setShouldFetch, status, setStatus } = useFetchData(loginApi,{data: {
     loginId: loginValue.loginId,
     loginPw: loginValue.password,
   },shouldFetch:false});
 
   const handleInputChange = (e) => {
     setLoginValue({...loginValue, [e.target.name]: e.target.value})
-    // 입력이 변경될 때마다 에러 메시지 초기화
+
   }
 
   const handleLoginAction = async (e) => {
@@ -36,12 +35,15 @@ export default function LoginForm() {
   };
 
   useEffect(()=>{
+    console.log('로그인폼 요청 몇번되지');
     if(status===202){
-      navigate('/',{state:{ menuId: "0" }});
+      console.log('로그임폼 202일때요청')
+        navigate('/',{state:{ menuId: "0" }});
     } else if (error && error.data && error.data.message) {  // error 객체에서 message 추출
-      setApiErrorMessage(error.data.message);
+      setErrorMessage(error.data.message);
     }
     console.log(error);
+    setStatus(null);
   },[status, error]);
 
   return (
@@ -68,7 +70,7 @@ export default function LoginForm() {
         // errorMessage={"비밀번호 형식을 지켜주세요."}
         setValid={setInputValid}
       />
-      {apiErrorMessage && <ErrorText>{apiErrorMessage}</ErrorText>}
+      {errorMessage && <ErrorText>{errorMessage}</ErrorText>}
       <SignButton
         onClickHandler={handleLoginAction} 
       />

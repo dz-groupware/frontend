@@ -50,6 +50,7 @@ import MenuItemView from './MenuItemView';
 
   const Container = styled.div`
     margin-bottom: 1.2rem;
+    border-top: 2px solid #747474;
   `;
 
   const Table = styled.table`
@@ -73,7 +74,7 @@ import MenuItemView from './MenuItemView';
   const Th = styled.th`
     text-align: left;
     padding: 0.5rem;
-    background-color: beige;
-    border-bottom: 2px solid #ccc;
+    background-color: #f2f2f2;
+    border-bottom: 2px solid #ddd;
     
   `;

@@ -12,10 +12,8 @@ function header(pageId){
 export function basicInfoApi(empId, pageId){
   if(empId !== undefined && empId !== null){
     return axiosInstance.get(`/home`, {
-      headers: {
-        "Content-Type": "application/json",
-      'menuId' : pageId
-    }});
+      
+    });
   }
 }
 
@@ -75,9 +73,6 @@ export function searchMenuListAPI(pageId, menuId, compId) {
           menuId,
           compId
         }, 
-        headers: {
-          "Content-Type": "application/json",
-          'menuId' : pageId
-    }});
+    });
   }
 }

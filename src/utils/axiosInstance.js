@@ -17,6 +17,7 @@ axiosInstance.interceptors.request.use(
     return config;
   },
   (err) => {
+    console.log('request Error : ', err);
     //요청 에러 시 수행 로직
     if (err.response && err.response.status === 401) {
       throw new Error('UNAUTHORIZED');
@@ -24,7 +25,6 @@ axiosInstance.interceptors.request.use(
     if (err.response && err.response.status === 403) {
       throw new Error('FORBIDDEN');
     }
-    
     return Promise.reject(err);
   }
 );
@@ -39,6 +39,7 @@ axiosInstance.interceptors.response.use(
     return { status, data };
   },
   (err) => {
+    console.log('response Error : ', err);
     // 오류 응답의 상태 코드와 본문을 얻으려면 err.response.status와 err.response.data를 확인해야 합니다.
     if (err.response) {
       const errorStatus = err.response.status;

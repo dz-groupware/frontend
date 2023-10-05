@@ -10,7 +10,7 @@ import ProfileModal from '../components/TB/ProfileModal';
 import OrgModal from '../components/TB/OrgModal';
 
 
-export default function TB({ profile }) {
+export default function TB({ profile, empId }) {
 
   const [profileModal, setProfileModal] = useState(false);
   const [orgModal, setOrgModal] = useState(false);
@@ -23,13 +23,13 @@ export default function TB({ profile }) {
       <Recent />
       <div>
         <ProfileArea id='prf' onClick={() => {setProfileModal(true)}}>        
-          <Profile profile={profile}/>
-          {profileModal && <ProfileModal profile={profile} profileModal={profileModal} setProfileModal={setProfileModal}/>}
+          <Profile profile={profile} empId={empId}/>
+          {profileModal && <ProfileModal profile={profile} empId={empId} profileModal={profileModal} setProfileModal={setProfileModal}/>}
         </ProfileArea>
         <IconArea>
           <AiOutlineDeploymentUnit onClick={() => {setOrgModal(true)}}/>
         </IconArea>
-        {orgModal && <OrgModal setOrgModal={setOrgModal}/>}
+        {orgModal && <OrgModal empId={empId} setOrgModal={setOrgModal}/>}
       </div>
     </TBArea>
   );
@@ -61,6 +61,7 @@ z-index: 2;
 const ProfileArea = styled.div`
 display: flex;
 width: 250px;
+right: 50px;
 `;
 const IconArea = styled.div`
 padding-top: 10px;

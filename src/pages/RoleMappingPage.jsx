@@ -8,6 +8,7 @@ import ActionButton from '../components/Commons/ActionButton';
 import { useFetchData } from '../hooks/useFetchData';
 import { addEmployeeAuthApi } from '../api/authgroup';
 import { changeMasterYn } from '../api/employee';
+import RoleTopContainer from '../components/RoleMapping/RoleTopContainer';
 
 export default function RoleMappingPage({ pageId }) {
   const [activeAuthId, setActiveAuthId] = useState(null);
@@ -57,6 +58,7 @@ export default function RoleMappingPage({ pageId }) {
     setUpdateMasterYnFetch(!updateFetch);
   }
 
+
   useEffect(()=>{
     if(status === 200){
       alert('저장되었습니다.');
@@ -64,8 +66,7 @@ export default function RoleMappingPage({ pageId }) {
       setStatus(null);
       setActiveAuthId(null);
     }
-  },[status,updateStatus]);
-
+  },[status]);
   const handleCheckboxChange = (authId) => {
     setSelectedAuthIds(prevSelectedAuthIds => {
       const newState = { ...prevSelectedAuthIds };
@@ -80,6 +81,7 @@ export default function RoleMappingPage({ pageId }) {
 
   useEffect(() => {
     if(updateStatus === 200) { // API 호출이 성공적으로 끝났을 때
+      console.log("엑티브는",activeEmp);
       setRefresh(!refresh);  // refresh 상태를 업데이트
       setUpdateStatus(null);
     }
@@ -87,66 +89,15 @@ export default function RoleMappingPage({ pageId }) {
 
   return (
     <Container>
-      <TopContainer >
-        <TitleAndIconContainer>
-          <h1>권한설정</h1>
-          <IconWrapper>
-            <MdDisplaySettings fontSize={20} color='#939393'/>
-          </IconWrapper>
-          <IconWrapper>
-            <MdSmartDisplay fontSize={20} color='#939393'/>
-          </IconWrapper>
-          <IconWrapper>
-            <MdOutlineMapsUgc fontSize={20} color='#939393'/>
-          </IconWrapper>
-        </TitleAndIconContainer>
-        <div>
-          {activeEmp.id && (
-            <>
-              {activeEmp.masterYn ? (
-                <ActionButton 
-                  width={'5rem'}
-                  height={'2.5rem'}
-                  fontWeight={600} 
-                  fontSize={'1.0rem'} 
-                  name="마스터권한해제"
-                  onClick={handleChangeMasterClick} 
-                />
-              ) : (
-                <>
-                  <ActionButton 
-                    width={'5rem'}
-                    height={'2.5rem'}
-                    fontWeight={600} 
-                    fontSize={'1.0rem'} 
-                    name={isEditMode ? "저장":"권한부여"}
-                    onClick={() => isEditMode ? handleSaveClick() : handleEditModeClick()}
-                  />
-                  {!isEditMode && <ActionButton 
-                    width={'5rem'}
-                    height={'2.5rem'}
-                    fontWeight={600} 
-                    fontSize={'1.0rem'} 
-                    name="마스터권한부여"
-                    onClick={handleChangeMasterClick} // 마스터 권한을 부여하는 함수
-                  />}
-                </>
-              )}
-            </>
-          )}
-          {activeEmp.id && isEditMode &&(        
-            <ActionButton 
-              width={'5rem'}
-              height={'2.5rem'}
-              fontWeight={600} 
-              fontSize={'1.0rem'} 
-              name="닫기"
-              onClick={() => setIsEditMode(false)}
-            />)
-          }
-        </div>
-      </TopContainer>
-
+      <RoleTopContainer
+        activeEmp={activeEmp}
+        isEditMode={isEditMode}
+        handleSaveClick={handleSaveClick}
+        handleEditModeClick={handleEditModeClick} 
+        handleChangeMasterClick={handleChangeMasterClick}
+        setIsEditMode={setIsEditMode}
+        refresh={refresh}
+      />
       <Line color="#f5f5f5" height="2px" bottom={"20px"}/>
       <div style={{  marginLeft: "1.2rem" }} >
         <LinkButon
@@ -184,31 +135,4 @@ const Container = styled.div`
   height: 100%; //높이 바꿔
 `;
 
-const TopContainer = styled.div`
-  display: flex;
-  justify-content: space-between;
-  flex-direction: row;
-  padding: 0 0.5rem;
-`;
-const TitleAndIconContainer = styled.div`
-  display: flex;
-  align-items: center;
-  padding: 15px 0;
-  h1{
-    margin-left: 10px;
-    font-size: 1.2rem;
-    font-weight: bold;
-  }
-`;
-const IconWrapper = styled.div`
-  display: flex;
-  position: relative;
-  bottom: 5px;
-  margin-left: 8px;
-  justify-content: center;
-  align-items: center;
-  background-color: #eaeaea;
-  width: 30px; 
-  height: 30px; 
-  border-radius: 50%; 
-`;
+

@@ -33,25 +33,18 @@ export default function GnbLayout() {
       localStorage.setItem("empId", res.data.data.empId);
       localStorage.setItem("compId", res.data.data.compId);
     } catch (error) {
-      console.log(error);
+      console.log('gnb에러',error);
+      window.location.href="/login";
     }
   };
 
   useEffect(() => {
     const empId = localStorage.getItem("empId");
-    try {
-      if (empId) {
-        basicInfo(empId);
-      } else {
-        basicInfo(0);
-      }  
-    } catch (error) {
-      console.log("E! Gnb : ", error);
-      window.location.href="/login";
-
-    }
-
-
+    if (empId) {
+      basicInfo(empId);
+    } else {
+      basicInfo(0);
+    }  
   }, [])
 
   return (

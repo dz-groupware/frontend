@@ -1,10 +1,11 @@
+import { AiOutlinePoweroff } from 'react-icons/ai';
 import styled from 'styled-components';
 
-import { AiOutlinePoweroff } from 'react-icons/ai';
+import { logOut } from '../../api/login';
+import { UnAuthorized } from '../../common/Error/Error';
 
 import PosiList from './PosiList';
-import { logOut } from '../../api/login';
-
+import { ModalBackdrop, ModalView } from '../../common/Modal/Modal';
 
 export default function ProfileModal({ profile, setProfileModal }) {
 
@@ -27,103 +28,74 @@ export default function ProfileModal({ profile, setProfileModal }) {
     return (
       <ModalBackdrop onClick={modalOff}>
         <ModalView onClick={(e) => e.stopPropagation()}>
-          <div className='top_btn'>
+          <Btn className='top_btn'>
             <div onClick={handleLogOut}>
               <AiOutlinePoweroff />
             </div>
-          </div>
-          <div>  
-          <img src={user['imageUrl']} alt='p_img' />
-          <div className='prf'>
-            <div id="prf_name">{user['empName']}</div>
-            <div>{user['compName']} / {user['deptName']}</div>
-            <p>최근접속 : {user['lastAccess']} || {user['lastIp']}(현재: {user['lastIp']})</p>
-          </div>
-        </div>
-          <div id='tableName'><div> • 회사정보</div></div>
+          </Btn>
+          <ProfileArea>  
+            <img src={user['imageUrl']} alt='p_img' />
+            <div className='prf'>
+              <div id="prf_name">{user['empName']}</div>
+              <div>{user['compName']} / {user['deptName']}</div>
+              <p>최근접속 : {user['lastAccess']} || {user['lastIp']}(현재: {user['lastIp']})</p>
+            </div>
+          </ProfileArea>
+          <TableName><div> • 회사정보</div></TableName>
           <PosiList empId={user['empId']} modalOff={modalOff} profile={profile}/>
         </ModalView>
       </ModalBackdrop>
     );
-  };
+  } else {
+    console.log('사용자 정보가 일치하지 않습니다.');
+    UnAuthorized();
+  }
 };
 
-export const ModalBackdrop = styled.div`
-  z-index: 1; 
-  position: fixed;
-  display : flex;
-  justify-content : center;
-  align-items : center;
-  background-color: rgba(0,0,0,0.4);
-  border-radius: 10px;
-  top : 0;
-  left : 0;
-  right : 0;
-  bottom : 0;
-  width:100%;
-  height:100%;
-`;
-export const ModalView = styled.div`
+const Btn = styled.div`
 display: flex;
-position: relative;
-z-index: 2;
-top:-100px;
-right:-200px;
-align-items: center;
-flex-direction: column;
-border-radius: 5px;
-width: 600px;
-height: 400px;
-color: black;
-background-color: #ffffff;
-
-> .top_btn {
-  display: flex;
-  justify-content: end;
-  padding: 20px;
-  padding-bottom: 0px;
-  
-  > svg {
-    width: 20px;
-    height: 20px;
-  }
+justify-content: end;
+padding: 20px;
+padding-bottom: 0px;
+> svg {
+  width: 20px;
+  height: 20px;
 }
-> div {
-  padding: 20px;
-  padding-top: 0px;
-  display: flex;
-  justify-content: center;
-  width: 100%;
+`;
+const ProfileArea = styled.div`
 
-  > img {
-    width:70px;
-    height:70px;
-    margin-right: 20px;
+padding: 20px;
+padding-top: 0px;
+display: flex;
+justify-content: center;
+width: 100%;
+
+> img {
+  width:70px;
+  height:70px;
+  margin-right: 20px;
+}
+
+> .prf {
+  > * {
+    margin: 5px;
   }
-  > .prf {
-      > * {
-        margin: 5px;
-      }
-      > #prf_name {
-        margin-top: 10px;
-        font-size: 18px;
-        font-weight: bold;
-      }
-    }
-  > p {
-    color: grey;
-    font-size: 12px;
-    margin: 0;
+  > #prf_name {
+    margin-top: 10px;
+    font-size: 18px;
+    font-weight: bold;
   }
 }
 
-
-
-> #tableName {
-  width: 100%;
-  display: flex;
-  justify-content: start;
-  font-weight: bold;
+> p {
+  color: grey;
+  font-size: 12px;
+  margin: 0;
 }
-
+`;
+const TableName = styled.div`
+width: 100%;
+display: flex;
+justify-content: start;
+font-weight: bold;
 `;

@@ -12,19 +12,14 @@ import Module from './Module';
 export default function LnbLayout() {
   const location = useLocation();
 
-  const compId = localStorage.getItem("compId");
-
-  const [lnbOpen, setLnbOpen] = useState(true);
   const [gnb, setGnb] = useState({ id: 0, name: '' });
+  const [lnbOpen, setLnbOpen] = useState(true);
+
   const [data, setData] = useState([]);
   const [routeOn, setRouteOn] = useState(false);
   const [routeList, setRouteList] = useState(new Map([
     [`/`, { menuId: 0, gnbId: 0, gnbName: 'main', page: 'Main' }],
     [`/FORBIDDEN`, { menuId: 0, gnbId: 0, gnbName: '403', page: 'FORBIDDEN' }],]));
-
-  // console.log('data : ',gnb.id, data);
-  // console.log("url : ",decodeURIComponent(location.pathname));
-  // console.log(routeList);
 
   useEffect(() => {
     const parseMenuList = (originMenuList) => {
@@ -45,16 +40,6 @@ export default function LnbLayout() {
         setRouteOn(true);  
       } catch (error) {
         console.log('error in lnb');
-        if (error.status === 401) {
-          console.log('로그인 정보 없음 (in lnb)');
-          localStorage.setItem("empId", 0);
-          localStorage.setItem("compId", 0);
-          window.location.href='/login';
-        };
-        if (error.status === 403) {
-          console.log('권한 없음');
-        };
-        console.log('unknown error : ', error);
       };
       // 컴포넌트 마운트 시 현재 경로를 기반으로 routeList 업데이트
     };
@@ -63,20 +48,18 @@ export default function LnbLayout() {
 
   useEffect(() => {
     try{
-      const res = searchMenuListAPI(0, gnb.id, compId);
+      const res = searchMenuListAPI(gnb.id);
       if (res !== undefined) {
-        res.then(res => setData(res.data.data));
+        res.then(res => {
+          if (Array.isArray(res.data.data)) {
+            setData(res.data.data)
+          }
+        });
       }
     } catch(error) {
-      if (error.status === 401) {
-        console.log('로그인 정보 없음 (in LNB)');
-        localStorage.setItem("empId", 0);
-        localStorage.setItem("compId", 0);
-        window.location.href="/login";
-      }
       console.log('searchMenuListAPI error : ', error);
     }
-  }, [gnb.id, compId]);
+  }, [gnb.id]);
 
   return (
     <Content>
@@ -86,11 +69,11 @@ export default function LnbLayout() {
       </LnbTitle>
       <LnbArea>
         <LNBList className={`${lnbOpen ? 'true' : 'false'}`}>
-          {data !== '' && data !== undefined && data !== null &&
+          {
             data.map((a, i) => {
               if (a['id'] !== a['parId']) {
                 return (
-                  <MenuTree menu={a} compId={compId} gnb={gnb} key={a['name']+a['id']}/>                                    
+                  <MenuTree menu={a} gnb={gnb} key={a['name']+a['id']}/>                                    
                 )
               }
               return null;
@@ -108,7 +91,7 @@ export default function LnbLayout() {
   );
 }
 
-export function MenuTree({ menu, param, compId, gnb }){
+export function MenuTree({ menu, param, gnb }){
   const [open, setOpen] = useState(false);
   const [subItem, setSubItem] = useState([]);
   const navigate = useNavigate();
@@ -118,24 +101,21 @@ export function MenuTree({ menu, param, compId, gnb }){
       setSubItem([]);
       setOpen(false);
     }
-  }, [compId, gnb.id]);
+  }, [gnb.id]);
 
   function handleMenuItem() {
     try{
       if(subItem.length === 0) {
-        searchMenuListAPI(menu['id'], menu['id'], compId)
-        .then(res => setSubItem(res.data.data));
+        searchMenuListAPI(menu['id'])
+        .then(res => {
+          if(Array.isArray(res.data.data)) {
+            setSubItem(res.data.data);
+          }
+        });
       }
       setOpen(!open);
-      // menuId를 넘기지 않고 gnbId를 넘긴다. LNB() 컴포넌트는 GNB 메뉴 ID가 필요함.
       navigate(`/${menu['nameTree']}`);  
     } catch(error) {
-      if (error.status === 401) {
-        console.log('로그인 정보 없음 (in MenuTree)');
-        localStorage.setItem("empId", 0);
-        localStorage.setItem("compId", 0);
-        window.location.href="/login";
-      } 
       console.log('searchMenuListAPI error : ',error);
     }
   }
@@ -155,7 +135,7 @@ export function MenuTree({ menu, param, compId, gnb }){
         open && subItem.map((a, i) => {
           if (a['id'] !== a['parId']) {
             return (
-              <MenuTree menu={a} param={`${param}/${menu['name']}`} compId={compId} gnb={gnb} key={a['name']+a['id']}/>
+              <MenuTree menu={a} param={`${param}/${menu['name']}`} gnb={gnb} key={'lnbList/'+a['name']}/>
             )
           }
           return null;

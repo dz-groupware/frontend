@@ -1,6 +1,6 @@
 import { axiosInstance } from '../utils/axiosInstance';
    
-export function orgTreeApi(pageId, type = "", compId = "", deptId = ""){  
+export function orgTreeApi(type = "", compId = "", deptId = ""){  
   return axiosInstance.get(
     `/modal/org/tree`,{
       params: {
@@ -10,13 +10,13 @@ export function orgTreeApi(pageId, type = "", compId = "", deptId = ""){
       }, 
       headers: { 
         'Content-Type': 'multipart/form-data',
-        'menuId': pageId,
+        'menuId': '0',
       },
     }
   );
 };
 
-export function orgEmpListApi(pageId, type = "", compId = "", deptId=""){  
+export function orgEmpListApi(type = "", compId = "", deptId=""){  
   return axiosInstance.get(
     `/modal/org/empList`,{
       params: {
@@ -26,7 +26,7 @@ export function orgEmpListApi(pageId, type = "", compId = "", deptId=""){
       }, 
       headers: { 
         'Content-Type': 'multipart/form-data',
-        'menuId': pageId,
+        'menuId': '0',
       },
     }
   );

@@ -2,10 +2,11 @@ import { axiosInstance } from '../utils/axiosInstance';
 
 export function getMenuList(pageId){
   return axiosInstance.get(`menu/route-list`, {
-  headers: {
-  "Content-Type": "application/json",
-  'menuId' : pageId
-}});
+    headers: {
+      "Content-Type": "application/json",
+      'menuId' : pageId
+    }
+  });
 }
 
 export function GnbApi(pageId){

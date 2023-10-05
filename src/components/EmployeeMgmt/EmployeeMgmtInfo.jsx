@@ -194,6 +194,13 @@ export default function EmployeeMgmtInfo({pageId}) {
             return;
         }
 
+        if (resignationDate) {
+            const isConfirmed = window.confirm("퇴사 하시는게 맞습니까?");
+            if (!isConfirmed) {
+                return;  // 사용자가 취소를 누른 경우 함수 실행을 멈춥니다.
+            }
+        }
+
         dispatch(employeeActions.updateBasicInfo(basicInfo));
         dispatch(employeeActions.updateGroupInfo(groupInfo));
         handleUpdate(e);

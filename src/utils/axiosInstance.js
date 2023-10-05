@@ -71,9 +71,21 @@ axiosInstance.interceptors.response.use(
       console.log('Error : FORBIDDEN');
       window.location.href="/FORBIDDEN";
     } 
+    if (err.response && err.response.data === "No data found from check") {
+      console.log("에러",err);
+      return Promise.reject(err.response.data);
+    }
+    if (err.response && err.response.data === "No data found") {
+      console.log("에러",err);
+      return Promise.reject(err.response.data);
+    }
     if (err.response && err.response.status === 500) {
       console.log('Error : INTERNAL_SERVER_ERROR');
       // window.location.href="/INTERNAL_SERVER_ERROR";
+    }
+    if (err.response && err.response.data === "Error while uploading:") {
+      console.log("에러",err);
+      return Promise.reject(err.response);
     }
     if (err.code === "ERR_NETWORK") {
       console.log('서버와 연결이 끊겼습니다.');
@@ -83,3 +95,5 @@ axiosInstance.interceptors.response.use(
     }
   }
 );
+
+

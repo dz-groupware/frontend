@@ -11,7 +11,6 @@ import { employeeActions } from '../utils/Slice';
 export default function EmployeeMgmtPage({pageId}) {
   const dispatch = useDispatch();
   useEffect(() => {
-    console.log("페이지아이디확인",pageId);
     
     // 컴포넌트가 unmount 될 때 상태를 초기화하려면, useEffect의 클린업 함수를 사용합니다.
     return () => {
@@ -22,7 +21,7 @@ export default function EmployeeMgmtPage({pageId}) {
     return (
       <PageContainer children={
         <>
-        <EmployeeMgmtHeader/>
+        <EmployeeMgmtHeader pageId={pageId}/>
         <EmployeeMgmtNav pageId={pageId}/>
       <MgmtMain aside={<EmployeeMgmtAside pageId={pageId} />} form={<EmployeeMgmtForm pageId={pageId} />} />
       

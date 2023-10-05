@@ -3,8 +3,9 @@ import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
 import { employeeActions } from "../../utils/Slice";
 import { getEmployeeDetailsById, getEmployeeMgmtList } from "../../api/employeemgmt";
+import { GrNext, GrPrevious } from 'react-icons/gr';
 
-export default function EmployeeMgmtAside({pageId}) {
+export default function EmployeeMgmtAside({ pageId }) {
   const dispatch = useDispatch();
   const [employeeDataList, setEmployeeDataList] = useState([]);
   const [sortType, setSortType] = useState("default");
@@ -14,7 +15,7 @@ export default function EmployeeMgmtAside({pageId}) {
   const isVisible = useSelector(state => state.employeeMgmt.isVisible);
   const reduxbasicInfo = useSelector(state => state.employeeMgmt.employeeBasicInfo);
   const [currentPage, setCurrentPage] = useState(1);
-
+  const [pageRange, setPageRange] = useState([1, 5]);
 
 
 
@@ -39,39 +40,52 @@ export default function EmployeeMgmtAside({pageId}) {
 
 
 
-
   if (!employeeDataList) {
     return <div>Loading...</div>;
   };
 
-  // const itemsPerPage = 5;
-  //   const totalPages = Math.ceil(employeeDataList.length / itemsPerPage);
+  const itemsPerPage = 5;
+  const dataForPagination = isSearchExecuted ? searchedEmployeeDataList : employeeDataList;
 
-  // const renderPageNumbers = () => {
-  //   const pageNumbers = [];
-  //   for (let i = 1; i <= totalPages; i++) {
-  //     pageNumbers.push(
-  //       <PageNumber
-  //         key={i}
-  //         isSelected={i === currentPage}
-  //         onClick={() => setCurrentPage(i)}
-  //       >
-  //         {i}
-  //       </PageNumber>
-  //     );
-  //   }
-  //   return pageNumbers;
-  // };
+  const renderPageNumbers = () => {
+    
+    const totalPages = Math.ceil(dataForPagination.length / itemsPerPage);
+    const pageNumbers = [];
+
+    for (let i = pageRange[0]; i <= Math.min(pageRange[1], totalPages); i++) {
+      pageNumbers.push(
+        <PageNumber
+          key={i}
+          $isselected={i === currentPage}
+          onClick={() => setCurrentPage(i)}
+        >
+          {i}
+        </PageNumber>
+      );
+    }
+
+    return pageNumbers;
+  };
+
+  const handleNextPageRange = () => {
+    setPageRange(prevRange => [prevRange[1] + 1, prevRange[1] + 5]);
+  };
+
+  const handlePrevPageRange = () => {
+    setPageRange(prevRange => [prevRange[0] - 5, prevRange[0] - 1]);
+  };
+
+
 
 
 
   function renderEmployeeDataList(dataList) { //dataList는 배열
-  
+
 
     let sortedDataList = Object.keys(dataList).map(key => dataList[key]);
-    // const startIndex = (currentPage - 1) * itemsPerPage;
-    // const endIndex = startIndex + itemsPerPage;
-    // sortedDataList = sortedDataList.slice(startIndex, endIndex);
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    sortedDataList = sortedDataList.slice(startIndex, endIndex);
     // sortType에 따라서 정렬
     if (sortType === "sortdate") {
       sortedDataList = sortedDataList.sort((a, b) => a.joinDate.localeCompare(b.joinDate));
@@ -113,14 +127,14 @@ export default function EmployeeMgmtAside({pageId}) {
 
 
   async function handleEmployeeClick(employeeMgmt) {
-console.log("너네 뭐니",employeeMgmt);
+    // console.log("너네 뭐니", employeeMgmt);
     setSelectedEmployeeId(employeeMgmt.id);
     // console.log("selectedEmployeeId", selectedEmployeeId);
 
 
     try {
-      const fetchedEmployeeData = await getEmployeeDetailsById(employeeMgmt.id,pageId);
-      console.log(fetchedEmployeeData);
+      const fetchedEmployeeData = await getEmployeeDetailsById(employeeMgmt.id, pageId);
+      // console.log(fetchedEmployeeData);
       if (!fetchedEmployeeData) {
         console.error("No data returned for employee ID:", employeeMgmt.id);
         return;
@@ -168,8 +182,8 @@ console.log("너네 뭐니",employeeMgmt);
       dispatch(employeeActions.updateBasicInfo(employeeBasicInfo)); // Redux action이 단일 객체를 받아야 함
       dispatch(employeeActions.updateGroupInfo(employeeGroupInfo)); // Redux action이 배열을 받아야 함
 
-      console.log("3333basic", reduxbasicInfo.id);//잘나옴
-      console.log("3333group", employeeGroupInfo);//잘나옴
+      // console.log("3333basic", reduxbasicInfo.id);//잘나옴
+      // console.log("3333group", employeeGroupInfo);//잘나옴
 
 
       dispatch(employeeActions.showForm({
@@ -207,7 +221,12 @@ console.log("너네 뭐니",employeeMgmt);
         {isSearchExecuted ? renderEmployeeDataList(searchedEmployeeDataList) : renderEmployeeDataList(employeeDataList)}
       </EmployeeListArea>
       <EmployeeListPageNation>
-        {/* {renderPageNumbers()} */}
+        <SpaceArea>
+        {pageRange[0] > 1 && <StyledGrPrevious onClick={handlePrevPageRange}/>}
+        {renderPageNumbers()}
+        {/* 데이터의 끝 페이지가 현재 페이지 범위의 끝보다 클 경우 "다음" 버튼을 표시 */}
+        {Math.ceil(dataForPagination.length / itemsPerPage) > pageRange[1] && <StyledGrNext  onClick={handleNextPageRange}/>  }
+        </SpaceArea>
       </EmployeeListPageNation>
 
 
@@ -335,10 +354,46 @@ const ImageAndName = styled.div`
 display: flex;
 align-items:center;
 justify-content:center;
-`
+`;
+
+const SpaceArea = styled.div`
+display: flex;
+justify-content: space-between;
+width: 180px;
+margin: auto; 
+`;
+
+
 const PageNumber = styled.span`
+
   margin: 0 5px;
   cursor: pointer;
-  color: ${props => (props.isSelected ? "blue" : "black")};
-  font-weight: ${props => (props.isSelected ? "bold" : "normal")};
+  color: ${props => (props.$isselected ? "#308EFC" : "black")};
+  font-weight: ${props => (props.$isselected ? "bold" : "normal")};
+  flex: 1;
+  text-align: center;
+`;
+
+
+const StyledGrNext = styled(GrNext)`
+  cursor: pointer;
+  color: ${props => (props.$isselected ? "#308EFC" : "black")};
+  font-weight: ${props => (props.$isselected ? "bold" : "normal")};
+  background: none;
+  border: none;
+  outline: none;
+  flex: 1;
+ 
+`;
+
+const StyledGrPrevious = styled(GrPrevious)`
+  cursor: pointer;
+  color: ${props => (props.$isselected ? "#308EFC" : "black")};
+  font-weight: ${props => (props.$isselected ? "bold" : "normal")};
+  background: none;
+  border: none;
+  outline: none;
+  flex: 1;
+ 
+
 `;

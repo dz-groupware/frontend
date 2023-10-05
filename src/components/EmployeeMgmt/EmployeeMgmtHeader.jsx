@@ -62,11 +62,33 @@ export default function EmployeeMgmtHeader({ pageId }) {
 
   }
 
+  const handleCloseModal = () => {
+    if (window.confirm("모달을 닫으면 정보가 날라갑니다. 계속하시겠습니까?")) { 
+      setModalIsOpen(false);
+    }
+  };
+  
+
+
   const handleRetire = () => {
     dispatch(employeeActions.resetState())
     dispatch(employeeActions.hideForm())
+    setSearchValue(""); // 검색 값 초기화
+    setSelectedOption(""); // 선택 옵션 초기화
+    setEmployeeList([]); // 검색된 사원 목록 초기화
+    setCheckedEmployees([]); // 선택된 사원 목록 초기화
     setModalIsOpen(true);
   }
+  const handleRetireProcess = () => {
+    if (checkedEmployees.length === 0) {
+      alert("퇴사 처리할 사원을 선택해주세요.");
+      return;
+    }
+    // 이 부분에서 API 호출 등을 사용하여 서버에 퇴사 처리를 요청할 수 있습니다.
+    alert("선택한 사원들의 퇴사 처리가 완료되었습니다.");
+    setCheckedEmployees([]);  // 체크된 목록 초기화
+    setModalIsOpen(false);
+  };
 
   const handleKeyDown = (e) => {
     if (e.key === 'Enter') {
@@ -89,13 +111,13 @@ export default function EmployeeMgmtHeader({ pageId }) {
   };
   const handleCheckboxChange = (employeeId) => {
     if (checkedEmployees.includes(employeeId)) {
-        // 이미 체크된 항목의 체크를 해제
-        setCheckedEmployees(checkedEmployees.filter(id => id !== employeeId));
+      // 이미 체크된 항목의 체크를 해제
+      setCheckedEmployees(checkedEmployees.filter(id => id !== employeeId));
     } else {
-        // 새로운 항목의 체크 설정
-        setCheckedEmployees([...checkedEmployees, employeeId]);
+      // 새로운 항목의 체크 설정
+      setCheckedEmployees([...checkedEmployees, employeeId]);
     }
-};
+  };
 
 
 
@@ -108,31 +130,56 @@ export default function EmployeeMgmtHeader({ pageId }) {
           <StyledButton onClick={handleHireProcess}>입사처리</StyledButton>
           <StyledButton onClick={handleRetire}>퇴사처리</StyledButton>
           {modalIsOpen && (
-            <ModalOverlay onClick={() => setModalIsOpen(false)}>
+            <ModalOverlay onClick={handleCloseModal}>
               <ModalContent onClick={e => e.stopPropagation()}>
                 <h1>퇴사처리</h1>
                 <NotificationText>오늘 날짜로 퇴사일이 처리되며 정보도 삭제됩니다.</NotificationText>
-                <p>사원 검색:</p>
-                <input value={searchValue}
-                  onChange={(e) => setSearchValue(e.target.value)}
-                  onKeyDown={handleKeyDown}
-                  type="text" placeholder="사원 이름 또는 ID 또는 Mail ID입력" />
-                  <SearchButton onClick={handleSearch}><FiSearch style={{ color: "lightgrey" }} /></SearchButton>
-                <CloseButton onClick={() => setModalIsOpen(false)}>✖</CloseButton>
 
-                <ul>
-                  {employeeList.map(employee => (
-                    <li key={employee.id}>
-                      <input
-                        type="checkbox"
-                        checked={checkedEmployees.includes(employee.id)}
-                        onChange={() => handleCheckboxChange(employee.id)}
-                      />
-                      {employee.name} - {employee.position}
-                    </li>
-                  ))}
-                </ul>
+                <h2>사원 검색</h2>
+                <div>
+                  <input value={searchValue}
+                    onChange={(e) => setSearchValue(e.target.value)}
+                    onKeyDown={handleKeyDown}
+                    type="text" placeholder="사원 이름 또는 ID 또는 Mail ID입력" />
+                  <SearchButton onClick={handleSearch}><FiSearch style={{ color: "lightgrey" }} /></SearchButton>
+                </div>
+                <ContentSection>
+                  <EmployeeList>
+                    <h3>검색된 사원</h3>
+                    <ul>
+                      {employeeList.map(employee => (
+                        <li key={employee.id}>
+                          <input
+                            type="checkbox"
+                            checked={checkedEmployees.includes(employee.id)}
+                            onChange={() => handleCheckboxChange(employee.id)}
+                          />
+                          {employee.name} - {employee.position}
+                        </li>
+                      ))}
+                    </ul>
+                  </EmployeeList>
+
+                  <EmployeeList>
+                    <h3>선택된 사원</h3>
+                    <ul>
+                      {checkedEmployees.map(employeeId => (
+                        <li key={employeeId}>
+                          {employeeId}
+                        </li>
+                      ))}
+                    </ul>
+                  </EmployeeList>
+                </ContentSection>
+
+                <CloseButton onClick={handleCloseModal}>✖</CloseButton>
+                <ButtonArea>
+                  <StyledButton onClick={handleRetireProcess}>퇴사 일괄 처리</StyledButton>
+
+                </ButtonArea>
+
               </ModalContent>
+
             </ModalOverlay>
           )}
 
@@ -142,7 +189,7 @@ export default function EmployeeMgmtHeader({ pageId }) {
       } />
       <NotificationArea>
         <NotificationInfo>
-          사원이 추가 될 경우 알림이 갑니다.
+          사용자 상세정보에서 퇴사일 입력 또는 삭제 클릭 시 퇴사처리 됩니다.
         </NotificationInfo>
       </NotificationArea>
     </div >
@@ -166,8 +213,11 @@ const NotificationArea = styled.div`
 
 
 const ModalContent = styled.div`
+display: flex;  // flexbox 활성화
+justify-content: space-between; // 컨텐츠 사이에 공간 배치
+flex-direction: column; 
 position: relative;
-width: 50%;
+width: 60%;
 max-width: 500px;
 background-color: #f1f1f1;
 padding: 40px;
@@ -207,6 +257,8 @@ const ModalOverlay = styled.div`
   align-items: center;
   z-index: 1000;
 `;
+
+
 const CloseButton = styled.button`
 position: absolute;
 right: 15px;
@@ -227,4 +279,15 @@ const NotificationText = styled.p`
   font-size: 0.8rem; // 작게
   color: #b33; // 약간의 빨간색으로 주의를 끕니다.
   margin: 10px 0; // 위아래 여백 추가
+`;
+
+
+const ContentSection = styled.div`
+  display: flex;  // 두 섹션을 양 옆에 배치
+  justify-content: space-between;
+  margin-top: 20px;  // 섹션 사이의 간격을 조정
+`;
+
+const EmployeeList = styled.div`
+  width: 48%;  // 전체 너비의 약 절반
 `;

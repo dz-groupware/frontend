@@ -12,7 +12,7 @@ export default function GnbLayout() {
   const [profile, setProfile] = useState(JSON.parse(`[{}]`));
   const [gnb, setGnb] = useState(JSON.parse(`[{}]`));
   const [favor, setFavor] = useState(JSON.parse(`[{}]`));
-
+  const [empId, setEmpId] = useState(null);
   const basicInfo = async(empId) => {
     try{
       const res = await basicInfoApi(empId);
@@ -39,13 +39,16 @@ export default function GnbLayout() {
   };
 
   useEffect(() => {
-    const empId = localStorage.getItem("empId");
+   setEmpId(localStorage.getItem("empId"));
+  }, [])
+  
+  useEffect(() => {
     if (empId) {
       basicInfo(empId);
     } else {
       basicInfo(0);
     }  
-  }, [])
+  },[empId]);
 
   return (
     <>

@@ -1,20 +1,26 @@
 import styled from 'styled-components';
+import { UnAuthorized } from '../../common/Error/Error';
 
 export default function Profile({ profile }) {
   const empId = localStorage.getItem("empId");
+  console.log('profile : ', empId);
+  console.log('profile : ', profile);
+  
+  const user = profile.find(prf => prf['empId']+"" === empId);
 
-  for (let prf of profile) {
-    if (empId !== null && empId !== undefined && empId !== 0 && prf['empId']+"" === empId) {
-      return (
-        <ProfileArea>
-          <img src={prf['imageUrl']} alt='profileImg' />
-          <div>
-            <div id="profile_name">{prf['empName']}</div>
-            <p>{prf['compName']} / {prf['deptName']}</p>
-          </div>
-        </ProfileArea>
-      );
-    }
+  if(user) {
+    return (
+      <ProfileArea>
+        <img src={user['imageUrl']} alt='profileImg' />
+        <div>
+          <div id="profile_name">{user['empName']}</div>
+          <p>{user['compName']} / {user['deptName']}</p>
+        </div>
+      </ProfileArea>
+    );
+  } else {
+    console.log('사용자 정보가 일치하지 않습니다.');
+    UnAuthorized();
   }
 }
 

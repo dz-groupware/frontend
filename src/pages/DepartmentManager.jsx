@@ -15,7 +15,7 @@ import SearchResult from '../components/DepartmentManager/SearchResult';
 import DetailTitle from '../components/DepartmentManager/DetailTitle';
 import TmpSaveModal from '../components/DepartmentManager/TmpSaveModal';
 import { Loading } from './VIEW';
-import Retry from '../components/Error/Retry';
+import Retry from '../common/Error/Retry';
 
 
 export default function DepartmentManager({ pageId }) {
@@ -58,7 +58,6 @@ export default function DepartmentManager({ pageId }) {
   const [result, setResult] = useState([]);
   const [empList, setEmpList] = useState([]);
 
-  const [noti, setNoti] = useState(false);
   const [loading, setLoading] = useState({loading: false, response: false});
   const [modalOn, setModalOn] = useState(false);
 
@@ -68,6 +67,7 @@ export default function DepartmentManager({ pageId }) {
     option: false,
     result: false,
   });
+
   console.log(detail)
   // console.log(search)
   // console.log(value)
@@ -78,18 +78,27 @@ export default function DepartmentManager({ pageId }) {
   const handleModifyNoti = () => {
     console.log(detail);
     if(detail.id === 0){
+      // 추가 시
       setValue(initValue);
-      setDetail({...detail, type: 'basic'});
+      setDetail({ ...initDetail, type: 'basic'});
     } else if (detail.type === 'basic' && detail.id > 0) {
-      getBasicDetailById(detail.id, pageId).then(res => {
-        if(Object.keys(initValue).every((property) => res.data.data.hasOwnProperty(property))){
-          setValue(res.data.data);
-        } else {
-          console.log("!error");
-          setError({ ...error, value: true });
-          setValue(initValue);
-        }
-      });
+      // 기본 정보 열람 중 다른 부서 선택
+      // form에 있다면 수정했던 정보를 보여 줌
+      const foundValue = form.find(item => item.id === 1);
+      if(foundValue) {
+        setValue(foundValue);
+      } else {
+        // 수정 한 적 없는 정보라면 새로 요청해서 보여 줌
+        getBasicDetailById(detail.id, pageId).then(res => {
+          if(Object.keys(initValue).every((property) => res.data.data.hasOwnProperty(property))){
+            setValue(res.data.data);
+          } else {
+            console.log("!error");
+            setError({ ...error, value: true });
+            setValue(initValue);
+          }
+        });
+      }
     } else if (detail.type === 'emp' && detail.id > 0){
       console.log('reqeust emp list');
       getEmpListByDeptId(detail.id, pageId).then(res => {
@@ -188,6 +197,7 @@ export default function DepartmentManager({ pageId }) {
       return updateRes;
     });
   }
+
   useEffect(()=>{
     const loadDeptList = async () => {
       try {
@@ -217,12 +227,12 @@ export default function DepartmentManager({ pageId }) {
           handleDelete();
           console.log('삭제 요청');
         } else {
-          if(detail.state === 'tmpSave'){
+          if(detail.state === 'tmp'){
             // 일괄등록
-            handleTmpSave();
             console.log('tmpSave : ', value);
             setForm([ ...form, value ]);
-            setDetail({ id: detail.state, state: false, save: false, isChanging: false });
+            handleTmpSave();
+            setDetail(initDetail);
           } 
           if(detail.state === 'save'){
             if(detail.id === 0){
@@ -282,35 +292,6 @@ export default function DepartmentManager({ pageId }) {
     }
   }, [loading]);
 
-  useEffect(() => {
-    console.log("noti : ", noti );
-    if (noti) {
-      Swal.fire({
-        title: "페이지 이동",
-        text: "수정 중인 내용은 모두 삭제 됩니다.",
-        showDenyButton: true,
-        showCancelButton: true,
-        confirmButtonText: '임시저장',
-        denyButtonText: '확인',
-        cancelButtonText: '취소',
-      }).then((result) => {
-        /* Read more about isConfirmed, isDenied below */
-        console.log(result)
-        if (result.isConfirmed) {
-          console.log('임시저장');
-          Swal.fire('임시저장 되었습니다', '', 'success');
-          setDetail({...detail, state: 'tmpSave', isChanging: detail.state });
-        } else if (result.isDenied) {
-          console.log('수정 삭제 후 이동');
-          setDetail({ ...detail, id: detail.state, state: false });
-        } else if (result.isDismissed) {
-          console.log('취소');
-          setDetail({ ...detail, state: false });
-        }
-      })
-      setNoti(false);
-    }
-  }, [noti])
 
   useEffect(() => {
     if (item > 0 ){
@@ -319,6 +300,14 @@ export default function DepartmentManager({ pageId }) {
       });      
     }
   }, [item]);
+
+  useEffect(() => {
+    // 임시저장일 시에 데이터 임시 저장
+    if (detail.state === 'tmp'){
+      setForm([ ...form, value ]);
+      setDetail({ ...detail, id: detail.isChanging, state: false, isChanging: false });
+    }
+  }, [detail.state]);
   
   return(
     <ContentDept>
@@ -359,7 +348,7 @@ export default function DepartmentManager({ pageId }) {
           {
             detail.type === 'basic' ? 
             ( !error.value ? 
-              <DetailBasic data={value} setData={setValue} detail={detail} setDetail={setDetail} setNoti={setNoti} pageId={pageId} />
+              <DetailBasic data={value} setData={setValue} detail={detail} setDetail={setDetail} pageId={pageId} />
               :  <Retry /> )
             : null
           }
@@ -371,7 +360,7 @@ export default function DepartmentManager({ pageId }) {
             : null
           }
         </Detail>
-        { modalOn && <TmpSaveModal modalOff={modalOff} form={form} pageId={pageId} setNoti={setNoti} />}
+        { modalOn && <TmpSaveModal modalOff={modalOff} form={form} pageId={pageId} />}
       </DetailArea>
     </ContentDept>
   );

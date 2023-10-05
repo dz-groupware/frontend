@@ -1,5 +1,5 @@
 import { configureStore } from '@reduxjs/toolkit';
-import {loginSlice, menuSlice, recentSlice, modalSlice, companyMgmtSlice, employeeMgmtSlice, authGroupSlice } from './Slice';
+import { companyMgmtSlice, employeeMgmtSlice, authGroupSlice } from './Slice';
 import { uploadMiddleware } from './thunk';
 
 const store = configureStore({

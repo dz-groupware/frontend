@@ -1,14 +1,13 @@
 import { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
 
 import styled from 'styled-components';
-
 import { AiOutlineStar, AiOutlineInfoCircle, AiOutlineSearch, AiFillStar } from 'react-icons/ai';
 
 import {GnbApi, FavorApi, searchAPI, PageListApi} from '../api/menu';
 
 import MenuList from '../components/MenuEditor/MenuList';
 import { GnbDetail, MenuDetail } from '../components/MenuEditor/Detail';
+import Retry from '../common/Error/Retry';
 
 export default function MenuEditor({ pageId }){
   const [gnbList, setGnbList] = useState([]);
@@ -21,17 +20,29 @@ export default function MenuEditor({ pageId }){
   const [detail, setDetail] = useState([false, false]);
   const [menuDetail, setMenuDetail] = useState("");
 
+  const [error, setError] = useState({
+    gnb: false,
+  });
+
+
   useEffect(() => {
     if(reRender){
       // gnb 리스트 가져오기
-      GnbApi(pageId).then(res => {setGnbList(res.data.data)});
+      GnbApi(pageId).then(res => {
+        if (Array.isArray(res.data.data)) {
+          setGnbList(res.data.data);
+        } else {
+          setError({ ...detail, gnb: true });
+        };
+      });
       // 즐겨찾기 가져오기
       FavorApi(pageId, 'load', pageId).then(res => {setFavor(res.data.data === "true")});
       PageListApi(pageId).then(res => {setPage(res.data.data)});
       searchHandler();
     }
     setReRender(false);
-  }, [pageId, reRender]);
+  // }, [pageId, reRender]);
+}, [reRender]);
 
   // 대메뉴/메뉴 디테일 on/off
   function menuDetailHandler(type, detail){
@@ -69,7 +80,7 @@ export default function MenuEditor({ pageId }){
     const formData = new FormData(document.getElementById('searchForm'));
     console.log(formData.get("gnbName"))
     searchAPI(pageId, formData).then(res => {
-      console.log('rerender: ', res.data.data);
+      
       setResult(res.data.data);
     });
   }
@@ -101,7 +112,7 @@ export default function MenuEditor({ pageId }){
         <MenuTree>
           <SearchForm id="searchForm">
             <select name="gnbName">
-              {
+              { error.gnb ? <Retry /> : 
                 gnbList.map((a, i) => (
                   <option key={a['name']+a['id']} id='gnbName' value={a['name']}>{a['name']}</option>
                   ))

@@ -26,7 +26,6 @@ export default function TB({ profile }) {
           <Profile profile={profile}/>
           {profileModal && <ProfileModal profile={profile} profileModal={profileModal} setProfileModal={setProfileModal}/>}
         </ProfileArea>
-
         <IconArea>
           <AiOutlineDeploymentUnit onClick={() => {setOrgModal(true)}}/>
         </IconArea>
@@ -36,8 +35,7 @@ export default function TB({ profile }) {
   );
 }
 
-
-export const TBArea = styled.div`
+const TBArea = styled.div`
 display: flex;
 justify-content: space-between;
 position: relative;
@@ -64,7 +62,7 @@ const ProfileArea = styled.div`
 display: flex;
 width: 250px;
 `;
-export const IconArea = styled.div`
+const IconArea = styled.div`
 padding-top: 10px;
 width:60px;
 position: relative;

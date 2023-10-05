@@ -6,12 +6,13 @@ import Swal from 'sweetalert2';
 
 import { checkDeptCode } from '../../api/department';
 
-export default function DetailBasic({ data, setData, detail, setDetail, setNoti, pageId }){
+export default function DetailBasic({ data, setData, detail, setDetail, pageId }){
   const [modalOn, setModalOn] = useState(false);
   const [form, setForm] = useState('');
   const { validText, isValid, validate } = useValid(form);
   const [isModified, setIsModified] = useState(false);
   const [useableCode, setUseableCode] = useState(false);
+  const [noti, setNoti] = useState(false);
 
   // console.log("modify : ", isModified);
   // console.log("useableCode : ", useableCode);
@@ -43,9 +44,28 @@ export default function DetailBasic({ data, setData, detail, setDetail, setNoti,
       try {
         // api 요청
         checkDeptCode(form.id, form.code, pageId).then(res => {
-          console.log("checkDeptCode : ", res);
-          if(res.data.data){
+          console.log("checkDeptCode : ", typeof res.data.data , res.data);
+          if(res.data.data === "true" || res.data.data === true){
+            let timerInterval
+            Swal.fire({
+              title: '사용 가능한 코드 입니다.',
+              timer: 1500,
+              timerProgressBar: false,
+              willClose: () => {
+                clearInterval(timerInterval)
+              }
+            })
             setUseableCode(true);
+          } else {
+            let timerInterval
+            Swal.fire({
+              title: '사용할 수 없는 코드 입니다',
+              timer: 1500,
+              timerProgressBar: false,
+              willClose: () => {
+                clearInterval(timerInterval)
+              }
+            })
           }
         });
       } catch (error) {
@@ -88,6 +108,38 @@ export default function DetailBasic({ data, setData, detail, setDetail, setNoti,
     }
   },[data]);
 
+  useEffect(() => {
+    if (noti) {
+      Swal.fire({
+        title: "페이지 이동",
+        text: "수정 중인 내용은 모두 삭제 됩니다.",
+        showDenyButton: true,
+        showCancelButton: true,
+        confirmButtonText: '임시저장',
+        denyButtonText: '확인',
+        cancelButtonText: '취소',
+      }).then((result) => {
+        /* Read more about isConfirmed, isDenied below */
+        console.log(result)
+        if (result.isConfirmed) {
+          console.log('임시저장');
+          Swal.fire('임시저장 되었습니다', '', 'success');
+          // setForm([ ...form, value ]);
+          setDetail({ ...detail, isChanging: detail.state, state: 'tmpSave', save:false }); // state는 남기고 save는 false 특수하게 DetailBasic에서 isModified를 false 해줘야 하기 때문에
+          setIsModified(false);
+        } else if (result.isDenied) {
+          console.log('수정 삭제 후 이동');
+          setDetail({ ...detail, id: detail.state, state: false });
+          setIsModified(false);
+        } else if (result.isDismissed) {
+          console.log('취소');
+          setDetail({ ...detail, state: false });
+        }
+      })
+      setNoti(false);
+    }
+  }, [noti]);
+
   useEffect(()=>{
     // 다른 부서를 눌렀을 때
     if (typeof detail.state === 'number'){
@@ -120,7 +172,13 @@ export default function DetailBasic({ data, setData, detail, setDetail, setNoti,
     // 임시저장 눌렀을 때
     if (detail.state === 'tmpSave') {
       setData(form); 
-      setDetail({ ...detail, id: detail.isChanging, state: false, save: false }); // state: true? false?
+      setDetail({ ...detail, state:'tmp', save: false }); // state: true? false?
+      setIsModified(false);
+    }
+    if (detail.state === 'tmpSaveButton') {
+      console.log('tlqkf wlsWk wpqkf')
+      setData(form); 
+      setDetail({ ...detail, state:'tmp', save: true }); // state: true? false?
       setIsModified(false);
     }
   },[detail.state]);

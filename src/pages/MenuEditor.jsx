@@ -173,7 +173,7 @@ export const Module = styled.div`
 background-color: white;
 border: 1px solid rgb(171,172,178);
 width: 100%;
-height: calc(100% - 90px);
+height: 100%;
 `;
 export const Nav = styled.div`
 border-top: 5px solid rgb(20,136,247);

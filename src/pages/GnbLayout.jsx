@@ -53,7 +53,7 @@ export default function GnbLayout() {
         initRouteList();
       });
     } catch (error) {
-      console.log(error);
+      console.log('gnb에러',error);
       window.location.href="/login";
     }
   };
@@ -90,26 +90,24 @@ export default function GnbLayout() {
 }
 
 export const Content = styled.div`
-position: fixed;
-top: 0px;
-left: 50px;
-margin: 0px;
-padding: 0px;
-width: 100%;
-height: 100%;
+  position: fixed;
+  top: 0px;
+  left: 50px;
+  margin: 0px;
+  padding: 0px;
+  width: 100%;
+  height: 100%;
 `;
 export const RouteArea = styled.div`
-color: rgb(66,71,84);
-height: calc(100% - 80px);
-width: 100%;
-
-
+  color: rgb(66,71,84);
+  height: calc(100% - 80px);
+  width: 100%;
 `;
 export const TBArea = styled.div`
-height:80px;
-width:100%;  
-position: relative;
-z-index: 2;
-color:rgb(66,71,84);
-background-color:rgb(181,194,200);
+  height:80px;
+  width:100%;  
+  position: relative;
+  z-index: 2;
+  color:rgb(66,71,84);
+  background-color:rgb(181,194,200);
 `;

@@ -1,16 +1,34 @@
 // CommonHeader.js
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import styled from "styled-components";
 import { FiMonitor } from "react-icons/fi";
 import { GoVideo, GoChecklist } from "react-icons/go";
 import { AiOutlineQuestionCircle, AiOutlineStar } from "react-icons/ai"
+import { FavorApi } from '../../api/menu';
 
-export default function MgmtHeader({ title, extraButtonComponents }) {
-    const [isStarClicked, setIsStarClicked] = useState(false);
 
-    const handleStarClick = () => {
-        setIsStarClicked(prev => !prev);
+export default function MgmtHeader({ title, extraButtonComponents , pageId}) {
+    const [favor, setFavor] = useState(false); // 초기 상태는 false (즐겨찾기 비활성화)로 설정
+
+    // useEffect(() => {
+    //     // 컴포넌트가 마운트될 때 즐겨찾기 상태를 불러옴
+    //     FavorApi(pageId, 'load').then(response => {
+    //         // API 응답에서 즐겨찾기 상태를 추출하고 state를 업데이트
+    //         // 응답 형식에 따라 아래 코드를 적절히 수정해야 합니다.
+    //         setFavor(response.data[0].data === 'true');
+    //     });
+    // }, [pageId]);
+
+    const handleFavoriteToggle = () => {
+        // 현재 즐겨찾기 상태의 반대 값을 API에 전송
+        FavorApi(pageId, !favor).then(() => {
+            // API 호출 후 state를 업데이트
+            setFavor(!favor);
+        });
     };
+
+
+   
 
     return (
         <div>
@@ -27,8 +45,9 @@ export default function MgmtHeader({ title, extraButtonComponents }) {
                 </ButtonArea>
                 <Icon><AiOutlineQuestionCircle /></Icon>
                 <Icon><GoChecklist /></Icon>
-                {isStarClicked ? <YellowStarIcon onClick={handleStarClick} /> : <NormalStarIcon onClick={handleStarClick} />}
-            </FavArea>
+                <Icon onClick={handleFavoriteToggle}>
+                        <AiOutlineStar color={favor ? "gold" : "gray"} />
+                    </Icon>            </FavArea>
         </Container>
     </div>
     );
@@ -64,11 +83,3 @@ const Icon = styled.div`
   margin: 10px;
 `;
 
-const YellowStarIcon = styled(AiOutlineStar)`
-  margin: 10px;
-  color: yellow;
-`;
-
-const NormalStarIcon = styled(AiOutlineStar)`
-  margin: 10px;
-`;

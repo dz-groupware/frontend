@@ -37,7 +37,6 @@ export const Label = styled.div`
     font-weight: bold;
     text-align: right;
     height:40px;
-    
 `;
 
 export const Input = styled.input`
@@ -71,12 +70,30 @@ export const PrefixSelect = styled.select`
     border: 1px solid lightgrey;
 `;
 
-export const FormInput = ({ customStyle, label, name, value, type = "text", maxLength, onChange, disabled, placeholder ,onBlur}) => (
-    <InputContainer style={customStyle}>
-        <Label>{label}</Label>
-        <Input name={name} type={type} value={value} maxLength={maxLength} onChange={onChange} disabled={disabled} placeholder={placeholder} onBlur={onBlur}/>
-    </InputContainer>
-);
+const isValidASCII = (str) => {
+    return /^[\x00-\x7Fㄱ-힣]*$/.test(str);
+};
+
+export const FormInput = ({ customStyle, label, name, value, type = "text", maxLength, onChange, disabled, placeholder, onBlur }) => {
+
+    const handleInputChange = (e) => {
+        if (!isValidASCII(e.target.value)) {
+            alert('한글 및 ASCII 문자만 입력할 수 있습니다.');
+            e.target.value = e.target.value.replace(/[^\x00-\x7Fㄱ-힣]/g, "");  // 한글 및 ASCII 문자가 아닌 문자들을 제거
+        }
+
+
+        if (onChange) onChange(e);
+    };
+
+    return (
+        <InputContainer style={customStyle}>
+            <Label>{label}</Label>
+            <Input name={name} type={type} value={value} maxLength={maxLength} onChange={handleInputChange} disabled={disabled} placeholder={placeholder} onBlur={onBlur} />
+        </InputContainer>
+    );
+};
+
 
 export const ImageContainer = styled.div`
     display:flex;

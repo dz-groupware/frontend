@@ -367,7 +367,7 @@ const ContentDept = styled.div`
 background-color: white;
 border: 1px solid rgb(171,172,178);
 width: 100%;
-height: calc(100% - 90px);
+height: 100%;
 `;
 const DeptTitle = styled.div`
 display: flex;
@@ -375,8 +375,6 @@ justify-content: space-between;
 
 width: 100%;
 
-border-top: 5px solid rgb(20,136,247);
-border-bottom: 1px solid grey;
 color: black;
 
 > #deptTitle {

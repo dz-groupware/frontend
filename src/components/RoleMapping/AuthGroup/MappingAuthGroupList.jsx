@@ -100,7 +100,7 @@ export default function MappingAuthGroupList({ activeAuthId, activeEmp, orderBy,
     }
   }, [lastElementRef.current, hasMore, data]);
 
-  if (error) return <div>에러가 발생했어요...</div>;
+  if (error) return <div>에러가 발생하였습니다...</div>;
   if (!data) return null;
 
   return (

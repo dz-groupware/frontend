@@ -1,9 +1,9 @@
   import React, { useCallback, useEffect, useRef, useState } from 'react';
   import AuthGroupItem from './AuthGroupItem';
   import { styled } from 'styled-components';
-  import { getAuthGroupApi } from '../../../api/authgroup';
+  import { getAuthGroupApi as getCompanyAuthGroupApi } from '../../../api/authgroup';
 
-  export default function AuthGroupList({ activeAuthId, orderBy, searchTerm, refresh, showCloseRequest, handleItemClick, headers, isEditMode }) {
+  export default function AuthGroupList({ activeAuthId, canUseAuth, orderBy, searchTerm, refresh, showCloseRequest, handleItemClick, headers, isEditMode }) {
     const [lastId, setLastId] = useState(99999999);
     const [lastAuthName, setLastAuthName] = useState(null);
     const [data, setData] = useState([]);
@@ -19,6 +19,7 @@
       
       let queryParam = { 
         pageSize: 8, 
+        canUseAuth,
         orderBy, 
         searchTerm,
         ...(lastAuthName !== null && orderBy.includes('authName') && { lastAuthName: encodeURIComponent(lastAuthName) }),
@@ -27,7 +28,7 @@
     
       
       try {
-        const res = await getAuthGroupApi({ params: queryParam, headers });
+        const res = await getCompanyAuthGroupApi({ params: queryParam, headers });
         const response = res.data;
         if (response.data && response.data.length > 0) {
           if(orderBy.includes('authName')) {
@@ -50,7 +51,7 @@
       } finally {
         setIsLoading(false);
       }
-    }, [lastId, lastAuthName, orderBy, searchTerm, isLoading, hasMore]);
+    }, [lastId, lastAuthName, canUseAuth, orderBy, searchTerm, isLoading, hasMore]);
 
     useEffect(() => {
       setData([]);
@@ -70,7 +71,7 @@
             setLastId(0); // ID 오름차순 정렬을 시작합니다.
         }
     }
-    }, [orderBy, searchTerm,refresh]);
+    }, [canUseAuth, orderBy, searchTerm,refresh]);
 
     useEffect(() => {
       if(data.length === 0 && hasMore) {

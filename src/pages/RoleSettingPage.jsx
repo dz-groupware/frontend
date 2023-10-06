@@ -35,7 +35,7 @@ export default function RoleSettingPage({pageId}) {
       <TopContainer>
         <TitleAndIconContainer>
           <h1>권한Role설정</h1>
-          <IconWrapper>
+          {/* <IconWrapper>
             <MdDisplaySettings fontSize={20} color='#939393'/>
           </IconWrapper>
           <IconWrapper>
@@ -43,7 +43,7 @@ export default function RoleSettingPage({pageId}) {
           </IconWrapper>
           <IconWrapper>
             <MdOutlineMapsUgc fontSize={20} color='#939393'/>
-          </IconWrapper>
+          </IconWrapper> */}
         </TitleAndIconContainer>
         <ActionsContainer>
           <ActionButton 
@@ -74,7 +74,7 @@ export default function RoleSettingPage({pageId}) {
               />
             )}
           <VerticalLine/>
-          <PiCalendarCheck fontSize={26} color='C9C9C9'/>
+          {/* <PiCalendarCheck fontSize={26} color='C9C9C9'/> */}
           <PiStarBold fontSize={26} color='C9C9C9'/>
         </ActionsContainer>
         <RoleModal isOpen={openCreateModal} onClose={() => setOpenCreateModal(false)} changeRefresh={changeRefresh} setActiveAuthId={setActiveAuthId} apiFunction={addAuthApi} headers={{pageId}}/>
@@ -83,6 +83,7 @@ export default function RoleSettingPage({pageId}) {
       <Line color="#f5f5f5" height="2px" bottom={"20px"}/>
       <div style={{  marginLeft: "1.2rem" }} >
         <LinkButon 
+          as="h1"
           cursor="none"
           onClick={(e)=>e.preventDefault()}
           name="권한그룹"

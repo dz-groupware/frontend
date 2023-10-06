@@ -283,7 +283,7 @@ export default function EmployeeMgmtBasicForm({ pageId }) {
 
 
 
-        if (response === "No data found") {
+        if (response.data === "No data found") {
 
             dispatch(employeeActions.setSignUpChecked(true)); // 중복 확인된 경우 리덕스 상태 업데이트
             return;
@@ -471,7 +471,9 @@ export default function EmployeeMgmtBasicForm({ pageId }) {
                         value={info.name || ''}
                         onChange={handleChange}
                         onBlur={handleBlur}
-                        disabled={isSignUpChecked} />
+                        disabled={isSignUpChecked}
+                        maxLength={19} />
+
 
                     <FormInput label="주민등록번호"
                         name="empIdNum"
@@ -505,8 +507,13 @@ export default function EmployeeMgmtBasicForm({ pageId }) {
                 </HalfInputContainer>
 
                 <HalfInputContainer>
-                    <FormInput label="휴대전화번호" name="mobileNumber" value={info.mobileNumber || ''} onChange={handleHyphenChange} onBlur={handleBlur}
-                        disabled={isSignUpChecked} />
+                    <FormInput label="휴대전화번호" name="mobileNumber"
+                        value={info.mobileNumber || ''}
+                        onChange={handleHyphenChange}
+                        onBlur={handleBlur}
+                        disabled={isSignUpChecked}
+                        maxLength={25} />
+
 
                     <StyledButton name="signcheck" value="signcheck"
                         onClick={handleSignUpCheck}
@@ -514,9 +521,13 @@ export default function EmployeeMgmtBasicForm({ pageId }) {
                         onBlur={handleBlur}
                     >가입 확인</StyledButton>
 
+                    <FormInput label="전화번호(집)" name="homeNumber"
+                        value={info.homeNumber || ''}
+                        onChange={handleHyphenChange}
+                        onBlur={handleBlur}
+                        disabled={!isSignUpChecked}
+                        maxLength={25} />
 
-                    <FormInput label="전화번호(집)" name="homeNumber" value={info.homeNumber || ''} onChange={handleHyphenChange} onBlur={handleBlur}
-                        disabled={!isSignUpChecked} />
 
                 </HalfInputContainer>
 
@@ -569,8 +580,6 @@ export default function EmployeeMgmtBasicForm({ pageId }) {
 
 
 
-
-
                 <HalfInputContainer style={{ borderBottom: "1px solid lightgrey" }}>
                     <FormInput customStyle={{ border: "none" }} label="로그인ID" name="loginId" value={info.loginId || ''} onChange={handleChange} disabled={isDataFetched || isDuplicated || !isSignUpChecked} onBlur={handleBlur} />
                     <StyledButton name="duplicatecheck" value="duplicatecheck"
@@ -582,11 +591,13 @@ export default function EmployeeMgmtBasicForm({ pageId }) {
 
 
 
+                <FormInput label="주소" name="address"
+                    value={info.address || ''}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    disabled={!isSignUpChecked}
+                    maxLength={99} />
 
-
-
-                <FormInput label="주소" name="address" value={info.address || ''} onChange={handleChange} onBlur={handleBlur}
-                    disabled={!isSignUpChecked} />
 
 
                 <HalfInputContainer>

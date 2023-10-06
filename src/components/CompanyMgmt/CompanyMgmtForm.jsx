@@ -22,6 +22,11 @@ export default function CompanyMgmtForm({ pageId }) {
     const idForForm = useSelector(state => state.companyMgmt.idForForm);
     const [companyOptions, setCompanyOptions] = useState([]); // 회사 옵션을 담을 상태
     const [info, setInfo] = useState(reduxCompanyInfo);
+    const [datesEnabled, setDatesEnabled] = useState({
+        establishmentDate: true,
+        openingDate: false,
+        closingDate: false
+    });
 
     useEffect(() => {
         setInfo(reduxCompanyInfo);
@@ -136,10 +141,15 @@ export default function CompanyMgmtForm({ pageId }) {
 
         } else {
             try {
-                await addCompanyMgmt(info, pageId);
-                alert("회사 데이터가 저장되었습니다.");
-                dispatch(companyActions.hideForm());
-                window.location.reload();
+                const response = await addCompanyMgmt(info, pageId);
+                if (response === 409) {
+                    return;
+                }
+                else {
+                    alert("회사 데이터가 저장되었습니다.");
+                    dispatch(companyActions.hideForm());
+                    window.location.reload();
+                }
             } catch (error) {
                 console.error("Error adding company data:", error);
             }
@@ -229,6 +239,11 @@ export default function CompanyMgmtForm({ pageId }) {
 
         const openingDate = new Date(info.openingDate);
         const closingDate = info.closingDate ? new Date(info.closingDate) : null;
+        const establishmentDate = new Date(info.establishmentDate);
+        if (establishmentDate > openingDate) {
+            alert("개업일은 설립일 이후의 날짜여야 합니다.");
+            return;
+        }
 
         if (closingDate && openingDate > closingDate) {
             alert("폐업일은 개업일 이후의 날짜여야 합니다.");
@@ -245,6 +260,13 @@ export default function CompanyMgmtForm({ pageId }) {
             alert("회사코드는 숫자만 입력할 수 있습니다");
             return;
         }
+        // if (closingDate != null) {
+        //     const isConfirmed = window.confirm("폐업일 입력시 데이터가 삭제됩니다. 삭제하시겠습니까?");
+        //     if (!isConfirmed) {
+        //         return; // If user clicks "취소", exit the method
+        //     }
+        //     // If user clicks "확인", continue with the following logic
+        // }
 
 
         dispatch(companyActions.updateInfo(info));
@@ -285,13 +307,14 @@ export default function CompanyMgmtForm({ pageId }) {
                 </InputContainer>
             </HalfInputContainer>
 
-            <FormInput label="회사명" name="name" value={info.name || ''} onChange={handleChange} />
+            <FormInput label="회사명" name="name" value={info.name || ''} onChange={handleChange} maxLength={99} />
 
+            <FormInput label="회사약칭" name="abbr" value={info.abbr || ''} onChange={handleChange} maxLength={49} />
+            <FormInput label="업태" name="businessType" value={info.businessType || ''} onChange={handleChange} maxLength={49} />
 
-            <FormInput label="회사약칭" name="abbr" value={info.abbr || ''} onChange={handleChange} />
-            <FormInput label="업태" name="businessType" value={info.businessType || ''} onChange={handleChange} />
             <HalfInputContainer>
-                <FormInput label="대표자명" name="repName" value={info.repName || ''} onChange={handleChange} />
+                <FormInput label="대표자명" name="repName" value={info.repName || ''} onChange={handleChange} maxLength={19} />
+
                 <HalfInputContainer>
                     <FormInput label="대표자주민등록번호" name="repIdNum" value={info.repIdNum || ''} onChange={handleCombinedChange} placeholder="______-_______" />
                 </HalfInputContainer>
@@ -317,31 +340,49 @@ export default function CompanyMgmtForm({ pageId }) {
 
             <HalfInputContainer>
                 <HalfInputContainer>
-                    <FormInput label="사업자번호" name="businessNum" value={info.businessNum || ''} onChange={handleCombinedChange} placeholder="___-__-_____" maxLength={12} />
+                    <FormInput label="사업자번호" name="businessNum" value={info.businessNum || ''} disabled={!!idForForm} onChange={handleCombinedChange} placeholder="___-__-_____" maxLength={12} />
                 </HalfInputContainer>
                 <HalfInputContainer>
                     <Label>법인번호</Label>
-                    <PrefixSelect name="corpType" value={info.corpType || "direct"} onChange={handleChange}>
+                    <PrefixSelect name="corpType" value={info.corpType || "direct"} disabled={!!idForForm} onChange={handleChange}>
                         <option value="direct">선택</option>
                         <option value="1">개인</option>
                         <option value="2">법인</option>
                     </PrefixSelect>
-                    <Input name="corpNum" value={info.corpNum || ''} onChange={handleCombinedChange} placeholder="______-_______" />
+                    <Input name="corpNum" value={info.corpNum || ''} disabled={!!idForForm} onChange={handleCombinedChange} placeholder="______-_______" />
                     {/* // Limit to 9 characters including dash   */}
                 </HalfInputContainer>
             </HalfInputContainer>
 
             <HalfInputContainer>
-                <FormInput label="설립일" name="establishmentDate" type="date" value={info.establishmentDate || ''} onChange={handleChange} />
+                <FormInput
+                    label="설립일"
+                    name="establishmentDate"
+                    type="date"
+                    value={info.establishmentDate || ''}
+                    onChange={handleChange}
+                />
+
                 <DoubleInputContainer>
                     <Label>개/폐업일</Label>
-                    <Input name="openingDate" type="date" value={info.openingDate || ''} onChange={handleChange} />
+                    <Input
+                        name="openingDate"
+                        type="date"
+                        value={info.openingDate || ''}
+                        onChange={handleChange}
+                    />
                     <span>/</span>
-                    <Input name="closingDate" type="date" value={info.closingDate || ''} onChange={handleChange} />
+                    <Input
+                        name="closingDate"
+                        type="date"
+                        value={info.closingDate || ''}
+                        onChange={handleChange}
+                        disabled={!info.openingDate || !info.establishmentDate}
+                    />
                 </DoubleInputContainer>
             </HalfInputContainer>
 
-            <FormInput label="주소" name="address" value={info.address || ''} onChange={handleChange} />
+            <FormInput label="주소" name="address" value={info.address || ''} onChange={handleChange} maxLength={199} />
 
 
         </Container>

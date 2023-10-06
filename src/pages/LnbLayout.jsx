@@ -139,6 +139,8 @@ left: 50px;
 width: calc(100% - 50px);
 height: 100%;
 }
+
+overflow-y:auto;
 `;
 const LNBList = styled.div`
 width: 200px;

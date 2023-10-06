@@ -3,7 +3,7 @@ import { AiOutlinePlusCircle } from "react-icons/ai";
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect, useState } from 'react';
 import { companyActions } from '../../utils/Slice';
-import { getCompanyDetailsById, getCompanyMgmtList } from '../../api/companymgmt';
+import { getClosedCompanyMgmtList, getCompanyDetailsById, getCompanyMgmtList, getOpenedCompanyMgmtList } from '../../api/companymgmt';
 
 
 
@@ -16,8 +16,9 @@ export default function CompanyMgmtAside({ pageId }) {
   const isSearchExecuted = useSelector(state => state.companyMgmt.isSearchExecuted);
   const [selectedCompanyId, setSelectedCompanyId] = useState(null);
   const isVisible = useSelector(state => state.companyMgmt.isVisible);
-  const ddddddd = useSelector(state => state.companyMgmt.companyInfo);
-
+  const [selectedFilter, setSelectedFilter] = useState("전체");
+  const [openCompanyDataList, setOpenCompanyDataList] = useState([]);
+  const [closeCompanyDataList, setCloseCompanyDataList] = useState([]);
 
   useEffect(() => {
     async function fetchCompanies() {
@@ -28,11 +29,24 @@ export default function CompanyMgmtAside({ pageId }) {
     fetchCompanies();
   }, [searchedCompanyDataList]);
 
-  useEffect(() => {
-    console.log("뭐가 선택됏니12345648494", selectedCompanyId);
-  }, [selectedCompanyId]);
-  
 
+  useEffect(() => {
+    async function fetchCompaniesByFilter() {
+      if (selectedFilter === "개업") {
+        // 해당 API로 데이터 가져오기
+        const data = await getOpenedCompanyMgmtList(pageId);
+        setOpenCompanyDataList(data);
+      } else if (selectedFilter === "폐업") {
+        // 해당 API로 데이터 가져오기
+        const data = await getClosedCompanyMgmtList(pageId);
+        setCloseCompanyDataList(data);
+      } else {
+        const data = await getCompanyMgmtList(pageId);
+        setCompanyDataList(data);
+      }
+    }
+    fetchCompaniesByFilter();
+  }, [selectedFilter, searchedCompanyDataList]);
 
 
   useEffect(() => {
@@ -66,8 +80,8 @@ export default function CompanyMgmtAside({ pageId }) {
       const CorpTypeStyled = data.corpType === 1 ? CorpType1 : CorpType2;
       const CorpTypeName = data.corpType === 1 ? "개인" : "법인";
       return (
-         <Wrapper key={index} onClick={() => handleCompanyClick(data)} $isselected={(data.id === selectedCompanyId).toString()}>
-        {/* <Wrapper key={index} onClick={() => handleCompanyClick(data)} $isSelected={data.id === selectedCompanyId}> */}
+        <Wrapper key={index} onClick={() => handleCompanyClick(data)} $isselected={(data.id === selectedCompanyId).toString()}>
+          {/* <Wrapper key={index} onClick={() => handleCompanyClick(data)} $isSelected={data.id === selectedCompanyId}> */}
           <CompanyInfo>
             <div>{data.code}</div>
             <div>{truncatedName}</div>
@@ -85,7 +99,7 @@ export default function CompanyMgmtAside({ pageId }) {
 
 
   function truncateString(str, maxLength) {
-    
+
     if (str.length > maxLength) {
       return str.substring(0, maxLength - 3) + '...';  // -3은 '...'의 길이를 고려
     }
@@ -114,14 +128,14 @@ export default function CompanyMgmtAside({ pageId }) {
       // 회사 정보를 가져옵니다.
 
       console.log(companyMgmt.id);
-      const fetchedCompanyData = await getCompanyDetailsById(companyMgmt.id, pageId); 
+      const fetchedCompanyData = await getCompanyDetailsById(companyMgmt.id, pageId);
       console.log(fetchedCompanyData);
       // 가져온 회사 정보와 코드를 함께 showForm 액션에 전달합니다.
-      
-      dispatch(companyActions.showForm({companyInfo: fetchedCompanyData, id: fetchedCompanyData.id }));
-      console.log("fetchdata.id",fetchedCompanyData.id);
+
+      dispatch(companyActions.showForm({ companyInfo: fetchedCompanyData, id: fetchedCompanyData.id }));
+      console.log("fetchdata.id", fetchedCompanyData.id);
       console.log("fetchdata:", fetchedCompanyData);
-      
+
     } catch (error) {
       console.error("Error fetching company data by code:", error);
     }
@@ -129,11 +143,42 @@ export default function CompanyMgmtAside({ pageId }) {
 
   return (
     <Container>
+      <FilterSection>
+        <FilterButton
+          onClick={() => setSelectedFilter("전체")}
+          active={selectedFilter === "전체"}
+        >
+          전체
+        </FilterButton>
+        <Divider>|</Divider>
+        <FilterButton
+          onClick={() => setSelectedFilter("개업")}
+          active={selectedFilter === "개업"}
+        >
+          개업
+        </FilterButton>
+        <Divider>|</Divider>
+        <FilterButton
+          onClick={() => setSelectedFilter("폐업")}
+          active={selectedFilter === "폐업"}
+        >
+          폐업
+        </FilterButton>
+      </FilterSection>
+
       <NumberOfCompaniesArea>
         <NumberArea>
           <Element>
             <span style={{ margin: "5px", fontWeight: 600 }}>회사</span>
-            <span style={{ color: "#308EFC", fontWeight: 600 }}>  {isSearchExecuted ? Object.keys(searchedCompanyDataList).length : Object.keys(companyDataList).length}</span>
+            <span style={{ color: "#308EFC", fontWeight: 600 }}>   {
+              isSearchExecuted
+                ? Object.keys(searchedCompanyDataList).length
+                : selectedFilter === "개업"
+                  ? openCompanyDataList.length
+                  : selectedFilter === "폐업"
+                    ? closeCompanyDataList.length
+                    : companyDataList.length
+            }</span>
             <span style={{ margin: "5px", fontWeight: 600 }}>건</span>
           </Element>
           <SelectBox onChange={e => setSortType(e.target.value)}>
@@ -146,8 +191,14 @@ export default function CompanyMgmtAside({ pageId }) {
 
 
       <CompanyListArea>
-        {isSearchExecuted ? renderCompanyDataList(searchedCompanyDataList) : renderCompanyDataList(companyDataList)}
-      </CompanyListArea>
+        {isSearchExecuted
+          ? renderCompanyDataList(searchedCompanyDataList)
+          : selectedFilter === "개업"
+            ? renderCompanyDataList(openCompanyDataList)
+            : selectedFilter === "폐업"
+              ? renderCompanyDataList(closeCompanyDataList)
+              : renderCompanyDataList(companyDataList)
+        }      </CompanyListArea>
 
       <CompanyAddArea>
 
@@ -157,8 +208,8 @@ export default function CompanyMgmtAside({ pageId }) {
 
           setTimeout(() => {
             dispatch(companyActions.showForm())
-          },50);
-          
+          }, 50);
+
         }}>
 
           <AiOutlinePlusCircle />추가
@@ -250,7 +301,7 @@ const PersonInfo = styled.div`
 
 const NumberOfCompaniesArea = styled.div`
   position: sticky;
-  height: 50px;
+  height: 40px;
   display:flex;
   justify-content: space-between;
   align-items: center;
@@ -319,8 +370,36 @@ const FullWidthButton = styled.button`
   cursor: pointer;
   padding: 0;
   border: none;
+
   &:active {
     background: lightgrey;
     color: white;
   }
+`;
+const FilterSection = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #F5F5F5;
+
+`;
+
+const FilterButton = styled.button`
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 5px 10px;
+  margin: 5px;
+  font-weight: bold;  
+  font-size: 16px; 
+  color: ${props => props.active ? '#308EFC' : 'grey'};  // 활성화된 탭은 색을 변경
+  border-bottom: ${props => props.active ? '2px solid #308EFC' : 'none'}; // 활성화된 탭에는 밑줄 표시
+
+  &:hover {
+    background-color: #EFEFEF;
+  }
+`;
+
+const Divider = styled.span`
+  margin: 0 5px;
 `;

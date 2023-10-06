@@ -184,7 +184,7 @@ export default function DetailBasic({ data, setData, detail, setDetail, pageId }
 
   useEffect(() => {
     console.log('모달 ', console.log(data.parId, form.parId));
-    if (modalOn === false && data.parId !== form.parId) {
+    if (modalOn === true && data.parId !== form.parId) {
       console.log('상위부서 변경');
       setIsModified(true);
     }

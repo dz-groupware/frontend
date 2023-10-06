@@ -1,5 +1,4 @@
 import styled from 'styled-components';
-import { AiOutlineSearch } from "react-icons/ai";
 
 export default function Main() {
   return (
@@ -8,12 +7,6 @@ export default function Main() {
         <SearchArea>
             <div>
               <p>기업의 지속가능한 성장을 위해 디지털 혁신을 완성한다.</p>
-            </div>
-            <div>
-              <div>
-                <input type='text' id='searchBar'/>
-                <AiOutlineSearch/>
-              </div>
             </div>
         </SearchArea>
     </MainArea>
@@ -50,7 +43,7 @@ right: 20%;
   
   > p {
     color: white;
-    font-size: x-large;
+    font-size: xx-large;
     font-weight: bold;
     margin-bottom: 70px;
 

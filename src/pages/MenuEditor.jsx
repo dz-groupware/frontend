@@ -24,8 +24,10 @@ export default function MenuEditor({ pageId }){
     gnb: false,
   });
 
+  console.log(pageId, 'faovr: ', favor);
 
   useEffect(() => {
+    console.log('reRender');
     if(reRender){
       // gnb 리스트 가져오기
       GnbApi(pageId).then(res => {
@@ -36,7 +38,19 @@ export default function MenuEditor({ pageId }){
         };
       });
       // 즐겨찾기 가져오기
-      FavorApi(pageId, 'load', pageId).then(res => {setFavor(res.data.data === "true")});
+      FavorApi(pageId, 'load').then(res => {
+        console.log(res.data.data);
+        if (res.data.data === 1){
+          console.log('즐겨찾기 on')
+          setFavor(true);
+        } 
+        if (res.data.data === 0) {
+          console.log('즐겨찾기 off')
+          setFavor(false);
+        } else {
+          console.log('즐겨찾기 에러')
+        }  
+      });
       PageListApi(pageId).then(res => {setPage(res.data.data)});
       searchHandler();
     }
@@ -87,7 +101,15 @@ export default function MenuEditor({ pageId }){
 
   // 즐겨찾기 추가/삭제 요청
   function FavorHandler(){
-    FavorApi(pageId, favor).then(() => {setFavor(!favor);});
+    FavorApi(pageId, favor).then(res => {
+      console.log("favor", favor, " -> ", res.data.data);
+      if(res.data.data === 1) {
+        setFavor(!favor);
+      }else {
+        console.log('즐겨찾기 오류 : 강제 off')
+        setFavor(false);
+      }
+    });
   }
 
   return (

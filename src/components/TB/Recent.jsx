@@ -15,9 +15,9 @@ export default function Recent(){
     if (contentRef.current) {
       const contentWidth = contentRef.current.clientWidth;
       setShowAddMoreButton(contentWidth < chipData.length * 230);
-      setShowChipButton(Math.floor(contentWidth/200));
+      setShowChipButton(Math.floor(contentWidth/240));
     }
-  }, [chipData]);
+  }, [chipData, contentRef]);
 
   const navigator = (path) => {
     navigate(`${path}`);
@@ -69,7 +69,7 @@ export default function Recent(){
 const Chip = ({ name, path, onDelete, navigator }) => {
   return (
     <ChipContainer onClick={() => navigator(path)}>
-      {name}
+      {name.length < 7 ? name : `${name.slice(0, 7)}...`}
       {onDelete && (
         <span onClick={onDelete}>X</span>
       )}
@@ -114,7 +114,11 @@ font-size: large;
 display: flex;
 justify-content: space-between;
 white-space: normal;
-padding: 10px;
+padding-top: 12px;
+
+white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 > span {
   z-index: 1;
   margin-left: 4;

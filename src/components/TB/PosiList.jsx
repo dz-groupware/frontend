@@ -12,10 +12,14 @@ export default function PosiList({ empId, modalOff, profile }) {
   }
 
   const handleAnotherEmp = () => {
-    changeEmpApi().then(res => {
-      localStorage.setItem('empId', radioEmpId);
-      window.location.href = '/';
-    });
+    try {
+      changeEmpApi(empId).then(() => {
+        localStorage.setItem('empId', radioEmpId);
+        window.location.href = '/';
+      });  
+    } catch (error) {
+      console.log('error switch emp');
+    }
   }
 
   return (

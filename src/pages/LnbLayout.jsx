@@ -5,46 +5,15 @@ import styled from 'styled-components';
 import { AiFillFolder, AiFillFolderOpen, AiOutlineProfile, AiFillProfile, AiOutlineMenu } from "react-icons/ai";
 
 import { searchMenuListAPI } from '../api/gnb';
-import { getMenuList } from '../api/menu';
 
 import Module from './Module';
 
-export default function LnbLayout() {
+export default function LnbLayout({ routeList }) {
   const location = useLocation();
-
   const [gnb, setGnb] = useState({ id: 0, name: '' });
   const [lnbOpen, setLnbOpen] = useState(true);
 
   const [data, setData] = useState([]);
-  const [routeOn, setRouteOn] = useState(false);
-  const [routeList, setRouteList] = useState(new Map([
-    [`/`, { menuId: 0, gnbId: 0, gnbName: 'main', page: 'Main' }],
-    [`/FORBIDDEN`, { menuId: 0, gnbId: 0, gnbName: '403', page: 'FORBIDDEN' }],]));
-
-  useEffect(() => {
-    const parseMenuList = (originMenuList) => {
-      const menuList = new Map();
-      originMenuList.forEach(row => {
-        const { menuId, gnbId, gnbName, nameTree, page } = row;
-        menuList.set(`/${nameTree}`, { menuId, gnbId, gnbName, page });
-      });
-      menuList.set(`/`, { menuId: 0, gnbId: 0, gnbName: 'main', page: 'Main' });
-      menuList.set(`/FORBIDDEN`, { menuId: 0, gnbId: 0, gnbName: '403', page: 'FORBIDDEN' });
-      setRouteList(menuList);
-    }
-
-    const initRouteList = async () => {
-      try {
-        const res = await getMenuList(0);
-        parseMenuList(res.data.data);
-        setRouteOn(true);  
-      } catch (error) {
-        console.log('error in lnb');
-      };
-      // 컴포넌트 마운트 시 현재 경로를 기반으로 routeList 업데이트
-    };
-    initRouteList();
-  }, []);
 
   useEffect(() => {
     try{
@@ -52,6 +21,7 @@ export default function LnbLayout() {
       if (res !== undefined) {
         res.then(res => {
           if (Array.isArray(res.data.data)) {
+            console.log(res.data.data);
             setData(res.data.data)
           }
         });
@@ -81,10 +51,9 @@ export default function LnbLayout() {
           }
         </LNBList>
         <OutletArea id='route' className={`${location.pathname === '/' ? 'main' : 'lnb'} ${lnbOpen ? 'true' : 'false'}`} >
-          {routeOn &&
           <Routes>
             <Route path='/*' element={<Module gnb={gnb} setGnb={setGnb} routeList={routeList}/>} />
-          </Routes>}
+          </Routes>
         </OutletArea>
       </LnbArea>
     </Content>
@@ -123,24 +92,20 @@ export function MenuTree({ menu, param, gnb }){
   return (
     <Menu>
       <MenuItem>
-        { 
-        open ? 
-        (menu['childNodeYn'] === 1 ? <AiFillProfile /> : < AiFillFolderOpen/>)
-        :
-        (menu['childNodeYn'] === 0 ? <AiFillFolder /> : <AiOutlineProfile />) 
-        }
+        { open ? < AiFillFolderOpen/> : <AiFillFolder /> }
         <div onClick={handleMenuItem}>{menu['name']}</div>
       </MenuItem>
+      <ItemChild>
       {
         open && subItem.map((a, i) => {
           if (a['id'] !== a['parId']) {
             return (
-              <MenuTree menu={a} param={`${param}/${menu['name']}`} gnb={gnb} key={'lnbList/'+a['name']}/>
-            )
+              <MenuTree menu={a} param={`${param}/${menu['name']}`} gnb={gnb} key={'lnbList/'+a['name']}/>              )
           }
           return null;
         })
       }
+      </ItemChild>
     </Menu>
   )
 }
@@ -177,21 +142,36 @@ overflow-y:auto;
 const LNBList = styled.div`
 width: 200px;
 height: 100%;
-background-color: white;
 color: black;
-padding: 10px;
 position: absolute;
-&.true {
+
+overflow: scroll;
+height: calc(100% - 150px);
+background-color: #d9dde1;
+&::-webkit-scrollbar {
+    width: 5px; 
+    height: 5px;
+    background-color: transparent; 
+  }
+  &::-webkit-scrollbar-thumb {
+    background-color: rgb(214,236,248);
+    border-radius: 5px; 
+  }
+  &::-webkit-scrollbar-thumb:hover {
+    background-color: rgb(18, 172, 226);
+  }
+
+
+  &.true {
   left:0px;
   opacity:1;
 }
-
 &.false {
   left: -300px;
   top: 0;
   opacity: 0;
 
-  transition: left 2s;
+  transition: left 4s;
 }
 `;
 const LnbTitle = styled.div`
@@ -218,11 +198,24 @@ const LnbArea = styled.div`
 display: flex;
 width: 100%;
 height: 100%;
+padding-top: 2px;
 `;
 const Menu = styled.div`
-margin-left: 15px;
+margin: 2px;
+background-color: white;
+padding: 3px;
+`;
+const ItemChild = styled.div`
+margin-top: 15px;
+padding-left: 15px;
 `;
 const MenuItem = styled.div`
 display: flex;
-margin: 10px;
+font-size: large;
+height: 20px;
+padding: 3px;
+padding-top: 7px;
+> svg {
+  margin: 3px;
+}
 `;

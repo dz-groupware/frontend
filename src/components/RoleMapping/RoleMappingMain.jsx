@@ -45,14 +45,14 @@
           />
         </StyledAuthGroupContainer>
         {activeAuthId &&
-          <Container2>
+          <StyledMenuContainer>
               {/* && <MappingMenuTreeTop />  */}
               {/*&& <Line color="black"/> */}
             <MappingMenuOfAuth 
               authId={activeAuthId}
               headers={headers}
             />
-          </Container2>
+          </StyledMenuContainer>
          }
       </Container>
     );
@@ -69,7 +69,6 @@
     margin-top: 1.2rem;
     margin-left: 1.2rem;
     min-width: 300px;
-    height: 95%;
     width: 350px;
     border-top: 2px solid #747474;
     border-left: 1px solid #ccc;
@@ -77,6 +76,7 @@
     border-bottom: 1px solid #ccc;
     padding: 20px;
     background-color: #FAFAFA;
+    overflow-y: auto;
   `;
 
   const StyledAuthGroupContainer = styled.div`
@@ -84,7 +84,7 @@
     overflow-y: auto;
   `;
 
-  const Container2 = styled.div`
+  const StyledMenuContainer = styled.div`
     flex: 1;
     width: 400px;
     height: 100%;

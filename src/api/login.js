@@ -6,7 +6,6 @@ export const loginApi = async ({ data }) => {
       loginId: data.loginId,
       loginPw: data.loginPw,
     }) 
-    console.log(response);
     return response;
   } catch (error) {
     throw error;  

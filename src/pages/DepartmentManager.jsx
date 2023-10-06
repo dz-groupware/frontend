@@ -375,8 +375,6 @@ justify-content: space-between;
 
 width: 100%;
 
-border-top: 5px solid rgb(20,136,247);
-border-bottom: 1px solid grey;
 color: black;
 
 > #deptTitle {

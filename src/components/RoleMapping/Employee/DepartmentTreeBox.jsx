@@ -55,9 +55,9 @@ export function DepartmentTreeBox({ refresh, item, depth=0, companyId, activeEmp
 
   return (
     <>
-      <NameBar $depth={depth}>
+      <NameBar $depth={depth} onClick={toggleSubDepartment}>
         <>
-          <StyledButton onClick={toggleSubDepartment}>
+          <StyledButton >
             <div style={{ width: '1em' }} >
               {expanded ? <VscChevronDown style={{ fontWeight: 'bold' }}/> : <VscChevronRight style={{ fontWeight: 'bold' }}/>}
             </div>
@@ -116,7 +116,23 @@ const StyledButton = styled.button`
 const NameBar = styled.div`
   display: flex;
   flex-direction: row;
+  cursor: pointer;
   padding-left: ${({ $depth }) => `${$depth * 15}px`};
   align-items: center;
   margin-bottom: 4px;
+  ${props => !props.$isEditMode && `
+    &:hover {
+      border-width: 2px;
+      background-color: #d0cece84;  
+      border-color: #d0cece84;          
+    }
+  `}
+
+  ${props => !props.$isEditMode && `
+    &:active {
+      border-width: 2px;
+      background-color: #5dc3fb;  
+      border-color: #5dc3fb;  
+    }
+  `}
 `;

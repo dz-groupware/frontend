@@ -4,13 +4,14 @@ import { axiosInstance } from '../utils/axiosInstance';
  * 수정해야함
  */
 export const getAuthGroupApi = async ({ params, headers }) => {
-  const { lastId, lastAuthName, pageSize, orderBy, searchTerm } = params; 
+  const { lastId, lastAuthName, pageSize, canUseAuth, orderBy, searchTerm } = params; 
   axiosInstance.defaults.headers['menuId'] = headers.pageId;
   return axiosInstance.get(`/auth-group/companies/auth/list`, {
     params: {
       lastId,
       lastAuthName,
       pageSize,
+      canUseAuth,
       orderBy,
       searchTerm
     }
@@ -19,9 +20,10 @@ export const getAuthGroupApi = async ({ params, headers }) => {
   .catch(error => { throw error; });
 };
 
-export const getCountAuthGroupApi = async ({headers}) => {
+export const getCountAuthGroupApi = async ({headers, params}) => {
   axiosInstance.defaults.headers['menuId'] = headers.pageId;
-  return axiosInstance.get(`/auth-group/companies/auth/count`)
+  const { enabledYn, canUseAuth } = params;
+  return axiosInstance.get(`/auth-group/companies/auth/count`,{params: {enabledYn, canUseAuth}})
     .then(response => response)
     .catch(error => { throw error; });
 };

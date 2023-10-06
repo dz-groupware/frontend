@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
 import { employeeActions } from "../../utils/Slice";
-import { getEmployeeDetailsById, getEmployeeMgmtList } from "../../api/employeemgmt";
+import { getClosedEmployeeMgmtList, getEmployeeDetailsById, getEmployeeMgmtList, getOpenedEmployeeMgmtList } from "../../api/employeemgmt";
 import { GrNext, GrPrevious } from 'react-icons/gr';
 
 export default function EmployeeMgmtAside({ pageId }) {
@@ -16,6 +16,9 @@ export default function EmployeeMgmtAside({ pageId }) {
   const reduxbasicInfo = useSelector(state => state.employeeMgmt.employeeBasicInfo);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageRange, setPageRange] = useState([1, 5]);
+  const [selectedFilter, setSelectedFilter] = useState("전체");
+  const [openEmployeeDataList, setOpenEmployeeDataList] = useState([]);
+  const [closeEmployeeDataList, setCloseEmployeeDataList] = useState([]);
 
 
 
@@ -37,7 +40,23 @@ export default function EmployeeMgmtAside({ pageId }) {
       setSelectedEmployeeId(null);
     }
   }, [isVisible]);
-
+  useEffect(() => {
+    async function fetchEmployeesByFilter() {
+      if (selectedFilter === "재직자") {
+        // 해당 API로 데이터 가져오기
+        const data = await getOpenedEmployeeMgmtList(pageId);
+        setOpenEmployeeDataList(data);
+      } else if (selectedFilter === "퇴사자") {
+        // 해당 API로 데이터 가져오기
+        const data = await getClosedEmployeeMgmtList(pageId);
+        setCloseEmployeeDataList(data);
+      } else {
+        const data = await getEmployeeMgmtList(pageId);
+        setEmployeeDataList(data);
+      }
+    }
+    fetchEmployeesByFilter();
+  }, [selectedFilter, searchedEmployeeDataList]);
 
 
   if (!employeeDataList) {
@@ -45,10 +64,19 @@ export default function EmployeeMgmtAside({ pageId }) {
   };
 
   const itemsPerPage = 5;
-  const dataForPagination = isSearchExecuted ? searchedEmployeeDataList : employeeDataList;
+  const dataForPagination =
+    isSearchExecuted
+      ? searchedEmployeeDataList
+      : selectedFilter === "재직자"
+        ? openEmployeeDataList
+        : selectedFilter === "퇴사자"
+          ? closeEmployeeDataList
+          : employeeDataList;
+
+
 
   const renderPageNumbers = () => {
-    
+
     const totalPages = Math.ceil(dataForPagination.length / itemsPerPage);
     const pageNumbers = [];
 
@@ -201,12 +229,45 @@ export default function EmployeeMgmtAside({ pageId }) {
 
   return (
     <Container>
+      <FilterSection>
+        <FilterButton
+          onClick={() => setSelectedFilter("전체")}
+          active={selectedFilter === "전체"}
+        >
+          전체
+        </FilterButton>
+        <Divider>|</Divider>
+        <FilterButton
+          onClick={() => setSelectedFilter("재직자")}
+          active={selectedFilter === "재직자"}
+        >
+          재직자
+        </FilterButton>
+        <Divider>|</Divider>
+        <FilterButton
+          onClick={() => setSelectedFilter("퇴사자")}
+          active={selectedFilter === "퇴사자"}
+        >
+          퇴사자
+        </FilterButton>
+
+      </FilterSection>
       <NumberOfEmployeesArea>
         <NumberArea>
           <Element>
             <span style={{ margin: "5px", fontWeight: 600 }}>사용자: </span>
             <span style={{ color: "#308EFC", fontWeight: 600 }}>
-              {isSearchExecuted ? Object.keys(searchedEmployeeDataList).length : Object.keys(employeeDataList).length}</span>
+              {
+                isSearchExecuted
+                  ? Object.keys(searchedEmployeeDataList).length
+                  : selectedFilter === "재직자"
+                    ? openEmployeeDataList.length
+                    : selectedFilter === "퇴사자"
+                      ? closeEmployeeDataList.length
+                      : employeeDataList.length
+              }
+            </span>
+
             <span style={{ margin: "5px", fontWeight: 600 }}>명</span>
           </Element>
           <SelectBox onChange={e => setSortType(e.target.value)}>
@@ -218,14 +279,21 @@ export default function EmployeeMgmtAside({ pageId }) {
       </NumberOfEmployeesArea>
 
       <EmployeeListArea>
-        {isSearchExecuted ? renderEmployeeDataList(searchedEmployeeDataList) : renderEmployeeDataList(employeeDataList)}
+        {isSearchExecuted
+          ? renderEmployeeDataList(searchedEmployeeDataList)
+          : selectedFilter === "재직자"
+            ? renderEmployeeDataList(openEmployeeDataList)
+            : selectedFilter === "퇴사자"
+              ? renderEmployeeDataList(closeEmployeeDataList)
+              : renderEmployeeDataList(employeeDataList)
+        }
       </EmployeeListArea>
       <EmployeeListPageNation>
         <SpaceArea>
-        {pageRange[0] > 1 && <StyledGrPrevious onClick={handlePrevPageRange}/>}
-        {renderPageNumbers()}
-        {/* 데이터의 끝 페이지가 현재 페이지 범위의 끝보다 클 경우 "다음" 버튼을 표시 */}
-        {Math.ceil(dataForPagination.length / itemsPerPage) > pageRange[1] && <StyledGrNext  onClick={handleNextPageRange}/>  }
+          {pageRange[0] > 1 && <StyledGrPrevious onClick={handlePrevPageRange} />}
+          {renderPageNumbers()}
+          {/* 데이터의 끝 페이지가 현재 페이지 범위의 끝보다 클 경우 "다음" 버튼을 표시 */}
+          {Math.ceil(dataForPagination.length / itemsPerPage) > pageRange[1] && <StyledGrNext onClick={handleNextPageRange} />}
         </SpaceArea>
       </EmployeeListPageNation>
 
@@ -276,8 +344,8 @@ bottom: 0;
 width: 100%;   // Container의 width와 동일하게 설정
 background-color: #FFFEFE;
 border-top: 1.5px solid #ECECEB ;
-padding : 15px;
-height:50px;
+padding : 10px;
+height:40px;
 
 `;
 
@@ -287,8 +355,9 @@ const NumberArea = styled.div`
   width: 100%;
   margin:10px;
   
-  
 `;
+
+
 const SelectBox = styled.select`
 &:focus {
   outline: none;
@@ -396,4 +465,32 @@ const StyledGrPrevious = styled(GrPrevious)`
   flex: 1;
  
 
+`;
+
+const FilterSection = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #F8F9F9;
+
+`;
+
+const FilterButton = styled.button`
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 5px 10px;
+  margin: 5px;
+  font-weight: bold;  
+  font-size: 12px; 
+  color: ${props => props.active ? '#308EFC' : 'grey'};  // 활성화된 탭은 색을 변경
+  border-bottom: ${props => props.active ? '2px solid #308EFC' : 'none'}; // 활성화된 탭에는 밑줄 표시
+
+  &:hover {
+    background-color: #EFEFEF;
+  }
+`;
+
+const Divider = styled.span`
+  margin: 0 5px;
 `;

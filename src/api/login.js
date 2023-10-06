@@ -13,8 +13,10 @@ export const loginApi = async ({ data }) => {
 }
 
 export function changeEmpApi(empId) {
-  return axiosInstance.post(`/auth/re-login`, {
+  return axiosInstance.post(`/auth/re-login`,
+    {
       empId,
+    },{
       headers: {
         "Content-Type": "application/json",
         "menuId" : "0",

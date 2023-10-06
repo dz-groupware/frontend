@@ -21,6 +21,35 @@ export const getEmployeeMgmtList = async (pageId) => {
   }
 };
 
+
+export const getOpenedEmployeeMgmtList = async (pageId) => {
+  try {
+    
+    axiosInstance.defaults.headers['menuId'] =  pageId;
+    const response = await axiosInstance.get('/employeemgmt/incumbent');
+    return response.data.data;
+  } catch (error) {
+    console.error("Error fetching company data:", error);
+    alert("오류가 발생했습니다.");  // 사용자에게 오류 메시지를 표시합니다.
+    throw error;
+  }
+};
+
+export const getClosedEmployeeMgmtList = async (pageId) => {
+  try {
+    
+    axiosInstance.defaults.headers['menuId'] =  pageId;
+    const response = await axiosInstance.get('/employeemgmt/quitter');
+    return response.data.data;
+  } catch (error) {
+    console.error("Error fetching company data:", error);
+    alert("오류가 발생했습니다.");  // 사용자에게 오류 메시지를 표시합니다.
+    throw error;
+  }
+};
+
+
+
 export const getEmployeeDetailsById = async (employeeMgmtId,pageId) => {
   try {
     axiosInstance.defaults.headers['menuId'] = pageId;
@@ -54,7 +83,8 @@ export const findEmployeeMgmtList = async (searchValue, selectedOption, pageId) 
     if (isNaN(actualSelectedOption)) {
       actualSelectedOption = 0; // 또는 원하는 기본값을 설정하세요.
     }
-    const actualSearchValue = searchValue === "" ? "%25%25" : `%25${searchValue}%25`;
+    const actualSearchValue = (searchValue === "" || searchValue === undefined) ? "%25%25" : `%25${searchValue}%25`;
+
     // console.log("actualSelectedOption:", actualSelectedOption);
 
     const response = await axiosInstance.get(`/employeemgmt/employee-list?compId=${actualSelectedOption}&text=${actualSearchValue}`);
@@ -65,9 +95,6 @@ export const findEmployeeMgmtList = async (searchValue, selectedOption, pageId) 
     throw error;
   }
 };
-
-
-
 
 
 export const addEmployeeMgmt = async (employeeInfo, pageId) => {
@@ -118,7 +145,7 @@ export const checkLoginId = async (loginId, pageId) => {
     const response = await axiosInstance.post(`/employeemgmt/idcheck/${loginId}`);
     return response.data.data;
   } catch (error) {
-    console.error("Error deleting company data:", error);
+    console.error("Error loginId is Duplicated:", error);
     throw error;
   }
 };
@@ -133,11 +160,11 @@ export const checkSignUp = async (signUpInfo, pageId) => {
   } catch (error) {
     console.log("eeeerrrrrorrr",error);
 
-    if (error === "No data found from check") {
+    if (error.data === "No data found from check") {
       alert("이미 사용중인 정보가 있습니다.");
       return null; // 또는 적절한 에러 처리
     }
-    if (error === "No data found") {
+    if (error.data === "No data found") {
       alert('가입되지 않았습니다. 입력된 정보로 가입하기위해 인증이 진행됩니다.');
       return error; // 또는 적절한 에러 처리
     }
@@ -149,7 +176,7 @@ export const checkSignUp = async (signUpInfo, pageId) => {
 
 
 export const imageUpload = async (imageFile, pageId) => {
-  console.log("pageId 알고시퍼",pageId);
+  // console.log("pageId 알고시퍼",pageId);
   try {
     if (imageFile !== "") {
       let formData = new FormData();

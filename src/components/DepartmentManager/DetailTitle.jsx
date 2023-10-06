@@ -7,12 +7,12 @@ export default function DetailTitle ({ detail, setDetail }){
       <>
       <TitleContent>
         <div>상세정보</div>
-        <div>
-          <button onClick={() => setDetail({...detail, state: 'save'})}>저장</button> 
-          <button onClick={() => setDetail({...detail, state: 'delete', type: false, save: true})}>삭제</button> 
+        <ButtonArea>
+          <button onClick={() => setDetail({...detail, state: 'save', isChanging: detail.state})}>저장</button> 
+          <button onClick={() => setDetail({...detail, state: 'delete', isChanging: detail.state})}>삭제</button> 
           <div>|</div>
           <div onClick={() => setDetail({...detail, type: false, state: false, save: false})}>X</div>
-        </div> 
+        </ButtonArea> 
       </TitleContent>
       
       <DetailType>
@@ -31,11 +31,12 @@ export default function DetailTitle ({ detail, setDetail }){
 const TitleContent = styled.div`
 display: flex;
 justify-content: space-between;
-font-size: large;
+font-size: x-large;
 font-weight: bold;
 width: 100%;
+height: 50px;
 border-bottom: 2px solid gray;
-margin-bottom: 5px;
+margin-bottom: 15px;
 > div {
   padding: 5px;
   display: flex;
@@ -45,10 +46,10 @@ const DetailType = styled.div`
 display: flex;
 width: 100%;
 border-bottom: 2px solid gray;
-margin-bottom: 5px;
-font-size: medium;
+margin-bottom: 10px;
+font-size: large;
 font-weight: bold;
-
+height: 46px;
 & .on {
   color: blue;
   border-bottom: 1px solid blue;
@@ -62,5 +63,10 @@ font-weight: bold;
 }
 > span{
   padding-top: 10px;
+}
+`;
+const ButtonArea = styled.div`
+> * {
+  margin: 5px; 
 }
 `;

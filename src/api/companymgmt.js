@@ -12,6 +12,31 @@ export const getCompanyMgmtList = async ( pageId) => {
     throw error;
   }
 };
+export const getOpenedCompanyMgmtList = async ( pageId) => {
+  try {
+    
+    axiosInstance.defaults.headers['menuId'] =  pageId;
+    const response = await axiosInstance.get('/companies/open');
+    return response.data.data;
+  } catch (error) {
+    console.error("Error fetching company data:", error);
+    alert("오류가 발생했습니다.");  // 사용자에게 오류 메시지를 표시합니다.
+    throw error;
+  }
+};
+
+export const getClosedCompanyMgmtList = async ( pageId) => {
+  try {
+    
+    axiosInstance.defaults.headers['menuId'] =  pageId;
+    const response = await axiosInstance.get('/companies/close');
+    return response.data.data;
+  } catch (error) {
+    console.error("Error fetching company data:", error);
+    alert("오류가 발생했습니다.");  // 사용자에게 오류 메시지를 표시합니다.
+    throw error;
+  }
+};
 
 
 export const getCompanyDetailsById = async (companyId,  pageId) => {
@@ -43,6 +68,9 @@ export const modifyCompanyMgmt = async (info, pageId) => {
   }
 };
 
+
+
+
 export const addCompanyMgmt = async (info, pageId) => {
   try {
     axiosInstance.defaults.headers['menuId'] = pageId;
@@ -51,8 +79,15 @@ export const addCompanyMgmt = async (info, pageId) => {
     return response.data.data;
   } catch (error) {
     console.error("Error adding company data:", error);
-    alert("오류가 발생했습니다.");  // 사용자에게 오류 메시지를 표시합니다.
+    if(error.status === 409){
+      alert("이미 사용중인 정보가 있습니다. 회사코드, 사업자번호, 법인번호를 확인해 주세요");
+      return error.status;
+    }
+    else{
+         alert("오류가 발생했습니다.");  // 사용자에게 오류 메시지를 표시합니다.
     throw error;
+    }
+
   }
 };
 

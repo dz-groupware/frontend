@@ -13,7 +13,7 @@ import {
     Select
 } from '../Commons/StyledForm';
 import { companyActions } from '../../utils/Slice';
-import { addCompanyMgmt, getAllCompanyMgmtParList, modifyCompanyMgmt } from '../../api/companymgmt';
+import { addCompanyMgmt, getCompanyMgmtList, modifyCompanyMgmt } from '../../api/companymgmt';
 
 export default function CompanyMgmtForm({ pageId }) {
     const dispatch = useDispatch();
@@ -34,7 +34,7 @@ export default function CompanyMgmtForm({ pageId }) {
 
     const fetchCompanyOptions = async () => {
         try {
-            const companyList = await getAllCompanyMgmtParList(pageId);
+            const companyList = await getCompanyMgmtList(pageId);
             setCompanyOptions(companyList);
         } catch (error) {
             console.error("Error fetching company data:", error);

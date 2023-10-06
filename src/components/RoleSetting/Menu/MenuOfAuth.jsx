@@ -50,7 +50,7 @@ import MenuItemView from './MenuItemView';
 
   const Container = styled.div`
     margin-bottom: 1.2rem;
-    border-top: 2px solid #747474;
+    border-top: 1.5px solid #ccc;
   `;
 
   const Table = styled.table`

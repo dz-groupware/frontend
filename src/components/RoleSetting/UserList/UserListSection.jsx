@@ -49,7 +49,7 @@ const Container = styled.div`
   width: 400px;
   height: 600px;
   overflow-y: auto;
-  border-top: 2px solid #747474;
+  border-top: 1.5px solid #ccc;
 `;
 
 const StyledTable = styled.table`

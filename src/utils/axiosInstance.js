@@ -3,7 +3,7 @@ import axios from "axios";
 export const axiosInstance = axios.create({
   // baseURL: "https://dev.amaranth2023.site/api/v1",
   baseURL: "http://localhost:8010/api/v1",
-  headers: { "Content-Type": "application/json", "ngrok-skip-browser-warning": "1" },
+  headers: { "Content-Type": "application/json", },
   withCredentials: true,
   timeout: 20000,
 });

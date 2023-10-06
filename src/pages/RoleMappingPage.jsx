@@ -93,7 +93,6 @@ export default function RoleMappingPage({ pageId }) {
 
   useEffect(() => {
     if(updateMaster && updateStatus === 200) { // API 호출이 성공적으로 끝났을 때
-      console.log("엑티브는",activeEmp);
       setRefresh(!refresh);  // refresh 상태를 업데이트
       setActiveEmp({id: updateMaster.id, masterYn: updateMaster.masterYn})
       setUpdateStatus(null);
@@ -123,7 +122,7 @@ export default function RoleMappingPage({ pageId }) {
         <LinkButon
           cursor="none"
           onClick={(e)=>e.preventDefault()}
-          name="사용자 기준"
+          name="사원 기준"
           selected={true}
           padding={"0.1rem 1.2rem 0.5rem"}
           showBorderBottom={true}

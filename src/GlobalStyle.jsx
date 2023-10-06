@@ -8,7 +8,15 @@ ${reset}
   margin: 0;
   padding: 0;
 }
+body {
+  font-family:  'Noto Sans','Gothic A1',  sans-serif;
+}
+h1 {
+  font-family: 'Noto Sans Bold' ,  sans-serif;
+}
+p {
+  font-family: 'Gothic A1','Noto Sans Korean','Roboto Mono',   sans-serif;
+}
 `;
-
 
 export default GlobalStyle;

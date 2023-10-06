@@ -37,7 +37,6 @@ export const Label = styled.div`
     font-weight: bold;
     text-align: right;
     height:40px;
-    
 `;
 
 export const Input = styled.input`

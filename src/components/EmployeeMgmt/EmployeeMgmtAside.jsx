@@ -238,12 +238,14 @@ export default function EmployeeMgmtAside({ pageId }) {
         >
           전체
         </FilterButton>
+        <Divider>|</Divider>
         <FilterButton
           onClick={() => setSelectedFilter("재직자")}
           $isActive={selectedFilter === "재직자"}
         >
           재직자
         </FilterButton>
+        <Divider>|</Divider>
         <FilterButton
           onClick={() => setSelectedFilter("퇴사자")}
           $isActive={selectedFilter === "퇴사자"}

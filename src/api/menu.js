@@ -19,19 +19,21 @@ export function GnbApi(pageId){
 
 export function FavorApi(pageId, type){
   if (type === 'load') {
-    return axiosInstance.get(`/common/favor`, {
-  headers: {
-  "Content-Type": "application/json",
-  'menuId' : pageId
-}});
+    return axiosInstance.get(`/common/favor?menuId`, {
+      headers: {
+        "Content-Type": "application/json",
+        'menuId' : pageId
+      }
+    });
   }
   if (type === true) {
     console.log('request off')
-    return axiosInstance.delete(`/common/favor`, {
-  headers: {
-  "Content-Type": "application/json",
-  'menuId' : pageId
-}});
+    return axiosInstance.delete(`/common/favor?menuId`, {
+      headers: {
+        "Content-Type": "application/json",
+        'menuId' : pageId
+      }
+    });
   }
   if (type === false) {
     console.log('request on')

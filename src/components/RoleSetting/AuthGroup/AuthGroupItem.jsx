@@ -52,8 +52,8 @@ const StyledEnabledYn  = styled.div`
   width: fit-content;
   height: 22px;
   align-items: center;
-  background-color: ${props => (props.$enabledYn ? "#5dc3fb" : "#ccc")};
-  color: black;
+  background-color: ${props => (props.$enabledYn ? "#23aef9" : "#ccc")};
+  color: #fff;
   border-radius: 20px;
   padding: 0 10px;
   margin-bottom: 10px;

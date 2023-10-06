@@ -145,10 +145,11 @@ width: 200px;
 height: 100%;
 color: black;
 position: absolute;
-
-overflow: scroll;
+overflow: auto;
 height: calc(100% - 150px);
-background-color: #d9dde1;
+background-color: #9fabb23a;
+
+
 &::-webkit-scrollbar {
     width: 5px; 
     height: 5px;
@@ -178,7 +179,7 @@ background-color: #d9dde1;
 const LnbTitle = styled.div`
 width: 100%;
 height: 50px;
-background-color: rgb(18,172,226);
+background-color: #308EFC;
 color: white;
 font-size: x-large;
 font-weight: bold;
@@ -199,7 +200,6 @@ const LnbArea = styled.div`
 display: flex;
 width: 100%;
 height: 100%;
-padding-top: 2px;
 `;
 const Menu = styled.div`
 margin: 2px;

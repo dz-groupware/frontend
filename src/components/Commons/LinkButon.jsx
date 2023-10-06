@@ -21,7 +21,7 @@ export default function LinkButon(props) {
 
 const Container = styled.button`
   width: fit-content;
-  color: ${props=> props.$selected? "#5398ff" : "black"};
+  color: ${props=> props.$selected? "#308EFC" : "black"};
   font-size: 1.2rem;
   font-weight: bold;
   letter-spacing: 4px;

@@ -120,10 +120,11 @@ const Container = styled.div`
   margin-left: 20px;
   width: 300px;
   height: 95%;
-  border-top: 2px solid #747474;
+  border-top: 1.5px solid #ccc;
   border-left: 1px solid #ccc;
   border-right: 1px solid #ccc;
   border-bottom: 1px solid #ccc;
+  background-color: #F9F9F9;
   padding: 20px;
 `;
 const StyledSelect = styled.select`

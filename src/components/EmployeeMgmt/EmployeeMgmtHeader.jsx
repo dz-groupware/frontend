@@ -189,13 +189,15 @@ const handleSearch = async () => {
       alert("퇴사 처리할 사원을 선택해주세요.");
       return;
     }
-
+  
     for (let i = 0; i < selectedEmployees.length; i++) {
       try {
-        console.log("퇴사 id", selectedEmployeeIds[i]);
-        console.log("퇴사 바디", selectedEmployees[i]);
-        await deleteEmployeeMgmt(selectedEmployeeIds[i], selectedEmployees[i], pageId);
-
+        // 해당 사원의 세부 정보 가져오기
+        const employeeDetails = await getEmployeeDetailsById(selectedEmployeeIds[i], pageId);
+  
+        // 이제 employeeDetails를 사용하여 퇴사 처리를 수행합니다.
+        await deleteEmployeeMgmt(selectedEmployeeIds[i], employeeDetails, pageId);
+  
       } catch (error) {
         console.error("Error deleting employee data for ID:", selectedEmployeeIds[i], error);
         // 특정 ID에 대한 처리가 실패하면, 에러 메시지를 표시하고 루프를 종료합니다.
@@ -203,12 +205,12 @@ const handleSearch = async () => {
         return;
       }
     }
-
+  
     alert("선택한 사원들의 퇴사 처리가 완료되었습니다.");
     setCheckedEmployees([]);  // 체크된 목록 초기화
     setModalIsOpen(false);
   };
-
+  
 
 
 
@@ -302,7 +304,7 @@ const handleSearch = async () => {
                 <Spacer />
                 <ButtonArea>
 
-                  {/* <StyledButton styled={{ marginTop: "10px" }} onClick={handleRetireProcess}>퇴사 일괄 처리</StyledButton> */}
+                  <StyledButton styled={{ marginTop: "10px" }} onClick={handleRetireProcess}>퇴사 일괄 처리</StyledButton>
 
                 </ButtonArea>
 

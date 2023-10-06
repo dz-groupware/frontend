@@ -21,6 +21,7 @@ export default function LnbLayout({ routeList }) {
       if (res !== undefined) {
         res.then(res => {
           if (Array.isArray(res.data.data)) {
+            console.log(res.data.data);
             setData(res.data.data)
           }
         });
@@ -91,24 +92,20 @@ export function MenuTree({ menu, param, gnb }){
   return (
     <Menu>
       <MenuItem>
-        { 
-        open ? 
-        (menu['childNodeYn'] === 1 ? <AiFillProfile /> : < AiFillFolderOpen/>)
-        :
-        (menu['childNodeYn'] === 0 ? <AiFillFolder /> : <AiOutlineProfile />) 
-        }
+        { open ? < AiFillFolderOpen/> : <AiFillFolder /> }
         <div onClick={handleMenuItem}>{menu['name']}</div>
       </MenuItem>
+      <ItemChild>
       {
         open && subItem.map((a, i) => {
           if (a['id'] !== a['parId']) {
             return (
-              <MenuTree menu={a} param={`${param}/${menu['name']}`} gnb={gnb} key={'lnbList/'+a['name']}/>
-            )
+              <MenuTree menu={a} param={`${param}/${menu['name']}`} gnb={gnb} key={'lnbList/'+a['name']}/>              )
           }
           return null;
         })
       }
+      </ItemChild>
     </Menu>
   )
 }
@@ -143,21 +140,36 @@ height: 100%;
 const LNBList = styled.div`
 width: 200px;
 height: 100%;
-background-color: white;
 color: black;
-padding: 10px;
 position: absolute;
-&.true {
+
+overflow: scroll;
+height: calc(100% - 150px);
+background-color: #d9dde1;
+&::-webkit-scrollbar {
+    width: 5px; 
+    height: 5px;
+    background-color: transparent; 
+  }
+  &::-webkit-scrollbar-thumb {
+    background-color: rgb(214,236,248);
+    border-radius: 5px; 
+  }
+  &::-webkit-scrollbar-thumb:hover {
+    background-color: rgb(18, 172, 226);
+  }
+
+
+  &.true {
   left:0px;
   opacity:1;
 }
-
 &.false {
   left: -300px;
   top: 0;
   opacity: 0;
 
-  transition: left 2s;
+  transition: left 4s;
 }
 `;
 const LnbTitle = styled.div`
@@ -184,11 +196,24 @@ const LnbArea = styled.div`
 display: flex;
 width: 100%;
 height: 100%;
+padding-top: 2px;
 `;
 const Menu = styled.div`
-margin-left: 15px;
+margin: 2px;
+background-color: white;
+padding: 3px;
+`;
+const ItemChild = styled.div`
+margin-top: 15px;
+padding-left: 15px;
 `;
 const MenuItem = styled.div`
 display: flex;
-margin: 10px;
+font-size: large;
+height: 20px;
+padding: 3px;
+padding-top: 7px;
+> svg {
+  margin: 3px;
+}
 `;

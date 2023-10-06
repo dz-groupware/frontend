@@ -44,16 +44,12 @@ export default function GnbLayout() {
   const basicInfo = async(empId) => {
     try{
       await basicInfoApi(empId).then(res => {
-        console.log('save home data', res);
         setProfile(res.data.data.profile);
         setGnb(res.data.data.menu);
         setFavor(res.data.data.favor);  
-        console.log(res.data.data.empId, res.data.data.compId)
         setEmpId(res.data.data.empId);
         localStorage.setItem("empId", res.data.data.empId);
         localStorage.setItem("compId", res.data.data.compId);
-  
-        console.log('request route-list');
         initRouteList();
       });
     } catch (error) {
@@ -64,10 +60,8 @@ export default function GnbLayout() {
 
   useEffect(() => {
     if (empId) {
-      console.log("empid is not null ")
       basicInfo(empId);
     } else {
-      console.log("empid is null ")
       basicInfo(0);
     }  
   }, [empId]);
@@ -83,7 +77,6 @@ export default function GnbLayout() {
       console.log('route-list : ',error);
     }
   }, []);
-  console.log('in gnb')
 
   return (
     <>

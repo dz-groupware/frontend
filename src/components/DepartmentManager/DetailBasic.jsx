@@ -9,42 +9,42 @@ import { checkDeptCode } from '../../api/department';
 export default function DetailBasic({ data, setData, detail, setDetail, pageId }){
   const [modalOn, setModalOn] = useState(false);
   const [form, setForm] = useState('');
-  const { validText, isValid, validate } = useValid(form);
   const [isModified, setIsModified] = useState(false);
   const [useableCode, setUseableCode] = useState(false);
   const [noti, setNoti] = useState(false);
+  const [isValid, setIsValid] = useState({code: false, abbr: false, name: false});
+  const [validText, setValidText] = useState({code: '', abbr: '', name: ''});
 
-  // console.log("modify : ", isModified);
-  // console.log("useableCode : ", useableCode);
-
-  // const handleCompareData = () => {
-  //   if (data !== undefined) {
-  //     const keys = Object.keys(data);
-  //     for (let key of keys) {
-  //       if (data[key] !== form[key]) {
-  //         return false;
-  //       }
-  //       return true;
-  //     }  
-  //   }
-  // }
-
+  // 수정
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    console.log("handleInputChange : ",value);
+    // console.log("handleInputChange : ",value);
     setForm({ ...form, [name]:value });
     setIsModified(true);
   }
-
+  // 수정 없음
+  const handleNotModified = () => {
+    let timerInterval
+    Swal.fire({
+      title: '수정 사항이 없습니다',
+      html: '저장되지 않음',
+      timer: 1500,
+      timerProgressBar: false,
+      willClose: () => {
+        clearInterval(timerInterval)
+      }
+    })
+  };
+  // 유효성 검사
   const handleCheckCode = () => {
-    // 유효성 검사
-    validate(form);
+    const { validText, isValid } = validate(form);
+    setValidText(validText);
+    setIsValid(isValid);
     if(isValid.code) {
-      console.log('중복검사 : 코드 유효성 충족');
+      console.log('중복검사 : 코드 유효성 충족 : ', isValid.code, form.code);
       try {
         // api 요청
         checkDeptCode(form.id, form.code, pageId).then(res => {
-          console.log("checkDeptCode : ", typeof res.data.data , res.data);
           if(res.data.data === "true" || res.data.data === true){
             let timerInterval
             Swal.fire({
@@ -72,24 +72,41 @@ export default function DetailBasic({ data, setData, detail, setDetail, pageId }
         console.log('중복 검사 요청 에러 : ', error);
       }  
     } else {
-      console.log('중복검사 : 코드 유효성 불충족');
+      console.log('중복검사 : 코드 유효성 불충족 : ', isValid.code, form.code);
     }
-  }
-
-  const handleNotModified = () => {
-    let timerInterval
-    Swal.fire({
-      title: '수정 사항이 없습니다',
-      html: '저장되지 않음',
-      timer: 1500,
-      timerProgressBar: false,
-      willClose: () => {
-        clearInterval(timerInterval)
-      }
-    })
   };
-
-
+  // 저장 
+  const saveAlert = () => {
+    Swal.fire({
+      title: '저장하시겠습니까?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: '확인',
+      cancelButtonText: '취소',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        if (detail.id === 0) {
+          // 저장 : 추가
+          setData({ ...form, status: 'add' });    
+          setIsModified(false);  
+        }
+        if (detail.id > 0) {
+          // 저장 : 수정
+          setData({ ...form, status: 'modify' });    
+          setIsModified(false);  
+        } else {
+          console.log('저장 요청 실패 : 알수없는 요청(id)');
+        }
+  
+      }
+      if (result.isDismissed) {
+        console.log('취소 클릭');
+        setDetail({ ...detail, state: false, isChanging: false });
+      }
+    });
+  }
   useEffect(()=>{
     setForm(data);
     setIsModified(false);
@@ -97,7 +114,7 @@ export default function DetailBasic({ data, setData, detail, setDetail, pageId }
       setUseableCode(true);
     }
   },[]);
-  
+
   useEffect(()=>{
     setUseableCode(false);
     if (data !== undefined){
@@ -107,86 +124,124 @@ export default function DetailBasic({ data, setData, detail, setDetail, pageId }
       }
     }
   },[data]);
+  useEffect(() => {
+    // 다른 부서를 눌렀을 때
+    console.log('useEffect 오나')
+    if ( typeof detail.isChanging === 'number' ) {
+      if(isModified){
+        console.log("수정 중 : ", isModified)
+        setNoti(true);
+      } else {
+        console.log("수정 중 아님 : ", detail.isChanging)
+        setDetail({ ...detail, id: detail.isChanging, state: false, isChanging: false });
+      }
+    }
+  }, [detail.isChanging]);
 
+  useEffect(() => {    
+    // 저장
+    if (detail.state === 'save') {
+      console.log('저장 클릭');
+      if (isModified){
+        const { validText, isValid } = validate(form);
+        setValidText(validText);
+        setIsValid(isValid);  
+        if (isValid.code && isValid.abbr && isValid.name) {
+          saveAlert();
+        } else {
+          console.log('valid : no');
+        }
+      } else {
+        handleNotModified();
+        setDetail({ ...detail, state: detail.isChanging, isChanging: false });
+      }
+    }
+  }, [detail.state]);
+  // 다른 아이템을 눌렀을 때
   useEffect(() => {
     if (noti) {
       Swal.fire({
         title: "페이지 이동",
         text: "수정 중인 내용은 모두 삭제 됩니다.",
-        showDenyButton: true,
         showCancelButton: true,
-        confirmButtonText: '임시저장',
-        denyButtonText: '확인',
+        confirmButtonText: '확인',
         cancelButtonText: '취소',
       }).then((result) => {
         /* Read more about isConfirmed, isDenied below */
         console.log(result)
         if (result.isConfirmed) {
-          console.log('임시저장');
-          Swal.fire('임시저장 되었습니다', '', 'success');
-          // setForm([ ...form, value ]);
-          setDetail({ ...detail, isChanging: detail.state, state: 'tmpSave', save:false }); // state는 남기고 save는 false 특수하게 DetailBasic에서 isModified를 false 해줘야 하기 때문에
-          setIsModified(false);
-        } else if (result.isDenied) {
           console.log('수정 삭제 후 이동');
-          setDetail({ ...detail, id: detail.state, state: false });
+          setDetail({ ...detail, id: detail.isChanging, state: false, isChanging: false });
           setIsModified(false);
         } else if (result.isDismissed) {
           console.log('취소');
-          setDetail({ ...detail, state: false });
+          setDetail({ ...detail, isChanging: false });
         }
       })
       setNoti(false);
     }
   }, [noti]);
 
-  useEffect(()=>{
-    // 다른 부서를 눌렀을 때
-    if (typeof detail.state === 'number'){
-      if(isModified){
-        console.log("수정 중 : ", isModified)
-        setNoti(true);
-      } else {
-        setDetail({ ...detail, id: detail.state, state: false });
-      }
-    }
-    // 저장 버튼을 눌렀을 때
-    if (detail.state === 'save'){
-      if (isModified) {
-        validate(form);
-        if (isValid.code && isValid.abbr && isValid.name && useableCode) {
-          console.log('유효성 통과');
-          setData(form); 
-          setDetail({ ...detail, state: 'save', save: true }); // state: true? false?
-          setIsModified(false);
-        } else {
-          console.log(isValid.code, isValid.abbr, isValid.name, useableCode);
-          console.log('유효성 검사 불충족');
-          setDetail({ ...detail, state: false, save: false });
-        }  
-      } else {
-        handleNotModified();
-        setDetail({ ...detail, state: false, save: false });
-      }
-    }
-    // 임시저장 눌렀을 때
-    if (detail.state === 'tmpSave') {
-      setData(form); 
-      setDetail({ ...detail, state:'tmp', save: false }); // state: true? false?
-      setIsModified(false);
-    }
-    if (detail.state === 'tmpSaveButton') {
-      console.log('tlqkf wlsWk wpqkf')
-      setData(form); 
-      setDetail({ ...detail, state:'tmp', save: true }); // state: true? false?
-      setIsModified(false);
-    }
-  },[detail.state]);
-
   useEffect(() => {
-  },[detail.id]);
+    console.log('모달 ', console.log(data.parId, form.parId));
+    if (modalOn === false && data.parId !== form.parId) {
+      console.log('상위부서 변경');
+      setIsModified(true);
+    }
+  }, [modalOn]);
 
+  // console.log("modify : ", isModified);
+  // console.log("useableCode : ", useableCode);
+  // const handleCompareData = () => {
+  //   if (data !== undefined) {
+  //     const keys = Object.keys(data);
+  //     for (let key of keys) {
+  //       if (data[key] !== form[key]) {
+  //         return false;
+  //       }
+  //       return true;
+  //     }  
+  //   }
+  // }
 
+  // console.log(detail)
+  // console.log(isValid);
+  // console.log(validText);
+
+  // useEffect(()=>{
+    
+  //   // 저장 버튼을 눌렀을 때
+  //   if (detail.state === 'save'){
+  //     if (isModified) {
+  //       validate(form);
+  //       if (isValid.code && isValid.abbr && isValid.name && useableCode) {
+  //         console.log('유효성 통과');
+  //         setData(form); 
+  //         setDetail({ ...detail, state: 'save', save: true }); // state: true? false?
+  //         setIsModified(false);
+  //       } else {
+  //         console.log(isValid.code, isValid.abbr, isValid.name, useableCode);
+  //         console.log('유효성 검사 불충족');
+  //         setDetail({ ...detail, state: false, save: false });
+  //       }  
+  //     } else {
+  //       handleNotModified();
+  //       setDetail({ ...detail, state: false, save: false });
+  //     }
+  //   }
+  //   // 임시저장 눌렀을 때
+  //   if (detail.state === 'tmpSave') {
+  //     setData(form); 
+  //     setDetail({ ...detail, state:'tmp', save: false }); // state: true? false?
+  //     setIsModified(false);
+  //   }
+  //   if (detail.state === 'tmpSaveButton') {
+  //     console.log('tlqkf wlsWk wpqkf')
+  //     setData(form); 
+  //     setDetail({ ...detail, state:'tmp', save: true }); // state: true? false?
+  //     setIsModified(false);
+  //   }
+  // },[detail.state]);
 
   return (
     <Detail>
@@ -205,7 +260,7 @@ export default function DetailBasic({ data, setData, detail, setDetail, pageId }
             <td colSpan="3">
               <input name='code' placeholder='부서코드를 입력하세요'
               value={form.code} onChange={handleInputChange}
-              data-valid={!isValid.code} disabled={useableCode} className={useableCode}/> 
+              data-valid={!isValid.code} disabled={useableCode} className={`input ${useableCode}`}/> 
               {useableCode ? 
               <CheckBtn onClick={() => setUseableCode(false)} >다른 부서 코드 사용</CheckBtn> 
               : <CancelBtn onClick={handleCheckCode}>중복 검사</CancelBtn>}<div>{validText.code}</div>
@@ -214,7 +269,7 @@ export default function DetailBasic({ data, setData, detail, setDetail, pageId }
           <tr>
             <td>부서명</td>
             <td colSpan="3">
-              <input  name='name' placeholder='부서명을 입력하세요'
+              <input className='input' name='name' placeholder='부서명을 입력하세요'
               value={form.name}  onChange={handleInputChange} 
               data-valid={!isValid.name}/> <div>{validText.name}</div>
             </td>
@@ -222,7 +277,7 @@ export default function DetailBasic({ data, setData, detail, setDetail, pageId }
           <tr>
             <td>부서약칭</td>
             <td colSpan="3">
-              <input name='abbr' placeholder='부서약칭을 입력하세요'
+              <input className='input' name='abbr' placeholder='부서약칭을 입력하세요'
               value={form.abbr}  onChange={handleInputChange}
               data-valid={!isValid.abbr} /> <div>{validText.abbr}</div>
             </td>
@@ -282,41 +337,30 @@ export default function DetailBasic({ data, setData, detail, setDetail, pageId }
   )
 }
 
-function useValid(form){
-  const initValid = {
-    code: false,
-    name: false,
-    abbr: false,
+function validate(form) {
+  const codeExp = /^[A-Za-z0-9]{1,8}$/;
+  const nameExp = /^[A-Za-z0-9\d가-힣/]{1,10}$/;
+  const abbrExp = /^[A-Za-z0-9]{1,6}$/;
+
+  const codeIsValid = codeExp.test(form.code);
+  const nameIsValid = nameExp.test(form.name);
+  const abbrIsValid = abbrExp.test(form.abbr);
+
+  const isValid = {
+    code : codeExp.test(form.code),
+    name : nameExp.test(form.name),
+    abbr : abbrExp.test(form.abbr),
   }
-  const [validText, setText] = useState(initValid);
-  const [isValid, setValid] = useState(initValid);
 
-  const validate = () => {
-    const codeExp = /^[A-Za-z0-9]{1,8}$/;
-    const nameExp = /^[A-Za-z0-9\d가-힣/]{1,10}$/;
-    const abbrExp = /^[A-Z0-9]{1,6}$/;
+  const validText = {
+    code : codeIsValid ? '' : '8자리 이하 :: 영어 대/소문자',
+    name : nameIsValid ? '' : '10잘자리 이하 :: / 제외 특수문자 불가',
+    abbr : abbrIsValid ? '' : '6자리 이하 :: 영어 대/소문자',
+  };
 
-    const codeIsValid = codeExp.test(form.code);
-    const nameIsValid = nameExp.test(form.name);
-    const abbrIsValid = abbrExp.test(form.abbr);
-
-    setValid({
-      code : codeIsValid,
-      name : nameIsValid,
-      abbr : abbrIsValid,
-    });
-
-    setText({
-      code : codeIsValid ? '' : '8자리 이하 :: 영어 대/소문자',
-      name : nameIsValid ? '' : '10잘자리 이하 :: / 제외 특수문자 불가',
-      abbr : abbrIsValid ? '' : '6자리 이하 :: 영어 대/소문자',
-    });
-
-    return {isValid : codeIsValid && nameIsValid && abbrIsValid};
-  }
-  return { validText, isValid, validate };
+  console.log('in validate : ', validText, isValid);
+  return { validText, isValid };
 }
-
 const Detail = styled.div`
 display: block;
 width: 100%;
@@ -340,6 +384,7 @@ height: calc(100% - 100px);
           background-color: rgb(240,245,248);
           width: 10%;
           min-width: 150px;
+          height: 50px;
           font-size: medium;
           font-weight: bold;
           padding: 10px;
@@ -350,16 +395,22 @@ height: calc(100% - 100px);
         > td:nth-child(2) {
           display: flex;
           background-color:  white;
-          color: gray;
+          color: #151414;
           width: 90%;
           min-width: 300px;
-          font-size: small;
+          height: 50px;
+          font-size: medium;
+          font-weight: bold;
           padding: 10px;
           text-align: left;
           border-top: 1px solid gray;
           border-bottom: 1px solid gray;
           > .true{
             background-color: rgb(188,237,196);
+          }
+          > .input {
+            width: 300px;
+            height: 30px;
           }
         }
         > td {
@@ -370,6 +421,7 @@ height: calc(100% - 100px);
         }
       }
       > tr {
+        color: #151414;
         > .field{
           display: flex;
           background-color: rgb(240,245,248);
@@ -380,17 +432,20 @@ height: calc(100% - 100px);
           padding: 10px;
           text-align: right;
           border-bottom: 1px solid gray;
+          height: 50px;
         }
         > .data {
           display: flex;
           background-color:  white;
-          color: gray;
+          color: #151414;
           width: 80%;
           min-width: 300px;
-          font-size: small;
+          font-size: medium;
+          font-weight: 200;
           padding: 10px;
           text-align: left;
           border-bottom: 1px solid gray;
+          height: 50px;
         }
       }
     }  

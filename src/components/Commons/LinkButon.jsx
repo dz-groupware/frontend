@@ -2,6 +2,7 @@ import React from 'react'
 import styled from 'styled-components';
 
 export default function LinkButon(props) {
+  const fontTag = props.tagName || 'span';  
   return(
     <Container
       $cursor={props.cursor}
@@ -11,7 +12,9 @@ export default function LinkButon(props) {
       $showBorderRight={props.showBorderRight}
       $padding={props.padding}
     >
-      {props.name}
+      <StyledTag as={fontTag}>
+        {props.name}
+      </StyledTag>
     </Container>
   );
 }
@@ -54,4 +57,8 @@ const Container = styled.button`
     width: 1px;
     background-color: #ccc; //  
   }
+`;
+
+const StyledTag = styled.div`
+  display: inline-block;
 `;

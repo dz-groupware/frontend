@@ -21,10 +21,16 @@ const MappingAuthGroupItem  = forwardRef(({ item, hasAuth, onClick, isActive, se
           onChange={() => handleCheckboxChange(item.authId)}
         />
       )}
-      <Text $hasAuth={hasAuth}>회사id- {item.companyId}</Text>
-      <Text $hasAuth={hasAuth}>회사명- {item.companyName}</Text>
-      <Text $hasAuth={hasAuth}>권한id- {item.authId}</Text>
-      <Text $hasAuth={hasAuth}>권한명- {item.authName}</Text>
+      {/* <Text $hasAuth={hasAuth}>회사id- {item.companyId}</Text> */}
+      <StlyedTextWrapper>
+        <Text $hasAuth={hasAuth}><StyledLabel>회사명 :</StyledLabel> ㅂ{item.companyName}</Text>
+        <Text $hasAuth={hasAuth}><StyledLabel>권한명 :</StyledLabel> {item.authName}</Text>
+        <Text $hasAuth={hasAuth}><StyledLabel>메뉴 :</StyledLabel> {item.menuCount} 개</Text>
+      </StlyedTextWrapper>
+
+        {/* <StyledEnabledYn $enabledYn={item.enabledYn}>
+          {item.enabledYn? "사용가능" : "사용불가"}
+        </StyledEnabledYn>  */}
     </Container>
   )
 });
@@ -60,4 +66,22 @@ const Container = styled.div`
 
 const Text = styled.p`
   color: ${props => props.$hasAuth ? 'red' : 'inherit'};
+`;
+
+const StyledEnabledYn  = styled.div`
+  display: flex;
+  align-items: center;
+  /* background-color: ${props => (props.$enabledYn ? "#947AFF" : "#4DE9D6")}; */
+  color: black;
+  border-radius: 20px;
+  margin-top: 5px;
+  height: 20px;
+  padding: 3px;
+  padding-left: 10px;
+  padding-right: 10px;
+`;
+const StlyedTextWrapper= styled.div`
+  margin-left: 20px;
+`;
+const StyledLabel = styled.label`
 `;

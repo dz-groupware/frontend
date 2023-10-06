@@ -93,7 +93,6 @@ export default function RoleMappingPage({ pageId }) {
 
   useEffect(() => {
     if(updateMaster && updateStatus === 200) { // API 호출이 성공적으로 끝났을 때
-      console.log("엑티브는",activeEmp);
       setRefresh(!refresh);  // refresh 상태를 업데이트
       setActiveEmp({id: updateMaster.id, masterYn: updateMaster.masterYn})
       setUpdateStatus(null);

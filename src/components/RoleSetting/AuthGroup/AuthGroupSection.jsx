@@ -8,17 +8,26 @@ import { useFetchData } from '../../../hooks/useFetchData';
 import { getCountAuthGroupApi } from '../../../api/authgroup';
 
 export default function AuthGroupSection({ activeAuthId, setActiveAuthId, refresh, isEditMode, handleItemClick, headers}) {
+  const canUseAuthOptions = [
+    { label: '전체', value: '' },
+    { label: '사용', value: true},
+    { label: '미사용', value: false},
+  ]
   const orderOptions = [
-    // { label: '필터', value: 'none' },
     { label: '최신순', value: 'authDashboardIdDesc' },
     { label: '오래된순', value: 'authDashboardIdAsc' },
     { label: '권한명순', value: 'authNameAsc' },
     { label: '권한명역순', value: 'authNameDesc'},
   ];
   const [orderBy, setOrderBy] = useState(orderOptions[0].value);
+  const [canUseAuth, setCanUseAuth] = useState(canUseAuthOptions[0].value);
   const [searchInput, setSearchInput] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
-  const { data: countData, isLoading: isLoadingCount, error: isErrorCount, setShouldFetch} = useFetchData(getCountAuthGroupApi, {headers});
+  const { data: countData, isLoading: isLoadingCount, error: isErrorCount, setShouldFetch} = useFetchData(getCountAuthGroupApi, {
+    headers,
+    params:{canUseAuth: canUseAuth === '' ? null : canUseAuth},
+    shouldFetch:false
+  });
   const [isFilterd, setIsFiltered] = useState(false);
   
   const handleSearch = () => {
@@ -35,9 +44,23 @@ export default function AuthGroupSection({ activeAuthId, setActiveAuthId, refres
 
   useEffect(()=>{
     setShouldFetch(true);
-  },[refresh]);
+  },[refresh,canUseAuth]);
+  useEffect(()=>{
+    console.log('옵션',canUseAuth);
+  },[canUseAuth])
+;
   return (
     <Container>
+      <StyledSelect           
+          value={canUseAuth} 
+          onChange={e => setCanUseAuth(e.target.value)} 
+        >
+        {canUseAuthOptions.map((option, index) => (
+          <option key={index} value={option.value}>
+            {option.label}
+          </option>
+        ))}
+      </StyledSelect>
       <SearchBar>
         <StyledInput
           type="text"
@@ -57,22 +80,22 @@ export default function AuthGroupSection({ activeAuthId, setActiveAuthId, refres
           그룹 : 
           {isLoadingCount && 'Loading...'}
           {isErrorCount && 'Error occurred'}
-          {!isLoadingCount && !isErrorCount && `${countData}개`}
+          {!isLoadingCount && !isErrorCount && ` ${countData}개`}
         </p>
         <StyledFilterSelect 
           value={orderBy} 
           onChange={e => setOrderBy(e.target.value)}
-        >
-        {orderOptions.map((option, index) => (
-          <option 
-            key={index} 
-            value={option.value}
-            disabled={option.value === 'none'} // 'none' 값을 가진 option만 비활성화
-            hidden={option.value === 'none'}   // 'none' 값을 가진 option만 숨김
           >
-            {option.label}
-          </option>
-        ))}
+          {orderOptions.map((option, index) => (
+            <option 
+              key={index} 
+              value={option.value}
+              disabled={option.value === 'none'} // 'none' 값을 가진 option만 비활성화
+              hidden={option.value === 'none'}   // 'none' 값을 가진 option만 숨김
+            >
+              {option.label}
+            </option>
+          ))}
         </StyledFilterSelect>
       </GroupCountFilter>
       <Line color="#C9C9C9" height={"1px"} top={"5px"}/>
@@ -80,6 +103,7 @@ export default function AuthGroupSection({ activeAuthId, setActiveAuthId, refres
         refresh={refresh}
         activeAuthId={activeAuthId} 
         setActiveAuthId={setActiveAuthId} 
+        canUseAuth={canUseAuth}
         orderBy={orderBy}
         searchTerm={searchTerm}
         isEditMode={isEditMode}

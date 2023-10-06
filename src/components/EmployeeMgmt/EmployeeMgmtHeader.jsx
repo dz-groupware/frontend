@@ -3,11 +3,12 @@ import MgmtHeader from '../Commons/MgmtHeader';
 import StyledButton from '../Commons/StyledButton';
 import NotificationInfo from '../Commons/NotificationInfo';
 import { employeeActions } from '../../utils/Slice';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useState } from 'react';
-import { findEmployeeMgmtList } from '../../api/employeemgmt';
+import { deleteEmployeeMgmt, findEmployeeMgmtList, getEmployeeDetailsById } from '../../api/employeemgmt';
 import { SearchButton } from '../Commons/MgmtNav';
 import { FiSearch } from "react-icons/fi";
+import { AiOutlineExclamationCircle } from "react-icons/ai";
 
 
 export default function EmployeeMgmtHeader({ pageId }) {
@@ -17,7 +18,8 @@ export default function EmployeeMgmtHeader({ pageId }) {
   const [selectedOption, setSelectedOption] = useState("");
   const [employeeList, setEmployeeList] = useState([]); // API 응답을 저장하는 상태
   const [checkedEmployees, setCheckedEmployees] = useState([]); // 체크된 사원들의 ID 또는 고유 값을 저장하는 상태
-
+  const idForForm = useSelector(state => state.employeeMgmt.idForForm);
+  const [selectedEmployees, setSelectedEmployees] = useState([]);
 
   const showAlertAndDisappear = (message) => {
     // overlay 생성 및 스타일 설정
@@ -63,11 +65,12 @@ export default function EmployeeMgmtHeader({ pageId }) {
   }
 
   const handleCloseModal = () => {
-    if (window.confirm("모달을 닫으면 정보가 날라갑니다. 계속하시겠습니까?")) { 
+    if (window.confirm("모달을 닫으면 정보가 날라갑니다. 계속하시겠습니까?")) {
       setModalIsOpen(false);
+      setSelectedEmployees([]);  // selectedEmployees 상태 초기화
     }
   };
-  
+
 
 
   const handleRetire = () => {
@@ -79,82 +82,200 @@ export default function EmployeeMgmtHeader({ pageId }) {
     setCheckedEmployees([]); // 선택된 사원 목록 초기화
     setModalIsOpen(true);
   }
-  const handleRetireProcess = () => {
+
+
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      handleSearch();
+
+    }
+  };
+
+
+
+
+const handleSearch = async () => {
+  try {
+    dispatch(employeeActions.hideForm());
+
+    const responseData = await findEmployeeMgmtList(searchValue, selectedOption, pageId);
+    
+    console.log("eeeeeeeee", responseData);
+
+    setEmployeeList(responseData); // API 응답을 상태에 저장
+    
+    
+  } catch (error) {
+    console.error("API Error:", error);
+  }
+};
+
+
+
+  async function handleEmployeeDetails(checkedEmployees) {
+  
+
+    try {
+      const fetchedEmployeeData = await getEmployeeDetailsById(checkedEmployees, pageId);
+      // console.log(fetchedEmployeeData);
+      if (!fetchedEmployeeData) {
+        console.error("No data returned for employee ID:", checkedEmployees);
+        return;
+      }
+
+
+
+      const fetchedEmployeeArray = Object.values(fetchedEmployeeData);
+      // 첫 번째 데이터로 basicInfo 생성
+      const firstEmployee = fetchedEmployeeArray[0];
+      // console.log("firstEmployee", firstEmployee);
+
+      const employeeBasicInfo = {
+        id: firstEmployee.id,
+        imageUrl: firstEmployee.imageUrl,
+        name: firstEmployee.name,
+        empIdNum: firstEmployee.empIdNum,
+        gender: firstEmployee.gender,
+        accountYn: firstEmployee.accountYn,
+        loginId: firstEmployee.loginId,
+        loginPw: firstEmployee.loginPw,
+        privEmail: firstEmployee.privEmail,
+        mobileNumber: firstEmployee.mobileNumber,
+        homeNumber: firstEmployee.homeNumber,
+        address: firstEmployee.address,
+        joinDate: firstEmployee.joinDate,
+        resignationDate: firstEmployee.resignationDate
+      };
+
+      // 모든 데이터에서 groupInfo 수집
+      const employeeGroupInfo = fetchedEmployeeArray.map(employee => ({
+        departmentId: employee.departmentId,
+        position: employee.position,
+        compId: employee.compId,
+        deptId: employee.deptId,
+        transferredYn: employee.transferredYn,
+        edjoinDate: employee.edjoinDate,
+        leftDate: employee.leftDate,
+        deletedYn: employee.deletedYn
+      }));
+
+
+
+
+      const combinedEmployeeInfo = employeeGroupInfo.map(group => ({
+        ...employeeBasicInfo,
+        ...group
+      }));
+
+      setEmployeeList(combinedEmployeeInfo);
+
+
+    } catch (error) {
+      console.error("Error fetching employee data by code:", error);
+    }
+  }
+
+
+
+
+
+
+  const selectedEmployeeIds = selectedEmployees.map(employee => employee.id);
+
+
+  const handleRetireProcess = async () => {
     if (checkedEmployees.length === 0) {
       alert("퇴사 처리할 사원을 선택해주세요.");
       return;
     }
-    // 이 부분에서 API 호출 등을 사용하여 서버에 퇴사 처리를 요청할 수 있습니다.
+
+    for (let i = 0; i < selectedEmployees.length; i++) {
+      try {
+        console.log("퇴사 id", selectedEmployeeIds[i]);
+        console.log("퇴사 바디", selectedEmployees[i]);
+        await deleteEmployeeMgmt(selectedEmployeeIds[i], selectedEmployees[i], pageId);
+
+      } catch (error) {
+        console.error("Error deleting employee data for ID:", selectedEmployeeIds[i], error);
+        // 특정 ID에 대한 처리가 실패하면, 에러 메시지를 표시하고 루프를 종료합니다.
+        alert(`ID: ${selectedEmployeeIds[i]}에 대한 퇴사처리 실패.`);
+        return;
+      }
+    }
+
     alert("선택한 사원들의 퇴사 처리가 완료되었습니다.");
     setCheckedEmployees([]);  // 체크된 목록 초기화
     setModalIsOpen(false);
   };
 
-  const handleKeyDown = (e) => {
-    if (e.key === 'Enter') {
-      handleSearch(); // Enter 키를 누르면 검색 실행
-      // setModalIsOpen(false);
-      // showAlertAndDisappear("퇴사일을 입력해 주세요.");
 
-    }
-  };
 
-  const handleSearch = async () => {
-    try {
-      dispatch(employeeActions.hideForm());
 
-      const responseData = await findEmployeeMgmtList(searchValue, selectedOption, pageId);
-      setEmployeeList(responseData); // API 응답을 상태에 저장
-    } catch (error) {
-      console.error("API Error:", error);
-    }
-  };
+
+
+
+
+
+
+
   const handleCheckboxChange = (employeeId) => {
+    const employee = employeeList.find(emp => emp.id === employeeId); // 해당 사원의 정보를 찾습니다.
+
     if (checkedEmployees.includes(employeeId)) {
-      // 이미 체크된 항목의 체크를 해제
       setCheckedEmployees(checkedEmployees.filter(id => id !== employeeId));
+
+      setSelectedEmployees(selectedEmployees.filter(emp => emp.id !== employeeId));
     } else {
-      // 새로운 항목의 체크 설정
       setCheckedEmployees([...checkedEmployees, employeeId]);
+
+      setSelectedEmployees([...selectedEmployees, employee]);
     }
   };
 
 
+
+  const handleNameClick = (employeeId) => {
+    handleCheckboxChange(employeeId);
+  }
 
   return (
     <div>
-      <MgmtHeader title="사원" extraButtonComponents={
+      <MgmtHeader title="사원" pageId={pageId} extraButtonComponents={
         <ButtonArea>
           {/* <StyledButton>ID변경</StyledButton> */}
-          <StyledButton>비밀번호 초기화</StyledButton>
+          {/* <StyledButton>비밀번호 초기화</StyledButton> */}
           <StyledButton onClick={handleHireProcess}>입사처리</StyledButton>
           <StyledButton onClick={handleRetire}>퇴사처리</StyledButton>
           {modalIsOpen && (
             <ModalOverlay onClick={handleCloseModal}>
               <ModalContent onClick={e => e.stopPropagation()}>
                 <h1>퇴사처리</h1>
-                <NotificationText>오늘 날짜로 퇴사일이 처리되며 정보도 삭제됩니다.</NotificationText>
+                <NotificationText><AiOutlineExclamationCircle />
+                  오늘 날짜로 퇴사일이 처리되며
+                  정보도 삭제됩니다.
+                </NotificationText>
 
-                <h2>사원 검색</h2>
+
                 <div>
                   <input value={searchValue}
                     onChange={(e) => setSearchValue(e.target.value)}
                     onKeyDown={handleKeyDown}
                     type="text" placeholder="사원 이름 또는 ID 또는 Mail ID입력" />
-                  <SearchButton onClick={handleSearch}><FiSearch style={{ color: "lightgrey" }} /></SearchButton>
+                  <SearchButton onClick={handleSearch}><FiSearch style={{ color: "black" }} /></SearchButton>
                 </div>
                 <ContentSection>
                   <EmployeeList>
                     <h3>검색된 사원</h3>
                     <ul>
                       {employeeList.map(employee => (
-                        <li key={employee.id}>
+                        <li key={employee.id} onClick={() => handleNameClick(employee.id)}>
                           <input
                             type="checkbox"
                             checked={checkedEmployees.includes(employee.id)}
                             onChange={() => handleCheckboxChange(employee.id)}
                           />
-                          {employee.name} - {employee.position}
+                          {employee.name} - {employee.loginId}
                         </li>
                       ))}
                     </ul>
@@ -163,18 +284,25 @@ export default function EmployeeMgmtHeader({ pageId }) {
                   <EmployeeList>
                     <h3>선택된 사원</h3>
                     <ul>
-                      {checkedEmployees.map(employeeId => (
-                        <li key={employeeId}>
-                          {employeeId}
+                      {selectedEmployees.map(employee => (
+                        <li key={employee.id}>
+                          {employee.id} - {employee.name}
                         </li>
                       ))}
                     </ul>
+
+
+
+
                   </EmployeeList>
                 </ContentSection>
 
                 <CloseButton onClick={handleCloseModal}>✖</CloseButton>
+                <Spacer />
+                <Spacer />
                 <ButtonArea>
-                  <StyledButton onClick={handleRetireProcess}>퇴사 일괄 처리</StyledButton>
+
+                  {/* <StyledButton styled={{ marginTop: "10px" }} onClick={handleRetireProcess}>퇴사 일괄 처리</StyledButton> */}
 
                 </ButtonArea>
 
@@ -197,10 +325,9 @@ export default function EmployeeMgmtHeader({ pageId }) {
 }
 
 const ButtonArea = styled.div`
-  display:flex;
+  display: flex;
   justify-content: center;
-  align-items : center;
-
+  align-items: center;
 `;
 
 const NotificationArea = styled.div`
@@ -217,13 +344,15 @@ display: flex;  // flexbox 활성화
 justify-content: space-between; // 컨텐츠 사이에 공간 배치
 flex-direction: column; 
 position: relative;
-width: 60%;
-max-width: 500px;
+width: 80%;            // 원하는 비율로 조정
+max-width: 700px;
 background-color: #f1f1f1;
 padding: 40px;
 border-radius: 10px;
 box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
 text-align: center; // 중앙 정렬
+
+
 
 h1 {
   font-weight: 700;  // 굵게 조절
@@ -233,16 +362,19 @@ h1 {
 
 p {
   font-size: 1.1rem; // 크기 조절
-  margin-bottom: 10px;
+  margin: 10px;
 }
 
 input[type="text"] {
   width: 80%; // 폭 조절
+  margin: 10px;
   padding: 10px;
   border: 1px solid #aaa;
   border-radius: 5px;
   text-align: center; // 텍스트 중앙 정렬
 }
+
+
 `;
 
 const ModalOverlay = styled.div`
@@ -255,7 +387,8 @@ const ModalOverlay = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1000;
+  z-index: 9999;
+  margin-top:50px;
 `;
 
 
@@ -279,15 +412,44 @@ const NotificationText = styled.p`
   font-size: 0.8rem; // 작게
   color: #b33; // 약간의 빨간색으로 주의를 끕니다.
   margin: 10px 0; // 위아래 여백 추가
+  font-weight: 600;
 `;
 
 
 const ContentSection = styled.div`
   display: flex;  // 두 섹션을 양 옆에 배치
   justify-content: space-between;
-  margin-top: 20px;  // 섹션 사이의 간격을 조정
 `;
 
 const EmployeeList = styled.div`
   width: 48%;  // 전체 너비의 약 절반
+  height: 250px;
+  max-height: 250px;  // 10명의 이름에 대략 맞는 높이 설정 (이 값을 조절해가며 원하는 높이를 찾아주세요)
+  margin : 10px;
+  h3 {
+    font-weight: bold;
+    border-bottom: 2px solid #000;  // 밑줄 추가
+    padding-bottom: 5px;  // 밑줄과의 간격 추가
+    margin-bottom: 10px;  // 밑줄 아래와의 간격 추가
+  }
+  
+  ul {
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+    max-height: 250px;  // 목록의 높이 제한
+    overflow-y: auto;
+  
+    li {
+
+      cursor: pointer; 
+      padding: 5px;
+      white-space: nowrap;      // 줄 바꿈 방지
+      overflow: hidden;        // 내용이 넘치면 숨김
+      text-overflow: ellipsis; 
+    }
+  }
+`;
+const Spacer = styled.div`
+  margin: 10px 0; // 원하는 마진을 설정
 `;

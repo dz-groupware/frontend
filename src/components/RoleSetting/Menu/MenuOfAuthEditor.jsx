@@ -120,7 +120,7 @@ export default function MenuOfAuthEditor({ authId , isSaveClicked, setIsSaveClic
 
 
 const Container = styled.div`
-  border-top: 2px solid #747474;
+  border-top: 1.5px solid #ccc;
   margin-bottom: 1.2rem;
 `;
 

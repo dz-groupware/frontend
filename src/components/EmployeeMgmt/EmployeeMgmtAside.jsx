@@ -20,7 +20,9 @@ export default function EmployeeMgmtAside({ pageId }) {
   const [openEmployeeDataList, setOpenEmployeeDataList] = useState([]);
   const [closeEmployeeDataList, setCloseEmployeeDataList] = useState([]);
 
-
+  useEffect(() => {
+    setCurrentPage(1); // 페이지를 1로 초기화
+}, [selectedFilter]);
 
   useEffect(() => {
     async function fetchEmployees() {
@@ -232,21 +234,19 @@ export default function EmployeeMgmtAside({ pageId }) {
       <FilterSection>
         <FilterButton
           onClick={() => setSelectedFilter("전체")}
-          active={selectedFilter === "전체"}
+          $isActive={selectedFilter === "전체"}
         >
           전체
         </FilterButton>
-        <Divider>|</Divider>
         <FilterButton
           onClick={() => setSelectedFilter("재직자")}
-          active={selectedFilter === "재직자"}
+          $isActive={selectedFilter === "재직자"}
         >
           재직자
         </FilterButton>
-        <Divider>|</Divider>
         <FilterButton
           onClick={() => setSelectedFilter("퇴사자")}
-          active={selectedFilter === "퇴사자"}
+          $isActive={selectedFilter === "퇴사자"}
         >
           퇴사자
         </FilterButton>
@@ -483,9 +483,9 @@ const FilterButton = styled.button`
   margin: 5px;
   font-weight: bold;  
   font-size: 12px; 
-  color: ${props => props.active ? '#308EFC' : 'grey'};  // 활성화된 탭은 색을 변경
-  border-bottom: ${props => props.active ? '2px solid #308EFC' : 'none'}; // 활성화된 탭에는 밑줄 표시
-
+  color: ${props => props.$isActive ? '#308EFC' : 'grey'};
+  border-bottom: ${props => props.$isActive ? '2px solid #308EFC' : 'none'};
+  
   &:hover {
     background-color: #EFEFEF;
   }

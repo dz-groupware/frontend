@@ -15,7 +15,7 @@ h1 {
   font-family: 'Noto Sans Bold' ,  sans-serif;
 }
 p {
-  font-family: 'Gothic A1','Noto Sans Korean','Roboto Mono',   sans-serif;
+  font-family: 'Gothic A1', 'Roboto Mono',   sans-serif;
 }
 `;
 

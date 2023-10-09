@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
 
 import styled from 'styled-components';
-import { AiFillFolder, AiFillFolderOpen, AiOutlineProfile, AiFillProfile, AiOutlineMenu } from "react-icons/ai";
+import { AiOutlineMenu } from "react-icons/ai";
+import { MdMenuOpen } from "react-icons/md";
 
 import { searchMenuListAPI } from '../api/gnb';
 
@@ -14,7 +15,7 @@ export default function LnbLayout({ routeList }) {
   const [lnbOpen, setLnbOpen] = useState(true);
 
   const [data, setData] = useState([]);
-
+  const [clicked, setClicked] = useState('');
   useEffect(() => {
     try{
       const res = searchMenuListAPI(gnb.id);
@@ -34,7 +35,11 @@ export default function LnbLayout({ routeList }) {
   return (
     <Content>
       <LnbTitle className={`${location.pathname === '/' ? 'main' : 'lnb' }`}>
-        <AiOutlineMenu onClick={() => {setLnbOpen(!lnbOpen)}}/>
+        {
+          lnbOpen ? <MdMenuOpen className={`on ${!lnbOpen ? 'open' : 'close'}`} onClick={() => {setLnbOpen(false)}}/>
+          : <AiOutlineMenu className={`off ${lnbOpen ? 'open' : 'close'}`} onClick={() => {setLnbOpen(true)}}/>
+        }
+        
         <p>{gnb.name}</p>
       </LnbTitle>
       <LnbArea>
@@ -43,7 +48,7 @@ export default function LnbLayout({ routeList }) {
             data.map((a, i) => {
               if (a['id'] !== a['parId']) {
                 return (
-                  <MenuTree menu={a} gnb={gnb} key={a['name']+a['id']}/>                                    
+                  <MenuTree menu={a} gnb={gnb} key={a['name']+a['id']} clicked={clicked} setClicked={setClicked}/>                                    
                 )
               }
               return null;
@@ -60,9 +65,10 @@ export default function LnbLayout({ routeList }) {
   );
 }
 
-export function MenuTree({ menu, param, gnb }){
+export function MenuTree({ menu, param, gnb, clicked, setClicked }){
   const [open, setOpen] = useState(false);
   const [subItem, setSubItem] = useState([]);
+
   const navigate = useNavigate();
     
   useEffect(() => {
@@ -87,12 +93,17 @@ export function MenuTree({ menu, param, gnb }){
     } catch(error) {
       console.log('searchMenuListAPI error : ',error);
     }
+    setClicked(menu['id']);
   }
 
   return (
     <Menu>
-      <MenuItem>
-        { open ? < AiFillFolderOpen/> : <AiFillFolder /> }
+      <MenuItem className={(clicked === menu['id']) ? 'true' : 'false'}>
+        {
+          menu['childNodeYn'] ? <img src='/img/page2.png' alt='1' />
+          : (open ? <img src="/img/comp/dept_open_32.png" alt='1' />
+          : <img src="/img/comp/dept_50.png" alt='1' />)
+        }
         <div onClick={handleMenuItem}>{menu['name']}</div>
       </MenuItem>
       <ItemChild>
@@ -100,7 +111,7 @@ export function MenuTree({ menu, param, gnb }){
         open && subItem.map((a, i) => {
           if (a['id'] !== a['parId']) {
             return (
-              <MenuTree menu={a} param={`${param}/${menu['name']}`} gnb={gnb} key={'lnbList/'+a['name']}/>              )
+              <MenuTree menu={a} param={`${param}/${menu['name']}`} gnb={gnb} clicked={clicked} setClicked={setClicked} key={'lnbList/'+a['name']}/>              )
           }
           return null;
         })
@@ -120,7 +131,7 @@ position: fixed;
 top: 130px;
 left: 250px;
 width: calc(100% - 250px);
-height: calc(100% - 50px);
+height: calc(100% - 130px);
 
 &.true {
   left: 250px;
@@ -144,9 +155,8 @@ height: 100%;
 color: black;
 position: absolute;
 overflow: auto;
-height: calc(100% - 150px);
-background-color: #9fabb23a;
-
+height: calc(100% - 120px);
+background-color: #e3e8ed;
 
 &::-webkit-scrollbar {
     width: 5px; 
@@ -184,7 +194,24 @@ font-weight: bold;
 padding-left: 10px;
 display:flex;
 > svg {
-  margin: 15px;
+  width: 30px;
+  height: 30px;
+  margin: 10px 10px 15px 5px;
+  transition: all 0.3s ease; 
+  .on.open {
+    transform: scale(1.2);
+  }
+  .off.open {
+    transform: scale(1.2);
+  }
+  .on.close {
+    opacity: 0; 
+    transform: scale(0.8);
+  }
+  .off.close {
+    opacity: 0; 
+    transform: scale(0.8);
+  }
 }
 > p {
   margin-top:15px;
@@ -199,22 +226,33 @@ display: flex;
 width: 100%;
 height: 100%;
 `;
-const Menu = styled.div`
+const Menu = styled.ul`
 margin: 2px;
-background-color: white;
-padding: 3px;
+background-color: #fefffe;
 `;
 const ItemChild = styled.div`
-margin-top: 15px;
+background-color: #cbd0d5;
 padding-left: 15px;
 `;
-const MenuItem = styled.div`
+const MenuItem = styled.li`
 display: flex;
 font-size: large;
-height: 20px;
-padding: 3px;
-padding-top: 7px;
-> svg {
+height: auto;
+padding-top: 3px;
+box-shadow: inset 1px 1px 1px 0px rgba(255,255,255,.3),
+            3px 3px 3px 0px rgba(0,0,0,.1),
+            1px 1px 3px 0px rgba(0,0,0,.1);
+            outline: none;
+
+&.true{
+  background-color: rgb(214,236,248);
+  border: 1px solid #7dafdc;
+  transition: all 0.3s ease;
+}
+> img {
+  width: 20px;
+  height: 20px;
   margin: 3px;
 }
+
 `;

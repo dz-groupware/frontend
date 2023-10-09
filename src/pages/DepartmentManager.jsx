@@ -55,13 +55,16 @@ export default function DepartmentManager({ pageId }) {
   const [option, setOption] = useState([]);
   const [result, setResult] = useState([]);
   const [empList, setEmpList] = useState([]);
+  const [disabled, setDisabled] = useState(false);
 
-  console.log(detail);
+  const [filter, setFilter] = useState('all');
+  const [pageLoading, setPageLoading] = useState(false);
+  // console.log(detail);
   // console.log(search)
   // console.log(value)
   // console.log(form);
   // console.log("error:", error);
-  // console.log("result : ", result);
+  console.log("result : ", result);
 
   // 즐겨찾기 추가/삭제 요청
   const handleFavor = () => {
@@ -88,12 +91,15 @@ export default function DepartmentManager({ pageId }) {
       if (result.isConfirmed) {
         try {
           deleteDepartment(value, pageId).then(() => {
-            getDepartemnt(pageId).then(res => setResult(res.data.data));
+            getDepartemnt(pageId).then(res => {
+              setResult(res.data.data)}).then(() => {
+                setDetail({initDetail});
+                renderOrgTree();
+              });
             Swal.fire({
               text: "완료되었습니다.",
               icon: 'success',
             });  
-            setDetail({initDetail});
           });
         } catch (error) {
           console.log('삭제에 실패하였습니다.');
@@ -111,12 +117,30 @@ export default function DepartmentManager({ pageId }) {
     if(detail.id === 0){
       // 추가 시
       setValue(initValue);
-      setDetail({ ...initDetail, type: 'basic'});
+      setDetail({ ...detail, type: 'basic'});
     } else if (detail.type === 'basic' && detail.id > 0) {
       try {
         console.log('부서 상세 요청 : ', detail.id)
         getBasicDetailById(detail.id, pageId).then(res => {
-          setValue(res.data.data);});
+          setValue(res.data.data);
+          console.log('try disabled');
+              // 자신의 회사가 아닌 다른 회사의 부서 정보 열람 시도
+          const compId = localStorage.getItem("compId");
+          const myForm = document.getElementById('basic');
+
+          if (myForm) {
+          if(compId+"" !== res.data.data['compId']+"") {
+            myForm.querySelectorAll('input, textarea, button, div').forEach(element => {
+              element.disabled = true;
+            });
+            setDisabled(true);
+          } else {
+            myForm.querySelectorAll('input, textarea, button, div').forEach(element => {
+              element.disabled = false;
+            });
+            setDisabled(false);
+          }}
+        });
       } catch (error) {
         console.log(error);
         setValue(initValue);
@@ -133,7 +157,8 @@ export default function DepartmentManager({ pageId }) {
     }
   }
   // 부서트리 하위 부서 찾기
-  function findItemAndSetSubItem(items, itemId, newSubItem) {
+  const findItemAndSetSubItem = (items, itemId, newSubItem) => {
+    console.log('여기도 옴')
     for (let i = 0; i < items.length; i++) {
       if (items[i].id === itemId) {
         items[i].subItem = newSubItem;
@@ -148,16 +173,30 @@ export default function DepartmentManager({ pageId }) {
   }
   // 부서트리 하위 부서 추가
   const updateSubItem = (itemId, newSubItem) => {
+    console.log('여기도')
     setResult((prevRes) => {
       const updateRes = [...prevRes];
       findItemAndSetSubItem(updateRes, itemId, newSubItem);
       return updateRes;
     });
   }
+  // 저장/수정/삭제 시 조직도 트리 리렌더링 
+  const renderOrgTree = () => {
+    try {
+      getDepartemnt(pageId).then(res => {
+        console.log(' new res : ', res.data.data);
+        setResult(res.data.data);
+        setSearch({ option: 'basic', text: '', on: false });
+      });  
+    } catch (error) {
+      console.log(error);
+    }
+  }
   
   useEffect(()=>{
     const loadDeptList = async () => {
       try {
+        setPageLoading(true);
         const menu = await getDepartemnt(pageId);
         console.log(menu);
         setResult(menu.data.data);
@@ -181,8 +220,10 @@ export default function DepartmentManager({ pageId }) {
         } else {
           setOption([]);
         }
+        setPageLoading(false);
       } catch (error) {
         console.log(error);
+        window.location.href='/SERVICE_UNAVAILABLE'
       }
     }
     loadDeptList();
@@ -190,31 +231,36 @@ export default function DepartmentManager({ pageId }) {
   
   // 부서 상세 정보 요청
   useEffect(()=>{ 
-    console.log('상세 요청')
+    console.log('상세 요청', detail);
     handleModifyNoti();
   },[detail.id, detail.type]);
   useEffect(() => {
-    console.log('updated value : ', value, detail);
+    // console.log('updated value : ', value, detail);
     // 데이터 업데이트 (저장 시)
     if (detail.state === 'save') {
       try {
         console.log('save request', value);
         addDepartment(value, pageId).then(() => {
+          console.log('저장 후 조직도 리렌더링');
+          renderOrgTree();
+        }).then(() => {
           Swal.fire({
             text: "완료되었습니다.",
             icon: 'success',
           });  
         });
+        setDetail({ ...initDetail});
       } catch (error) {
         console.log('저장에 실패하였습니다.');
         Swal.fire({
           text: "저장에 실패하였습니다.",
           icon: 'cancle',
         });  
+        setDetail({ ...detail, state: false, isChanging: false });
       }
-      setDetail({ ...detail, state: false, isChanging: false });
     }
   }, [value]);
+
   useEffect(() => {
     if (detail.save) {
       try {
@@ -249,33 +295,6 @@ export default function DepartmentManager({ pageId }) {
               }
             }    
           }
-      //   if(detail.state === 'delete'){
-      //     handleDelete();
-      //     console.log('삭제 요청');
-      //   } else {
-      //     if(detail.state === 'tmp'){
-      //       // 일괄등록
-      //       console.log('tmpSave : ', value);
-      //       setForm([ ...form, value ]);
-      //       handleTmpSave();
-      //       setDetail(initDetail);
-      //     } 
-          // if(detail.state === 'save'){
-          //   if(detail.id === 0){
-          //     // 추가 요청 : 추가 api
-          //     console.log('추가 요청');
-          //   }
-          //   if(detail.id > 0) {
-          //     console.log('수정 요청');            
-          //     modifyDepartment(value, pageId).then(res => {
-          //       console.log(res);
-          //       // 결과 확인 알림창에 결과 전달
-          //       setLoading({ loading: true, response: (res.data.data === '1' || res.data.data === 1)});
-          //       setDetail({...detail, state: false, save: false });
-          //     });
-          //   }    
-          // }
-        // }
       } catch (error) {
         console.log('save error : ', error);
       }
@@ -286,6 +305,7 @@ export default function DepartmentManager({ pageId }) {
   useEffect(() => {
     if (detail.save === 'save' && detail.isChanging === 'save') {
       setDetail({ ...detail, isChanging: false});
+      getDepartemnt(pageId).then(res => setResult(res.data.data));
     }
     if(detail.type === 'emp') {
       setDetail({ ...detail, id: detail.isChanging, isChanging: false });
@@ -296,9 +316,11 @@ export default function DepartmentManager({ pageId }) {
     }
   }, [detail.isChanging]);
   useEffect(() => {
-    if (item > 0 ){
-      getDepartmentById(item, pageId).then(res => { 
-        updateSubItem(item, res.data.data);
+    console.log(typeof item['id']);
+    if (item['id'] > 0 ){
+      console.log('item id : ', item)
+      getDepartmentById(item['compId'], item['id'], pageId).then(res => { 
+        updateSubItem(item['id'], res.data.data);
       });      
     }
   }, [item]);
@@ -316,13 +338,17 @@ export default function DepartmentManager({ pageId }) {
     }
   }, [search.on]);
 
-
   return(
+    <>{
+      pageLoading && <Loading />
+    }
+    { !pageLoading && 
     <ContentDept>
       <DeptTitle>
         <div id="deptTitle">부서관리</div>
-        <TitleBtn favor={favor} handleFavor={handleFavor} detail={detail} setDetail={setDetail}/>
+        <TitleBtn favor={favor} handleFavor={handleFavor} detail={detail} setDetail={setDetail} disabled={disabled}/>
       </DeptTitle>
+      <Line />
       <Info>
           <div>
             <AiOutlineInfoCircle />&nbsp; 회사별 조직도(부서)를 등록할 수 있으며, '부서/팀/입사' 유형을 선택하여 등록할 수 있습니다.
@@ -334,24 +360,24 @@ export default function DepartmentManager({ pageId }) {
             <SearchForm option={option} search={search} setSearch={setSearch} />
             <div>
               <span>조직도</span>
-              <select name="filter">
+              <select name="filter" onChange={(e) => {setFilter(e.target.value)}}>
                 <option value="all">전체</option>
-                <option value='admin'>사용중 부서</option>
-                <option value='admin'>미사용중 부서</option>
-                <option value='general'>관리 부서</option>
-                <option value='general'>사용자 부서</option>
-                <option value='general'>조직도 표시</option>
-                <option value='general'>조직도 미표시</option>
+                <option value='enableY'>사용중 부서</option>
+                <option value='enableN'>미사용중 부서</option>
+                <option value='manageY'>관리 부서</option>
+                <option value='manageN'>사용자 부서</option>
+                <option value='includY'>조직도 표시</option>
+                <option value='includN'>조직도 미표시</option>
               </select>
             </div>
-            <SearchResult result={result} setItem={setItem} detail={detail} setDetail={setDetail}/>
+            <SearchResult result={result} setItem={setItem} detail={detail} setDetail={setDetail} filter={filter}/>
           </Suspense>
         </SearchResultArea>
         <Detail>
-          <DetailTitle detail={detail} setDetail={setDetail} />
+          <DetailTitle detail={detail} setDetail={setDetail} disabled={disabled}/>
           {
             detail.type === 'basic' ? 
-            <DetailBasic data={value} setData={setValue} detail={detail} setDetail={setDetail} pageId={pageId} />
+            <DetailBasic data={value} setData={setValue} detail={detail} setDetail={setDetail} pageId={pageId} disabled={disabled} setDisabled={setDisabled}/>
             : null
           }
           {
@@ -360,7 +386,7 @@ export default function DepartmentManager({ pageId }) {
         </Detail>
       </DetailArea>
     </ContentDept>
-  );
+  }</>);
 };
 
 const ContentDept = styled.div`
@@ -372,15 +398,11 @@ height: 100%;
 const DeptTitle = styled.div`
 display: flex;
 justify-content: space-between;
-
 width: 100%;
-
-color: black;
-
+color: #1d2437;
 > #deptTitle {
-  margin: 10px;
-  margin-left: 20px;
-  font-size: large;
+  margin: 25px 0 10px 20px;
+  font-size: x-large;
   font-weight: bold;
   color: rgb(32,35,44);
 }
@@ -397,24 +419,24 @@ justify-content: center;
   background-color: rgb(214,236,248);
   border: 1px solid rgb(146,183,214);
   border-radius: 5px;
-  color: black;
-  font-weight: bold;
+  font-size: small;
+  color: #414854;
 }
 `;
 const DetailArea = styled.div`
 display: flex;
 width: 100%;
-height: calc(100% - 120px);
+height: calc(100% - 130px);
 `;
 const SearchResultArea = styled.div`
 margin:10px;
-height: calc(100% - 10px);
+height: calc(100% - 20px);
+border-top: 3px solid #1d2437;
+border: 1px solid #1d2437;
 background-color: white;
+color: black;
 width: 330px;
 min-width: 330px;
-border: 1px solid rgb(171,172,178);
-color: black;
-
 > div {
   display: flex;
   justify-content: space-between;
@@ -444,4 +466,10 @@ min-width: 600px;
 color: black;
 margin: 10px;
 margin-right: 20px;
+`;
+const Line = styled.div`
+width: calc(100% - 20px);
+height: 2px;
+background-color: #1d2437;
+margin: 5px 10px 5px 10px;
 `;

@@ -18,15 +18,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
   font-family:  'NanumGothic', 'Noto Sans','Gothic A1',  sans-serif;
 }
-/* h1 {
-  font-family: 'Noto Sans Bold' ,  sans-serif;
-}
-p {
-  font-family: 'Gothic A1','Noto Sans Korean','Roboto Mono',   sans-serif;
-} */
-p, a, h1, h2, h3, h4, h5, h6 {
-    transform: skew(-0.1deg);
-}
+
 `;
 
 export default GlobalStyle;

@@ -15,7 +15,8 @@ export default function GnbLayout() {
   const [favor, setFavor] = useState(JSON.parse(`[{}]`));
   const [routeList, setRouteList] = useState(new Map([
     [`/`, { menuId: 0, gnbId: 0, gnbName: 'main', page: 'Main' }],
-    [`/FORBIDDEN`, { menuId: 0, gnbId: 0, gnbName: '403', page: 'FORBIDDEN' }],]));
+    [`/FORBIDDEN`, { menuId: 0, gnbId: 0, gnbName: '403', page: 'FORBIDDEN' }],
+    [`/SERVICE_UNAVAILABLE`, { menuId: 0, gnbId: 0, gnbName: '503', page: 'SERVICE_UNAVAILABLE' }]]));
 
   const [empId, setEmpId] = useState(localStorage.getItem("empId"));
   const [routeOn, setRouteOn] = useState(false);
@@ -28,6 +29,7 @@ export default function GnbLayout() {
     });
     menuList.set(`/`, { menuId: 0, gnbId: 0, gnbName: 'main', page: 'Main' });
     menuList.set(`/FORBIDDEN`, { menuId: 0, gnbId: 0, gnbName: '403', page: 'FORBIDDEN' });
+    menuList.set(`/SERVICE_UNAVAILABLE`, { menuId: 0, gnbId: 0, gnbName: '503', page: 'SERVICE_UNAVAILABLE' });
     setRouteList(menuList);
   }
 
@@ -81,7 +83,7 @@ export default function GnbLayout() {
   return (
     <>
       <Content>
-        <TB profile={profile} empId={empId}/>
+        <TB profile={profile} empId={empId} routeList={routeList}/>
         { routeOn && <LnbLayout routeList={routeList}/> }
       </Content>
       <GNB gnb={gnb} favor={favor}/>

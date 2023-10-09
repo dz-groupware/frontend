@@ -7,9 +7,17 @@ export default function DeptModal({ form, setModalOn, setForm, pageId }){
   const [item, setItem] = useState(JSON.parse('[{"":""}]'));
 
   useEffect(() => {
-    getDepartemnt(pageId).then(res => {
-      setItem(res.data.data);
-    });
+    try {
+      if(pageId) {
+        getDepartemnt(pageId).then(res => {
+          setItem(res.data.data);
+        });    
+      } else {
+        throw new Error('pageId is undefined');
+      }
+    } catch (error) {
+      console.log(error);
+    }
   }, []);
 
   return (
@@ -21,6 +29,9 @@ export default function DeptModal({ form, setModalOn, setForm, pageId }){
         </div>
         <MenuArea>
           <div>
+          <div onClick={() => {setForm({...form, parId: '0', parName: '없음'});}}>
+            <img style={{width: '15px', height: '15px', marginRight: '5px'}} src='/img/comp/dept_50.png' alt='icon' />'선택없음'
+          </div>
           {
             item.map((a, i) => (
               <Item form={form} data={a} setModalOn={setModalOn} setForm={setForm} key={a['name']+'gnb'}/>
@@ -57,7 +68,7 @@ function Item({ form, data, setModalOn, setForm }) {
   return (
     <Menu>
       <div onClick={handleMenuItem}>
-        └{data['name']}
+      <img style={{width: '15px', height: '15px', marginRight: '5px'}} src='/img/comp/dept_50.png' alt='icon' />{data['name']}
       </div>
       { subItem.length > 1 && open &&
         subItem.map((a, i) => (
@@ -90,27 +101,50 @@ align-items: center;
 flex-direction: column;
 border-radius: 5px;
 width: 300px;
-height: 500px;
+height: 480px;
 color: black;
-background-color: rgb(146,183,214);
-z-index:2;
+background-color: #f2f3f6;
+z-index: 2;
+box-shadow: inset 1px 1px 1px 0px rgba(255,255,255,.3),
+          3px 3px 3px 0px rgba(0,0,0,.1),
+          -3px -3px 3px 0px rgba(0,0,0,.1);
+          outline: none;
 > #menuTitle {
+  margin: 20px 15px 10px 15px;
   display: flex;
-  justify-content: space-around;
+  justify-content: space-between;
   height: 30px;
   font-size: large;
   font-weight: bold;
 }
 `;
 export const MenuArea = styled.div`
+margin: 5px 15px 5px 15px;
 width: 90%;
 height: 100%;
 
 > div {
+  padding: 10px;
   background-color: white;
   width: 100%;
-  height: 450px;
+  height: 400px;
   overflow: scroll;
+  &::-webkit-scrollbar {
+    width: 5px; 
+    height: 5px;
+    background-color: transparent; 
+  }
+  &::-webkit-scrollbar-thumb {
+    background-color: #7dafdc;
+    border-radius: 5px; 
+  }
+  &::-webkit-scrollbar-thumb:hover {
+    background-color: #318dfc;
+  }
+  box-shadow: inset 1px 1px 1px 0px rgba(255,255,255,.3),
+            3px 3px 3px 0px rgba(0,0,0,.1),
+            1px 1px 3px 0px rgba(0,0,0,.1);
+            outline: none;
 }
 `;
 export const Menu = styled.div`

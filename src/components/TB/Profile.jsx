@@ -28,6 +28,10 @@ color: black;
   width: 50px;
   height: 50px;
   border-radius: 100%;
+  box-shadow: inset 1px 1px 1px 0px rgba(255, 255, 255, 0.3),
+            3px 3px 7px 0px rgba(255, 255, 255, 1),
+            2px 2px 2px 0px rgba(255, 255, 255, 1);
+            outline: none;
 }
 
 > div {
@@ -36,6 +40,7 @@ color: black;
 
   > div {
     margin: 5px;
+    text-shadow: 2px 2px 4px #ffffff;
   }
 
   > p {
@@ -44,6 +49,13 @@ color: black;
     padding-top: 5px;
     font-size: small;
     color: gray;
+    &::after {
+      content: attr()(data-text);
+      text-shadow: 0 -2px 4px rgba(255, 255, 255, 1),
+                -2px 0 4px rgba(255, 255, 255, 1),
+                0 2px 4px rgba(255, 255, 255, 1),
+                2px 0 4px rgba(255, 255, 255, 1);
+    }
   }
 }
 `;

@@ -31,18 +31,16 @@ background-color: #ffffff;
 `;
 
 export const ModalArea = styled.div`
-width:100%;
-height:230px;
-margin:0;
-display: flex;
-flex-direction: column;
-
+width: 600px;
+height: 300px;
+margin: 5px;
 > table {
-  width: 560px;
+  margin: 5px;
+  height: 290px;
   font-size: medium;
-  height: 200px;
   > tbody {
     > #tHeader {
+      height: 20px;
       background-color: rgb(230,230,250);
       text-align : center;
       font-weight: bold;

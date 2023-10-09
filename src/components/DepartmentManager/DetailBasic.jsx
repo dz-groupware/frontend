@@ -6,7 +6,7 @@ import Swal from 'sweetalert2';
 
 import { checkDeptCode } from '../../api/department';
 
-export default function DetailBasic({ data, setData, detail, setDetail, pageId }){
+export default function DetailBasic({ data, setData, detail, setDetail, pageId, disabled, setDisabled }){
   const [modalOn, setModalOn] = useState(false);
   const [form, setForm] = useState('');
   const [isModified, setIsModified] = useState(false);
@@ -87,6 +87,7 @@ export default function DetailBasic({ data, setData, detail, setDetail, pageId }
       cancelButtonText: '취소',
     }).then((result) => {
       if (result.isConfirmed) {
+        console.log('try add : ',detail);
         if (detail.id === 0) {
           // 저장 : 추가
           setData({ ...form, status: 'add' });    
@@ -123,6 +124,7 @@ export default function DetailBasic({ data, setData, detail, setDetail, pageId }
         setUseableCode(true);
       }
     }
+
   },[data]);
   useEffect(() => {
     // 다른 부서를 눌렀을 때
@@ -134,14 +136,18 @@ export default function DetailBasic({ data, setData, detail, setDetail, pageId }
       } else {
         console.log("수정 중 아님 : ", detail.isChanging)
         setDetail({ ...detail, id: detail.isChanging, state: false, isChanging: false });
+        setValidText({code: '', abbr: '', name: ''});
       }
+    }
+    if (detail.isChanging === 'save' || detail.isChanging === 'delete') {
+      setNoti(true);
     }
   }, [detail.isChanging]);
 
   useEffect(() => {    
     // 저장
     if (detail.state === 'save') {
-      console.log('저장 클릭');
+      console.log('저장 클릭', form);
       if (isModified){
         const { validText, isValid } = validate(form);
         setValidText(validText);
@@ -173,6 +179,7 @@ export default function DetailBasic({ data, setData, detail, setDetail, pageId }
           console.log('수정 삭제 후 이동');
           setDetail({ ...detail, id: detail.isChanging, state: false, isChanging: false });
           setIsModified(false);
+          setValidText({code: '', abbr: '', name: ''});
         } else if (result.isDismissed) {
           console.log('취소');
           setDetail({ ...detail, isChanging: false });
@@ -189,59 +196,6 @@ export default function DetailBasic({ data, setData, detail, setDetail, pageId }
       setIsModified(true);
     }
   }, [modalOn]);
-
-  // console.log("modify : ", isModified);
-  // console.log("useableCode : ", useableCode);
-  // const handleCompareData = () => {
-  //   if (data !== undefined) {
-  //     const keys = Object.keys(data);
-  //     for (let key of keys) {
-  //       if (data[key] !== form[key]) {
-  //         return false;
-  //       }
-  //       return true;
-  //     }  
-  //   }
-  // }
-
-  // console.log(detail)
-  // console.log(isValid);
-  // console.log(validText);
-
-  // useEffect(()=>{
-    
-  //   // 저장 버튼을 눌렀을 때
-  //   if (detail.state === 'save'){
-  //     if (isModified) {
-  //       validate(form);
-  //       if (isValid.code && isValid.abbr && isValid.name && useableCode) {
-  //         console.log('유효성 통과');
-  //         setData(form); 
-  //         setDetail({ ...detail, state: 'save', save: true }); // state: true? false?
-  //         setIsModified(false);
-  //       } else {
-  //         console.log(isValid.code, isValid.abbr, isValid.name, useableCode);
-  //         console.log('유효성 검사 불충족');
-  //         setDetail({ ...detail, state: false, save: false });
-  //       }  
-  //     } else {
-  //       handleNotModified();
-  //       setDetail({ ...detail, state: false, save: false });
-  //     }
-  //   }
-  //   // 임시저장 눌렀을 때
-  //   if (detail.state === 'tmpSave') {
-  //     setData(form); 
-  //     setDetail({ ...detail, state:'tmp', save: false }); // state: true? false?
-  //     setIsModified(false);
-  //   }
-  //   if (detail.state === 'tmpSaveButton') {
-  //     console.log('tlqkf wlsWk wpqkf')
-  //     setData(form); 
-  //     setDetail({ ...detail, state:'tmp', save: true }); // state: true? false?
-  //     setIsModified(false);
-  //   }
-  // },[detail.state]);
 
   return (
     <Detail>
@@ -262,8 +216,8 @@ export default function DetailBasic({ data, setData, detail, setDetail, pageId }
               value={form.code} onChange={handleInputChange}
               data-valid={!isValid.code} disabled={useableCode} className={`input ${useableCode}`}/> 
               {useableCode ? 
-              <CheckBtn onClick={() => setUseableCode(false)} >다른 부서 코드 사용</CheckBtn> 
-              : <CancelBtn onClick={handleCheckCode}>중복 검사</CancelBtn>}<div>{validText.code}</div>
+              <CheckBtn className={`${disabled ? 'disabled' : 'abled'}`} onClick={() => setUseableCode(false)} >다른 부서 코드 사용</CheckBtn> 
+              : <CancelBtn className={`${disabled ? 'disabled' : 'abled'}`} onClick={handleCheckCode}>중복 검사</CancelBtn>}<div>{validText.code}</div>
             </td>
           </tr>
           <tr>
@@ -289,10 +243,10 @@ export default function DetailBasic({ data, setData, detail, setDetail, pageId }
             <td className="data">
               <input name='enabledYn' value="true" type='radio' 
               checked={form.enabledYn === true } 
-              onChange={e => setForm({...form, enabledYn: true})}/>사용
+              onChange={e => setForm({...form, enabledYn: true})}/><p>사용</p>
               <input name='enabledYn' value="false" type='radio' 
               checked={form.enabledYn === false} 
-              onChange={e => setForm({...form, enabledYn: false})}/>미사용
+              onChange={e => setForm({...form, enabledYn: false})}/><p>미사용</p>
             </td>
             <td className="field">
               관리부서
@@ -300,10 +254,10 @@ export default function DetailBasic({ data, setData, detail, setDetail, pageId }
             <td className="data">
               <input name='managementYn' value="true" type='radio' 
               checked={form.managementYn === true} 
-              onChange={e => setForm({...form, managementYn: true})}/>설정
+              onChange={e => setForm({...form, managementYn: true})}/><p>설정</p>
               <input name='managementYn' value="false" type='radio' 
               checked={form.managementYn === false} 
-              onChange={e => setForm({...form, managementYn: false})}/>미설정
+              onChange={e => setForm({...form, managementYn: false})}/><p>미설정</p>
             </td>
           </tr>
           <tr>
@@ -313,16 +267,16 @@ export default function DetailBasic({ data, setData, detail, setDetail, pageId }
             <td className="data">
               <input name='includedYn' value="true" type='radio' 
               checked={form.includedYn === true} 
-              onChange={e => setForm({...form, includedYn: true})}/>표시
+              onChange={e => setForm({...form, includedYn: true})}/><p>표시</p>
               <input name='includedYn' value="false" type='radio' 
               checked={form.includedYn === false} 
-              onChange={e => setForm({...form, includedYn: false})}/>미표시
+              onChange={e => setForm({...form, includedYn: false})}/><p>미표시</p>
             </td>
             <td className="field">
               정렬
             </td>
             <td className="data">
-              <input name='sortOrder' type="number" value={form.sortOrder}  
+              <input name='sortOrder' type="number" value={form.sortOrder} className='input'
               onChange={e => setForm({...form, sortOrder: parseInt(e.target.value, 10)})}  />
             </td>
           </tr>
@@ -381,36 +335,72 @@ height: calc(100% - 100px);
         display: flex;
         > td:nth-child(1) {
           display: flex;
-          background-color: rgb(240,245,248);
-          width: 10%;
-          min-width: 150px;
-          height: 50px;
+          background-color: #f2f3f6;
+          width: 16.5%;
+          min-width: 100px;
+          height: 40px;
           font-size: medium;
           font-weight: bold;
           padding: 10px;
           text-align: right;
           border-top: 1px solid gray;
           border-bottom: 1px solid gray;
+          &.field{
+          display: flex;
+          background-color: #f2f3f6;
+          width: 32%;
+          min-width: 100px;
+          font-size: medium;
+          font-weight: bold;
+          padding: 10px;
+          text-align: right;
+          border-bottom: 1px solid gray;
+          height: 40px;
+        }
         }
         > td:nth-child(2) {
           display: flex;
           background-color:  white;
           color: #151414;
-          width: 90%;
-          min-width: 300px;
-          height: 50px;
+          width: 83.5%;
+          min-width: 250px;
+          height: 40px;
           font-size: medium;
           font-weight: bold;
-          padding: 10px;
+          padding: 5px;
           text-align: left;
           border-top: 1px solid gray;
           border-bottom: 1px solid gray;
+          &.data {
+          display: flex;
+          background-color:  white;
+          color: #151414;
+          width: 68%;
+          min-width: 250px;
+          font-size: medium;
+          font-weight: 200;
+          padding: 5px;
+          text-align: left;
+          border-bottom: 1px solid gray;
+          height: 40px;
+          > p {
+            padding-top: 5px;
+            margin: 0 5px 0 5px;
+          }
+        }
           > .true{
             background-color: rgb(188,237,196);
           }
           > .input {
+            padding-left: 5px;
             width: 300px;
-            height: 30px;
+            height: 25px;
+          }
+          > textarea {
+            padding: 5px 0 0 5px;
+            width: 300px;
+            height: 25px;
+            resize: none;
           }
         }
         > td {
@@ -424,28 +414,37 @@ height: calc(100% - 100px);
         color: #151414;
         > .field{
           display: flex;
-          background-color: rgb(240,245,248);
-          width: 20%;
-          min-width: 150px;
+          background-color: #f2f3f6;
+          width: 32%;
+          min-width: 100px;
           font-size: medium;
           font-weight: bold;
           padding: 10px;
           text-align: right;
           border-bottom: 1px solid gray;
-          height: 50px;
+          height: 40px;
         }
         > .data {
           display: flex;
           background-color:  white;
           color: #151414;
-          width: 80%;
-          min-width: 300px;
+          width: 68%;
+          min-width: 250px;
           font-size: medium;
           font-weight: 200;
-          padding: 10px;
+          padding: 5px;
           text-align: left;
           border-bottom: 1px solid gray;
-          height: 50px;
+          height: 40px;
+          > .input {
+            width: 200px;
+            padding-left: 5px;
+            height: 25px;
+          }
+          > p {
+            padding-top: 5px;
+            margin: 0 5px 0 5px;
+          }
         }
       }
     }  
@@ -488,7 +487,7 @@ height: calc(100% - 50px);
     padding: 10px;
     border-top: 1px solid gray;
     border-bottom: 1px solid gray;
-    height: 30px;
+    height: 40px;
     > td {
       display: flex;
       padding: 10px;
@@ -506,6 +505,10 @@ border-radius: 5px;
 margin-left: 20px;
 font-weight: 100;
 padding: 5px;
+&.disabled{
+  pointer-events: none;
+  opacity: 0.5;
+}
 `;
 const CancelBtn = styled.div`
 background-color: rgb(214,236,248);
@@ -515,4 +518,8 @@ border-radius: 5px;
 margin-left: 20px;
 font-weight: 100;
 padding: 5px;
+&.disabled{
+  pointer-events: none;
+  opacity: 0.5;
+}
 `;

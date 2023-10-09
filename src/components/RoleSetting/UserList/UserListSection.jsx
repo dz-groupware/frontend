@@ -60,7 +60,8 @@ const StyledTable = styled.table`
 const StyledTh = styled.th`
   background-color: #f2f2f2;
   color: black;
-  border: 1px solid #ddd;
+  border-left: 1.5px solid #ccc;
+  border-right: 1.5px solid #ccc;
   padding: 8px;
   text-align: left;
 `;

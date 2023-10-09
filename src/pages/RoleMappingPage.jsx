@@ -3,12 +3,12 @@ import { MdDisplaySettings, MdOutlineMapsUgc, MdSmartDisplay } from 'react-icons
 import styled from 'styled-components';
 import RoleMappingMain from '../components/RoleMapping/RoleMappingMain';
 import Line from '../components/Commons/Line';
-import LinkButon from '../components/Commons/LinkButon';
 import ActionButton from '../components/Commons/ActionButton';
 import { useFetchData } from '../hooks/useFetchData';
 import { addEmployeeAuthApi } from '../api/authgroup';
 import { changeMasterYn } from '../api/employee';
 import RoleTopContainer from '../components/RoleMapping/RoleTopContainer';
+import LinkButton from '../components/Commons/LinkButton';
 
 export default function RoleMappingPage({ pageId }) {
   const [activeAuthId, setActiveAuthId] = useState(null);
@@ -119,7 +119,7 @@ export default function RoleMappingPage({ pageId }) {
       />
       <Line color="#f5f5f5" height="2px" bottom={"20px"}/>
       <div style={{  marginLeft: "1.2rem" }} >
-        <LinkButon
+        <LinkButton
           cursor="none"
           onClick={(e)=>e.preventDefault()}
           name="사원 기준"

@@ -1,7 +1,7 @@
 import React from 'react'
 import styled from 'styled-components';
 
-export default function LinkButon(props) {
+export default function LinkButton(props) {
   const fontTag = props.tagName || 'span';  
   return(
     <Container

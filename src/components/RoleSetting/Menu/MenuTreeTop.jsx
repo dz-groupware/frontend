@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import LinkButon from '../../Commons/LinkButon';
+import LinkButton from '../../Commons/LinkButton';
 import ActionButton from '../../Commons/ActionButton';
 
 export default function MenuTreeTop({isEditMode, setIsEditMode, setIsSaveClicked, setIsDeleteClicked}) {
@@ -8,7 +8,7 @@ export default function MenuTreeTop({isEditMode, setIsEditMode, setIsSaveClicked
   return (
     <Container>
       <HeaderWrapper>
-        <LinkButon 
+        <LinkButton 
             cursor="none"
             onClick={(e)=>e.preventDefault()}
             name="전체"

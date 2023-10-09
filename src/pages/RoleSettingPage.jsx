@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
-import LinkButon from '../components/Commons/LinkButon';
 import Line from '../components/Commons/Line';
 import RoleSettingMain from '../components/RoleSetting/RoleSettingMain';
 import { MdDisplaySettings, MdSmartDisplay, MdOutlineMapsUgc } from 'react-icons/md'
@@ -8,6 +7,7 @@ import { PiCalendarCheck, PiStarBold } from 'react-icons/pi'
 import RoleModal from '../components/RoleSetting/RoleModal';
 import ActionButton from '../components/Commons/ActionButton';
 import { addAuthApi, updateAuthApi } from '../api/authgroup';
+import LinkButton from '../components/Commons/LinkButton';
 
 export default function RoleSettingPage({pageId}) {
   const [refresh, setRefresh] = useState(false);
@@ -82,7 +82,7 @@ export default function RoleSettingPage({pageId}) {
       </TopContainer>
       <Line color="#f5f5f5" height="2px" bottom={"20px"}/>
       <div style={{  marginLeft: "1.2rem" }} >
-        <LinkButon 
+        <LinkButton
           as="h1"
           cursor="none"
           onClick={(e)=>e.preventDefault()}

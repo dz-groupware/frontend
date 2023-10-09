@@ -116,6 +116,7 @@ export default function RoleMappingPage({ pageId }) {
         handleChangeMasterClick={handleChangeMasterClick}
         setIsEditMode={setIsEditMode}
         refresh={refresh}
+        pageId={pageId}
       />
       <Line color="#f5f5f5" height="2px" bottom={"20px"}/>
       <div style={{  marginLeft: "1.2rem" }} >

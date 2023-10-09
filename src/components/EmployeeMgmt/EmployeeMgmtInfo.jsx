@@ -18,6 +18,8 @@ export default function EmployeeMgmtInfo({pageId}) {
     const isSignUpChecked = useSelector(state => state.employeeMgmt.isSignUpChecked);
     const isDataFetched = useSelector(state => state.employeeMgmt.idForForm);
     const newImageFile = useSelector(state => state.employeeMgmt.uploadedFile);
+    const defaultImageUrl = "https://yourdomain.com/pathttps://img.freepik.com/free-vector/young-businessman-showing-ok-sign-hand-drawn-cartoon-art-illustration_56104-1093.jpg?size=626&ext=jpg&ga=GA1.1.2127282484.1692942479&semt=sphh-to-default-image.jpg"; // 여기에 기본 이미지 URL을 지정하세요.
+
 
 
 
@@ -85,7 +87,7 @@ export default function EmployeeMgmtInfo({pageId}) {
             if (!isErrorOccurred) {
             alert("사원 데이터가 수정되었습니다.");
             dispatch(employeeActions.hideForm());
-            // window.location.reload();
+            window.location.reload();
             }
     
         } else {
@@ -103,7 +105,7 @@ export default function EmployeeMgmtInfo({pageId}) {
             alert("사원 데이터가 저장되었습니다.");
             dispatch(employeeActions.hideForm());
 
-            // window.location.reload();
+            window.location.reload();
             }
         }
     };
@@ -200,6 +202,7 @@ export default function EmployeeMgmtInfo({pageId}) {
                 return;  // 사용자가 취소를 누른 경우 함수 실행을 멈춥니다.
             }
         }
+
 
         dispatch(employeeActions.updateBasicInfo(basicInfo));
         dispatch(employeeActions.updateGroupInfo(groupInfo));

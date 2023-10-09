@@ -168,7 +168,7 @@ function getIdFormLocal(k, d) {
           state.isSignUpChecked = action.payload;
         },
         updateUploadedFile: (state, action) => {
-          // state.uploadedFile = action.payload;
+          state.uploadedFile = action.payload;
           state.employeeBasicInfo.imageUrl = action.payload;
         },
         setPreviousGroupsInfo: (state, action) => {

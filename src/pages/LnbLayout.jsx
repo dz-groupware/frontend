@@ -131,7 +131,7 @@ position: fixed;
 top: 130px;
 left: 250px;
 width: calc(100% - 250px);
-height: calc(100% - 130px);
+height: calc(100% - 50px);
 
 &.true {
   left: 250px;

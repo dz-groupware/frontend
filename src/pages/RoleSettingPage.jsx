@@ -8,6 +8,7 @@ import RoleModal from '../components/RoleSetting/RoleModal';
 import ActionButton from '../components/Commons/ActionButton';
 import { addAuthApi, updateAuthApi } from '../api/authgroup';
 import MgmtHeader from '../components/Commons/MgmtHeader';
+import LinkButton from '../components/Commons/LinkButton';
 
 export default function RoleSettingPage({pageId}) {
   const [refresh, setRefresh] = useState(false);

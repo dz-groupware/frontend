@@ -313,7 +313,8 @@ const Container = styled.div`
   margin-left: 20px;
   margin-top: 10px;
   border : 1.5px solid #CCCCCC;
-  `;
+  height: 330px;
+   `;
 
 const NumberOfEmployeesArea = styled.div`
   position: sticky;
@@ -331,7 +332,7 @@ const EmployeeListArea = styled.div`
 position: relative; 
 padding: 10px;
 padding-bottom: 50px;
-height: calc(450px - 40px - 50px);
+height: 200px;
 overflow-y: auto;
 background-color: #F9F9F9;
 border: none;
@@ -342,12 +343,12 @@ const EmployeeListPageNation = styled.div`
 display:flex;
 justify-content:center;
 position: absolute;
-bottom: 0;
 width: 100%;   // Container의 width와 동일하게 설정
 background-color: #FFFEFE;
 border-top: 1.5px solid #ECECEB ;
+
+
 padding : 10px;
-height:40px;
 
 `;
 

@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import StyledButton from './StyledButton';
+import {StyledButton} from './StyledButton';
 import { FiSearch } from "react-icons/fi";
 
 

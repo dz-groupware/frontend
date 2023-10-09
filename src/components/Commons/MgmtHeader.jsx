@@ -1,13 +1,13 @@
 // CommonHeader.js
-import React, { useState,useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from "styled-components";
 import { FiMonitor } from "react-icons/fi";
 import { GoVideo, GoChecklist } from "react-icons/go";
-import { AiOutlineQuestionCircle, AiOutlineStar } from "react-icons/ai"
+import { AiFillStar, AiOutlineStar } from "react-icons/ai"
 import { FavorApi } from '../../api/menu';
 
 
-export default function MgmtHeader({ title, extraButtonComponents , pageId}) {
+export default function MgmtHeader({ title, extraButtonComponents, pageId }) {
     const [favor, setFavor] = useState(false); // 초기 상태는 false (즐겨찾기 비활성화)로 설정
 
     // useEffect(() => {
@@ -19,37 +19,58 @@ export default function MgmtHeader({ title, extraButtonComponents , pageId}) {
     //     });
     // }, [pageId]);
 
-    const handleFavoriteToggle = () => {
-        // 현재 즐겨찾기 상태의 반대 값을 API에 전송
-        FavorApi(pageId, !favor).then(() => {
-            // API 호출 후 state를 업데이트
-            setFavor(!favor);
+
+    //페이지에서 즐겨찾기 가져오기
+    FavorApi(pageId, 'load').then(res => {
+        console.log(res.data.data);
+        if (res.data.data === 1) {
+            console.log('즐겨찾기 on')
+            setFavor(true);
+        }
+        if (res.data.data === 0) {
+            console.log('즐겨찾기 off')
+            setFavor(false);
+        } else {
+            console.log('즐겨찾기 에러')
+        }
+    });
+
+    // 즐겨찾기 추가/삭제 요청
+    function handleFavor() {
+        FavorApi(pageId, favor).then(res => {
+            console.log("favor", favor, " -> ", res.data.data);
+            if (res.data.data === 1) {
+                setFavor(!favor);
+            } else {
+                console.log('즐겨찾기 오류 : 강제 off')
+                setFavor(false);
+            }
         });
-    };
+    }
 
 
-   
 
     return (
         <div>
-        <Container>
-            <MgmtNameArea>
-                <Title>{title}관리</Title>
-                <Icon><FiMonitor /></Icon>
-                <Icon><GoVideo /></Icon>
-            </MgmtNameArea>
-            
-            <FavArea>
-                <ButtonArea>
-                    {extraButtonComponents}
-                </ButtonArea>
-                <Icon><AiOutlineQuestionCircle /></Icon>
-                <Icon><GoChecklist /></Icon>
-                <Icon onClick={handleFavoriteToggle}>
-                        <AiOutlineStar color={favor ? "gold" : "gray"} />
-                    </Icon>            </FavArea>
-        </Container>
-    </div>
+            <Container>
+                <MgmtNameArea>
+                    <Title>{title}</Title>
+                </MgmtNameArea>
+
+                <FavArea>
+                    <ButtonArea>
+                        {extraButtonComponents}
+                    </ButtonArea>
+                    
+                    
+                    <Icon>
+
+                        <div onClick={handleFavor}>{favor === true ? <AiFillStar /> : <AiOutlineStar />}</div>
+
+                    </Icon>
+                </FavArea>
+            </Container>
+        </div>
     );
 }
 const Container = styled.div`
@@ -58,28 +79,36 @@ const Container = styled.div`
     border-bottom : 2px solid black;
     margin-left: 10px;
     margin-right:10px;
+    height: 50px;
     
 `;
 
 const MgmtNameArea = styled.div`
     display: flex;
-   
+    justify-content: center;
+    align-items:center;
+ 
 `;
 
 const FavArea = styled.div`
     display: flex;
-    
 `;
 const ButtonArea = styled.div`
     display:flex;
 `
 const Title = styled.span`
-  font-size: 15px;
+  font-size: 20px;
   font-weight: 900;
   margin: 10px;
 `;
 
 const Icon = styled.div`
   margin: 10px;
+  > div > svg {
+    width: 20px;
+    height: 30px;
+    width: 30px;
+    color: rgb(252,214,80);
+  }
 `;
 

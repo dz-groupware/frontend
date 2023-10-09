@@ -27,7 +27,7 @@ export const StyledNotificationInfo = styled.div`
 display: flex;
 justify-content: left;
 align-items: center;
-margin: 10px;
+margin: 5px;
 
 padding: 20px;
 width: 97%;

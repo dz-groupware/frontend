@@ -314,7 +314,7 @@ const CompanyListArea = styled.div`
 position: relative; 
 border: 1px solid #CCCCCC;
 padding: 10px;
-height: calc(360px - 50px); 
+height: 350px;
 overflow-y: auto;
 background-color: #F5F5F5;
 border: none; // 이 부분을 추가

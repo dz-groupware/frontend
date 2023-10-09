@@ -56,3 +56,17 @@ export function searchOrg(pageId, type, text){
     }
   );
 };
+
+export function getProfilePage(pageNum){  
+  return axiosInstance.get(
+    `/modal/profiles`,{
+      params: {
+        pageNum,
+      }, 
+      headers: { 
+        'Content-Type': 'multipart/form-data',
+        'menuId': '0',
+      },
+    }
+  );
+};

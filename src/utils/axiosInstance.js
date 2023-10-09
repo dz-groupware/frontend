@@ -16,6 +16,10 @@ axiosInstance.interceptors.request.use(
     return config;
   },
   (err) => {
+    if (err.code && err.code === 'ERR_NETWORK') {
+      window.location.href='/ERR_NETWORK';
+      console.log('net error');
+    }
     console.log('request Error : ', err);
     //요청 에러 시 수행 로직
     if (err.response && err.response.status === 401) {
@@ -23,8 +27,9 @@ axiosInstance.interceptors.request.use(
     }
     if (err.response && err.response.status === 403) {
       throw new Error('FORBIDDEN');
+    } else {
+      return Promise.reject(err);
     }
-    return Promise.reject(err);
   }
 );
   
@@ -38,6 +43,10 @@ axiosInstance.interceptors.response.use(
     return { status, data };
   },
   (err) => {
+    if (err.code && err.code === 'ERR_NETWORK') {
+      window.location.href='/ERR_NETWORK';
+      console.log('net error');
+    }
     console.log('response Error : ', err);
     // 오류 응답의 상태 코드와 본문을 얻으려면 err.response.status와 err.response.data를 확인해야 합니다.
     if (err.response) {
@@ -45,8 +54,9 @@ axiosInstance.interceptors.response.use(
       const errorData = err.response.data;
 
       return Promise.reject({ status: errorStatus, data: errorData });
+    } else {
+      return Promise.reject(err);
     }
-    return Promise.reject(err);
   }
 );
 

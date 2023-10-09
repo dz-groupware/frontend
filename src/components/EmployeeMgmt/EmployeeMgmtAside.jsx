@@ -313,7 +313,7 @@ const Container = styled.div`
   margin-left: 20px;
   margin-top: 10px;
   border : 1.5px solid #CCCCCC;
-  height: 330px;
+  height: 480px;
    `;
 
 const NumberOfEmployeesArea = styled.div`
@@ -332,7 +332,7 @@ const EmployeeListArea = styled.div`
 position: relative; 
 padding: 10px;
 padding-bottom: 50px;
-height: 200px;
+height: 350px;
 overflow-y: auto;
 background-color: #F9F9F9;
 border: none;

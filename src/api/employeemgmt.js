@@ -64,10 +64,10 @@ export const getEmployeeDetailsById = async (employeeMgmtId,pageId) => {
 };
 
 
-export const getAllDepartmentMgmtList = async (pageId) => {
+export const getAllDepartmentMgmtList = async (pageId,companyId) => {
   try {
     axiosInstance.defaults.headers['menuId'] = pageId;
-    const response = await axiosInstance.get('/employeemgmt/dep');
+    const response = await axiosInstance.get(`/employeemgmt/dep/${companyId}`);
     return response.data.data;
   } catch (error) {
     console.error("Error fetching company data:", error);
@@ -203,3 +203,13 @@ export const imageUpload = async (imageFile, pageId) => {
   }
 }
 
+export const checkIfCompanyHasCEO = async (companyId, pageId) => {
+  try {
+    axiosInstance.defaults.headers['menuId'] = pageId;
+    const response = await axiosInstance.post(`/employeemgmt/${companyId}/hasCEO`);
+    return response.data.data;
+  } catch (error) {
+    console.error("Error HasCEOApi", error);
+    throw error;
+  }
+};

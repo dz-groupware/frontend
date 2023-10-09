@@ -2,6 +2,11 @@ import { createGlobalStyle } from 'styled-components';
 import reset from 'styled-reset';
 
 const GlobalStyle = createGlobalStyle`
+@font-face {
+  font-family: 'NanumGothic';
+  src: url('./assets/fonts/NanumGothic.ttf') format('truetype');
+}
+
 ${reset}
 *, *::before, *::after {
   box-sizing: border-box;
@@ -9,14 +14,11 @@ ${reset}
   padding: 0;
 }
 body {
-  font-family:  'Noto Sans','Gothic A1',  sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-family:  'NanumGothic', 'Noto Sans','Gothic A1',  sans-serif;
 }
-h1 {
-  font-family: 'Noto Sans Bold' ,  sans-serif;
-}
-p {
-  font-family: 'Gothic A1', 'Roboto Mono',   sans-serif;
-}
+
 `;
 
 export default GlobalStyle;

@@ -1,10 +1,12 @@
 import styled from 'styled-components';
 import { AiFillStar, AiOutlineStar } from 'react-icons/ai';
+import { ButtonTitle } from '../../common/styles/Button';
 
-export default function TitleBtn({ favor, handleFavor, detail, setDetail }){
+export default function TitleBtn({ favor, handleFavor, detail, setDetail, disabled }){
   return(
     <BtnContent>
-      <button onClick={() => {setDetail({...detail, id: 0, state:'add'})}}>추가</button>
+      <ButtonTitle className={`${disabled ? 'disabled' : 'able'}`} onClick={() => {setDetail({...detail, id: 0, state:'add'})}}>추가</ButtonTitle>
+      <div><Pipe /></div>
       <div onClick={handleFavor}>{favor === true ? <AiFillStar /> : <AiOutlineStar/>}</div>
     </BtnContent>
   );
@@ -12,15 +14,23 @@ export default function TitleBtn({ favor, handleFavor, detail, setDetail }){
 
 const BtnContent = styled.div`
 display: flex;
-margin-top: 5px;
+margin-top: 10px;
 > * {
-  height: 30px;
   margin: 5px;
 }
-> svg {
-  margin-top: 10px;
+> div > svg {
+  margin: 5px 10px 0 0;
   width: 20px;
-  height: 20px;
-  color: gray;
+  height: 30px;
+  width: 30px;
+  /* color: rgb(255,231,147); */
+  color: rgb(252,214,80);
 }
+`;
+
+const Pipe = styled.div`
+width: 2px;
+height: 60%;
+background-color: #1d2437;
+margin: 10px 0 0 0;
 `;

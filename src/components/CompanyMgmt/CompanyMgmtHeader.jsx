@@ -9,7 +9,7 @@ export default function CompanyMgmtHeader({pageId}) {
 
     return (
         <div>
-            <MgmtHeader title="회사"  pageId={pageId} />
+            <MgmtHeader title="회사관리"  pageId={pageId} />
             {/* Other components */}
         </div>
     );

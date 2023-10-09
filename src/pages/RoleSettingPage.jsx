@@ -7,7 +7,7 @@ import { PiCalendarCheck, PiStarBold } from 'react-icons/pi'
 import RoleModal from '../components/RoleSetting/RoleModal';
 import ActionButton from '../components/Commons/ActionButton';
 import { addAuthApi, updateAuthApi } from '../api/authgroup';
-import LinkButton from '../components/Commons/LinkButton';
+import MgmtHeader from '../components/Commons/MgmtHeader';
 
 export default function RoleSettingPage({pageId}) {
   const [refresh, setRefresh] = useState(false);
@@ -32,19 +32,10 @@ export default function RoleSettingPage({pageId}) {
 
   return (
     <Container>
-      <TopContainer>
-        <TitleAndIconContainer>
-          <h1>권한Role설정</h1>
-          {/* <IconWrapper>
-            <MdDisplaySettings fontSize={20} color='#939393'/>
-          </IconWrapper>
-          <IconWrapper>
-            <MdSmartDisplay fontSize={20} color='#939393'/>
-          </IconWrapper>
-          <IconWrapper>
-            <MdOutlineMapsUgc fontSize={20} color='#939393'/>
-          </IconWrapper> */}
-        </TitleAndIconContainer>
+ 
+        <MgmtHeader title="권한설정" pageId={pageId} extraButtonComponents={
+        
+        <ButtonArea>
         <ActionsContainer>
           <ActionButton 
             width={'3rem'}
@@ -73,13 +64,18 @@ export default function RoleSettingPage({pageId}) {
                 }}
               />
             )}
-          <VerticalLine/>
-          {/* <PiCalendarCheck fontSize={26} color='C9C9C9'/> */}
-          <PiStarBold fontSize={26} color='C9C9C9'/>
+          
         </ActionsContainer>
         <RoleModal isOpen={openCreateModal} onClose={() => setOpenCreateModal(false)} changeRefresh={changeRefresh} setActiveAuthId={setActiveAuthId} apiFunction={addAuthApi} headers={{pageId}}/>
         <RoleModal isOpen={openModifyModal} onClose={() => setOpenModifyModal(false)} modifyMode={true} changeRefresh={changeRefresh} activeAuthId={activeAuthId} setActiveAuthId={setActiveAuthId} apiFunction={updateAuthApi} headers={{pageId}}/>
-      </TopContainer>
+        <span style={{ height: '24px', borderRight: '2px solid lightgrey', marginLeft: '10px', marginRight: '5px' }} />
+           
+           </ButtonArea>   
+              }>
+      
+        </MgmtHeader>
+       
+      
       <Line color="#f5f5f5" height="2px" bottom={"20px"}/>
       <div style={{  marginLeft: "1.2rem" }} >
         <LinkButton
@@ -154,4 +150,10 @@ const VerticalLine = styled.div`
   width: 1px;
   background-color: #C9C9C9; 
   margin: 0 10px;
+`;
+
+const ButtonArea = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;

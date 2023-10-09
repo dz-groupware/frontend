@@ -238,12 +238,14 @@ export default function EmployeeMgmtAside({ pageId }) {
         >
           전체
         </FilterButton>
+        <Divider>|</Divider>
         <FilterButton
           onClick={() => setSelectedFilter("재직자")}
           $isActive={selectedFilter === "재직자"}
         >
           재직자
         </FilterButton>
+        <Divider>|</Divider>
         <FilterButton
           onClick={() => setSelectedFilter("퇴사자")}
           $isActive={selectedFilter === "퇴사자"}
@@ -311,7 +313,8 @@ const Container = styled.div`
   margin-left: 20px;
   margin-top: 10px;
   border : 1.5px solid #CCCCCC;
-  `;
+  height: 330px;
+   `;
 
 const NumberOfEmployeesArea = styled.div`
   position: sticky;
@@ -329,7 +332,7 @@ const EmployeeListArea = styled.div`
 position: relative; 
 padding: 10px;
 padding-bottom: 50px;
-height: calc(450px - 40px - 50px);
+height: 200px;
 overflow-y: auto;
 background-color: #F9F9F9;
 border: none;
@@ -340,12 +343,12 @@ const EmployeeListPageNation = styled.div`
 display:flex;
 justify-content:center;
 position: absolute;
-bottom: 0;
 width: 100%;   // Container의 width와 동일하게 설정
 background-color: #FFFEFE;
 border-top: 1.5px solid #ECECEB ;
+
+
 padding : 10px;
-height:40px;
 
 `;
 

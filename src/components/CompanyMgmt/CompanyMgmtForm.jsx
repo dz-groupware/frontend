@@ -13,7 +13,7 @@ import {
     Select
 } from '../Commons/StyledForm';
 import { companyActions } from '../../utils/Slice';
-import { addCompanyMgmt, getAllCompanyMgmtParList, modifyCompanyMgmt } from '../../api/companymgmt';
+import { addCompanyMgmt, getCompanyMgmtList, modifyCompanyMgmt } from '../../api/companymgmt';
 
 export default function CompanyMgmtForm({ pageId }) {
     const dispatch = useDispatch();
@@ -22,11 +22,7 @@ export default function CompanyMgmtForm({ pageId }) {
     const idForForm = useSelector(state => state.companyMgmt.idForForm);
     const [companyOptions, setCompanyOptions] = useState([]); // 회사 옵션을 담을 상태
     const [info, setInfo] = useState(reduxCompanyInfo);
-    const [datesEnabled, setDatesEnabled] = useState({
-        establishmentDate: true,
-        openingDate: false,
-        closingDate: false
-    });
+
 
     useEffect(() => {
         setInfo(reduxCompanyInfo);
@@ -34,7 +30,7 @@ export default function CompanyMgmtForm({ pageId }) {
 
     const fetchCompanyOptions = async () => {
         try {
-            const companyList = await getAllCompanyMgmtParList(pageId);
+            const companyList = await getCompanyMgmtList(pageId);
             setCompanyOptions(companyList);
         } catch (error) {
             console.error("Error fetching company data:", error);
@@ -110,18 +106,25 @@ export default function CompanyMgmtForm({ pageId }) {
             }));
         }
 
+
+
         else if (name === "businessNum") {
-            // Add hyphen for businessNum
-            if (formattedValue.length >= 3 && formattedValue.length <= 5) {
-                formattedValue = `${formattedValue.slice(0, 3)}-${formattedValue.slice(3)}`;
-            } else if (formattedValue.length > 5) {
-                formattedValue = `${formattedValue.slice(0, 3)}-${formattedValue.slice(3, 5)}-${formattedValue.slice(5)}`;
+            const rawValue = formattedValue.replace(/\D/g, ''); // Remove all non-numeric characters
+
+            if (rawValue.length <= 3) {
+                formattedValue = rawValue;
+            } else if (rawValue.length <= 5) {
+                formattedValue = `${rawValue.slice(0, 3)}-${rawValue.slice(3)}`;
+            } else {
+                formattedValue = `${rawValue.slice(0, 3)}-${rawValue.slice(3, 5)}-${rawValue.slice(5)}`;
             }
+
             setInfo(prev => ({
                 ...prev,
                 businessNum: formattedValue
             }));
         }
+
 
 
     };

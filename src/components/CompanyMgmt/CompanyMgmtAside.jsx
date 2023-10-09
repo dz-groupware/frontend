@@ -146,21 +146,21 @@ export default function CompanyMgmtAside({ pageId }) {
       <FilterSection>
         <FilterButton
           onClick={() => setSelectedFilter("전체")}
-          active={selectedFilter === "전체"}
+          $isActive={selectedFilter === "전체"}
         >
           전체
         </FilterButton>
         <Divider>|</Divider>
         <FilterButton
           onClick={() => setSelectedFilter("개업")}
-          active={selectedFilter === "개업"}
+          $isActive={selectedFilter === "개업"}
         >
           개업
         </FilterButton>
         <Divider>|</Divider>
         <FilterButton
           onClick={() => setSelectedFilter("폐업")}
-          active={selectedFilter === "폐업"}
+          $isActive={selectedFilter === "폐업"}
         >
           폐업
         </FilterButton>
@@ -314,7 +314,7 @@ const CompanyListArea = styled.div`
 position: relative; 
 border: 1px solid #CCCCCC;
 padding: 10px;
-height: calc(360px - 50px); 
+height: 350px;
 overflow-y: auto;
 background-color: #F5F5F5;
 border: none; // 이 부분을 추가
@@ -392,8 +392,8 @@ const FilterButton = styled.button`
   margin: 5px;
   font-weight: bold;  
   font-size: 16px; 
-  color: ${props => props.active ? '#308EFC' : 'grey'};  // 활성화된 탭은 색을 변경
-  border-bottom: ${props => props.active ? '2px solid #308EFC' : 'none'}; // 활성화된 탭에는 밑줄 표시
+  color: ${props => props.$isActive ? '#308EFC' : 'grey'};  // 활성화된 탭은 색을 변경
+  border-bottom: ${props => props.$isActive ? '2px solid #308EFC' : 'none'}; // 활성화된 탭에는 밑줄 표시
 
   &:hover {
     background-color: #EFEFEF;

@@ -2,12 +2,13 @@ import styled from 'styled-components';
 
 import { IoCallOutline } from 'react-icons/io5';
 
-export default function EmpList(props){
+export default function EmpList({ value, handler, clickedEmp, setClickedEmp }){
   return (
     <ListDiv>
     {
-      props.value.map ((a, i) => (
-        <EmpItem onClick={()=>{props.handler(a)}} key={a['empName']+i+a['compName']}>
+      value.map ((a, i) => (
+        <EmpItem className={(clickedEmp === a['deptName']+a['empName']) ? 'true' : 'false'}
+         onClick={()=>{handler(a)}} key={a['empName']+i+a['compName']}>
           <div>
             <img src={a['imageUrl']} alt='p_img' />
           </div>
@@ -69,6 +70,11 @@ z-index: 2;
     }    
   }
 }
+&.true {
+  background-color: rgb(214,236,248);
+  border: 1px solid rgb(146,183,214);
+  border-radius: 5px;
+}
 `;
 export const ListDiv = styled.div`
 width: 450px;
@@ -76,7 +82,7 @@ height: 100%;
 margin: 5px;
 overflow: scroll;
 height: 100%;
-background-color: rgb(240, 245, 248);
+background-color: #f2f3f6;
 &::-webkit-scrollbar {
     display: none;
 }

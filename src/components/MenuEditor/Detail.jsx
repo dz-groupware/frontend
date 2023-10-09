@@ -8,6 +8,7 @@ import { MdOutlineRefresh } from 'react-icons/md';
 import { saveMenuAPI, deleteMenuApi, deleteMenuLnbApi, saveIconAPI } from '../../api/menu';
 import IconImageList from './IconImageList';
 import MenuTree from './MenuTree';
+import { ButtonBright, ButtonBlue } from '../../common/styles/Button';
 
 export function GnbDetail({ pageId, value, detailOff, on, setReRender }) {
 
@@ -27,6 +28,7 @@ export function GnbDetail({ pageId, value, detailOff, on, setReRender }) {
   const [newIconFile, setNewIconFile] = useState("");
   const [newIconUrl, setNewIconUrl] = useState("");
 
+  const [iconRender, setIconRender] = useState(true);
   const path = 'https://dz-test-image.s3.ap-northeast-2.amazonaws.com/';
   const prefix = 'icon/';
 
@@ -123,17 +125,15 @@ export function GnbDetail({ pageId, value, detailOff, on, setReRender }) {
     setDetail({ ...detail, enabledYn: e.target.value === "true"});
   };
 
-  console.log('detail : ', detail);
-
   return (
     on &&
     <DetailDiv>
       <DetailTitle> 
-        <span>•대메뉴 정보</span>
+        <p>•대메뉴 정보</p>
         <div>
-          <div onClick={deleteMenu}>삭제</div>
-          <div onClick={updateMenu}>저장</div>
-          <hr /> 
+          <ButtonBlue onClick={updateMenu}>저장</ButtonBlue>
+          <ButtonBright onClick={deleteMenu}>삭제</ButtonBright>
+          <Pipe />
           <span onClick={detailOff}>X</span>
         </div>
       </DetailTitle>
@@ -183,7 +183,7 @@ export function GnbDetail({ pageId, value, detailOff, on, setReRender }) {
             </td>
           </tr>
           <tr>
-            <td>아이콘(48*44)<MdOutlineRefresh /></td>
+            <td>아이콘(48*44)<MdOutlineRefresh onClick={() => {setIconRender(true)}}/></td>
           <td>
             <DnDBox
             onDragEnter={onDragEnter} 
@@ -209,14 +209,15 @@ export function GnbDetail({ pageId, value, detailOff, on, setReRender }) {
                     }}/>
                 </label>
               </div>
-              <hr/>
               <IconImageList 
               pageId={pageId}
               newIconFile={newIconFile} 
               newIconUrl={newIconUrl}
               iconUrl={detail.iconUrl}
               detail={detail} 
-              setDetail={setDetail}/>
+              setDetail={setDetail}
+              iconRender={iconRender} 
+              setIconRender={setIconRender} />
             </DnDBox>
           </td>
         </tr>
@@ -244,7 +245,6 @@ export function MenuDetail({ pageId, value, detailOff, on, setReRender, page }) 
   const [detail, setDetail] = useState(initValue);  
   const [modalOn, setModalOn] = useState(false);
 
-  console.log('detail : ', detail);
   const updateMenu = async () => {
     const menu = new FormData();
     try {
@@ -290,11 +290,11 @@ export function MenuDetail({ pageId, value, detailOff, on, setReRender, page }) 
     on &&
     <DetailDiv>
       <DetailTitle> 
-        <span>•메뉴 정보</span>
+        <p>•메뉴 정보</p>
         <div>
-          <button onClick={deleteMenu}>삭제</button>
-          <button onClick={updateMenu}>저장</button>
-          <hr /> 
+          <ButtonBlue onClick={updateMenu}>저장</ButtonBlue>
+          <ButtonBright onClick={deleteMenu}>삭제</ButtonBright>
+          <Pipe />
           <span onClick={detailOff}>X</span>
         </div>
       </DetailTitle>
@@ -375,33 +375,26 @@ export function MenuDetail({ pageId, value, detailOff, on, setReRender, page }) 
 }
 
 export const DetailDiv = styled.div`
-margin: 10px;
+margin: 10px 10px 15px 10px;
 color: black;
 min-width: 450px;
-width: calc(100% - 700px);
+width: calc(100% - 710px);
 height: calc(100% - 151px);
-> div {
-  > span {
-    font-weight: bold;
-    margin-bottom: 10px;
-    }
-    > div > * {
-      margin: 5px;
-      height: 20px;
-    }
-  }
 
 > table {
   border-top: 2px solid black;
   border-collapse: collapse;
-  height: calc(100% - 30px);
+  height: calc(100% - 35px);
   width: 100%;
-    
-  > tbody{
+  box-shadow: inset 1px 1px 1px 0px rgba(255,255,255,.3),
+            3px 3px 3px 0px rgba(0,0,0,.1),
+            1px 1px 3px 0px rgba(0,0,0,.1);
+            outline: none;
+  > tbody {
     > tr {  
-      border-bottom: 1px solid rgb(171,172,178);
+      border-bottom: 1px solid #1d2437;
       > td:nth-child(1) {
-        background-color: rgb(240,245,248);
+        background-color: #f2f3f6;
       font-weight: bold;
       text-align: right;
       padding-right: 10px;
@@ -412,6 +405,7 @@ height: calc(100% - 151px);
         margin: 10px;
         display: flex;
         > input {
+          padding-left: 5px;
           width: 100%;
           height: 25px;
         }   
@@ -425,6 +419,16 @@ height: calc(100% - 151px);
             margin: 5px;
           }
         }  
+        > textarea {
+          padding-left: 5px;
+          width: 100%;
+          height: 25px;
+        }
+        > select {
+          padding-left: 5px;
+          width: 100%;
+          height: 25px;
+        }
       }
       > td {
         > .readOnly{
@@ -432,7 +436,7 @@ height: calc(100% - 151px);
         }
       }
     }
-    > :nth-child(4) {
+    > :nth-child(5) {
       height: 100%;
     }
   }
@@ -442,20 +446,34 @@ height: calc(100% - 151px);
 export const DetailTitle = styled.div`
 display: flex;
 justify-content: space-between;
+font-weight: bold;
+> p {
+  margin-top: 10px;
+  font-size: large;
+  font-weight: 500;
+}
 > div {
   display: flex;
+  height: 35px;
+  font-weight: bold;
+  > * {
+    margin: 5px ;
+
+    & span {
+      margin-top: 10px;
+    }
+  }
 }
 `;
 
 const DnDBox = styled.div`
-width: 400px;
-height: 200px;
+width: 100%;
+height: 100%;
         
 > div {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
-  margin: 5px;
   width: 100%;
 
   > img {
@@ -463,14 +481,15 @@ height: 200px;
     height: 40px;
     padding : 5px;
     margin: 5px;
-    border: 1px solid rgb(171,172,178);
+    border: 1px solid #f2f3f6;
   }
 
   > textarea {
-    border: 1px solid rgb(171,172,178);
-    width: calc(100% - 30px);
+    padding-left: 5px;
+    border: 1px solid #1d2437;
+    width: calc(100% - 35px);
     height: 25px;
-    color: rgb(171,172,178);
+    color: #1d2437;
     font-weight: bold;
     font-size: small;
     padding-top: 4px;  
@@ -478,6 +497,7 @@ height: 200px;
 
   > label {
     > svg {
+      margin-left: 5px;
     width: 30px;
     height: 30px;
     }
@@ -487,4 +507,11 @@ height: 200px;
     }
   }
 }
+`;
+
+const Pipe = styled.div`
+width: 2px;
+height: 60%;
+background-color: black;
+margin: 5px 10px 5px 10px;
 `;

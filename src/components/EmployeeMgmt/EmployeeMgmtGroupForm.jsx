@@ -291,7 +291,7 @@ console.log("dlvmans ehsl");
 
         </EmployeeMgmtGroupInputForm>
       ))}
-      <StyledButton onClick={addNewGroup}>소속 부서 추가</StyledButton>
+      <AddButton onClick={addNewGroup}>소속 부서 추가</AddButton>
     </StyledContainer>
   
   );
@@ -304,14 +304,15 @@ const StyledContainer = styled.div`
     flex-direction: column;
     align-items: center;
     overflow-y: auto;
-   height:  300px;
+   height:  450px;
 `;
 
 const EmployeeMgmtGroupInputForm = styled.div`
-      border-top: 2px solid black;
+      border-top: 2px solid gray;
       margin-top: 10px;
       width: 99%;
       background-color: white;
+      
     `;
 
 const CloseButton = styled(StyledButton)`
@@ -320,4 +321,13 @@ const CloseButton = styled(StyledButton)`
    
   `;
 
+  const AddButton = styled(StyledButton)`
+  margin-top: 20px;
+  cursor: pointer;
+  font-size: 15px;
+  box-shadow: inset 1px 1px 1px 0px rgba(255,255,255,.3),
+  3px 3px 3px 0px rgba(0,0,0,.1),
+  1px 1px 3px 0px rgba(0,0,0,.1);
+  outline: none;
  
+`;

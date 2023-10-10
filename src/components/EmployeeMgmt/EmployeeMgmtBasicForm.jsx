@@ -16,10 +16,10 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { employeeActions } from '../../utils/Slice';
-import {StyledButton} from '../Commons/StyledButton';
 import { MdOutlineAttachFile } from 'react-icons/md';
 import { BsPersonBoundingBox } from 'react-icons/bs';
 import { checkDuplicates, checkLoginId, checkSignUp, getEmployeeDetailsById } from '../../api/employeemgmt';
+import { StyledButton } from '../Commons/StyledButton';
 
 
 export default function EmployeeMgmtBasicForm({ pageId }) {

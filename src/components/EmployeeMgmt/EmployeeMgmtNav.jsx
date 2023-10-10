@@ -79,13 +79,13 @@ const handleKeyDown  = (e) => {
     </>
   );
   return (
-    <div>
+    <Container>
 
       <MgmtNav onSearch={handleSearch}>
         {searchFields}
       </MgmtNav>
 
-    </div >
+    </Container >
   );
 }
 
@@ -103,4 +103,9 @@ const Select = styled.select`
 
 const Input = styled.input`
   margin: 10px;
+`;
+const Container = styled.div`
+  display: flex;
+  justify-content: center;  // 가로 중앙 정렬
+
 `;

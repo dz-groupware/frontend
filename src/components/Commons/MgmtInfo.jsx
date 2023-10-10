@@ -17,7 +17,7 @@ return (
             <ButtonBlue onClick={onSubmit} type="button">저장</ButtonBlue>
 
             <ButtonBright onClick={onDelete}>삭제</ButtonBright>
-            <RxCross1 style = {{cursor : "pointer"}} onClick={() => dispatch(hideFormAction())}  />
+            <RxCross1 style = {{cursor : "pointer", margin: "5px"}} onClick={() => dispatch(hideFormAction())}  />
         </ButtonArea>
     </Container>
 );

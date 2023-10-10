@@ -6,7 +6,7 @@ import { useFetchData } from "../../../hooks/useFetchData";
 import { DepartmentTreeBox } from "./DepartmentTreeBox";
 import EmployeeBox from "./EmployeeBox";
 
-export default function CompanyTreeBox({ refresh, item, depth = 0, companyId, activeEmp, handleEmpClick, headers, isEditMode, is }) {
+export default function CompanyTreeBox({superParentCompId, refresh, item, depth = 0, companyId, activeEmp, handleEmpClick, headers, isEditMode, is }) {
   const [expanded, setExpanded] = useState(false);
   const { data: companyItemList, setShouldFetch: setCompanyFetch, isLoading: companyLoading, error } = useFetchData(getSubsidiaryCompaniesWithEmployeeCountApi, { paths: { companyId }, shouldFetch: false, headers });
   const { data: parDepartmentInfoList, isLoading: departmentLoading, error: departmentError, setShouldFetch: setDepartmentFetch } = useFetchData(getParDepartmentsWithEmployeeCountApi, { paths: { companyId }, shouldFetch: false, headers });
@@ -55,7 +55,11 @@ export default function CompanyTreeBox({ refresh, item, depth = 0, companyId, ac
       <NameBar $depth={depth} onClick={toggleSubCompany}>
         {item.childNodeYn ? (
           <>
-            <div style={{ width: '1em' }}></div>
+              <div style={{ width: '1em' }} >
+                {item.employeeCount > 0 ? (expanded ? <VscChevronDown style={{ fontWeight: 'bold' }} /> : <VscChevronRight style={{ fontWeight: 'bold' }} />)
+                  : null
+                }
+              </div>
             {depth === 0 ? <img src="/img/comp/comp_48.png" width={22} alt="example" /> : <img src="/img/comp/branch_48.png" width={22} alt="example" />}
           </>
         ) : (
@@ -70,10 +74,11 @@ export default function CompanyTreeBox({ refresh, item, depth = 0, companyId, ac
         )}
         <p>{item.companyName} ({item.employeeCount})</p>
       </NameBar>
-      {expanded && companyItemList.length > 0 && (
+      {/* {expanded && companyItemList.length > 0 && (
         <>
           {companyItemList.map((subItem) => (
             <CompanyTreeBox
+              superParentCompId={superParentCompId}
               refresh={refresh}
               key={"c-" + subItem.companyId}
               depth={depth + 1}
@@ -86,11 +91,12 @@ export default function CompanyTreeBox({ refresh, item, depth = 0, companyId, ac
             />
           ))}
         </>
-      )}
+      )} */}
       {expanded && item.hasDepartment && (
         <>
           {parDepartmentInfoList.map((subItem) => (
             <DepartmentTreeBox
+              superParentCompId={superParentCompId}
               refresh={refresh}
               key={"d-" + subItem.departmentId}
               item={subItem}
@@ -115,7 +121,7 @@ export default function CompanyTreeBox({ refresh, item, depth = 0, companyId, ac
               position={subItem.empPosition}
               masterYn={subItem.empMasterYn}
               activeEmp={activeEmp}
-              onClick={() => handleEmpClick({ id: subItem.empId, masterYn: subItem.empMasterYn })}
+              onClick={() => handleEmpClick({ id: subItem.empId, compId: companyId, masterYn: subItem.empMasterYn }, superParentCompId)}
               depth={depth + 1}
               isEditMode={isEditMode}
             />

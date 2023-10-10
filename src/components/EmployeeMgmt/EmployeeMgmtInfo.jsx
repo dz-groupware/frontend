@@ -164,6 +164,8 @@ export default function EmployeeMgmtInfo({ pageId }) {
                 }
             });
 
+    
+
             if (employeeInfo.privEmail && !employeeInfo.privEmail.includes('@')) {
                 console.log('privEmail:', employeeInfo.privEmail);
                 alert("이메일에 도메인이 포함되어야 합니다.");

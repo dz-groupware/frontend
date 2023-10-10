@@ -30,7 +30,6 @@ export default function GNB({ gnb, favor }){
           <AiOutlineMenu onClick={() => {setMenuOn([true, false]);}} />
           <AiOutlineStar onClick={() => {setMenuOn([false, true]);}} />
         </TopIconArea>
-        <hr />
         <MenuList gnb={gnb}/>
       </GNBMenuArea>
       <GNBFavArea id='gnbFav' className={`main ${menuOn[1]} ? 'true' : 'false'}`}>
@@ -38,7 +37,6 @@ export default function GNB({ gnb, favor }){
           <AiOutlineMenu onClick={() => {setMenuOn([true, false]);}} />
           <AiOutlineStar onClick={() => {setMenuOn([false, true]);}} />
         </TopIconArea>
-        <hr />
         <FavList favor={favor} />
       </GNBFavArea>
     </>
@@ -47,7 +45,7 @@ export default function GNB({ gnb, favor }){
 
 export const GNBIconArea = styled.div`
 display:block;
-width:50px;
+width: 45px;
 height: 100%;
 background-color:rgb(66,71,84);
 color:rgb(181,194,200);
@@ -56,52 +54,42 @@ overflow : scroll;
 &::-webkit-scrollbar{
   display: none;
 }
-
 > svg {
   width:35px;
   height:35px;
-  margin: 7px;  
-  margin-top: 15px;
+  margin: 15px 7px 7px 7px;  
+  cursor: pointer;
 }
-
 > a {
   text-decoration: none;
-
   > img {
     position: relative;
     width:30px;
     height:30px;
-    margin:10px;
-    margin-top: 20px;
+    margin: 20px 7px 5px 7px;
   }
 }
 `;
 export const GNBMenuArea = styled.div`
 padding-top: 10px;
-padding-left: 10px;
 position: absolute;
-margin-left: 50px;
+margin-left: 45px;
 width: 200px;
 height: 100%;
 background-color: rgb(66,71,84);
 color:rgb(181,194,200);
 cursor: pointer;
-
 overflow: hidden;
-
 &.false {
   left: -300px;
   top: 0;
   opacity: 0;
-
   transition: left 2s;
 }
-
 &.true {
   left:0px;
   opacity:1;
 }
-
 > a {
   color:rgb(181,194,200);
   list-style: none;
@@ -112,28 +100,23 @@ overflow: hidden;
 `;
 export const GNBFavArea = styled.div`
 padding-top: 10px;
-padding-left: 10px;
 position: absolute;
-margin-left: 50px;
+margin-left: 45px;
 width: 200px;
 height: 100%;
 background-color: rgb(66,71,84);
 color:rgb(181,194,200);
 cursor: pointer;
-
 overflow: hidden;
-
   &.false {
     left: -300px;
     top: 0;
     opacity: 0;
   }
-  
   &.true {
     left:0px;
     opacity:1;
   }
-
   > div > img {
     width: 30px;
     height: 30px;
@@ -144,7 +127,7 @@ overflow: hidden;
 `;
 export const TopIconArea = styled.div`
 display: flex;
-
+border-bottom: 2px solid rgb(181,194,200);
 > * {
   width: 30px;
   height: 30px;
@@ -152,5 +135,6 @@ display: flex;
   margin-right: 10px;
   margin-top: 9px;
   margin-bottom: 10px;
+  cursor: pointer;
 } 
 `;

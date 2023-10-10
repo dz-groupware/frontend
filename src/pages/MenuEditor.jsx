@@ -14,19 +14,68 @@ export default function MenuEditor({ pageId }){
   const [gnbList, setGnbList] = useState([]);
   const [result, setResult] = useState([]);
   const [page, setPage] = useState([]);
-
   const [favor, setFavor] = useState(false);
   const [reRender, setReRender] = useState(true);
+  const [clicked, setClicked] = useState('');
+  const [error, setError] = useState({
+    gnb: false,
+    pageOption: false,
+  });
 
   const [detail, setDetail] = useState([false, false]);
   const [menuDetail, setMenuDetail] = useState("");
 
-  const [clicked, setClicked] = useState('');
-  const [error, setError] = useState({
-    gnb: false,
-  });
+  // 대메뉴/메뉴 디테일 on/off
+  const menuDetailHandler = (type, detail) => {
+    if (detail === ""){
+      detail = JSON.parse('{ }');
+    }
+    if (type === 'newGnb') {
+      setDetail([1, false]);
+      setMenuDetail({ id: 0, name: '', enabledYn: true, sortOrder: 0, iconUrl: 'default.png' });
+    }
+    if (type === 'newMenu') {
+      setDetail([false, 1]);
+      setMenuDetail({ enabledYn: true, id: 0, name: "", parId: 0, sortOrder: 0 });
+    }
+    if (type === 'gnbDetail') {
+      setDetail([2, false]);
+      setMenuDetail(detail);
+    }
+    if (type === 'menuDetail') {
+      setDetail([false, 2]);
+      setMenuDetail(detail);
+    }
+  };
 
-  console.log(pageId, 'faovr: ', favor);
+  // X 버튼
+  const detailOff = () => {
+    setDetail([false, false]);
+  };
+
+  // 메뉴 검색 결과
+  const searchHandler = (event) => {
+    if(event !== undefined){
+      event.preventDefault();
+    }
+    const formData = new FormData(document.getElementById('searchForm'));
+    searchAPI(pageId, formData).then(res => {
+      setResult(res.data.data);
+    });
+  };
+
+  // 즐겨찾기 추가/삭제 요청
+  const FavorHandler = () => {
+    FavorApi(pageId, favor).then(res => {
+      console.log("favor", favor, " -> ", res.data.data);
+      if(res.data.data === 1) {
+        setFavor(!favor);
+      }else {
+        console.log('즐겨찾기 오류 : 강제 off')
+        setFavor(false);
+      }
+    });
+  };
 
   useEffect(() => {
     console.log('reRender');
@@ -53,66 +102,20 @@ export default function MenuEditor({ pageId }){
           console.log('즐겨찾기 에러')
         }  
       });
-      PageListApi(pageId).then(res => {setPage(res.data.data)});
-      searchHandler();
+      PageListApi(pageId).then(res => {
+        if (Array.isArray(res.data.data)) {
+          setPage(res.data.data);
+        } else {
+          setError({ ...detail, pageOption: true });
+        }});
+      // const formData = new FormData(document.getElementById('searchForm'));
+      //   searchAPI(pageId, formData)
+      // 일단 검색 결과는 저장시에 다시 렌더링 되게 하는거 제외시킴 
+      // 한다면 기본 검색 설정에서는 리렌더링 안 시킬 예정
     }
     setReRender(false);
   // }, [pageId, reRender]);
-}, [reRender]);
-
-  // 대메뉴/메뉴 디테일 on/off
-  function menuDetailHandler(type, detail){
-    if (detail === ""){
-      detail = JSON.parse('{ }');
-    }
-    if (type === 'newGnb') {
-      setDetail([1, false]);
-      setMenuDetail({ id: 0, name: '', enabledYn: true, sortOrder: 0, iconUrl: 'default.png' });
-    }
-    if (type === 'newMenu') {
-      setDetail([false, 1]);
-      setMenuDetail({ enabledYn: true, id: 0, name: "", parId: 0, sortOrder: 0 });
-    }
-    if (type === 'gnbDetail') {
-      setDetail([2, false]);
-      setMenuDetail(detail);
-    }
-    if (type === 'menuDetail') {
-      setDetail([false, 2]);
-      setMenuDetail(detail);
-    }
-  }
-
-  // X 버튼
-  const detailOff = () =>{
-    setDetail([false, false]);
-  }
-
-  // 메뉴 검색 결과
-  function searchHandler(event){
-    if(event !== undefined){
-      event.preventDefault();
-    }
-    const formData = new FormData(document.getElementById('searchForm'));
-    console.log(formData.get("gnbName"))
-    searchAPI(pageId, formData).then(res => {
-      
-      setResult(res.data.data);
-    });
-  }
-
-  // 즐겨찾기 추가/삭제 요청
-  function FavorHandler(){
-    FavorApi(pageId, favor).then(res => {
-      console.log("favor", favor, " -> ", res.data.data);
-      if(res.data.data === 1) {
-        setFavor(!favor);
-      }else {
-        console.log('즐겨찾기 오류 : 강제 off')
-        setFavor(false);
-      }
-    });
-  }
+  }, [reRender]);
 
   return (
     <Module>
@@ -139,10 +142,18 @@ export default function MenuEditor({ pageId }){
             <select name="gnbName">
               { error.gnb ? <Retry /> : 
                 gnbList.map((a, i) => (
-                  <option key={a['name']+a['id']} id='gnbName' value={a['name']}>{a['name']}</option>
+                  <option key={a['name']+a['id']} value={a['name']}>{a['name']}</option>
                   ))
               }
-            </select><select><option>전체</option></select>
+            </select>
+            <select name="pageOption">
+              <option value='0'>전체</option>
+              { error.pageOption ? <Retry /> : 
+                page.map((a, i) => (
+                  <option key={a['name']+a['id']} value={a['id']}>{a['name']}</option>
+                  ))
+              }
+            </select>
             </div>
             <div>
               <input id='name' placeholder=' 메뉴명 검색' name='name'/>
@@ -177,31 +188,27 @@ border: 1px solid rgb(171,172,178);
 width: 100%;
 height: 100%;
 `;
-
 export const Nav = styled.div`
 display: flex;
 color: #1d2437; 
 width: 100%;
 justify-content: space-between;
-
 > #menuTitle {
-  margin: 25px 0 10px 20px;
-  font-size: x-large;
+  margin: 15px 0 5px 20px;
+  font-size: large;
   font-weight: bold;
-  color: rgb(32,35,44);
 }
 > #menuBtn {
   display: flex;
-  margin-top: 10px;
   > * {
-    margin: 5px;
+    margin: 10px 5px 5px 5px;
   }
   > div {
     > svg {
-      margin: 5px 10px 0 0 ;
-    width: 20px;
-    height: 30px;
-    width: 30px;
+      margin: 0 5px 0 0;
+      padding: 0 5px 0 0;
+    height: 25px;
+    width: 25px;
     color: rgb(252,214,80);
   }
   }
@@ -253,7 +260,7 @@ box-shadow: inset 1px 1px 1px 0px rgba(255,255,255,.3),
 `;
 export const SearchForm = styled.form`
 padding: 5px;
-height: 120px;
+height: 110px;
 background-color: #f2f3f6;
 border-top: 3px solid #1d2437;
 border-bottom: 1px solid #1d2437;
@@ -261,23 +268,23 @@ color: #1d2437;
 min-width: 370px;
 > div > select {
   width: 170px;
-  height: 30px;
+  height: 25px;
   margin: 5px;
   margin-left: 10px;
 }
 > div {
   > input {
     width: 320px;
-    height: 30px;
+    height: 25px;
     margin: 5px;
     margin: 10px 0 10px 10px;
   }
   > svg {
     position: absolute;
-    margin-left: 5px;
-    margin-top: 10px;
-    width: 25px;
-    height: 25px;
+    margin-left: 7px;
+    margin-top: 7px;
+    width: 30px;
+    height: 30px;
   }
 }
 > span {
@@ -295,19 +302,17 @@ overflow: scroll;
 }
 `;
 const Pipe = styled.div`
-width: 2px;
-height: 60%;
-background-color: #1d2437;
-margin: 10px 0 0 0;
+width: 1.5px;
+height: 70%;
+background-color: #414854;
+margin: 5px 0 0 5px;
 `;
-
 const Line = styled.div`
 width: calc(100% - 20px);
 height: 2px;
 background-color: #1d2437;
 margin: 5px 10px 5px 10px;
 `;
-
 const SearchItem = styled.div`
 margin: 10px;
 padding: 10px;

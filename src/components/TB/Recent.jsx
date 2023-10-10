@@ -10,11 +10,36 @@ export default function Recent({ routeList }){
   const [chipData, setChipData] = useState([]);
   const [routeLink, setRouteLink] = useState([]);
   const contentRef = useRef(null);
+  const currentURL = decodeURI(window.location.href);
   const navigate = useNavigate();
+  const navigator = (path) => {
+    navigate(`${path}`);
+  }
+  const handleDelete = (pathName) => () => {
+    setChipData((chips) => {
+      const newChips = chips.filter((chip) => chip.name !== pathName);
+      return newChips;
+    });
+  };
+
+  useEffect(() => {
+    const splitURL =  currentURL.split('/');
+    const pathName = splitURL[splitURL.length - 1];
+    if(routeLink.includes("/"+currentURL.split('http://localhost:3000/')[1])){
+      if (currentURL.split('http://localhost:3000/')[1].length !== 0) {
+        setChipData((chips) => {
+          const newChips = chips.filter((chip) => chip.name !== pathName);
+          newChips.unshift({ name: pathName, path: "/"+currentURL.split('http://localhost:3000/')[1] })
+          return newChips;
+        });  
+      }
+    }
+  }, [window.location.href]);
 
   useEffect(() => {
     setRouteLink(Array.from(routeList.keys()));
   }, [routeList])
+
   useEffect(() => {
     if (contentRef.current) {
       const contentWidth = contentRef.current.clientWidth;
@@ -42,33 +67,6 @@ export default function Recent({ routeList }){
       window.removeEventListener('resize', handleResize);
     };
   }, [chipData, contentRef]);
-
-  const navigator = (path) => {
-    navigate(`${path}`);
-  }
-
-  const currentURL = decodeURI(window.location.href);
-
-  const handleDelete = (pathName) => () => {
-    setChipData((chips) => {
-      const newChips = chips.filter((chip) => chip.name !== pathName);
-      return newChips;
-    });
-  };
-
-  useEffect(() => {
-    const splitURL =  currentURL.split('/');
-    const pathName = splitURL[splitURL.length - 1];
-    if(routeLink.includes("/"+currentURL.split('http://localhost:3000/')[1])){
-      if (currentURL.split('http://localhost:3000/')[1].length !== 0) {
-        setChipData((chips) => {
-          const newChips = chips.filter((chip) => chip.name !== pathName);
-          newChips.unshift({ name: pathName, path: "/"+currentURL.split('http://localhost:3000/')[1] })
-          return newChips;
-        });  
-      }
-    }
-  }, [window.location.href]);
 
   return(
     <Content ref={contentRef}>
@@ -117,7 +115,7 @@ justify-content: center;
 border: 1px solid #1d2437; 
 border-radius: 5px;
 background-color: white;
-margin: 10px;
+margin: 5px;
 box-shadow: inset 1px 1px 1px 0px rgba(255,255,255,.3),
             3px 3px 3px 0px rgba(0,0,0,.1),
             1px 1px 3px 0px rgba(0,0,0,.1);
@@ -133,13 +131,12 @@ box-shadow: inset 1px 1px 1px 0px rgba(255,255,255,.3),
 }
 `;
 const Content = styled.div`
-width: 100%;
 display: flex;
 justify-content: start;
 flex-wrap: wrap;
+width: 100%;
 list-style: none;
-margin: 10px;
-margin-left: 20px;
+margin: 5px 0 0 20px;
 `;
 const ChipContainer = styled.div`
 width: 140px;

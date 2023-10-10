@@ -12,6 +12,23 @@ export const getCompanyMgmtList = async ( pageId) => {
     throw error;
   }
 };
+
+export const getCompanyMgmtNameTreeList = async ( pageId) => {
+  try {
+    
+    axiosInstance.defaults.headers['menuId'] =  pageId;
+    const response = await axiosInstance.get('/companies/nametree');
+    return response.data.data;
+  } catch (error) {
+    console.error("Error fetching company data:", error);
+    alert("오류가 발생했습니다.");  // 사용자에게 오류 메시지를 표시합니다.
+    throw error;
+  }
+};
+
+
+
+
 export const getOpenedCompanyMgmtList = async ( pageId) => {
   try {
     

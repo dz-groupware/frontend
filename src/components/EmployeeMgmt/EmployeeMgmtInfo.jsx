@@ -145,6 +145,7 @@ export default function EmployeeMgmtInfo({ pageId }) {
         for (const employeeInfo of combinedEmployeeInfo) {
             console.log("departmentId",employeeInfo);
             const currentRequiredFields = [...requiredFields]; // 필수 입력 필드 목록을 복사하여 초기화
+          
 
             if (employeeInfo.position !== "대표") {
                 currentRequiredFields.push('transferredYn', 'edjoinDate', 'deptId');
@@ -163,6 +164,12 @@ export default function EmployeeMgmtInfo({ pageId }) {
                     missingFields.push(field);
                 }
             });
+
+            if (missingFields.length > 0) {
+                console.log("Missing fields:", missingFields);
+                alert("모든 필수 필드를 채워주세요: " + missingFields.join(", "));
+                return;
+            }
 
             if (employeeInfo.privEmail && !employeeInfo.privEmail.includes('@')) {
                 console.log('privEmail:', employeeInfo.privEmail);

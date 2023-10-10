@@ -13,7 +13,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { axiosInstance } from '../../utils/axiosInstance';
 import { styled } from 'styled-components';
 import { employeeActions } from '../../utils/Slice';
-import {StyledButton} from '../Commons/StyledButton';
+import { StyledButton } from '../Commons/StyledButton';
 
 export default function EmployeeMgmtGroupForm({ pageId }) {
   const dispatch = useDispatch();
@@ -21,7 +21,7 @@ export default function EmployeeMgmtGroupForm({ pageId }) {
   const isVisible = useSelector(state => state.employeeMgmt.isVisible);
   const [info, setInfo] = useState(reduxEmployeeGroupInfo);
   const [companyOptions, setCompanyOptions] = useState([]);
-  const [departmentOptions, setDepartmentOptions] = useState([]);
+  const [departmentOptions, setDepartmentOptions] = useState({});
   const [groupsInfo, setGroupsInfo] = useState([reduxEmployeeGroupInfo]);
   const previousGroupsInfo = useRef([]);
   const [showCEOOption, setShowCEOOption] = useState(false);
@@ -42,7 +42,7 @@ export default function EmployeeMgmtGroupForm({ pageId }) {
       }
     };
     // 부서 목록을 가져오는 함수
-    
+
     fetchCompanies();
   }, []);
 
@@ -69,29 +69,69 @@ export default function EmployeeMgmtGroupForm({ pageId }) {
 
 
 
-  useEffect(() => {
-    // console.log("groupsInfo has changed:", groupsInfo);
-  }, [groupsInfo]);
+
 
   useEffect(() => {
-    // info가 배열인 경우에 대한 처리
     if (Array.isArray(reduxEmployeeGroupInfo)) {
       setGroupsInfo(reduxEmployeeGroupInfo.map(item => ({ ...item })));
+      for (const item of reduxEmployeeGroupInfo) {
+        if (item.compId) {
+          fetchDepartmentsForCompany(item.compId);
+        }
+      }
     } else {
-      // info가 배열이 아닌 경우에 대한 처리
       setGroupsInfo([reduxEmployeeGroupInfo]);
+      if (reduxEmployeeGroupInfo.compId) {
+        fetchDepartmentsForCompany(reduxEmployeeGroupInfo.compId);
+      }
     }
   }, [reduxEmployeeGroupInfo, isVisible]);
+
+
+  useEffect(() => {
+    console.log("showCEOOption changed to", showCEOOption);
+}, [showCEOOption]);
+
+
 
   const handleChange = (e, idx) => {
     const { name, value } = e.target;
     let propName = name;
 
     if (name === "compId") {
-console.log("dlvmans ehsl");
-      checkIfCompanyHasCEO(value); 
+      checkIfCompanyHasCEO(value);
       fetchDepartmentsForCompany(value);
+      const updatedGroups = [...groupsInfo];
+      updatedGroups[idx] = {
+        ...updatedGroups[idx],
+        compId: value,
+        position: "",
+        deptId: "",
+        transferredYn: "",
+        edjoinDate: "",
+        leftDate: ""
+      };
+      setGroupsInfo(updatedGroups);
+      return;
     }
+    
+    
+
+    if (name === "position" && value === "대표") {
+      const updatedGroups = [...groupsInfo];
+      updatedGroups[idx] = {
+        ...updatedGroups[idx],
+        position: value,
+        deptId: "",
+        transferredYn: "",
+        edjoinDate: "",
+        leftDate: ""
+      };
+      setGroupsInfo(updatedGroups);
+      return;
+    }
+
+
 
     // Extract correct property name for transferredYn
     if (name.startsWith("transferredYn")) {
@@ -131,7 +171,7 @@ console.log("dlvmans ehsl");
       updatedGroups.pop(); // 마지막 원소 제거
       setGroupsInfo(updatedGroups);
       dispatch(employeeActions.updateGroupInfo(updatedGroups));
-      
+
     } else {
       // 모든 그룹이 제거되었을 때 필요한 필드 초기화
       const resetGroup = {
@@ -140,10 +180,10 @@ console.log("dlvmans ehsl");
       };
       setGroupsInfo([resetGroup]);
 
-      
+
     }
   };
-  
+
 
   const handleBlur = () => {
     dispatch(employeeActions.updateGroupInfo(groupsInfo));
@@ -156,7 +196,12 @@ console.log("dlvmans ehsl");
     try {
       axiosInstance.defaults.headers['menuId'] = pageId;
       const response = await axiosInstance.get(`/employeemgmt/dep/${companyId}`);
-      setDepartmentOptions(response.data.data);
+
+      setDepartmentOptions(prevOptions => ({
+        ...prevOptions,
+        [companyId]: response.data.data
+      }));
+
       console.log("부서값 받아왓니");
     } catch (error) {
       console.error("API Error:", error);
@@ -165,29 +210,32 @@ console.log("dlvmans ehsl");
 
 
   const checkIfCompanyHasCEO = async (companyId) => {
-
+    setShowCEOOption(false);
     console.log("check하니");
     try {
-      axiosInstance.defaults.headers['menuId'] = pageId;
-      const response = await axiosInstance.get(`/employeemgmt/${companyId}/hasCEO`);
-      console.log("ceo값 받아왓니",response.data.data);
-     
-      if (response.data.data) {
-        setShowCEOOption(false);
-      } else {
-        setShowCEOOption(true);
-      }
+        axiosInstance.defaults.headers['menuId'] = pageId;
+        const response = await axiosInstance.get(`/employeemgmt/${companyId}/hasCEO`);
+        console.log("ceo값 받아왔니", response.data.data);
+
+        // 데이터에 따라 showCEOOption을 설정합니다.
+        if (response.data.data) {
+            // 회사에 대표가 있다면 "대표" 옵션을 표시하지 않음
+            setShowCEOOption(false);
+        } else {
+            // 회사에 대표가 없다면 "대표" 옵션을 표시함
+            setShowCEOOption(true);
+        }
     } catch (error) {
-      console.error("Error checking if company has CEO:", error);
+        console.error("Error checking if company has CEO:", error);
     }
-  };
+};
 
   return (
-    
+
     <StyledContainer>
       {groupsInfo.map((group, idx) => (
         <EmployeeMgmtGroupInputForm key={idx}>
-          {!group.deptId && idx !== 0 && <CloseButton onClick={() => removeGroup(idx)}>x</CloseButton >}
+          {!group.departmentId && idx !== 0 && <CloseButton onClick={() => removeGroup(idx)}>x</CloseButton >}
           <InputContainer>
             <Label>회사</Label>
 
@@ -215,13 +263,14 @@ console.log("dlvmans ehsl");
                 disabled={!group.compId}
               >
                 <option value="direct">선택</option>
-                {showCEOOption && <option value="대표">대표</option>}
-                <option value="팀장">팀장</option>
-                <option value="부장">부장</option>
-                <option value="대리">대리</option>
-                <option value="사원">사원</option>
+                {(showCEOOption || group.position === "대표") && <option value="대표">대표</option>}
+                {(!showCEOOption || group.position === "팀장") && <option value="팀장">팀장</option>}
+                {(!showCEOOption || group.position === "부장") && <option value="부장">부장</option>}
+                {(!showCEOOption || group.position === "대리") && <option value="대리">대리</option>}
+                {(!showCEOOption || group.position === "사원") && <option value="사원">사원</option>}
               </Select>
             </InputContainer>
+
 
             <InputContainer>
               <Label>부서</Label>
@@ -230,10 +279,10 @@ console.log("dlvmans ehsl");
                 value={group.deptId || ""}
                 onChange={(e) => handleChange(e, idx)}
                 onBlur={handleBlur}
-                disabled={!group.compId}
+                disabled={!group.compId || group.position === "대표"}
               >
                 <option value="direct">선택</option>
-                {departmentOptions && departmentOptions.map((department, index) => (
+                {departmentOptions[group.compId] && departmentOptions[group.compId].map((department, index) => (
                   <option key={index} value={department.id}>{department.name}</option>
                 ))}
               </Select>
@@ -250,6 +299,7 @@ console.log("dlvmans ehsl");
                 checked={group.transferredYn === true}
                 onChange={(e) => handleChange(e, idx)}
                 onBlur={handleBlur}
+                disabled={!group.compId || group.position === "대표"}
               />
               이동
             </label>
@@ -261,6 +311,7 @@ console.log("dlvmans ehsl");
                 checked={group.transferredYn === false}
                 onChange={(e) => handleChange(e, idx)}
                 onBlur={handleBlur}
+                disabled={!group.compId || group.position === "대표"}
               />
               미이동
             </label>
@@ -274,7 +325,7 @@ console.log("dlvmans ehsl");
               value={group.edjoinDate || ''}
               onChange={(e) => handleChange(e, idx)}
               onBlur={handleBlur}
-
+              disabled={!group.compId || group.position === "대표"}
 
             />
             <FormInput
@@ -285,7 +336,7 @@ console.log("dlvmans ehsl");
               onChange={(e) => handleChange(e, idx)}
               onBlur={handleBlur}
 
-              disabled={group.transferredYn !== true}
+              disabled={!group.compId || group.transferredYn !== true}
             />
           </HalfInputContainer>
 
@@ -293,7 +344,7 @@ console.log("dlvmans ehsl");
       ))}
       <AddButton onClick={addNewGroup}>소속 부서 추가</AddButton>
     </StyledContainer>
-  
+
   );
 }
 
@@ -321,7 +372,7 @@ const CloseButton = styled(StyledButton)`
    
   `;
 
-  const AddButton = styled(StyledButton)`
+const AddButton = styled(StyledButton)`
   margin-top: 20px;
   cursor: pointer;
   font-size: 15px;

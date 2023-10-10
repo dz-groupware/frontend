@@ -16,10 +16,10 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { employeeActions } from '../../utils/Slice';
-import StyledButton from '../Commons/StyledButton';
 import { MdOutlineAttachFile } from 'react-icons/md';
 import { BsPersonBoundingBox } from 'react-icons/bs';
 import { checkDuplicates, checkLoginId, checkSignUp, getEmployeeDetailsById } from '../../api/employeemgmt';
+import { StyledButton } from '../Commons/StyledButton';
 
 
 export default function EmployeeMgmtBasicForm({ pageId }) {
@@ -35,6 +35,8 @@ export default function EmployeeMgmtBasicForm({ pageId }) {
     const isSignUpChecked = useSelector(state => state.employeeMgmt.isSignUpChecked);
     const fileInput = React.useRef(null);
     const [previewImage, setPreviewImage] = useState(null);
+    const DEFAULT_IMAGE_URL = "https://yourdomain.com/path-to-default-image.jpg"; // 여기에 기본 이미지 URL을 지정하세요.
+
 
 
 
@@ -464,7 +466,7 @@ export default function EmployeeMgmtBasicForm({ pageId }) {
 
     return (
 
-        <Container>
+        <StyledContainer>
             <EmployeeMgmtBasicInputForm>
                 <HalfInputContainer>
                     <FormInput label="이름" name="name"
@@ -512,7 +514,7 @@ export default function EmployeeMgmtBasicForm({ pageId }) {
                         onChange={handleHyphenChange}
                         onBlur={handleBlur}
                         disabled={isSignUpChecked}
-                        maxLength={25} />
+                        maxLength={13} />
 
 
                     <StyledButton name="signcheck" value="signcheck"
@@ -526,7 +528,7 @@ export default function EmployeeMgmtBasicForm({ pageId }) {
                         onChange={handleHyphenChange}
                         onBlur={handleBlur}
                         disabled={!isSignUpChecked}
-                        maxLength={25} />
+                        maxLength={13} />
 
 
                 </HalfInputContainer>
@@ -612,7 +614,7 @@ export default function EmployeeMgmtBasicForm({ pageId }) {
             </EmployeeMgmtBasicInputForm>
 
 
-        </Container>
+        </StyledContainer>
 
     );
 }
@@ -623,5 +625,15 @@ export default function EmployeeMgmtBasicForm({ pageId }) {
 const EmployeeMgmtBasicInputForm = styled.div`
   border-top : 2px solid black;
   margin-top : 10px;
-  width : 100%;
+  width : 99%;
+`;
+
+const StyledContainer = styled.div`
+    width:100%;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    // overflow-y: auto;
+   height:  300px;
 `;

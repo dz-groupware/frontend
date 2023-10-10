@@ -27,10 +27,9 @@ export const StyledNotificationInfo = styled.div`
 display: flex;
 justify-content: left;
 align-items: center;
-margin: 10px;
 
 padding: 20px;
-width: 97%;
+width: 98.5%;
 background-color: rgb(214,236,248);
 border: 1px solid rgb(146,183,214);
 border-radius: 5px;

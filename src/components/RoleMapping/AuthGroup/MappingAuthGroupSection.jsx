@@ -61,7 +61,7 @@ export default function MappingAuthGroupSection({ activeAuthId, activeEmp, handl
 
   return (
     <Container>
-      <p> 권한그룹목록</p>
+      <Title> 권한그룹목록</Title>
       <SearchBar>
         <StyledInput
           type="text"
@@ -126,6 +126,11 @@ const Container = styled.div`
   border-right: 1px solid #ccc;
   border-bottom: 1px solid #ccc;
   padding: 20px;
+  background-color: #FAFAFA;
+  box-shadow: inset 1px 1px 1px 0px rgba(255,255,255,.3),
+            3px 3px 3px 0px rgba(0,0,0,.1),
+            1px 1px 3px 0px rgba(0,0,0,.1);
+            outline: none;
 `;
 
 const SearchBar = styled.div`
@@ -158,3 +163,6 @@ const GroupCountFilter = styled.div`
   align-items: center;
 `;
 
+const Title = styled.p`
+  font-weight: 600;
+`;

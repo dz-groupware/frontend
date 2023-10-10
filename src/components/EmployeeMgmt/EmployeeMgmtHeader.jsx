@@ -1,6 +1,6 @@
 import { styled } from 'styled-components';
 import MgmtHeader from '../Commons/MgmtHeader';
-import StyledButton from '../Commons/StyledButton';
+import {ButtonBright, StyledButton} from '../Commons/StyledButton';
 import NotificationInfo from '../Commons/NotificationInfo';
 import { employeeActions } from '../../utils/Slice';
 import { useDispatch, useSelector } from 'react-redux';
@@ -189,6 +189,9 @@ const handleSearch = async () => {
       alert("퇴사 처리할 사원을 선택해주세요.");
       return;
     }
+    if (!window.confirm("진짜로 일괄 퇴사처리 하시겠습니까?")) {
+      return;  // 사용자가 취소를 누르면 함수를 종료합니다.
+    }
   
     for (let i = 0; i < selectedEmployees.length; i++) {
       try {
@@ -196,7 +199,7 @@ const handleSearch = async () => {
         const employeeDetails = await getEmployeeDetailsById(selectedEmployeeIds[i], pageId);
   
         // 이제 employeeDetails를 사용하여 퇴사 처리를 수행합니다.
-        await deleteEmployeeMgmt(selectedEmployeeIds[i], employeeDetails, pageId);
+        await deleteEmployeeMgmt(selectedEmployeeIds[i], employeeDetails[0], pageId);
   
       } catch (error) {
         console.error("Error deleting employee data for ID:", selectedEmployeeIds[i], error);
@@ -209,6 +212,7 @@ const handleSearch = async () => {
     alert("선택한 사원들의 퇴사 처리가 완료되었습니다.");
     setCheckedEmployees([]);  // 체크된 목록 초기화
     setModalIsOpen(false);
+    window.location.reload();
   };
   
 
@@ -243,16 +247,16 @@ const handleSearch = async () => {
 
   return (
     <div>
-      <MgmtHeader title="사원" pageId={pageId} extraButtonComponents={
+      <MgmtHeader title="사원관리" pageId={pageId} extraButtonComponents={
         <ButtonArea>
           {/* <StyledButton>ID변경</StyledButton> */}
           {/* <StyledButton>비밀번호 초기화</StyledButton> */}
-          <StyledButton onClick={handleHireProcess}>입사처리</StyledButton>
-          <StyledButton onClick={handleRetire}>퇴사처리</StyledButton>
+          <ButtonBright onClick={handleHireProcess}>입사처리</ButtonBright>
+          <ButtonBright onClick={handleRetire}>퇴사일괄처리</ButtonBright>
           {modalIsOpen && (
             <ModalOverlay onClick={handleCloseModal}>
               <ModalContent onClick={e => e.stopPropagation()}>
-                <h1>퇴사처리</h1>
+                <h1>퇴사일괄처리</h1>
                 <NotificationText><AiOutlineExclamationCircle />
                   오늘 날짜로 퇴사일이 처리되며
                   정보도 삭제됩니다.
@@ -314,7 +318,7 @@ const handleSearch = async () => {
           )}
 
 
-          <span style={{ height: '24px', borderRight: '2px solid lightgrey', marginLeft: '0px', marginRight: '-5px' }} />
+          <span style={{ height: '24px', borderRight: '2px solid lightgrey', marginLeft: '10px', marginRight: '5px' }} />
         </ButtonArea>
       } />
       <NotificationArea>

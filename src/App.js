@@ -18,7 +18,7 @@ export default function App() {
     <>
       <GlobalStyle/>
       <Provider store={store}>
-        <div className="App">
+        <div className="App" >
           <Suspense fallback={<div>로딩중...</div>}>
             <ThemeProvider theme={theme}>
               <Routes>

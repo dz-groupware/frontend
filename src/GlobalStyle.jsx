@@ -16,17 +16,23 @@ ${reset}
 body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  font-family:  'NanumGothic', 'Noto Sans','Gothic A1',  sans-serif;
+  font-family: 'NanumGothic', 'Noto Sans', 'Gothic A1', sans-serif;
+
+  /* 스크롤바의 폭 너비 */
+  ::-webkit-scrollbar {
+      width: 10px;  
+  }
+  
+  ::-webkit-scrollbar-thumb {
+      background: #CBD0D5; /* 스크롤바 색상 */
+      border-radius: 10px; /* 스크롤바 둥근 테두리 */
+  }
+  
+  ::-webkit-scrollbar-track {
+      background: #F2F2F2;  /*스크롤바 뒷 배경 색상*/
+  }
 }
-/* h1 {
-  font-family: 'Noto Sans Bold' ,  sans-serif;
-}
-p {
-  font-family: 'Gothic A1','Noto Sans Korean','Roboto Mono',   sans-serif;
-} */
-p, a, h1, h2, h3, h4, h5, h6 {
-    transform: skew(-0.1deg);
-}
+
 `;
 
 export default GlobalStyle;

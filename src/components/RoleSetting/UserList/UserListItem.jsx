@@ -14,7 +14,7 @@ export default function UserListItem({item}) {
 }
 
 const StyledTd = styled.td`
-  border: 1px solid #ddd;
+  border: 1.5px solid #ccc;
   padding: 8px;
   text-align: left;
 `;

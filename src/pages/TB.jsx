@@ -57,6 +57,7 @@ color: rgb(66,71,84);
 width:100%;
 height: 62px; 
 z-index: 2;
+
 &.true {
   background-color: transparent;
 }

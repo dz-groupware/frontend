@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import CompanyMgmtInfo from './CompanyMgmtInfo';
+import { styled } from 'styled-components'
+
 import {
     Container,
     InputContainer,
@@ -13,7 +15,7 @@ import {
     Select
 } from '../Commons/StyledForm';
 import { companyActions } from '../../utils/Slice';
-import { addCompanyMgmt, getAllCompanyMgmtParList, modifyCompanyMgmt } from '../../api/companymgmt';
+import { addCompanyMgmt, getCompanyMgmtList, modifyCompanyMgmt } from '../../api/companymgmt';
 
 export default function CompanyMgmtForm({ pageId }) {
     const dispatch = useDispatch();
@@ -22,11 +24,7 @@ export default function CompanyMgmtForm({ pageId }) {
     const idForForm = useSelector(state => state.companyMgmt.idForForm);
     const [companyOptions, setCompanyOptions] = useState([]); // 회사 옵션을 담을 상태
     const [info, setInfo] = useState(reduxCompanyInfo);
-    const [datesEnabled, setDatesEnabled] = useState({
-        establishmentDate: true,
-        openingDate: false,
-        closingDate: false
-    });
+
 
     useEffect(() => {
         setInfo(reduxCompanyInfo);
@@ -34,7 +32,7 @@ export default function CompanyMgmtForm({ pageId }) {
 
     const fetchCompanyOptions = async () => {
         try {
-            const companyList = await getAllCompanyMgmtParList(pageId);
+            const companyList = await getCompanyMgmtList(pageId);
             setCompanyOptions(companyList);
         } catch (error) {
             console.error("Error fetching company data:", error);
@@ -110,18 +108,25 @@ export default function CompanyMgmtForm({ pageId }) {
             }));
         }
 
+
+
         else if (name === "businessNum") {
-            // Add hyphen for businessNum
-            if (formattedValue.length >= 3 && formattedValue.length <= 5) {
-                formattedValue = `${formattedValue.slice(0, 3)}-${formattedValue.slice(3)}`;
-            } else if (formattedValue.length > 5) {
-                formattedValue = `${formattedValue.slice(0, 3)}-${formattedValue.slice(3, 5)}-${formattedValue.slice(5)}`;
+            const rawValue = formattedValue.replace(/\D/g, ''); // Remove all non-numeric characters
+
+            if (rawValue.length <= 3) {
+                formattedValue = rawValue;
+            } else if (rawValue.length <= 5) {
+                formattedValue = `${rawValue.slice(0, 3)}-${rawValue.slice(3)}`;
+            } else {
+                formattedValue = `${rawValue.slice(0, 3)}-${rawValue.slice(3, 5)}-${rawValue.slice(5)}`;
             }
+
             setInfo(prev => ({
                 ...prev,
                 businessNum: formattedValue
             }));
         }
+
 
 
     };
@@ -281,110 +286,116 @@ export default function CompanyMgmtForm({ pageId }) {
 
 
     return (
-        <Container>
+       
+            <Container>
+                <CompanyMgmtInfo handleSubmit={handleSubmit} isCodeDisabled={!!idForForm} idForForm={idForForm} pageId={pageId} />
+         
 
-            <CompanyMgmtInfo handleSubmit={handleSubmit} isCodeDisabled={!!idForForm} idForForm={idForForm} pageId={pageId} />
-            <InputContainer>
-                <Label>소속회사</Label>
-                <Select name="parId" value={info.parId || ''} onChange={handleChange}>
-                    <option value="">없음</option>
-                    {companyOptions.map((company, index) => (
-                        <option key={company.id} value={company.id}>{company.name}</option>
-                    ))}
-                </Select>
-            </InputContainer>
-
-            <HalfInputContainer>
-                <FormInput label="회사코드" name="code" maxLength={6} value={info.code || ''} disabled={!!idForForm} onChange={handleChange} />
                 <InputContainer>
-                    <Label>사용여부</Label>
-                    <label>
-                        <Input type="radio" name="enabledYn" value="true" checked={info.enabledYn === true} onChange={handleChange} />사용
-                    </label>
-                    <label>
-                        <Input type="radio" name="enabledYn" value="false" checked={info.enabledYn === false} onChange={handleChange} />미사용
-                    </label>
+                    <Label>소속회사</Label>
+                    <Select name="parId" value={info.parId || ''} onChange={handleChange}>
+                        <option value="">없음</option>
+                        {companyOptions.map((company, index) => (
+                            <option key={company.id} value={company.id}>{company.name}</option>
+                        ))}
+                    </Select>
                 </InputContainer>
-            </HalfInputContainer>
-
-            <FormInput label="회사명" name="name" value={info.name || ''} onChange={handleChange} maxLength={99} />
-
-            <FormInput label="회사약칭" name="abbr" value={info.abbr || ''} onChange={handleChange} maxLength={49} />
-            <FormInput label="업태" name="businessType" value={info.businessType || ''} onChange={handleChange} maxLength={49} />
-
-            <HalfInputContainer>
-                <FormInput label="대표자명" name="repName" value={info.repName || ''} onChange={handleChange} maxLength={19} />
 
                 <HalfInputContainer>
-                    <FormInput label="대표자주민등록번호" name="repIdNum" value={info.repIdNum || ''} onChange={handleCombinedChange} placeholder="______-_______" />
+                    <FormInput label="회사코드" name="code" maxLength={6} value={info.code || ''} disabled={!!idForForm} onChange={handleChange} />
+                    <InputContainer>
+                        <Label>사용여부</Label>
+                        <label>
+                            <Input type="radio" name="enabledYn" value="true" checked={info.enabledYn === true} onChange={handleChange} />사용
+                        </label>
+                        <label>
+                            <Input type="radio" name="enabledYn" value="false" checked={info.enabledYn === false} onChange={handleChange} />미사용
+                        </label>
+                    </InputContainer>
                 </HalfInputContainer>
-            </HalfInputContainer>
 
-            <HalfInputContainer style={{ borderBottom: "1px solid lightgrey" }}>
-                <Label>대표자번호</Label>
-                <PrefixSelect name="repTel1" value={info.repTel.split('-')[0] || "direct"} onChange={handleHyphenChange}>
-                    <option value="direct">선택</option>
-                    <option value="010">010</option>
-                    <option value="051">051</option>
-                    <option value="02">02</option>
-                </PrefixSelect>
-                <Input
-                    name="repTel2"
-                    value={info.repTel.slice(4, info.repTel.length) || ''}
-                    onChange={handleHyphenChange}
-                    placeholder='-'
-                    maxLength={9}
-                    disabled={info.repTel.split('-')[0] === 'direct'}
-                />
-            </HalfInputContainer>
+                <FormInput label="회사명" name="name" value={info.name || ''} onChange={handleChange} maxLength={99} />
 
-            <HalfInputContainer>
+                <FormInput label="회사약칭" name="abbr" value={info.abbr || ''} onChange={handleChange} maxLength={49} />
+                <FormInput label="업태" name="businessType" value={info.businessType || ''} onChange={handleChange} maxLength={49} />
+
                 <HalfInputContainer>
-                    <FormInput label="사업자번호" name="businessNum" value={info.businessNum || ''} disabled={!!idForForm} onChange={handleCombinedChange} placeholder="___-__-_____" maxLength={12} />
+                    <FormInput label="대표자명" name="repName" value={info.repName || ''} onChange={handleChange} maxLength={19} />
+
+                    <HalfInputContainer>
+                        <FormInput label="대표자주민등록번호" name="repIdNum" value={info.repIdNum || ''} onChange={handleCombinedChange} placeholder="______-_______" />
+                    </HalfInputContainer>
                 </HalfInputContainer>
-                <HalfInputContainer>
-                    <Label>법인번호</Label>
-                    <PrefixSelect name="corpType" value={info.corpType || "direct"} disabled={!!idForForm} onChange={handleChange}>
+
+                <HalfInputContainer style={{ borderBottom: "1px solid lightgrey" }}>
+                    <Label>대표자번호</Label>
+                    <PrefixSelect name="repTel1" value={info.repTel.split('-')[0] || "direct"} onChange={handleHyphenChange}>
                         <option value="direct">선택</option>
-                        <option value="1">개인</option>
-                        <option value="2">법인</option>
+                        <option value="010">010</option>
+                        <option value="051">051</option>
+                        <option value="02">02</option>
                     </PrefixSelect>
-                    <Input name="corpNum" value={info.corpNum || ''} disabled={!!idForForm} onChange={handleCombinedChange} placeholder="______-_______" />
-                    {/* // Limit to 9 characters including dash   */}
+                    <Input
+                        name="repTel2"
+                        value={info.repTel.slice(4, info.repTel.length) || ''}
+                        onChange={handleHyphenChange}
+                        placeholder='-'
+                        maxLength={9}
+                        disabled={info.repTel.split('-')[0] === 'direct'}
+                    />
                 </HalfInputContainer>
-            </HalfInputContainer>
 
-            <HalfInputContainer>
-                <FormInput
-                    label="설립일"
-                    name="establishmentDate"
-                    type="date"
-                    value={info.establishmentDate || ''}
-                    onChange={handleChange}
-                />
+                <HalfInputContainer>
+                    <HalfInputContainer>
+                        <FormInput label="사업자번호" name="businessNum" value={info.businessNum || ''} disabled={!!idForForm} onChange={handleCombinedChange} placeholder="___-__-_____" maxLength={12} />
+                    </HalfInputContainer>
+                    <HalfInputContainer>
+                        <Label>법인번호</Label>
+                        <PrefixSelect name="corpType" value={info.corpType || "direct"} disabled={!!idForForm} onChange={handleChange}>
+                            <option value="direct">선택</option>
+                            <option value="1">개인</option>
+                            <option value="2">법인</option>
+                        </PrefixSelect>
+                        <Input name="corpNum" value={info.corpNum || ''} disabled={!!idForForm} onChange={handleCombinedChange} placeholder="______-_______" />
+                        {/* // Limit to 9 characters including dash   */}
+                    </HalfInputContainer>
+                </HalfInputContainer>
 
-                <DoubleInputContainer>
-                    <Label>개/폐업일</Label>
-                    <Input
-                        name="openingDate"
+                <HalfInputContainer>
+                    <FormInput
+                        label="설립일"
+                        name="establishmentDate"
                         type="date"
-                        value={info.openingDate || ''}
+                        value={info.establishmentDate || ''}
                         onChange={handleChange}
                     />
-                    <span>/</span>
-                    <Input
-                        name="closingDate"
-                        type="date"
-                        value={info.closingDate || ''}
-                        onChange={handleChange}
-                        disabled={!info.openingDate || !info.establishmentDate}
-                    />
-                </DoubleInputContainer>
-            </HalfInputContainer>
 
-            <FormInput label="주소" name="address" value={info.address || ''} onChange={handleChange} maxLength={199} />
+                    <DoubleInputContainer>
+                        <Label>개/폐업일</Label>
+                        <Input
+                            name="openingDate"
+                            type="date"
+                            value={info.openingDate || ''}
+                            onChange={handleChange}
+                        />
+                        <span>/</span>
+                        <Input
+                            name="closingDate"
+                            type="date"
+                            value={info.closingDate || ''}
+                            onChange={handleChange}
+                            disabled={!info.openingDate || !info.establishmentDate}
+                        />
+                    </DoubleInputContainer>
+                </HalfInputContainer>
+
+                <FormInput label="주소" name="address" value={info.address || ''} onChange={handleChange} maxLength={199} />
 
 
-        </Container>
+            </Container>
+       
     );
 }
+
+
+

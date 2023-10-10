@@ -11,26 +11,17 @@ export default function RoleTopContainer({ activeEmp, isEditMode, handleSaveClic
           <>
             {activeEmp.masterYn ? (
               <ActionButton
-                height={'2.5rem'}
-                fontWeight={600}
-                fontSize={'1.0rem'}
                 name="마스터해제"
                 onClick={handleChangeMasterClick}
               />
             ) : (
               <>
                 <ActionButton
-                  width={'5rem'}
-                  height={'2.5rem'}
-                  fontWeight={600}
-                  fontSize={'1.0rem'}
                   name={isEditMode ? "저장" : "권한부여"}
                   onClick={() => isEditMode ? handleSaveClick() : handleEditModeClick()}
                 />
                 {!isEditMode && <ActionButton
-                  height={'2.5rem'}
-                  fontWeight={600}
-                  fontSize={'1.0rem'}
+
                   name="마스터부여"
                   onClick={handleChangeMasterClick} // 마스터 권한을 부여하는 함수
                 />}
@@ -40,10 +31,7 @@ export default function RoleTopContainer({ activeEmp, isEditMode, handleSaveClic
         )}
         {activeEmp.id && isEditMode && (
           <ActionButton
-            width={'5rem'}
-            height={'2.5rem'}
-            fontWeight={600}
-            fontSize={'1.0rem'}
+
             name="닫기"
             onClick={() => setIsEditMode(false)}
           />)

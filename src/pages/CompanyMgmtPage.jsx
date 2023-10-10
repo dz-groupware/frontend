@@ -26,6 +26,8 @@ export default function CompanyMgmtPage({pageId}) {
         <MgmtMain pageId={pageId} aside={<CompanyMgmtAside pageId={pageId} />} form={<CompanyMgmtForm pageId={pageId} />} />
       </>
     }>
+
+      
     </PageContainer>
   );
 }

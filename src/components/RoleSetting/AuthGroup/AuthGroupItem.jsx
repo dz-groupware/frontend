@@ -19,6 +19,7 @@ const AuthGroupItem = forwardRef(({ item, onClick, isActive, isEditMode }, ref) 
 export default AuthGroupItem;
 
 const Container = styled.div`
+position: relative;
   border: 1px solid #ccc;
   border-width: ${props => props.$isActive ? '2px' : '1px'};
   border-radius: 5px;
@@ -42,7 +43,7 @@ const Container = styled.div`
       border-color: #5dc3fb;  
     }
   `}
-  background-color: ${props => props.$isActive ? '#e6f4ff' : 'transparent'};
+  background-color: ${props => props.$isActive ? '#e6f4ff' : 'white'};
   border-color: ${props => props.$isActive ? '#7BAAF1' : '#ccc'};
 `;
 
@@ -51,8 +52,11 @@ const StyledEnabledYn  = styled.div`
   display: flex;
   width: fit-content;
   height: 22px;
+  position: absolute;  
+  top: 7px;           
+  right: 10px;
   align-items: center;
-  background-color: ${props => (props.$enabledYn ? "#23aef9" : "#ccc")};
+  background-color: ${props => (props.$enabledYn ? "#51bffa" : "#ccc")};
   color: #fff;
   border-radius: 20px;
   padding: 0 10px;
@@ -60,8 +64,17 @@ const StyledEnabledYn  = styled.div`
 `;
  
 const StlyedTextWrapper= styled.div`
-  margin-left: 20px;
+  margin-top: 19px;
+  margin-left: 5px;
+  p {
+    white-space: nowrap; 
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 92%; 
+    margin-bottom: 4px;
+  }
 `;
 const StyledLabel = styled.label`
   font-weight: 500;
+  
 `;

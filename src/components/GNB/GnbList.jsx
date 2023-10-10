@@ -79,7 +79,9 @@ const StyledLink = styled.div`
 color:rgb(181,194,200);
 font-size: x-large;
 display: flex;
-
+&.clicked {
+  background-color: black;
+}
 > a {
   list-style: none;
   text-decoration: none;

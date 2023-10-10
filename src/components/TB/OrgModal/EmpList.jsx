@@ -75,6 +75,10 @@ z-index: 2;
   border: 1px solid rgb(146,183,214);
   border-radius: 5px;
 }
+&:hover {
+  background-color: rgb(189, 221, 238);
+  cursor: pointer;
+}
 `;
 export const ListDiv = styled.div`
 width: 450px;

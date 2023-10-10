@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 
 import styled from 'styled-components';
+import Swal from 'sweetalert2';
 
 import { AiOutlinePaperClip } from 'react-icons/ai';
 import { MdOutlineRefresh } from 'react-icons/md';
@@ -50,13 +51,12 @@ export function GnbDetail({ pageId, value, detailOff, on, setReRender }) {
     }
   };
   const readImage = (image) => {
-
     const reader = new FileReader();
     reader.onload = function(e) {
       setNewIconUrl(e.target?.result);
     };
     reader.readAsDataURL(image);
-  }
+  };
   const onDrop = (e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -69,7 +69,6 @@ export function GnbDetail({ pageId, value, detailOff, on, setReRender }) {
       setDetail({ ...detail, iconUrl: path+prefix+e.dataTransfer.files[0]['name']});
     }
   };
-
   const updateMenu = async () => {
     const menu = new FormData();
     try {
@@ -100,11 +99,29 @@ export function GnbDetail({ pageId, value, detailOff, on, setReRender }) {
       setReRender(true);
     }
     
-  }
+  };
+  const deleteMenu = () => {
+    try{
+      deleteMenuApi(pageId, detail.id);
+      setReRender(true);
+      detailOff();  
+      Swal.fire({
+        text: "완료되었습니다.",
+        icon: 'success',
+      });  
+    } catch (error) {
+      Swal.fire({
+        text: "저장에 실패하였습니다.",
+        icon: 'cancle',
+      }); 
+    }
+  };
+  const handleRadio = (e) => {
+    setDetail({ ...detail, enabledYn: e.target.value === "true"});
+  };
 
-  console.log(newIconFile);
   useEffect (() => {
-    console.log('value -> detail : ', value);
+    // console.log('value -> detail : ', value);
     setDetail({ 
       id: value['id'], 
       parId: value['id'], 
@@ -115,21 +132,11 @@ export function GnbDetail({ pageId, value, detailOff, on, setReRender }) {
     })
   }, [value]);
   
-  const deleteMenu = () => {
-    deleteMenuApi(pageId, detail.id);
-    setReRender(true);
-    detailOff();
-  }
-  
-  const handleRadio = (e) => {
-    setDetail({ ...detail, enabledYn: e.target.value === "true"});
-  };
-
   return (
     on &&
     <DetailDiv>
       <DetailTitle> 
-        <p>•대메뉴 정보</p>
+        <p>• 대메뉴 정보</p>
         <div>
           <ButtonBlue onClick={updateMenu}>저장</ButtonBlue>
           <ButtonBright onClick={deleteMenu}>삭제</ButtonBright>
@@ -184,7 +191,7 @@ export function GnbDetail({ pageId, value, detailOff, on, setReRender }) {
           </tr>
           <tr>
             <td>아이콘(48*44)<MdOutlineRefresh onClick={() => {setIconRender(true)}}/></td>
-          <td>
+          <td className='dndBox'>
             <DnDBox
             onDragEnter={onDragEnter} 
             onDragLeave={onDragLeave} 
@@ -209,6 +216,7 @@ export function GnbDetail({ pageId, value, detailOff, on, setReRender }) {
                     }}/>
                 </label>
               </div>
+              <div  className='iconList'>
               <IconImageList 
               pageId={pageId}
               newIconFile={newIconFile} 
@@ -217,7 +225,8 @@ export function GnbDetail({ pageId, value, detailOff, on, setReRender }) {
               detail={detail} 
               setDetail={setDetail}
               iconRender={iconRender} 
-              setIconRender={setIconRender} />
+              setIconRender={setIconRender}/>
+              </div>
             </DnDBox>
           </td>
         </tr>
@@ -237,7 +246,7 @@ export function MenuDetail({ pageId, value, detailOff, on, setReRender, page }) 
     id: 0,
     parId: 0,
     name: '',
-    parName: '', 
+    parName: '상위메뉴 선택 필수', 
     enabledYn: true,
     sortOrder: 0,
     pageId: 0,
@@ -246,22 +255,52 @@ export function MenuDetail({ pageId, value, detailOff, on, setReRender, page }) 
   const [modalOn, setModalOn] = useState(false);
 
   const updateMenu = async () => {
-    const menu = new FormData();
-    try {
-      menu.set('id', detail.id);
-      menu.set('parId', detail.parId === "" ? 0 : detail.parId);
-      menu.set('name', detail.name);
-      menu.set('enabledYn', detail.enabledYn);
-      menu.set('sortOrder', detail.sortOrder);
-      menu.set('pageId', detail.pageId);
-      await saveMenuAPI(pageId, menu, ((on)+2));
-    } catch (error) {
-      console.log('failed insert...');
-    }
-  }
-
+    console.log(detail.parId);
+    if (detail.parId === null || detail.parId === "" || detail.parId === "0" || detail.parId === 0 ) {
+      Swal.fire({
+        text: "양식을 지켜주세요",
+        icon: 'cancle'
+      }); 
+    } else {
+      try {
+        const menu = new FormData();
+        menu.set('id', detail.id);
+        menu.set('parId', detail.parId);
+        menu.set('name', detail.name);
+        menu.set('enabledYn', detail.enabledYn);
+        menu.set('sortOrder', detail.sortOrder);
+        menu.set('pageId', detail.pageId);
+        await saveMenuAPI(pageId, menu, ((on)+2));
+      } catch (error) {
+        Swal.fire({
+          text: "저장에 실패하였습니다.",
+          icon: 'cancle'
+        }); 
+      };
+    };
+  };
   const handleRadio = (e) => {
     setDetail({ ...detail, enabledYn: e.target.value === "true"});
+  };
+  const handleParMenu = (value) => {
+    console.log(value);
+    setDetail({ ...detail, parId: value['id'], parName: value['name'] });
+  };
+  const deleteMenu = () => {
+    try{
+      deleteMenuLnbApi(pageId, detail.id);
+      setReRender(true);
+      detailOff();  
+      Swal.fire({
+        text: "완료되었습니다.",
+        icon: 'success',
+      });  
+    } catch (error) {
+      Swal.fire({
+        text: "저장에 실패하였습니다.",
+        icon: 'cancle',
+      }); 
+    }
   };
 
   useEffect (() => {
@@ -275,22 +314,12 @@ export function MenuDetail({ pageId, value, detailOff, on, setReRender, page }) 
       pageId: value.pageId || 1,
     })
   }, [value]);
-  
-  const handleParMenu = (value) => {;
-    setDetail({ ...detail, parId: value['id'], parName: value['name'] });
-  }
-
-  const deleteMenu = () => {
-    deleteMenuLnbApi(pageId, detail.id);
-    setReRender(true);
-    detailOff();
-  }
 
   return (
     on &&
     <DetailDiv>
       <DetailTitle> 
-        <p>•메뉴 정보</p>
+        <p> • 메뉴 정보</p>
         <div>
           <ButtonBlue onClick={updateMenu}>저장</ButtonBlue>
           <ButtonBright onClick={deleteMenu}>삭제</ButtonBright>
@@ -303,7 +332,7 @@ export function MenuDetail({ pageId, value, detailOff, on, setReRender, page }) 
           <tr>
             <td>상위메뉴</td>
             <td>
-              <textarea value={detail.parName === undefined ? "" : detail.parName} onClick={() => {setModalOn(true)}} readOnly></textarea>
+              <textarea value={detail.parName === undefined || detail.parName === "" ? "상위메뉴 선택 필수" : detail.parName} onClick={() => {setModalOn(true)}} readOnly></textarea>
               <textarea className='readOnly' value={detail.parId === undefined ? "" : detail.parId} readOnly></textarea>
               <textarea className='readOnly' value={detail.id === undefined ? "" : detail.id} readOnly></textarea>
             </td>
@@ -326,7 +355,7 @@ export function MenuDetail({ pageId, value, detailOff, on, setReRender, page }) 
               <select onChange={(e) => {setDetail({ ...detail, pageId: e.target.value})}}>
                 {
                   page.map((a, i) => (
-                    <option value={a['id']}>
+                    <option value={a['id']} key={'option'+i}>
                       {a['name']}
                     </option>
                   ))
@@ -355,7 +384,7 @@ export function MenuDetail({ pageId, value, detailOff, on, setReRender, page }) 
               </div>
             </td>
           </tr>
-          <tr>
+          <tr className='iconList'>
             <td>정렬</td>
             <td>
               <input 
@@ -374,18 +403,17 @@ export function MenuDetail({ pageId, value, detailOff, on, setReRender, page }) 
 
 }
 
-export const DetailDiv = styled.div`
+const DetailDiv = styled.div`
 margin: 10px 10px 15px 10px;
 color: black;
 min-width: 450px;
 width: calc(100% - 710px);
 height: calc(100% - 151px);
-
 > table {
   border-top: 2px solid black;
   border-collapse: collapse;
-  height: calc(100% - 35px);
   width: 100%;
+  height: calc(100% - 35px);
   box-shadow: inset 1px 1px 1px 0px rgba(255,255,255,.3),
             3px 3px 3px 0px rgba(0,0,0,.1),
             1px 1px 3px 0px rgba(0,0,0,.1);
@@ -393,10 +421,12 @@ height: calc(100% - 151px);
   > tbody {
     > tr {  
       border-bottom: 1px solid #1d2437;
+      height: 35px;
       > td:nth-child(1) {
         background-color: #f2f3f6;
       font-weight: bold;
       text-align: right;
+      vertical-align: middle;
       padding-right: 10px;
       width:150px;
       }
@@ -404,12 +434,14 @@ height: calc(100% - 151px);
         width: calc(100% - 20px);
         margin: 10px;
         display: flex;
+        vertical-align: middle;
         > input {
           padding-left: 5px;
           width: 100%;
           height: 25px;
         }   
         > div {
+          vertical-align: middle;
           > #iconFile {
             display: none;
           }
@@ -418,16 +450,23 @@ height: calc(100% - 151px);
             height: 25px;
             margin: 5px;
           }
+          > input.radio {
+            margin: 5px;
+          }
         }  
         > textarea {
-          padding-left: 5px;
+          padding: 5px;
           width: 100%;
           height: 25px;
+          resize: none;
         }
         > select {
           padding-left: 5px;
           width: 100%;
           height: 25px;
+        }
+        &.dndBox {
+          height: 100%;
         }
       }
       > td {
@@ -442,48 +481,36 @@ height: calc(100% - 151px);
   }
 }
 `;
-
-export const DetailTitle = styled.div`
+const DetailTitle = styled.div`
 display: flex;
 justify-content: space-between;
 font-weight: bold;
 > p {
-  margin-top: 10px;
+  margin-top: 5px;
   font-size: large;
   font-weight: 500;
 }
 > div {
   display: flex;
   height: 35px;
-  font-weight: bold;
-  > * {
-    margin: 5px ;
-
-    & span {
-      margin-top: 10px;
-    }
+  > div {
+    margin: 5px;
+  }
+  > span {
+    font-size: 24px;
+    margin-top: 5px;
   }
 }
 `;
-
 const DnDBox = styled.div`
 width: 100%;
 height: 100%;
-        
+max-height: 200px;   
 > div {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
   width: 100%;
-
-  > img {
-    width: 40px;
-    height: 40px;
-    padding : 5px;
-    margin: 5px;
-    border: 1px solid #f2f3f6;
-  }
-
   > textarea {
     padding-left: 5px;
     border: 1px solid #1d2437;
@@ -493,25 +520,26 @@ height: 100%;
     font-weight: bold;
     font-size: small;
     padding-top: 4px;  
+    resize: none;
   }
-
   > label {
     > svg {
       margin-left: 5px;
     width: 30px;
     height: 30px;
     }
-
     > input {
       display: none;
     }
   }
 }
+> .iconList {
+  width: 100%;
+  height: 100%;
+} 
 `;
-
 const Pipe = styled.div`
 width: 2px;
-height: 60%;
+height: 70%;
 background-color: black;
-margin: 5px 10px 5px 10px;
 `;

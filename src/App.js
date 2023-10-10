@@ -9,7 +9,7 @@ import LoginPage from "./pages/LoginPage";
 
 import GnbLayout from './pages/GnbLayout';
 import { Test } from './pages/VIEW';
-import ERR_NETWORK from './common/Error/ERR_NETWORK';
+import ERR_NETWORK from './pages/Error/ERR_NETWORK';
 import { ThemeProvider } from 'styled-components';
 import theme from './utils/theme';
 
@@ -18,7 +18,7 @@ export default function App() {
     <>
       <GlobalStyle/>
       <Provider store={store}>
-        <div className="App">
+        <div className="App" >
           <Suspense fallback={<div>로딩중...</div>}>
             <ThemeProvider theme={theme}>
               <Routes>

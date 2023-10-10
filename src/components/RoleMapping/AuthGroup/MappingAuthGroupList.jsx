@@ -137,6 +137,15 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   flex: 1;
-  height: 80%;
+  height: 78%;
+
   overflow-y: auto; 
+  p {
+    font-size: 17px;
+    align-items:center;
+    white-space: nowrap;          // 줄 바꿈 없이 한 줄에 표시
+    overflow: hidden;             // 내용이 넘칠 경우 숨김
+    text-overflow: ellipsis;     // 내용이 넘칠 경우 ... 표시
+    max-width: 250px;            // 최대 너비 설정 (원하는 값으로 조절 가능)
+  }
 `;

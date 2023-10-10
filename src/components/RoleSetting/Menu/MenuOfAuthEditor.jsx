@@ -120,8 +120,12 @@ export default function MenuOfAuthEditor({ authId , isSaveClicked, setIsSaveClic
 
 
 const Container = styled.div`
-  border-top: 1.5px solid #ccc;
+  border-top: 2px solid gray;
   margin-bottom: 1.2rem;
+  box-shadow: inset 1px 1px 1px 0px rgba(255,255,255,.3),
+            3px 3px 3px 0px rgba(0,0,0,.1),
+            1px 1px 3px 0px rgba(0,0,0,.1);
+            outline: none;
 `;
 
 const Table = styled.table`
@@ -143,8 +147,12 @@ const Table = styled.table`
 `;
 
 const Th = styled.th`
-  text-align: left;
+  text-align: center;
   padding: 0.5rem;
   background-color: #f2f2f2;
   border-bottom: 2px solid #ddd;
+  &:nth-child(2) {
+    width: 10px;  
+  }
+
 `;

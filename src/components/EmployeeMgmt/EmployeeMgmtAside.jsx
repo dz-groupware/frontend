@@ -81,6 +81,7 @@ export default function EmployeeMgmtAside({ pageId }) {
 
     const totalPages = Math.ceil(dataForPagination.length / itemsPerPage);
     const pageNumbers = [];
+    
 
     for (let i = pageRange[0]; i <= Math.min(pageRange[1], totalPages); i++) {
       pageNumbers.push(
@@ -313,7 +314,11 @@ const Container = styled.div`
   margin-left: 20px;
   margin-top: 10px;
   border : 1.5px solid #CCCCCC;
-  height: 330px;
+  height: 490px;
+  box-shadow: inset 1px 1px 1px 0px rgba(255,255,255,.3),
+            3px 3px 3px 0px rgba(0,0,0,.1),
+            1px 1px 3px 0px rgba(0,0,0,.1);
+            outline: none;
    `;
 
 const NumberOfEmployeesArea = styled.div`
@@ -332,24 +337,21 @@ const EmployeeListArea = styled.div`
 position: relative; 
 padding: 10px;
 padding-bottom: 50px;
-height: 200px;
-overflow-y: auto;
+height: 350px;
 background-color: #F9F9F9;
 border: none;
 
 `;
 
 const EmployeeListPageNation = styled.div`
-display:flex;
-justify-content:center;
-position: absolute;
-width: 100%;   // Container의 width와 동일하게 설정
-background-color: #FFFEFE;
-border-top: 1.5px solid #ECECEB ;
-
-
-padding : 10px;
-
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  width: 100%;   // Container의 width와 동일하게 설정
+  background-color: #FFFEFE;
+  border-top: 1.5px solid #ECECEB;
+  padding: 10px 0; // 상하 패딩 적용
 `;
 
 
@@ -385,14 +387,32 @@ const Element = styled.div`
 `;
 const Wrapper = styled.div`
   display: flex;
-  
   justify-content: space-between;  // 양 끝에 내용을 배치
-  cursor: pointer;
-  border: 1.5px solid #CCCCCC;
-  margin-bottom: 10px;
-  background-color: ${props => props.$isselected === "true" ? '#EFEFEF' : 'white'};
+cursor: pointer;
+border: 1.5px solid #CCCCCC;
+margin-bottom: 10px;
+padding :10px;
+background-color: ${props => props.$isselected === "true" ? '#e6f4ff' : 'white'};
+border-color: ${props => props.$isselected === "true"? '#7BAAF1' : '#CCCCCC'};
+transition: transform 0.2s ease, box-shadow 0.2s ease;  // 부드러운 변환 효과
 
-  padding :10px;
+
+&:hover {
+  transform: scale(0.98);  // 원래 크기의 98%로 약간 줄임
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);  // 더 부드러운 그림자로 변경
+
+  background-color: #d0cece84;  
+  border-color: #d0cece84;             
+}
+&:active {
+  border-color: #5dc3fb;  
+  background-color: #5dc3fb;  
+}
+
+
+
+
+
 `;
 const Image = styled.img`
 
@@ -429,45 +449,48 @@ justify-content:center;
 `;
 
 const SpaceArea = styled.div`
-display: flex;
-justify-content: space-between;
-width: 180px;
-margin: auto; 
+  display: flex;
+  align-items: center; // 중앙 정렬 추가
+  gap: 1px; // 아이템 간의 간격 추가
 `;
+
 
 
 const PageNumber = styled.span`
-
-  margin: 0 5px;
   cursor: pointer;
-  color: ${props => (props.$isselected ? "#308EFC" : "black")};
+  padding: 5px 10px;
+  color: ${props => (props.$isselected ? "#308EFC" : "#333")};
   font-weight: ${props => (props.$isselected ? "bold" : "normal")};
-  flex: 1;
-  text-align: center;
+  border-radius: 3px;
+  font-size: 15px;
+  transition: background-color 0.3s;
+  &:hover {
+    background-color: #f3f3f3;
+  }
 `;
 
-
 const StyledGrNext = styled(GrNext)`
+flex-shrink: 0;  // 위치 고정
   cursor: pointer;
-  color: ${props => (props.$isselected ? "#308EFC" : "black")};
-  font-weight: ${props => (props.$isselected ? "bold" : "normal")};
-  background: none;
-  border: none;
-  outline: none;
-  flex: 1;
- 
+  color: #333;
+  transition: background-color 0.3s;
+  border-radius: 3px;
+
+  &:hover {
+    background-color: #f3f3f3;
+  }
 `;
 
 const StyledGrPrevious = styled(GrPrevious)`
+flex-shrink: 0;  // 위치 고정
   cursor: pointer;
-  color: ${props => (props.$isselected ? "#308EFC" : "black")};
-  font-weight: ${props => (props.$isselected ? "bold" : "normal")};
-  background: none;
-  border: none;
-  outline: none;
-  flex: 1;
- 
+  color: #333;
+  transition: background-color 0.3s;
+  border-radius: 3px;
 
+  &:hover {
+    background-color: #f3f3f3;
+  }
 `;
 
 const FilterSection = styled.div`

@@ -61,8 +61,9 @@
 
   const Container = styled.div`
     display: flex;
-    height: 80%;
+    height: 75%;
     gap: 30px;
+    
   `;
 
   const StyledCompanySection = styled.div`
@@ -77,11 +78,16 @@
     padding: 20px;
     background-color: #FAFAFA;
     overflow-y: auto;
+    box-shadow: inset 1px 1px 1px 0px rgba(255,255,255,.3),
+            3px 3px 3px 0px rgba(0,0,0,.1),
+            1px 1px 3px 0px rgba(0,0,0,.1);
+            outline: none;
   `;
 
   const StyledAuthGroupContainer = styled.div`
     min-width: 400px;
-    overflow-y: auto;
+    
+    
   `;
 
   const StyledMenuContainer = styled.div`
@@ -91,4 +97,7 @@
     border-top: 2px solid #747474;
     margin-top: 1.2rem;
     margin-right: 1.2rem;
+    
+    
+    
   `

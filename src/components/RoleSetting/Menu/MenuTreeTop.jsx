@@ -62,10 +62,10 @@ export default function MenuTreeTop({isEditMode, setIsEditMode, setIsSaveClicked
     </Container>
   );
 }
-
 const Container = styled.div`
   flex:1;
   padding-top: 0.8rem;
+  
 `;
 
 const HeaderWrapper = styled.div`

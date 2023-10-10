@@ -119,10 +119,17 @@ const Container = styled.div`
   margin-top: 20px;
   margin-left: 20px;
   width: 300px;
-  height: 95%;
-  border: 1.5px solid #ccc;
-  background-color: #F9F9F9;
+  height: 91%;
+  border-left: 1.5px solid #ccc;
+  border-right: 1.5px solid #ccc;
+  border-bottom: 1.5px solid #ccc;
+  border-top: 2px solid gray;
+  background-color: #FAFAFA;
   padding: 20px;
+  box-shadow: inset 1px 1px 1px 0px rgba(255,255,255,.3),
+            3px 3px 3px 0px rgba(0,0,0,.1),
+            1px 1px 3px 0px rgba(0,0,0,.1);
+            outline: none;
 `;
 const StyledSelect = styled.select`
   width: 100%;
@@ -131,6 +138,7 @@ const StyledSelect = styled.select`
   padding: 7px;
   border: 1px solid #C9C9C9;
   border-radius: 4px;
+  font-weight:550;
 `;
 
 const SearchBar = styled.div`
@@ -160,5 +168,10 @@ const GroupCountFilter = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
+
+  p{
+    font-weight:500;
+
+  }
 `;
 

@@ -24,7 +24,7 @@ export default function EmployeeMgmtPage({pageId}) {
       <PageContainer children={
         <>
         <EmployeeMgmtHeader pageId={pageId}/>
-        <EmployeeMgmtNav pageId={pageId}/>
+        <EmployeeMgmtNav pageId={pageId} />
       <MgmtMain aside={<EmployeeMgmtAside pageId={pageId} />} form={<EmployeeMgmtForm pageId={pageId} />} />
       
       </>

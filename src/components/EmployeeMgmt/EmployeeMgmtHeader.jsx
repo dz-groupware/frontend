@@ -189,6 +189,9 @@ const handleSearch = async () => {
       alert("퇴사 처리할 사원을 선택해주세요.");
       return;
     }
+    if (!window.confirm("진짜로 일괄 퇴사처리 하시겠습니까?")) {
+      return;  // 사용자가 취소를 누르면 함수를 종료합니다.
+    }
   
     for (let i = 0; i < selectedEmployees.length; i++) {
       try {
@@ -249,11 +252,11 @@ const handleSearch = async () => {
           {/* <StyledButton>ID변경</StyledButton> */}
           {/* <StyledButton>비밀번호 초기화</StyledButton> */}
           <ButtonBright onClick={handleHireProcess}>입사처리</ButtonBright>
-          <ButtonBright onClick={handleRetire}>퇴사처리</ButtonBright>
+          <ButtonBright onClick={handleRetire}>퇴사일괄처리</ButtonBright>
           {modalIsOpen && (
             <ModalOverlay onClick={handleCloseModal}>
               <ModalContent onClick={e => e.stopPropagation()}>
-                <h1>퇴사처리</h1>
+                <h1>퇴사일괄처리</h1>
                 <NotificationText><AiOutlineExclamationCircle />
                   오늘 날짜로 퇴사일이 처리되며
                   정보도 삭제됩니다.

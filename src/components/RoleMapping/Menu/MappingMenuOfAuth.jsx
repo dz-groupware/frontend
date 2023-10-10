@@ -52,6 +52,10 @@ export default function MappingMenuOfAuth({ authId, headers }) {
 
 const Container = styled.div`
   margin-bottom: 1.2rem;
+  box-shadow: inset 1px 1px 1px 0px rgba(255,255,255,.3),
+            3px 3px 3px 0px rgba(0,0,0,.1),
+            1px 1px 3px 0px rgba(0,0,0,.1);
+            outline: none;
 `;
 
 const Table = styled.table`
@@ -78,5 +82,5 @@ const Th = styled.th`
   background-color: #f2f2f2;
   border-top: 2px solid #f2f2f2;
   border-bottom: 2px solid #f2f2f2;
-  
+  font-weight: 600;
 `;

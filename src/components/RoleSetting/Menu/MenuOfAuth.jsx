@@ -50,7 +50,11 @@ import MenuItemView from './MenuItemView';
 
   const Container = styled.div`
     margin-bottom: 1.2rem;
-    border-top: 1.5px solid #ccc;
+    border-top: 2px solid gray;
+    box-shadow: inset 1px 1px 1px 0px rgba(255,255,255,.3),
+            3px 3px 3px 0px rgba(0,0,0,.1),
+            1px 1px 3px 0px rgba(0,0,0,.1);
+            outline: none;
   `;
 
   const Table = styled.table`

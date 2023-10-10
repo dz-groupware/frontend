@@ -54,7 +54,7 @@ background-color: white;
 color: rgb(66,71,84);
 width:100%;
 height:80px; 
-z-index: 2;
+z-index: 8000;
  
 > a {
   text-decoration: none; 

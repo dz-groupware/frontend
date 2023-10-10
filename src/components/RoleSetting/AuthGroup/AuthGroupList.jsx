@@ -128,6 +128,7 @@
     display: flex;
     flex-direction: column;
     flex: 1;
-    height: 80%;
+    height: 74%;
     overflow-y: auto; 
+    background-color:white;
   `;

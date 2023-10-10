@@ -34,7 +34,8 @@ export default function MenuOfAuthEditor({ authId , isSaveClicked, setIsSaveClic
     if(!isEditMode) {
       setCheckedItems({});
     }
-  },isEditMode)
+  },[isEditMode]);
+  
   useEffect(() => { 
     if(authId !== null && authId !== undefined) { // authId가 유효한지 검사
       setShouldFetch(true);

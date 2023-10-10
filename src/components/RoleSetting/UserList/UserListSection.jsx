@@ -49,18 +49,24 @@ const Container = styled.div`
   width: 400px;
   height: 600px;
   overflow-y: auto;
-  border-top: 1.5px solid #ccc;
+  border-top: 2px solid gray;
+  
 `;
 
 const StyledTable = styled.table`
   width: 100%;
   border-collapse: collapse;
+  box-shadow: inset 1px 1px 1px 0px rgba(255,255,255,.3),
+            3px 3px 3px 0px rgba(0,0,0,.1),
+            1px 1px 3px 0px rgba(0,0,0,.1);
+            outline: none;
 `;
 
 const StyledTh = styled.th`
   background-color: #f2f2f2;
   color: black;
-  border: 1px solid #ddd;
+  border-left: 1.5px solid #ccc;
+  border-right: 1.5px solid #ccc;
   padding: 8px;
   text-align: left;
 `;

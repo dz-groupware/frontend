@@ -146,21 +146,21 @@ export default function CompanyMgmtAside({ pageId }) {
       <FilterSection>
         <FilterButton
           onClick={() => setSelectedFilter("전체")}
-          active={selectedFilter === "전체"}
+          $isActive={selectedFilter === "전체"}
         >
           전체
         </FilterButton>
         <Divider>|</Divider>
         <FilterButton
           onClick={() => setSelectedFilter("개업")}
-          active={selectedFilter === "개업"}
+          $isActive={selectedFilter === "개업"}
         >
           개업
         </FilterButton>
         <Divider>|</Divider>
         <FilterButton
           onClick={() => setSelectedFilter("폐업")}
-          active={selectedFilter === "폐업"}
+          $isActive={selectedFilter === "폐업"}
         >
           폐업
         </FilterButton>
@@ -233,6 +233,12 @@ max-width: 250px;
 margin-left: 20px;
 margin-top: 10px;
 border : 1.5px solid #CCCCCC;
+height: 550px;
+
+box-shadow: inset 1px 1px 1px 0px rgba(255,255,255,.3),
+            3px 3px 3px 0px rgba(0,0,0,.1),
+            1px 1px 3px 0px rgba(0,0,0,.1);
+            outline: none;
 `;
 
 
@@ -265,15 +271,31 @@ const Element = styled.div`
 `;
 
 const Wrapper = styled.div`
-  display: flex;
-  justify-content: space-between;  // 양 끝에 내용을 배치
-  cursor: pointer;
-  border: 1.5px solid #CCCCCC;
-  margin-bottom: 10px;
-  background-color: ${props => props.$isselected === "true" ? '#EFEFEF' : 'white'};
+display: flex;
+justify-content: space-between;  // 양 끝에 내용을 배치
+cursor: pointer;
+border: 1.5px solid #CCCCCC;
+margin-bottom: 10px;
+padding :10px;
+background-color: ${props => props.$isselected === "true" ? '#e6f4ff' : 'white'};
+border-color: ${props => props.$isselected === "true"? '#7BAAF1' : '#CCCCCC'};
+transition: transform 0.2s ease, box-shadow 0.2s ease;  // 부드러운 변환 효과
 
 
-  padding :10px;
+&:hover {
+  transform: scale(0.98);  // 원래 크기의 98%로 약간 줄임
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);  // 더 부드러운 그림자로 변경
+
+  background-color: #d0cece84;  
+  border-color: #d0cece84;             
+}
+&:active {
+  border-color: #5dc3fb;  
+  background-color: #5dc3fb;  
+}
+
+
+
 `;
 
 const CompanyInfo = styled.div`
@@ -314,7 +336,7 @@ const CompanyListArea = styled.div`
 position: relative; 
 border: 1px solid #CCCCCC;
 padding: 10px;
-height: calc(360px - 50px); 
+height: 410px;
 overflow-y: auto;
 background-color: #F5F5F5;
 border: none; // 이 부분을 추가
@@ -392,8 +414,8 @@ const FilterButton = styled.button`
   margin: 5px;
   font-weight: bold;  
   font-size: 16px; 
-  color: ${props => props.active ? '#308EFC' : 'grey'};  // 활성화된 탭은 색을 변경
-  border-bottom: ${props => props.active ? '2px solid #308EFC' : 'none'}; // 활성화된 탭에는 밑줄 표시
+  color: ${props => props.$isActive ? '#308EFC' : 'grey'};  // 활성화된 탭은 색을 변경
+  border-bottom: ${props => props.$isActive ? '2px solid #308EFC' : 'none'}; // 활성화된 탭에는 밑줄 표시
 
   &:hover {
     background-color: #EFEFEF;

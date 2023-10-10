@@ -27,12 +27,14 @@ export default function TB({ profile, empId, routeList }) {
   }, [location]);
 
   return (
-    <TBArea className={isMain ? 'true' : 'false'}>
-      <Link to='/'>
+    <Content className={isMain ? 'true' : 'false'}>
+      <Logo to='/'>
+        <Link to='/'>
         Amaranth2023
-      </Link>
+        </Link>
+      </Logo>
       <Recent routeList={routeList}/>
-      <div>
+      <ModalArea>
         <ProfileArea id='prf' onClick={() => {setProfileModal(true)}}>        
           <Profile profile={profile} empId={empId}/>
           {profileModal && <ProfileModal profile={profile} empId={empId} profileModal={profileModal} setProfileModal={setProfileModal}/>}
@@ -41,34 +43,20 @@ export default function TB({ profile, empId, routeList }) {
           <AiOutlineDeploymentUnit onClick={() => {setOrgModal(true)}}/>
         </IconArea>
         {orgModal && <OrgModal empId={empId} setOrgModal={setOrgModal}/>}
-      </div>
-    </TBArea>
+      </ModalArea>
+    </Content>
   );
 }
 
-const TBArea = styled.div`
+const Content = styled.div`
 display: flex;
 justify-content: space-between;
 position: relative;
 background-color: white;
 color: rgb(66,71,84);
 width:100%;
-height:80px; 
+height: 62px; 
 z-index: 2;
- 
-> a {
-  text-decoration: none; 
-  margin-left: 20px;
-  margin-top: 30px;
-  color: rgb(45,49,62);
-  font-size: xx-large;
-  font-weight: bold;
-}
-
-> div {
-  display: flex;
-}
-
 &.true {
   background-color: transparent;
 }
@@ -76,21 +64,34 @@ z-index: 2;
   background-color: white;
 }
 `;
+const Logo = styled.div` 
+margin: 20px 0 0 20px;
+> a{
+  text-decoration: none; 
+  color: #1d2437;
+  font-size: xx-large;
+  font-weight: bold;
+}
+`;
+const ModalArea = styled.div`
+display: flex;
+`;
 const ProfileArea = styled.div`
 display: flex;
 width: 250px;
 right: 50px;
-
 `;
 const IconArea = styled.div`
 padding-top: 10px;
-width:60px;
+width:55px;
 position: relative;
 right:50px;
-color: rgb(7, 10, 69);
+color: #1d2437;
 > * {
-  width:35px;
-  height:35px;
-  margin:10px;
+  width: 35px;
+  height: 35px;
+  margin: 5px;
+  text-shadow: 1px 1px 1px rgba(255,255,255,0.7),
+                -1px -1px 1px rgba(255,255,255,0.7);
 }
 `;

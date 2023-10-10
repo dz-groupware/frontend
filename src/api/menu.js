@@ -53,6 +53,7 @@ export function searchAPI(pageId, formData) {
       params: {
         gnbName: `${formData.get("gnbName")}%`,
         name: `%${formData.get("name")}%`, 
+        pageId: `${formData.get("pageOption")}`, 
       },
       headers: {
         "Content-Type": "application/json",
@@ -89,7 +90,6 @@ export function deleteMenuApi(pageId, menuId){
 }
 
 export function deleteMenuLnbApi(pageId, menuId){
-  console.log(pageId, menuId);
   return axiosInstance.delete(
     `/menu/menu-lnb`, {
       params: {

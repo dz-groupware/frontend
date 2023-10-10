@@ -9,7 +9,7 @@ import LoginPage from "./pages/LoginPage";
 
 import GnbLayout from './pages/GnbLayout';
 import { Test } from './pages/VIEW';
-import ERR_NETWORK from './common/Error/ERR_NETWORK';
+import ERR_NETWORK from './pages/Error/ERR_NETWORK';
 import { ThemeProvider } from 'styled-components';
 import theme from './utils/theme';
 

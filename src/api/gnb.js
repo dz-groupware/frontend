@@ -17,7 +17,7 @@ export function searchMenuListAPI(menuId) {
       }, 
       headers: {
         "Content-Type": "application/json",
-        "menuId" : "0",
+        "menuId" : menuId,
       }
     });
   }

@@ -12,7 +12,7 @@ export default function ProfileModal({ profile, empId, setProfileModal }) {
   const user = profile.find(prf => prf['empId'] === empId);
   const [page, setPage] = useState({ pageNumber: 1, pageSize:3, totalElements: 1, totalPages: 1 });
   const [emp, setEmp] = useState([]);
-  
+  const [currentTime, setCurrentTime] = useState(new Date());
   const handleLogOut = () => {
     logOut();
     localStorage.setItem("empId", 0);
@@ -25,6 +25,15 @@ export default function ProfileModal({ profile, empId, setProfileModal }) {
     setProfileModal(false);
   };
 
+  const updateCurrentTime = () => {
+    setCurrentTime(new Date());
+  };
+
+  useEffect(() => {
+    const intervalId = setInterval(updateCurrentTime, 1000);
+    return () => clearInterval(intervalId);
+  }, []);
+
   useEffect(() => {
     getProfilePage(page.pageNumber).then((res) => {
       setEmp(res.data.data);
@@ -36,20 +45,19 @@ export default function ProfileModal({ profile, empId, setProfileModal }) {
     return (
       <ModalBackdrop onClick={modalOff}>
         <ModalView onClick={(e) => e.stopPropagation()}>
-          <div className='top_btn'>
-            <div onClick={handleLogOut}>
-              <AiOutlinePoweroff />
-            </div>
-          </div>
           <Profile>  
             <img src={user['imageUrl']} alt='p_img' />
             <div className='prf'>
               <div id="prf_name">{user['empName']}</div>
               <div>{user['compName']} / {user['deptName']}</div>
-              <p>최근접속 : {user['lastIp']} || {user['lastAccess']}</p>
-              <p>현재접속 : {user['lastIp']}</p>
+              <p>최근접속 : {user['lastAccess']}</p>
+              <p>현재접속 : {currentTime.toLocaleString()}</p>
+            </div>
+            <div onClick={handleLogOut}>
+              <AiOutlinePoweroff />
             </div>
           </Profile>
+
           <div id='tableName'>
             <div> • 회사정보</div>
             <Page>
@@ -67,7 +75,6 @@ export default function ProfileModal({ profile, empId, setProfileModal }) {
     );
   } else {
     console.log('사용자 정보가 일치하지 않습니다.');
-    UnAuthorized();
   }
 };
 
@@ -87,6 +94,7 @@ export const ModalBackdrop = styled.div`
   height:100%;
 `;
 export const ModalView = styled.div`
+background-image: url('/img/page/profile_bgi.png');
 display: block;
 position: absolute;
 z-index: 2;
@@ -103,51 +111,59 @@ box-shadow: inset 1px 1px 1px 0px rgba(255,255,255,.3),
             3px 3px 3px 0px rgba(0,0,0,.3),
             1px 1px 3px 0px rgba(0,0,0,.3);
             outline: none;
-> .top_btn {
-  display: flex;
-  justify-content: end;
-  padding: 20px;
-  padding-bottom: 0px;
-  
-  > div > svg {
-    width: 20px;
-    height: 20px;
-  }
-}
 
 > #tableName {
-  margin: 0 0 10px 40px;
-  width: 80%;
+  padding: 0 30px 0 30px;
+  width: 100%;
   display: flex;
   justify-content: space-between;
 }
 `;
 const Profile = styled.div`
 padding: 20px;
-padding-top: 0px;
 display: flex;
 justify-content: center;
 width: 100%;
 > img {
-  margin: 5px;
-  width: 80px;
-  height: 80px;
+  margin: 10px 10px 10px 20px;
+  width: 90px;
+  height: 90px;
+  border-radius: 100%;
+  box-shadow: inset 1px 1px 1px 0px rgba(255,255,255,.3),
+            3px 3px 3px 0px rgba(0,0,0,.1),
+            1px 1px 3px 0px rgba(0,0,0,.1);
+            outline: none;
 }
 > .prf {
-  padding-left: 20px;
-  > * {
-    margin: 5px;
-  }
+  width: 300px;
+  padding: 5px;
+  color: white;
   > #prf_name {
-    margin-top: 10px;
+    padding: 10px 0 5px 10px;
     font-size: 18px;
     font-weight: bold;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis; 
   }
-> p {
-  color: grey;
-  font-size: 12px;
-  margin: 0;
-}
+  > div {
+    padding: 0 0 10px 10px;
+    font-size: 14px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis; 
+    }
+  > p {
+    padding-left: 10px;
+    color: grey;
+    font-size: 12px;
+    margin: 0;
+  }  
+  > div > sgv {
+    color: white;
+    width: 20px;
+    height: 20px;
+    }
 }
 `;
 

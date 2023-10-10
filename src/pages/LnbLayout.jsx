@@ -70,7 +70,6 @@ export function MenuTree({ menu, param, gnb, clicked, setClicked }){
   const [subItem, setSubItem] = useState([]);
 
   const navigate = useNavigate();
-    
   useEffect(() => {
     if(gnb.id !== undefined){
       setSubItem([]);
@@ -78,7 +77,7 @@ export function MenuTree({ menu, param, gnb, clicked, setClicked }){
     }
   }, [gnb.id]);
 
-  function handleMenuItem() {
+  const handleMenuItem = () => {
     try{
       if(subItem.length === 0) {
         searchMenuListAPI(menu['id'])
@@ -100,7 +99,7 @@ export function MenuTree({ menu, param, gnb, clicked, setClicked }){
     <Menu>
       <MenuItem className={(clicked === menu['id']) ? 'true' : 'false'}>
         {
-          menu['childNodeYn'] ? <img src='/img/page2.png' alt='1' />
+          menu['childNodeYn'] ? <img src='/img/page.png' alt='1' />
           : (open ? <img src="/img/comp/dept_open_32.png" alt='1' />
           : <img src="/img/comp/dept_50.png" alt='1' />)
         }
@@ -128,23 +127,23 @@ background-color: white;
 `;
 const OutletArea = styled.div`
 position: fixed;
-top: 130px;
-left: 250px;
-width: calc(100% - 250px);
-height: calc(100% - 50px);
+top: 112px;
+left: 245px;
+width: calc(100% - 245px);
+height: calc(100% - 112px);
 
 &.true {
-  left: 250px;
-  width: calc(100% - 250px);
+  left: 245px;
+  width: calc(100% - 245px);
 }
 &.false {
-  left: 50px;
-  width: calc(100% - 50px);
+  left: 45px;
+  width: calc(100% - 45px);
 }
 &.main {
 top: 80px;
-left: 50px;
-width: calc(100% - 50px);
+left: 45px;
+width: calc(100% - 45px);
 height: 100%;
 }
 
@@ -155,9 +154,8 @@ height: 100%;
 color: black;
 position: absolute;
 overflow: auto;
-height: calc(100% - 120px);
+height: calc(100% - 112px);
 background-color: #e3e8ed;
-
 &::-webkit-scrollbar {
     width: 5px; 
     height: 5px;
@@ -170,8 +168,6 @@ background-color: #e3e8ed;
   &::-webkit-scrollbar-thumb:hover {
     background-color: rgb(18, 172, 226);
   }
-
-
   &.true {
   left:0px;
   opacity:1;
@@ -180,7 +176,6 @@ background-color: #e3e8ed;
   left: -300px;
   top: 0;
   opacity: 0;
-
   transition: left 4s;
 }
 `;
@@ -198,17 +193,19 @@ display:flex;
   height: 30px;
   margin: 10px 10px 15px 5px;
   transition: all 0.3s ease; 
-  .on.open {
+  &.on.open {
+    opacity: 1; 
     transform: scale(1.2);
   }
-  .off.open {
+  &.off.open {
+    opacity: 1; 
     transform: scale(1.2);
   }
-  .on.close {
+  &.on.close {
     opacity: 0; 
     transform: scale(0.8);
   }
-  .off.close {
+  &.off.close {
     opacity: 0; 
     transform: scale(0.8);
   }
@@ -216,7 +213,6 @@ display:flex;
 > p {
   margin-top:15px;
 }
-
 &.main {
   display: none;
 }
@@ -231,7 +227,7 @@ margin: 2px;
 background-color: #fefffe;
 `;
 const ItemChild = styled.div`
-background-color: #cbd0d5;
+background-color: #e3e8ed;
 padding-left: 15px;
 `;
 const MenuItem = styled.li`
@@ -243,7 +239,6 @@ box-shadow: inset 1px 1px 1px 0px rgba(255,255,255,.3),
             3px 3px 3px 0px rgba(0,0,0,.1),
             1px 1px 3px 0px rgba(0,0,0,.1);
             outline: none;
-
 &.true{
   background-color: rgb(214,236,248);
   border: 1px solid #7dafdc;
@@ -254,5 +249,9 @@ box-shadow: inset 1px 1px 1px 0px rgba(255,255,255,.3),
   height: 20px;
   margin: 3px;
 }
-
+> div {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis; 
+}
 `;

@@ -34,7 +34,7 @@ export default function RoleSettingPage({pageId}) {
   return (
     <Container>
  
-        <MgmtHeader title="권한설정" pageId={pageId} extraButtonComponents={
+        <MgmtHeader title="권한Role설정" pageId={pageId} extraButtonComponents={
         
         <ButtonArea>
         <ActionsContainer>
@@ -109,48 +109,14 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   width: 100%;
-  height: 100%; //높이 바꿔
+  height: 100%;
 `;
 
-const TopContainer = styled.div`
-  display: flex;
-  justify-content: space-between;
-  flex-direction: row;
-  padding: 0 0.5rem;
-`;
 
-const TitleAndIconContainer = styled.div`
-  display: flex;
-  align-items: center;
-  padding: 15px 0;
-  h1{
-    margin-left: 10px;
-    font-size: 1.2rem;
-    font-weight: bold;
-  }
-`;
 const ActionsContainer = styled.div`
   display: flex;
   align-items: center;
   padding: 15px 0;
-`;
-const IconWrapper = styled.div`
-  display: flex;
-  position: relative;
-  bottom: 5px;
-  margin-left: 8px;
-  justify-content: center;
-  align-items: center;
-  background-color: #eaeaea;
-  width: 30px; 
-  height: 30px; 
-  border-radius: 50%; 
-`;
-const VerticalLine = styled.div`
-  height: 20px; 
-  width: 1px;
-  background-color: #C9C9C9; 
-  margin: 0 10px;
 `;
 
 const ButtonArea = styled.div`

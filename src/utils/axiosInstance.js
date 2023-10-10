@@ -26,7 +26,7 @@ axiosInstance.interceptors.request.use(
       throw new Error('UNAUTHORIZED');
     }
     if (err.response && err.response.status === 403) {
-      throw new Error('FORBIDDEN');
+      window.location.href='/FORBIDDEN';
     } else {
       return Promise.reject(err);
     }
@@ -47,12 +47,14 @@ axiosInstance.interceptors.response.use(
       window.location.href='/ERR_NETWORK';
       console.log('net error');
     }
+    if (err.response && err.response.status === 403) {
+      window.location.href='/FORBIDDEN';
+    } 
     console.log('response Error : ', err);
     // 오류 응답의 상태 코드와 본문을 얻으려면 err.response.status와 err.response.data를 확인해야 합니다.
     if (err.response) {
       const errorStatus = err.response.status;
       const errorData = err.response.data;
-
       return Promise.reject({ status: errorStatus, data: errorData });
     } else {
       return Promise.reject(err);

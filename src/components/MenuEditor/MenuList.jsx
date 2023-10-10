@@ -53,23 +53,19 @@ box-shadow: inset 1px 1px 1px 0px rgba(255,255,255,.3),
             outline: none;
 `;
 export const MenuItem = styled.div`
-margin-top:5px;
-
+margin-top: 5px;
 display: flex;
 justify-content: flex-start;
-
-height: 80px;
-
+height: 60px;
 background-color: white;
 border: 1px solid rgb(171,172,178);
 color: black;
-
-padding: 10px;
-
 text-align: center;
 font-size: medium;
+padding: 3px 3px 3px 5px;
+
 > #menuitemname {
-  padding-top: 5%;
+  padding: 18px 0 0 10px;
 }
 
 > img {
@@ -77,7 +73,6 @@ font-size: medium;
 }
 
 &.true {
-  padding: 15px;
   background-color: #dceef6;
   border: 1px solid #7dafdc ;
   transition: all 0.3s ease;

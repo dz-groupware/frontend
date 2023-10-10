@@ -28,8 +28,8 @@ export default function GnbLayout() {
       menuList.set(`/${nameTree}`, { menuId, gnbId, gnbName, page });
     });
     menuList.set(`/`, { menuId: 0, gnbId: 0, gnbName: 'main', page: 'Main' });
-    menuList.set(`/FORBIDDEN`, { menuId: 0, gnbId: 0, gnbName: '403', page: 'FORBIDDEN' });
-    menuList.set(`/SERVICE_UNAVAILABLE`, { menuId: 0, gnbId: 0, gnbName: '503', page: 'SERVICE_UNAVAILABLE' });
+    menuList.set(`/FORBIDDEN`, { menuId: 0, gnbId: 0, gnbName: '403', page: 'Error/FORBIDDEN' });
+    menuList.set(`/SERVICE_UNAVAILABLE`, { menuId: 0, gnbId: 0, gnbName: '503', page: 'Error/SERVICE_UNAVAILABLE' });
     setRouteList(menuList);
   }
 
@@ -91,25 +91,12 @@ export default function GnbLayout() {
   );
 }
 
-export const Content = styled.div`
+const Content = styled.div`
   position: fixed;
   top: 0px;
-  left: 50px;
+  left: 45px;
   margin: 0px;
   padding: 0px;
   width: 100%;
   height: 100%;
-`;
-export const RouteArea = styled.div`
-  color: rgb(66,71,84);
-  height: calc(100% - 80px);
-  width: 100%;
-`;
-export const TBArea = styled.div`
-  height:80px;
-  width:100%;  
-  position: relative;
-  z-index: 2;
-  color:rgb(66,71,84);
-  background-color:rgb(181,194,200);
 `;

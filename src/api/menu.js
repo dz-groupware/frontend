@@ -159,3 +159,13 @@ export function PageListApi(pageId){
   );
 }
 
+export function test(){
+  return axiosInstance.get(
+    `/menu/defaultMenu`, {
+      headers: { 
+        'Content-Type': 'application/json',
+        'menuId': '0',
+      },
+    }    
+  );
+}

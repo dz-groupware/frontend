@@ -51,7 +51,7 @@ export default function ProfileModal({ profile, empId, setProfileModal }) {
               <div id="prf_name">{user['empName']}</div>
               <div>{user['compName']} / {user['deptName']}</div>
               <p>최근접속 : {user['lastAccess']}</p>
-              <p>현재접속 : {currentTime.toLocaleString("en-GB", { hour12: false })}</p>
+              <p>현재접속 : {currentTime.toLocaleString().replace('. ', '-').replace('. ', '-').replace('. ', '-').replace('-오후', '')}</p>
             </div>
             <div onClick={handleLogOut}>
               <AiOutlinePoweroff />

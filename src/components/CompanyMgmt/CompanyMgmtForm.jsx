@@ -337,7 +337,6 @@ export default function CompanyMgmtForm({ pageId }) {
         dispatch(companyActions.updateInfo({
                 ...info,
                 parId: selectedValue
-
         }));
 
 
@@ -592,7 +591,7 @@ export default function CompanyMgmtForm({ pageId }) {
                     <option value="direct">선택</option>
                     <option value="010">010</option>
                     <option value="051">051</option>
-                    <option value="02">02</option>
+                    <option value="031">031</option>
                 </PrefixSelect>
                 <Input
                     name="repTel2"

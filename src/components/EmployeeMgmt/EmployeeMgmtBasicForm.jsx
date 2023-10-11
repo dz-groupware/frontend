@@ -274,7 +274,6 @@ export default function EmployeeMgmtBasicForm({ pageId }) {
         console.log("signUpInfo", signUpInfo);
 
 
-        console.log("이이이이이이잉빕", pageId.pageId);
 
         // 중복 확인 API 요청 로직 구현
         const response = await checkSignUp(signUpInfo, pageId.pageId);

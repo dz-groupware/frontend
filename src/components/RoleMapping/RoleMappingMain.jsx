@@ -8,7 +8,7 @@
   import { getParentCompanyWithEmployeeCountApi } from '../../api/company';
   import CompanyTreeBox from './Employee/CompanyTreeBox';
 
-  export default function RoleMappingMain({ refresh, activeAuthId, handleAuthClick, activeEmp, handleEmpClick, isEditMode, selectedAuthIds, setSelectedAuthIds, handleCheckboxChange, headers}) {
+  export default function RoleMappingMain({ isSameCompany, refresh, activeAuthId, handleAuthClick, activeEmp, handleEmpClick, isEditMode, selectedAuthIds, setSelectedAuthIds, handleCheckboxChange, headers}) {
     const { data: parCompanyInfo, isLoading: companyLoading, error: companyError, setShouldFetch} = useFetchData(getParentCompanyWithEmployeeCountApi,
       {
         headers,
@@ -23,6 +23,7 @@
         <StyledCompanySection>
           {companyError && ( <div>서버에 에러가 생겨서 불러올 수가 없습니다.</div>)}
           <CompanyTreeBox 
+            superParentCompId={parCompanyInfo.companyId}
             refresh={refresh}
             item={parCompanyInfo} 
             companyId={parCompanyInfo ? parCompanyInfo.companyId : null}
@@ -32,7 +33,8 @@
             isEditMode={isEditMode}
           />
         </StyledCompanySection>
-        <StyledAuthGroupContainer>
+        {isSameCompany ?  (<>
+          <StyledAuthGroupContainer>
           <MappingAuthGroupSection
             activeAuthId={activeAuthId}
             handleAuthClick={handleAuthClick}
@@ -53,7 +55,11 @@
               headers={headers}
             />
           </StyledMenuContainer>
-         }
+        }</>) : (<StyledNoPermission>
+          <img src= {`${process.env.PUBLIC_URL}/img/forbidden.png`} width={120} alt="금지 이미지" style={{marginBottom:'80px'}}/>
+          <h1 o>해당 유저에 대한 권한은 참조할 수 없습니다.</h1>
+        </StyledNoPermission>)}
+
       </Container>
     );
   };
@@ -97,7 +103,26 @@
     border-top: 2px solid #747474;
     margin-top: 1.2rem;
     margin-right: 1.2rem;
-    
-    
-    
   `
+
+  const StyledNoPermission = styled.div`
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    flex: 1;
+    margin-top: 20px;
+    margin-left: 20px;
+    margin-right: 20px;
+    height: 97%;
+    border-top: 2px solid #747474;
+    border-left: 1px solid #ccc;
+    border-right: 1px solid #ccc;
+    border-bottom: 1px solid #ccc;
+    padding: 20px;
+    background-color: #FAFAFA;
+    box-shadow: inset 1px 1px 1px 0px rgba(255,255,255,.3),
+            3px 3px 3px 0px rgba(0,0,0,.1),
+            1px 1px 3px 0px rgba(0,0,0,.1);
+            outline: none;
+`;

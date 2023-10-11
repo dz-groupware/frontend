@@ -5,57 +5,52 @@ export default function Profile({ profile, empId }) {
 
   if(user) {
     return (
-      <ProfileArea>
+      <Content>
         <img src={user['imageUrl']} alt='profileImg' />
         <div>
-          <div id="profile_name">{user['empName']}</div>
+          <div>{user['empName']}</div>
           <p>{user['compName']} / {user['deptName']}</p>
         </div>
-      </ProfileArea>
+      </Content>
     );
   }
 }
 
-export const ProfileArea = styled.div`
+const Content = styled.div`
 display: flex;
 width: 300px;
 height: 100%;
-color: black;
+color: #1d2437;
 
 > img {
-  margin-top: 20px;
-  margin-right: 5px;
+  margin: 5px;
   width: 50px;
   height: 50px;
   border-radius: 100%;
-  box-shadow: inset 1px 1px 1px 0px rgba(255, 255, 255, 0.3),
-            3px 3px 7px 0px rgba(255, 255, 255, 1),
-            2px 2px 2px 0px rgba(255, 255, 255, 1);
-            outline: none;
+  box-shadow: 7px #ffffff;
+  outline: none;
 }
 
 > div {
-  margin-top: 20px;
-  font-weight: bold;
-
+  width: 145px;
   > div {
-    margin: 5px;
-    text-shadow: 2px 2px 4px #ffffff;
+    margin: 10px 5px 5px 5px;
+    font-weight: bold;
+    text-shadow: 1px 1px 1px rgba(255,255,255,0.7),
+                -1px -1px 1px rgba(255,255,255,0.7);
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis; 
   }
-
   > p {
-    margin: 0;
-    margin-left: 7px;
-    padding-top: 5px;
+    margin: 10px 5px 5px 5px;
     font-size: small;
-    color: gray;
-    &::after {
-      content: attr()(data-text);
-      text-shadow: 0 -2px 4px rgba(255, 255, 255, 1),
-                -2px 0 4px rgba(255, 255, 255, 1),
-                0 2px 4px rgba(255, 255, 255, 1),
-                2px 0 4px rgba(255, 255, 255, 1);
-    }
+    text-shadow: 1px 1px 1px rgba(255,255,255,0.7),
+                -1px -1px 1px rgba(255,255,255,0.7);
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis; 
+
   }
 }
 `;

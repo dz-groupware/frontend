@@ -20,6 +20,7 @@ export const getCompanyMgmtNameTreeList = async ( pageId) => {
     const response = await axiosInstance.get('/companies/nametree');
     return response.data.data;
   } catch (error) {
+    
     console.error("Error fetching company data:", error);
     alert("오류가 발생했습니다.");  // 사용자에게 오류 메시지를 표시합니다.
     throw error;
@@ -56,6 +57,48 @@ export const getClosedCompanyMgmtList = async ( pageId) => {
 };
 
 
+// export const getCEODetailsById = async (ceoId,pageId) => {
+//   try {
+//     axiosInstance.defaults.headers['menuId'] = pageId;
+//     const response = await axiosInstance.get(`/companies/${ceoId}`);
+
+//     return response.data.data;
+//   } catch (error) {
+//     console.error("Error fetching employee data by id:", error);
+//     alert("오류가 발생했습니다.");  // 사용자에게 오류 메시지를 표시합니다.
+//     throw error;
+//   }
+// };
+
+
+export const checkCEOSignUp = async (signUpInfo, pageId) => {
+
+  try {
+    axiosInstance.defaults.headers['menuId'] = pageId;
+    const response = await axiosInstance.post(`/companies/signupcheck`, signUpInfo);
+    return response.data.data;
+
+  } catch (error) {
+    console.log("eeeerrrrrorrr",error);
+
+    if (error.data === "No data found from check") {
+      alert("이미 사용중인 정보가 있습니다.");
+      return null; // 또는 적절한 에러 처리
+    }
+    if (error.data === "No data found") {
+      alert('가입되지 않았습니다. 입력된 정보로 가입하기위해 인증이 진행됩니다.');
+      return error; // 또는 적절한 에러 처리
+    }
+    console.error("Error checking sign up:", error);
+    alert("An error occurred while checking sign up. Please try again later.");
+    throw error;
+  }
+};
+
+
+
+
+
 export const getCompanyDetailsById = async (companyId,  pageId) => {
   try {
     console.log("menuId", pageId);
@@ -77,8 +120,14 @@ export const modifyCompanyMgmt = async (info, pageId) => {
     axiosInstance.defaults.headers['menuId'] = pageId;
 
     const response = await axiosInstance.put(`/companies`, info);
+    console.log("뭐라고 할래?" , response.data.data);
     return response.data.data;
   } catch (error) {
+    
+    if(error.data === "Circular reference detected! Cannot move company under its own subtree."){
+     
+      throw new Error("Circular reference detected");
+    }
     console.error("Error adding company data:", error);
     alert("오류가 발생했습니다.");  // 사용자에게 오류 메시지를 표시합니다.
     throw error;

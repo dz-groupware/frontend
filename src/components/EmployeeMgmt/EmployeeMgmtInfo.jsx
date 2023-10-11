@@ -17,8 +17,6 @@ export default function EmployeeMgmtInfo({ pageId }) {
     const isDuplicated = useSelector(state => state.employeeMgmt.isDuplicated);
     const isSignUpChecked = useSelector(state => state.employeeMgmt.isSignUpChecked);
     const isDataFetched = useSelector(state => state.employeeMgmt.idForForm);
-    const newImageFile = useSelector(state => state.employeeMgmt.uploadedFile);
-    const defaultImageUrl = "https://yourdomain.com/pathttps://img.freepik.com/free-vector/young-businessman-showing-ok-sign-hand-drawn-cartoon-art-illustration_56104-1093.jpg?size=626&ext=jpg&ga=GA1.1.2127282484.1692942479&semt=sphh-to-default-image.jpg"; // 여기에 기본 이미지 URL을 지정하세요.
 
 
 
@@ -165,11 +163,13 @@ export default function EmployeeMgmtInfo({ pageId }) {
                 }
             });
 
+
             if (missingFields.length > 0) {
                 console.log("Missing fields:", missingFields);
                 alert("모든 필수 필드를 채워주세요: " + missingFields.join(", "));
                 return;
             }
+
 
             if (employeeInfo.privEmail && !employeeInfo.privEmail.includes('@')) {
                 console.log('privEmail:', employeeInfo.privEmail);

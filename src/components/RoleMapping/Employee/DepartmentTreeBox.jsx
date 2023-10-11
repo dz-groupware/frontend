@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { getEmployeeByDepartmentIdApi, getSubsidiaryDepartmentsWithEmployeeCount } from "../../../api/company";
 import EmployeeBox from "./EmployeeBox";
 
-export function DepartmentTreeBox({ refresh, item, depth=0, companyId, activeEmp, handleEmpClick, headers, isEditMode }) {
+export function DepartmentTreeBox({superParentCompId, refresh, item, depth=0, companyId, activeEmp, handleEmpClick, headers, isEditMode }) {
   const [expanded, setExpanded] = useState(false);
   const { data: departmentList, isLoading: departmentLoading, error: departmentError, setShouldFetch: setDeptFetch } = useFetchData(getSubsidiaryDepartmentsWithEmployeeCount,
     { 
@@ -70,6 +70,7 @@ export function DepartmentTreeBox({ refresh, item, depth=0, companyId, activeEmp
         <>
           {departmentList.map((subItem) => (
               <DepartmentTreeBox 
+                superParentCompId={superParentCompId}
                 key={"d-"+subItem.departmentId}
                 item={subItem} 
                 depth={depth+1}
@@ -94,7 +95,7 @@ export function DepartmentTreeBox({ refresh, item, depth=0, companyId, activeEmp
               masterYn={subItem.empMasterYn}
               depth={depth+1}
               activeEmp={activeEmp}
-              onClick={() => handleEmpClick({id: subItem.empId, masterYn: subItem.empMasterYn})}
+              onClick={() => handleEmpClick({ id: subItem.empId, compId: companyId, masterYn: subItem.empMasterYn}, superParentCompId)}
               isEditMode={isEditMode}
             />
           ))}

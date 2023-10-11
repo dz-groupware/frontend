@@ -283,6 +283,11 @@ list-style: none;
 > .title {
   display: flex;
   margin: 10px;
+  cursor: pointer;
+  &:hover {
+    background-color: rgb(214,236,248);
+    border-radius: 5px;
+  }
   > img {
     margin: 5px;
     width: 20px;

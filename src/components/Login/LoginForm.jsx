@@ -81,6 +81,7 @@ const StyledForm = styled.form`
   align-items: center;
   align-content: end;
   justify-content: center;
+  
 `;
 const LoginText = styled.div`
   align-self: flex-start;  

@@ -12,7 +12,11 @@ const companyMgmtInitialState = {
     businessType: '',
     repName: '',
     repIdNum: '',
+    privEmail:'',
     repTel: '',
+    gender: '',
+    loginId:'',
+    loginPw:'',
     businessNum: '',
     corpType: '',
     corpNum: '',
@@ -20,11 +24,14 @@ const companyMgmtInitialState = {
     openingDate: '',
     closingDate: '',
     address: '',
-    deletedYn: false
+    deletedYn: false,
+    employeeId:null,
   },
   idForForm: null,
   isVisible: false,
-  searchList: JSON.parse('[{"":""}]')
+  searchList: JSON.parse('[{"":""}]'),
+  isDuplicated: false,
+  isSignUpChecked: false, 
 };
 
 const employeeMgmtInitialState = {

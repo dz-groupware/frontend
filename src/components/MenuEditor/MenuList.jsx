@@ -63,12 +63,19 @@ color: black;
 text-align: center;
 font-size: medium;
 padding: 3px 3px 3px 5px;
-
+cursor: pointer;
+&:hover {
+  background-color: #effaff;
+}
 > #menuitemname {
   padding: 18px 0 0 10px;
+  transition: all 0.3s ease;
 }
 
 > img {
+  padding: 5px;
+  border-radius: 10px;
+  background-color: #1d2437;
   border-radius: 10px;
 }
 

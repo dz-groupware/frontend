@@ -27,7 +27,8 @@ color: #1d2437;
   width: 50px;
   height: 50px;
   border-radius: 100%;
-  box-shadow: 7px #ffffff;
+  box-shadow: 2px 2px #9a959563,
+  inset 2px 2px #9a959563;
   outline: none;
 }
 

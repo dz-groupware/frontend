@@ -43,7 +43,7 @@ export default function ProfileModal({ profile, empId, setProfileModal }) {
 
   if (user) {
     return (
-      <ModalBackdrop onClick={modalOff}>
+      <ModalBackdrop onClick={() => {setProfileModal(false)}}>
         <ModalView onClick={(e) => e.stopPropagation()}>
           <Profile>  
             <img src={user['imageUrl']} alt='p_img' />
@@ -51,7 +51,7 @@ export default function ProfileModal({ profile, empId, setProfileModal }) {
               <div id="prf_name">{user['empName']}</div>
               <div>{user['compName']} / {user['deptName']}</div>
               <p>최근접속 : {user['lastAccess']}</p>
-              <p>현재접속 : {currentTime.toLocaleString()}</p>
+              <p>현재접속 : {currentTime.toLocaleString("en-GB", { hour12: false })}</p>
             </div>
             <div onClick={handleLogOut}>
               <AiOutlinePoweroff />
@@ -155,15 +155,16 @@ width: 100%;
     }
   > p {
     padding-left: 10px;
-    color: grey;
+    color: #2d2929;
     font-size: 12px;
     margin: 0;
   }  
-  > div > sgv {
-    color: white;
-    width: 20px;
-    height: 20px;
-    }
+}
+> div > svg {
+  color: white;
+  width: 20px;
+  height: 20px;
+  margin: 0 0 0 5px;
 }
 `;
 

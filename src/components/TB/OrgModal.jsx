@@ -21,10 +21,9 @@ export default function OrgModal({ setOrgModal, empId }){
   const [clickedComp, setClickedComp] = useState('');
   const [clickedDept, setClickedDept] = useState('');
   const [clickedEmp, setClickedEmp] = useState('');
-  console.log(clickedComp, clickedEmp);
 
   useEffect(() => {
-    async function LoadData(){
+    const LoadData = async() => {
       const res = await orgTreeApi('basic', "","");
       if (Array.isArray(res.data.data)) {
         setData(res.data.data);
@@ -33,14 +32,14 @@ export default function OrgModal({ setOrgModal, empId }){
     LoadData();
   }, []);  
 
-  async function loadEmpList(type, compId, deptId){
+  const loadEmpList = async(type, compId, deptId) => {
     const res = await orgEmpListApi(type, compId, deptId);
     if (Array.isArray(res.data.data)) {
       setEmpList(res.data.data);
     }
   }
 
-  function EmpDetailHandler(detailData){
+  const EmpDetailHandler = (detailData) => {
     if(detail === detailData){
       setDetailOpen(false);
     } else {
@@ -50,10 +49,11 @@ export default function OrgModal({ setOrgModal, empId }){
     setClickedEmp(detailData['deptName']+detailData['empName']);
   }
 
-  function searchHandler(){
+  const searchHandler = () => {
     setData(JSON.parse('[]'));
     setEmpList(JSON.parse('[]'));
     searchOrg(0, searchOption, searchText).then(res => {
+      console.log("searchOption : ", searchOption);
       if(searchOption === 'all'){
         if (res.data.data.Tree !== 0) {
           setData(res.data.data.Tree)
@@ -63,10 +63,10 @@ export default function OrgModal({ setOrgModal, empId }){
         }
       }
       if(searchOption === 'dept'){
-        setData(res.data.data.data);
+        setData(res.data.data);
       }
       if(searchOption === 'emp'){
-        setEmpList(res.data.data.data);
+        setEmpList(res.data.data);
       }
     });
   };
@@ -74,8 +74,6 @@ export default function OrgModal({ setOrgModal, empId }){
   const modalOff = () => {
     setOrgModal(false);
   };
-
-  console.log(data);
 
   return (
     <ModalBackdrop onClick={modalOff}>
@@ -103,7 +101,6 @@ export default function OrgModal({ setOrgModal, empId }){
               <CompList value={a} loadEmpList={loadEmpList} clickedComp={clickedComp} setClickedComp={setClickedComp} clickedDept={clickedDept} setClickedDept={setClickedDept} key={a['name']+a['id']}/>
             ))
           } 
-          
           </DeptList>
           <EmpList value={empList} handler={EmpDetailHandler} clickedEmp={clickedEmp} setClickedEmp={setClickedEmp}/>
           {detailOpen ? <EmpDetail list={detail}/> : <Empty/>}
@@ -117,29 +114,28 @@ export default function OrgModal({ setOrgModal, empId }){
 function CompList({ value, loadEmpList, clickedComp, setClickedComp, clickedDept, setClickedDept }) {
   const [open, setOpen] = useState(false);
   const [subItem, setSubItem] = useState([]);
-  function handleItem() {
+  const handleItem = () => {
+    console.log('comp click : ', value);
     if (value['type'] === 'comp') {
-      orgTreeApi(value['type'], value['compId'], '').then(res => {
+      orgTreeApi(value['type'], value['id'], '').then(res => {
         if (Array.isArray(res.data.data)) {
           setSubItem(res.data.data);
         }
       });
+      loadEmpList(value['type'], value['id'], '');
+      setClickedComp(value['type']+value['id']);
+
     } else {
       orgTreeApi(value['type'], value['compId'], value['id']).then(res => {
         if (Array.isArray(res.data.data)) {
           setSubItem(res.data.data);
         }
       });
-    }
-    loadEmpList(value['type'], value['compId'], value['id']);
-    setOpen(!open);
-    if(value['type'] === 'comp'){
-      setClickedComp(value['type']+value['id']);
-    }
-    if(value['type'] === 'dept'){
+      loadEmpList(value['type'], value['compId'], value['id']);
       setClickedComp('comp'+value['compId']);
       setClickedComp(value['type']+value['id']);
     }
+    setOpen(!open);
   }
 
   return (
@@ -164,7 +160,7 @@ export function DeptTree({ value, loadEmpList, clickedComp, setClickedComp, clic
   const [open, setOpen] = useState(false);
   const [subItem, setSubItem] = useState([]);
 
-  function handleItem() {
+  const handleItem = () => {
     if (value['type'] === 'comp') {
       orgTreeApi(value['type'], value['compId'], '').then(res => {
         if (Array.isArray(res.data.data)) {

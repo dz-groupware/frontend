@@ -38,6 +38,7 @@ z-index: 2;
   margin: 20px;
   width: 50px;
   height: 50px;
+  border-radius: 100%;
 }
 > .info {
   font-weight: 100;

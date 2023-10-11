@@ -60,7 +60,8 @@ export function FavList({ favor }) {
 
 export function IconList({ gnb }) {
   return (
-    <>
+    <ListArea>
+      <div>
       {
         gnb.map((a, i) => (
           <Link to={a['name']} key={a['name']+i+'icon'}>
@@ -68,28 +69,28 @@ export function IconList({ gnb }) {
           </Link>
         ))
       }
-    </>
+      </div>
+    </ListArea>
   );
 }  
 
 const ListArea = styled.div`
+border-top: 2px solid rgb(181,194,200);
 height: 100%;
 `;
 const StyledLink = styled.div`
 color:rgb(181,194,200);
 font-size: x-large;
 display: flex;
-&.clicked {
-  background-color: black;
-}
 > a {
   list-style: none;
   text-decoration: none;
   color:rgb(181,194,200);
-  margin: 10px;
-  margin-top: 22px;
-  margin-bottom: 15px;
+  margin: 22px 10px 12px 10px;
   width: calc(100% - 32px);
+  &:hover {
+    color: #9ec8f7;
+  }
 }
 
 > span {

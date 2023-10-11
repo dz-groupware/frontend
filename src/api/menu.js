@@ -51,7 +51,7 @@ export function searchAPI(pageId, formData) {
   return axiosInstance.get(
     `/menu/lnbs`,{
       params: {
-        gnbName: `${formData.get("gnbName")}%`,
+        gnbName: `${formData.get("gnbName")}/%`,
         name: `%${formData.get("name")}%`, 
         pageId: `${formData.get("pageOption")}`, 
       },

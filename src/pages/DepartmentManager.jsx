@@ -316,9 +316,10 @@ export default function DepartmentManager({ pageId }) {
     }
   }, [detail.isChanging]);
   useEffect(() => {
-    console.log(typeof item['id']);
+    console.log("item : ", typeof item['id']);
     if (item['id'] > 0 ){
       console.log('item id : ', item)
+      console.log('pageId : ', pageId)
       getDepartmentById(item['compId'], item['id'], pageId).then(res => { 
         updateSubItem(item['id'], res.data.data);
       });      
@@ -329,6 +330,7 @@ export default function DepartmentManager({ pageId }) {
     if (search.on){
       try {
         findDeptNameAndCode(search.option, search.text, pageId).then(res => {
+          console.log('res : ', res.data.data);
           setResult(res.data.data);
           setSearch({ ...search, on: false });
         });  
@@ -401,10 +403,9 @@ justify-content: space-between;
 width: 100%;
 color: #1d2437;
 > #deptTitle {
-  margin: 25px 0 10px 20px;
-  font-size: x-large;
+  margin: 15px 0 5px 20px;
+  font-size: large;
   font-weight: bold;
-  color: rgb(32,35,44);
 }
 `;
 const Info = styled.div`
@@ -412,15 +413,20 @@ display: flex;
 justify-content: center;
 > div {
   margin: 10px;
-  padding: 10px;
-  padding-left:15px;
+  padding: 10px 10px 10px 15px;
   width: 100%;
   height: 40px;
   background-color: rgb(214,236,248);
   border: 1px solid rgb(146,183,214);
   border-radius: 5px;
-  font-size: small;
-  color: #414854;
+  color: #1d2437;
+  display: flex;
+  > div {
+    margin: 3px 0 0 5px;
+  }
+  > svg {
+    margin-top : 0;
+  }
 }
 `;
 const DetailArea = styled.div`

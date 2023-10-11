@@ -2,10 +2,9 @@ import styled from 'styled-components';
 
 import DeptItem from './DeptItem';
 import { useEffect, useState } from 'react';
-import { Loading } from '../../pages/VIEW';
+// import { Loading } from '../../pages/VIEW';
 import Retry from '../../common/Error/Retry';
 
-// 재귀가 아니라 리스트로 할 수 있는지 찾아보기
 export default function SearchResult ({ result, setItem, detail, setDetail, filter }){
   const [data, setData] = useState([]);
   const [error, setError] = useState({ org: false });
@@ -13,38 +12,47 @@ export default function SearchResult ({ result, setItem, detail, setDetail, filt
   // console.log(filter, result);
   // console.log(data);
   useEffect(() => {
+
     if (result.length > 0) {
       setError({ org: false });
       console.log(filter, typeof result[0]['enabledYn']);
 
-    switch (filter) {
-      case 'all':
-        setData(result);
-        break;
-      case 'enableY':
-        setData(result.filter(a => a['enabledYn'] === true));
-        break;
-      case 'enableN':
-        setData(result.filter(a => a['enabledYn'] === false));
-        break;
-      case 'manageY':
-        setData(result.filter(a => a['managementYn'] === true));
-        break;
-      case 'manageN':
-        setData(result.filter(a => a['managementYn'] === false));
-        break;
-      case 'includY':
-        console.log('여기 in Y')
-        setData(result.filter(a => a['includedYn'] === true));
-        break;
-      case 'includN':
-        setData(result.filter(a => a['includedYn'] === false));
-        break;
-      default: 
-        console.log('error : 잘못된 필터 입니다.');
-    }} else {
-      console.log('result length is 0, ', result.length, result);
-      setError({ org: true });
+      try{
+        switch (filter) {
+          case 'all':
+            setData(result);
+            break;
+          case 'enableY':
+            console.log('enabledY : ', result);
+            setData(result.filter(a => a['enabledYn'] === true));
+            break;
+          case 'enableN':
+            setData(result.filter(a => a['enabledYn'] === false));
+            break;
+          case 'manageY':
+            setData(result.filter(a => a['managementYn'] === true));
+            break;
+          case 'manageN':
+            setData(result.filter(a => a['managementYn'] === false));
+            break;
+          case 'includY':
+            console.log('여기 in Y')
+            setData(result.filter(a => a['includedYn'] === true));
+            break;
+          case 'includN':
+            setData(result.filter(a => a['includedYn'] === false));
+            break;
+          default: 
+           setData([]);
+            console.log('error : 잘못된 필터 입니다.');
+        }
+      } catch (error) {
+        setData([]);
+        console.log('result length is 0, ', result.length, result);
+        setError({ org: true });
+      }
+    } else {
+      setData([]);
     }
   }, [filter, result]);
   // console.log("SearchResult : ", result)
@@ -55,12 +63,12 @@ export default function SearchResult ({ result, setItem, detail, setDetail, filt
           <DeptItem key={'item::'+ a['name']} dept={a} setItem={setItem} detail={detail} setDetail={setDetail} className={`${detail.id === a['id']}`}/>
         ))
       } 
-      {
+      {/* {
         result.length === 0 && 
         <Loading />
-      }
+      } */}
       {
-        data.length === 0 && error.org &&
+        error.org &&
         <Retry />
       }
     </ResultContent>

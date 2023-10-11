@@ -6,7 +6,8 @@ import { AiOutlineStar, AiOutlineInfoCircle, AiOutlineSearch, AiFillStar } from 
 import {GnbApi, FavorApi, searchAPI, PageListApi} from '../api/menu';
 
 import MenuList from '../components/MenuEditor/MenuList';
-import { GnbDetail, MenuDetail } from '../components/MenuEditor/Detail';
+import GnbDetail from '../components/MenuEditor/GnbDetail';
+import MenuDetail from '../components/MenuEditor/MenuDetail';
 import Retry from '../common/Error/Retry';
 import { ButtonTitle } from '../common/styles/Button';
 
@@ -78,9 +79,7 @@ export default function MenuEditor({ pageId }){
   };
 
   useEffect(() => {
-    console.log('reRender');
     if(reRender){
-      // gnb 리스트 가져오기
       GnbApi(pageId).then(res => {
         if (Array.isArray(res.data.data)) {
           setGnbList(res.data.data);
@@ -88,7 +87,6 @@ export default function MenuEditor({ pageId }){
           setError({ ...detail, gnb: true });
         };
       });
-      // 즐겨찾기 가져오기
       FavorApi(pageId, 'load').then(res => {
         console.log(res.data.data);
         if (res.data.data === 1){
@@ -107,15 +105,29 @@ export default function MenuEditor({ pageId }){
           setPage(res.data.data);
         } else {
           setError({ ...detail, pageOption: true });
+        }
+      });
+    }
+  }, []);
+
+  useEffect(() => {
+    if(reRender){
+      GnbApi(pageId).then(res => {
+        if (Array.isArray(res.data.data)) {
+          setGnbList(res.data.data);
+        } else {
+          setError({ ...detail, gnb: true });
+        };
+      });
+      PageListApi(pageId).then(res => {
+        if (Array.isArray(res.data.data)) {
+          setPage(res.data.data);
+        } else {
+          setError({ ...detail, pageOption: true });
         }});
-      // const formData = new FormData(document.getElementById('searchForm'));
-      //   searchAPI(pageId, formData)
-      // 일단 검색 결과는 저장시에 다시 렌더링 되게 하는거 제외시킴 
-      // 한다면 기본 검색 설정에서는 리렌더링 안 시킬 예정
     }
     setReRender(false);
-  // }, [pageId, reRender]);
-  }, [reRender]);
+  }, [reRender])
 
   return (
     <Module>
@@ -248,7 +260,7 @@ margin:10px;
 height: calc(100% - 150px);
 background-color: white;
 width: 390px;
-border: 1px solid rgb(171,172,178);
+border: 1px solid #1d2437;
 color: black;
 box-shadow: inset 1px 1px 1px 0px rgba(255,255,255,.3),
             3px 3px 3px 0px rgba(0,0,0,.1),
@@ -262,7 +274,7 @@ export const SearchForm = styled.form`
 padding: 5px;
 height: 110px;
 background-color: #f2f3f6;
-border-top: 3px solid #1d2437;
+border-top: 2px solid #1d2437;
 border-bottom: 1px solid #1d2437;
 color: #1d2437;
 min-width: 370px;

@@ -22,10 +22,9 @@ export default function GNB({ gnb, favor }){
             setMenuOn([true, false]);
           }
         }}/>
-        <hr />
         <IconList gnb={gnb}/>
       </GNBIconArea>
-      <GNBMenuArea id='gnbMenu' className={`menu main ${menuOn[0]} ? 'true' : 'false'}`}>
+      <GNBMenuArea id='gnbMenu' className={`menu ${menuOn[0]} ? 'true' : 'false'}`}>
         <TopIconArea>
           <AiOutlineMenu onClick={() => {setMenuOn([true, false]);}} />
           <AiOutlineStar onClick={() => {setMenuOn([false, true]);}} />
@@ -45,22 +44,24 @@ export default function GNB({ gnb, favor }){
 
 export const GNBIconArea = styled.div`
 display:block;
-width: 45px;
+width: 46px;
 height: 100%;
-background-color:rgb(66,71,84);
+background-color:#1d2437;
 color:rgb(181,194,200);
 position : absolute;
 overflow : scroll;
+z-index: 1;
+
 &::-webkit-scrollbar{
   display: none;
 }
 > svg {
   width:35px;
   height:35px;
-  margin: 15px 7px 7px 7px;  
+  margin: 15px 7px 7px 5px;  
   cursor: pointer;
 }
-> a {
+> div > div > a {
   text-decoration: none;
   > img {
     position: relative;
@@ -73,22 +74,37 @@ overflow : scroll;
 export const GNBMenuArea = styled.div`
 padding-top: 10px;
 position: absolute;
-margin-left: 45px;
+margin-left: 44px;
 width: 200px;
 height: 100%;
-background-color: rgb(66,71,84);
+background-color: #1d2437;
 color:rgb(181,194,200);
 cursor: pointer;
 overflow: hidden;
-&.false {
-  left: -300px;
-  top: 0;
-  opacity: 0;
+box-shadow: inset 1px 1px 1px 0px rgba(255,255,255,.3),
+            3px 3px 3px 0px rgba(0,0,0,.7),
+            1px 1px 3px 0px rgba(0,0,0,.7);
+            outline: none;
+/* &:hover + .menu.false {
+  left: 0;
+  opacity: 1;
   transition: left 2s;
+} */
+/* &:hover + .menu.true {
+  left: 0;
+  opacity: 1;
+  transition: left 2s;
+} */
+&.false {
+  left: -200px;
+  top: 0;
+  opacity: 1;
+  transition: all 1s ease;
 }
 &.true {
-  left:0px;
+  left: 0;
   opacity:1;
+  transition: all 1s ease;
 }
 > a {
   color:rgb(181,194,200);
@@ -109,13 +125,15 @@ color:rgb(181,194,200);
 cursor: pointer;
 overflow: hidden;
   &.false {
-    left: -300px;
-    top: 0;
-    opacity: 0;
+  left: -200px;
+  top: 0;
+  opacity: 1;
+  transition: all 1s ease;
   }
   &.true {
-    left:0px;
+    left: 0;
     opacity:1;
+    transition: all 1s ease;
   }
   > div > img {
     width: 30px;
@@ -127,7 +145,6 @@ overflow: hidden;
 `;
 export const TopIconArea = styled.div`
 display: flex;
-border-bottom: 2px solid rgb(181,194,200);
 > * {
   width: 30px;
   height: 30px;

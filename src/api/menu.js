@@ -51,7 +51,7 @@ export function searchAPI(pageId, formData) {
   return axiosInstance.get(
     `/menu/lnbs`,{
       params: {
-        gnbName: `${formData.get("gnbName")}%`,
+        gnbName: `${formData.get("gnbName")}/%`,
         name: `%${formData.get("name")}%`, 
         pageId: `${formData.get("pageOption")}`, 
       },
@@ -159,3 +159,13 @@ export function PageListApi(pageId){
   );
 }
 
+export function test(){
+  return axiosInstance.get(
+    `/menu/defaultMenu`, {
+      headers: { 
+        'Content-Type': 'application/json',
+        'menuId': '0',
+      },
+    }    
+  );
+}

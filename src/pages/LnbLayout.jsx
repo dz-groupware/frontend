@@ -225,6 +225,7 @@ height: 100%;
 const Menu = styled.ul`
 margin: 2px;
 background-color: #fefffe;
+cursor: pointer;
 `;
 const ItemChild = styled.div`
 background-color: #e3e8ed;

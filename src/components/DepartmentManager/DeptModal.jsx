@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
-import { getDepartemnt, getDepartmentList } from '../../api/department';
+import { getDepartemnt, getDepartmentById } from '../../api/department';
 
 export default function DeptModal({ form, setModalOn, setForm, pageId }){
   const [item, setItem] = useState(JSON.parse('[{"":""}]'));
@@ -13,7 +13,7 @@ export default function DeptModal({ form, setModalOn, setForm, pageId }){
           setItem(res.data.data);
         });    
       } else {
-        throw new Error('pageId is undefined');
+        console.log('pageId is undefined');
       }
     } catch (error) {
       console.log(error);
@@ -34,7 +34,7 @@ export default function DeptModal({ form, setModalOn, setForm, pageId }){
           </div>
           {
             item.map((a, i) => (
-              <Item form={form} data={a} setModalOn={setModalOn} setForm={setForm} key={a['name']+'gnb'}/>
+              <Item form={form} data={a} setModalOn={setModalOn} setForm={setForm} pageId={pageId} key={a['name']+'gnb'}/>
             ))
           }
           </div>
@@ -45,7 +45,7 @@ export default function DeptModal({ form, setModalOn, setForm, pageId }){
   );
 }
 
-function Item({ form, data, setModalOn, setForm }) {
+function Item({ form, data, setModalOn, setForm, pageId }) {
   const [open, setOpen] = useState(false);
   const [subItem, setSubItem] = useState([]);
 
@@ -58,8 +58,8 @@ function Item({ form, data, setModalOn, setForm }) {
 
   const handleMenuItem = (a) => {
     if(subItem.length === 0) {
-      getDepartmentList(data['id'])
-      .then(res => setSubItem(res.data.data));
+      console.log(data);
+      getDepartmentById(data['compId'], data['id'], pageId).then(res => setSubItem(res.data.data));
     }
     setOpen(!open);
     setForm({...form, parId: data['id'], parName: data['name']});
@@ -72,11 +72,13 @@ function Item({ form, data, setModalOn, setForm }) {
       </div>
       { subItem.length > 1 && open &&
         subItem.map((a, i) => (
-          <Item form={form} data={a} setModalOn={setModalOn} setForm={setForm} key={a['name']+'lnb'}/>
+          data['id'] === a['id'] ? null : (
+            <Item form={form} data={a} setModalOn={setModalOn} setForm={setForm} pageId={pageId} key={a['name']+'lnb'}/>
+          )
         ))
       }
     </Menu>
-  )    
+  );    
 }
 
 export const ModalBackdrop = styled.div`
@@ -122,7 +124,6 @@ export const MenuArea = styled.div`
 margin: 5px 15px 5px 15px;
 width: 90%;
 height: 100%;
-
 > div {
   padding: 10px;
   background-color: white;
@@ -150,4 +151,13 @@ height: 100%;
 export const Menu = styled.div`
 margin: 10px;
 margin-left: 20px;
+> div:hover {
+  color: #1b75ce;
+  cursor: pointer;
+}
+
+> div > div.item.disable {
+  display: none;
+}
+
 `;

@@ -15,8 +15,8 @@ export default function GnbLayout() {
   const [favor, setFavor] = useState(JSON.parse(`[{}]`));
   const [routeList, setRouteList] = useState(new Map([
     [`/`, { menuId: 0, gnbId: 0, gnbName: 'main', page: 'Main' }],
-    [`/FORBIDDEN`, { menuId: 0, gnbId: 0, gnbName: '403', page: 'FORBIDDEN' }],
-    [`/SERVICE_UNAVAILABLE`, { menuId: 0, gnbId: 0, gnbName: '503', page: 'SERVICE_UNAVAILABLE' }]]));
+    [`/FORBIDDEN`, { menuId: 0, gnbId: 0, gnbName: '403', page: 'Error/FORBIDDEN' }],
+    [`/SERVICE_UNAVAILABLE`, { menuId: 0, gnbId: 0, gnbName: '503', page: 'Error/SERVICE_UNAVAILABLE' }]]));
 
   const [empId, setEmpId] = useState(localStorage.getItem("empId"));
   const [routeOn, setRouteOn] = useState(false);
@@ -67,7 +67,6 @@ export default function GnbLayout() {
       basicInfo(0);
     }  
   }, [empId]);
-
 
   useEffect(() => {
     try{

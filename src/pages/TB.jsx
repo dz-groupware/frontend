@@ -79,7 +79,7 @@ display: flex;
 `;
 const ProfileArea = styled.div`
 display: flex;
-width: 250px;
+width: 280px;
 right: 50px;
 `;
 const IconArea = styled.div`

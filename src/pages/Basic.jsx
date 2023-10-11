@@ -1,6 +1,11 @@
+import { useEffect } from 'react';
 import styled from 'styled-components';
-
+import {test} from '../api/menu';
 export default function Basic() {
+  useEffect(() => {
+    // console.log('이거 실행됨')
+    // test();
+  }, []);
   return(
     <Content>
       <img src='/img/page/basic.gif' alt='animation'/>

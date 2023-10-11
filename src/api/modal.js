@@ -51,7 +51,7 @@ export function searchOrg(pageId, type, text){
       }, 
       headers: { 
         'Content-Type': 'multipart/form-data',
-        'menuId': pageId,
+        'menuId': '0',
       },
     }
   );

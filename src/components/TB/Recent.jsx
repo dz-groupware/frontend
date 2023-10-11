@@ -160,7 +160,7 @@ const ChipMoreContainer = styled.div`
 border: 1px solid #1d2437;
 border-radius: 5px;
 background-color: white;
-margin: 10px;
+margin: 5px;
 width: 40px;
 height: 45px;
 font-size: large;

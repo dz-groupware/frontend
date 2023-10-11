@@ -26,6 +26,7 @@ axiosInstance.interceptors.request.use(
       throw new Error('UNAUTHORIZED');
     }
     if (err.response && err.response.status === 403) {
+      console.log(err);
       window.location.href='/FORBIDDEN';
     } else {
       return Promise.reject(err);
@@ -48,6 +49,7 @@ axiosInstance.interceptors.response.use(
       console.log('net error');
     }
     if (err.response && err.response.status === 403) {
+      console.log(err);
       window.location.href='/FORBIDDEN';
     } 
     console.log('response Error : ', err);

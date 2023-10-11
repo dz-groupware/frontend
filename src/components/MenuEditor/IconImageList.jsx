@@ -41,7 +41,7 @@ export default function IconImageList({ pageId, newIconFile, newIconUrl, iconUrl
 
 export const IconDiv = styled.div`
 width: 100%;
-height: 100%;
+height: calc(100% - 40px);
 overflow: scroll;
 &::-webkit-scrollbar {
   display: none;
@@ -51,7 +51,8 @@ border-radius: 5px;
 padding: 5px;
 display: flex; /* flex 레이아웃 사용 */
   flex-wrap: wrap; /* 요소들이 가로로 나열되고 공간이 부족하면 아래로 내려감 */
-
+  justify-content: flex-start; /* 가로 정렬을 시작 지점으로 설정 (왼쪽 정렬) */
+  align-content: flex-start; 
 > div {
   width: 50px;
   height: 50px;

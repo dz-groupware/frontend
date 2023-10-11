@@ -51,6 +51,7 @@ export function modifyDepartment(dept, pageId){
 }
 
 export function getDepartmentById(compId, parId, pageId){
+  console.log('in api : ', pageId);
   return axiosInstance.get(
     `/department/dept-list?compId=${compId}&parId=${parId}`, {
   headers: {
@@ -77,31 +78,6 @@ export function deleteDepartment(id, pageId){
   'menuId' : pageId
 }})
 }
-
-//*
-
-// export function addDepartment(dept, pageId){    
-//   return axiosInstance.post(
-//     `/department/dept-all`, dept, {
-//   headers: {
-//   "Content-Type": "application/json",
-//   'menuId' : pageId
-// }})
-// }
-
-
-
-export function getDepartmentList(parId, pageId){    
-  return axiosInstance.get(
-    `/department/dept-list?compId=0&parId=${parId}`, {
-  headers: {
-  "Content-Type": "application/json",
-  'menuId' : pageId
-}})
-}
-
-
-
 
 export function saveAll(dept, pageId){    
   console.log(dept, typeof(dept));

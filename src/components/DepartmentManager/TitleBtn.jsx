@@ -14,23 +14,22 @@ export default function TitleBtn({ favor, handleFavor, detail, setDetail, disabl
 
 const BtnContent = styled.div`
 display: flex;
-margin-top: 10px;
 > * {
-  margin: 5px;
+  font-size: 14px;
+  margin: 10px 5px 5px 5px;
 }
 > div > svg {
-  margin: 5px 10px 0 0;
-  width: 20px;
-  height: 30px;
-  width: 30px;
-  /* color: rgb(255,231,147); */
+  margin: 0 5px 0 0;
+  padding: 0 5px 0 0;
+  width: 25px;
+  height: 25px;
   color: rgb(252,214,80);
 }
 `;
 
 const Pipe = styled.div`
 width: 2px;
-height: 60%;
+height: 80%;
 background-color: #1d2437;
-margin: 10px 0 0 0;
+margin: 3px 0 0 5px;
 `;

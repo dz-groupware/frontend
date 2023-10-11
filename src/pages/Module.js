@@ -29,9 +29,9 @@ export default function Module({ gnb, setGnb, routeList }){
   // 페이지를 이동하면 
   useEffect(() =>{
     try {
-      console.log("routeList : ", routeList);
-      console.log("path : ", decodeURIComponent(location.pathname));
-      console.log("route value : ", routeList.get(decodeURIComponent(location.pathname)));
+      // console.log("routeList : ", routeList);
+      // console.log("path : ", decodeURIComponent(location.pathname));
+      // console.log("route value : ", routeList.get(decodeURIComponent(location.pathname)));
       handleLoad(routeList.get(decodeURIComponent(location.pathname)));
     } catch (error) {
       console.log('Unknown Error', error);

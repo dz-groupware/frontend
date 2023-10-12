@@ -38,9 +38,9 @@ export default function LoginForm() {
         localStorage.setItem("isLogin", true);
         navigate('/',{state:{ menuId: "0" }});
     } else if (error && error.data && error.data.message) {  // error 객체에서 message 추출
+      console.log("에러발생" , error);
       setErrorMessage(error.data.message);
     }
-    console.log(error);
     setStatus(null);
   },[status, error]);
 

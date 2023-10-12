@@ -2,7 +2,6 @@ import { AiOutlinePoweroff } from 'react-icons/ai';
 import styled from 'styled-components';
 
 import { logOut } from '../../api/login';
-import { UnAuthorized } from '../../common/Error/Error';
 
 import PosiList from './PosiList';
 import { useEffect, useState } from 'react';
@@ -14,11 +13,12 @@ export default function ProfileModal({ profile, empId, setProfileModal }) {
   const [emp, setEmp] = useState([]);
   const [currentTime, setCurrentTime] = useState(new Date());
   const handleLogOut = () => {
-    logOut();
-    localStorage.setItem("empId", 0);
-    localStorage.setItem("compId", 0);
-    console.log('done')
-    window.location.href = '/login';
+    logOut().then(() => {
+      localStorage.setItem("empId", 0);
+      localStorage.setItem("compId", 0);
+      console.log('done')
+      window.location.href = '/login';
+    });
   };
 
   const modalOff = () => {
@@ -79,7 +79,7 @@ export default function ProfileModal({ profile, empId, setProfileModal }) {
 };
 
 export const ModalBackdrop = styled.div`
-  z-index: 1; 
+  z-index: 3; 
   position: fixed;
   display : flex;
   justify-content : center;

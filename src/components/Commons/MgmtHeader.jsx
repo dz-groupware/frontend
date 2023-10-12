@@ -26,8 +26,7 @@ export default function MgmtHeader({ title, extraButtonComponents, pageId }) {
         if (res.data.data === 1) {
             console.log('즐겨찾기 on')
             setFavor(true);
-        }
-        if (res.data.data === 0) {
+        } else if (res.data.data === 0) {
             console.log('즐겨찾기 off')
             setFavor(false);
         } else {

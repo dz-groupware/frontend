@@ -1,5 +1,6 @@
 import { Suspense, useEffect, useState } from "react";
 import {  AiOutlineInfoCircle } from 'react-icons/ai';
+import {  IoIosArrowDown, IoIosArrowUp } from 'react-icons/io';
 
 import styled from 'styled-components';
 import Swal from 'sweetalert2';
@@ -15,8 +16,7 @@ import TitleBtn from '../components/DepartmentManager/TitleBtn';
 import SearchForm from '../components/DepartmentManager/SearchForm';
 import SearchResult from '../components/DepartmentManager/SearchResult';
 import DetailTitle from '../components/DepartmentManager/DetailTitle';
-import { Loading } from './VIEW';
-
+import Loading from '../common/styles/Loading';
 
 export default function DepartmentManager({ pageId }) {
   // initialState
@@ -49,6 +49,7 @@ export default function DepartmentManager({ pageId }) {
   const [detail, setDetail] = useState(initDetail);
   const [value, setValue] = useState(initValue);
   const [item, setItem] = useState('');
+  const [info, setInfo] = useState(false);
 
   const [favor, setFavor] = useState(false);
 
@@ -302,6 +303,7 @@ export default function DepartmentManager({ pageId }) {
     setDetail({ ...detail, state: false, save: false });
     // console.log('저장 삭제 버튼 마무리 : ', detail);
   }, [detail.save]);
+
   useEffect(() => {
     if (detail.save === 'save' && detail.isChanging === 'save') {
       setDetail({ ...detail, isChanging: false});
@@ -315,6 +317,7 @@ export default function DepartmentManager({ pageId }) {
       deleteAlert();
     }
   }, [detail.isChanging]);
+
   useEffect(() => {
     console.log("item : ", typeof item['id']);
     if (item['id'] > 0 ){
@@ -352,8 +355,9 @@ export default function DepartmentManager({ pageId }) {
       </DeptTitle>
       <Line />
       <Info>
-          <div>
-            <AiOutlineInfoCircle />&nbsp; 회사별 조직도(부서)를 등록할 수 있으며, '부서/팀/입사' 유형을 선택하여 등록할 수 있습니다.
+          <div onClick={() => {setInfo(!info)}}  className={`${info ? 'on' : 'off'}`} >
+            <div><AiOutlineInfoCircle />&nbsp; 회사별 조직도(부서)를 등록할 수 있으며, '부서/팀/입사' 유형을 선택하여 등록할 수 있습니다.<IoIosArrowDown className={`toggle ${info ? 'up' : 'down'}`} /></div>
+            <div className='content'>자신의 회사는 수정이 가능하지만, 다른 회사는 조회만 가능합니다.</div>
           </div>
       </Info>
       <DetailArea>
@@ -409,23 +413,52 @@ color: #1d2437;
 }
 `;
 const Info = styled.div`
-display: flex;
+display: block;
 justify-content: center;
 > div {
-  margin: 10px;
+  top: 55px;
+  left: 10px;
+  position: absolute;
+  width: calc(100% - 20px);
   padding: 10px 10px 10px 15px;
-  width: 100%;
+  width: calc(100% - 20px);
   height: 40px;
   background-color: rgb(214,236,248);
   border: 1px solid rgb(146,183,214);
   border-radius: 5px;
   color: #1d2437;
-  display: flex;
+  display: block;
+  overflow: hidden;
   > div {
-    margin: 3px 0 0 5px;
-  }
-  > svg {
+    margin: 3px 0 15px 5px;
+    &.content {
+      padding-left: 40px;
+    }
+    > svg {
     margin-top : 0;
+    &.toggle {
+      position: absolute;
+      right: 10px;
+      transition: transform 0.3s;
+    }
+    &.up {
+      transform: rotate(180deg);
+    }
+    &.down {
+      transform: rotate(0deg);
+    }
+
+  }
+  }
+
+  &.on {
+    height: 70px;
+    transition: all 0.3s ease;
+  }
+
+  &.off {
+    height: 40px;
+    transition: all 0.3s ease;
   }
 }
 `;
@@ -477,5 +510,5 @@ const Line = styled.div`
 width: calc(100% - 20px);
 height: 2px;
 background-color: #1d2437;
-margin: 5px 10px 5px 10px;
+margin: 5px 10px 55px 10px;
 `;

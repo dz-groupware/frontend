@@ -8,14 +8,18 @@ import { MdMenuOpen } from "react-icons/md";
 import { searchMenuListAPI } from '../api/gnb';
 
 import Module from './Module';
+import Retry from '../common/Error/Retry';
+import Loading from '../common/styles/Loading.jsx';
 
 export default function LnbLayout({ routeList }) {
+  const [content, setContent] = useState(false);
+  const [loading, setLoading] = useState(false);
   const location = useLocation();
   const [gnb, setGnb] = useState({ id: 0, name: '' });
   const [lnbOpen, setLnbOpen] = useState(true);
-
   const [data, setData] = useState([]);
   const [clicked, setClicked] = useState('');
+
   useEffect(() => {
     try{
       const res = searchMenuListAPI(gnb.id);
@@ -25,44 +29,47 @@ export default function LnbLayout({ routeList }) {
             console.log(res.data.data);
             setData(res.data.data)
           }
+          // setContent(
+            
+          // );
+          // setLoading(false);
         });
       }
     } catch(error) {
-      console.log('searchMenuListAPI error : ', error);
+      setContent(<Retry />);
     }
   }, [gnb.id]);
 
-  return (
-    <Content>
-      <LnbTitle className={`${location.pathname === '/' ? 'main' : 'lnb' }`}>
+  // return ( loading ? <Loading /> : content );
+  return (<Content>
+    <LnbTitle className={`${location.pathname === '/' ? 'main' : 'lnb' }`}>
+      {
+        lnbOpen ? <MdMenuOpen className={`on ${!lnbOpen ? 'open' : 'close'}`} onClick={() => {setLnbOpen(false)}}/>
+        : <AiOutlineMenu className={`off ${lnbOpen ? 'open' : 'close'}`} onClick={() => {setLnbOpen(true)}}/>
+      }
+      
+      <p>{gnb.name}</p>
+    </LnbTitle>
+    <LnbArea>
+      <LNBList className={`${lnbOpen ? 'true' : 'false'}`}>
         {
-          lnbOpen ? <MdMenuOpen className={`on ${!lnbOpen ? 'open' : 'close'}`} onClick={() => {setLnbOpen(false)}}/>
-          : <AiOutlineMenu className={`off ${lnbOpen ? 'open' : 'close'}`} onClick={() => {setLnbOpen(true)}}/>
+          data.map((a, i) => {
+            if (a['id'] !== a['parId']) {
+              return (
+                <MenuTree menu={a} gnb={gnb} key={a['name']+a['id']} clicked={clicked} setClicked={setClicked}/>                                    
+              )
+            }
+            return null;
+          })
         }
-        
-        <p>{gnb.name}</p>
-      </LnbTitle>
-      <LnbArea>
-        <LNBList className={`${lnbOpen ? 'true' : 'false'}`}>
-          {
-            data.map((a, i) => {
-              if (a['id'] !== a['parId']) {
-                return (
-                  <MenuTree menu={a} gnb={gnb} key={a['name']+a['id']} clicked={clicked} setClicked={setClicked}/>                                    
-                )
-              }
-              return null;
-            })
-          }
-        </LNBList>
-        <OutletArea id='route' className={`${location.pathname === '/' ? 'main' : 'lnb'} ${lnbOpen ? 'true' : 'false'}`} >
-          <Routes>
-            <Route path='/*' element={<Module gnb={gnb} setGnb={setGnb} routeList={routeList}/>} />
-          </Routes>
-        </OutletArea>
-      </LnbArea>
-    </Content>
-  );
+      </LNBList>
+      <OutletArea id='route' className={`${location.pathname === '/' ? 'main' : 'lnb'} ${lnbOpen ? 'true' : 'false'}`} >
+        <Routes>
+          <Route path='/*' element={<Module gnb={gnb} setGnb={setGnb} routeList={routeList}/>} />
+        </Routes>
+      </OutletArea>
+    </LnbArea>
+  </Content>);
 }
 
 export function MenuTree({ menu, param, gnb, clicked, setClicked }){
@@ -131,7 +138,6 @@ top: 112px;
 left: 245px;
 width: calc(100% - 245px);
 height: calc(100% - 112px);
-
 &.true {
   left: 245px;
   width: calc(100% - 245px);

@@ -36,7 +36,13 @@ export default function MenuDetail({ pageId, value, detailOff, on, setReRender, 
         menu.set('enabledYn', detail.enabledYn);
         menu.set('sortOrder', detail.sortOrder);
         menu.set('pageId', detail.pageId);
-        await saveMenuAPI(pageId, menu, ((on)+2));
+        await saveMenuAPI(pageId, menu, ((on)+2)).then(() => {
+          Swal.fire({
+            text: "저장되었습니다.",
+            icon: 'success'
+          }); 
+        });
+
       } catch (error) {
         Swal.fire({
           text: "저장에 실패하였습니다.",
@@ -59,7 +65,7 @@ export default function MenuDetail({ pageId, value, detailOff, on, setReRender, 
       detailOff();  
       Swal.fire({
         text: "완료되었습니다.",
-        icon: 'success',
+        icon: 'success'
       });  
     } catch (error) {
       Swal.fire({
@@ -163,7 +169,7 @@ export default function MenuDetail({ pageId, value, detailOff, on, setReRender, 
           </tr>
         </tbody>
       </table>
-      {modalOn && <MenuTree pageId={pageId} setModalOn={setModalOn} handleParMenu={handleParMenu}/>}
+      {modalOn && <MenuTree itemId={detail.id} pageId={pageId} setModalOn={setModalOn} handleParMenu={handleParMenu}/>}
     </DetailDiv>
   );
 

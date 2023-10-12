@@ -127,7 +127,7 @@ export default function CompanyMgmtAside({ pageId }) {
     try {
       // 회사 정보를 가져옵니다.
 
-      console.log(companyMgmt.id);
+      console.log("회사 아이디 알려줘",companyMgmt.id);
       const fetchedCompanyData = await getCompanyDetailsById(companyMgmt.id, pageId);
       console.log(fetchedCompanyData);
       // 가져온 회사 정보와 코드를 함께 showForm 액션에 전달합니다.

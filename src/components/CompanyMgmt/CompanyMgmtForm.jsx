@@ -133,7 +133,7 @@ export default function CompanyMgmtForm({ pageId }) {
         if (name === "loginPw") {
             const regex = /^[a-zA-Z0-9_]{0,98}$/;
             if (!regex.test(value))
-                return console.log("비밀번호형식을지켜주세요");
+                return alert("비밀번호형식을지켜주세요");
 
         }
 

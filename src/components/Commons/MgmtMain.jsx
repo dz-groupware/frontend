@@ -31,8 +31,9 @@ const Container = styled.div`
 `;
 
 const AsideArea = styled.div`
-  width: 300px;
-  min-width: 300px;
+  width: 280px;
+  min-width: 280px;
+  margin-right: 10px;
 `;
 
 const FormArea = styled.div`

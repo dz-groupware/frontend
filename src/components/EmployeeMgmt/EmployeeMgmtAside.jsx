@@ -326,14 +326,14 @@ const Container = styled.div`
 
 const NumberOfEmployeesArea = styled.div`
   position: sticky;
-  height: 50px;
+  height: 40px;
   display:flex;
   justify-content: space-between;
   align-items: center;
   border-bottom:1px solid #ECECEB;
   background-color: #F8F9F9;
   top: 0;
-  font-size: 14px;
+  font-size: 10px;
   padding : 10px;
 `;
 
@@ -341,7 +341,7 @@ const EmployeeListArea = styled.div`
   padding: 20px;
   background-color: #F9F9F9;
   border: none;
-  height: 570px;
+  height: 400px;
 `;
 
 const EmployeeListPageNation = styled.div`
@@ -351,7 +351,7 @@ const EmployeeListPageNation = styled.div`
   width: 100%;  
   background-color: #FFFEFE;
   border-top: 1.5px solid #ECECEB;
-  padding: 10px 0; 
+  padding: 5px 0; 
   height: auto;  // 페이지네이션 영역의 높이도 자동으로 조절
 `;
 
@@ -359,7 +359,7 @@ const EmployeeListPageNation = styled.div`
 const NumberArea = styled.div`
   display: flex;
   width: 100%;
-  margin:20px;
+  margin:15px;
   
 `;
 
@@ -383,7 +383,7 @@ const Element = styled.div`
   flex: 1;
   display: flex;
   align-items: center;
-  font-size: 18px;
+  font-size: 16px;
   
   
   
@@ -394,12 +394,12 @@ const Wrapper = styled.div`
 cursor: pointer;
 border: 1.5px solid #CCCCCC;
 margin-bottom: 10px;
-margin-top: 10px;
+margin-top: 5px;
 padding :10px;
 background-color: ${props => props.$isselected === "true" ? '#e6f4ff' : 'white'};
 border-color: ${props => props.$isselected === "true"? '#7BAAF1' : '#CCCCCC'};
 transition: transform 0.2s ease, box-shadow 0.2s ease;  // 부드러운 변환 효과
-height: 70px;
+height: 60px;
 
 &:hover {
   transform: scale(0.98);  // 원래 크기의 98%로 약간 줄임
@@ -420,8 +420,8 @@ height: 70px;
 `;
 const Image = styled.img`
 
-  width: 50px;  // 원하는 이미지 크기로 조절
-  height: 50px;
+  width: 40px;  // 원하는 이미지 크기로 조절
+  height: 40px;
   margin-right: 20px;  // 오른쪽 여백
 `;
 const EmployeeInfo = styled.div`
@@ -466,7 +466,7 @@ const PageNumber = styled.span`
   color: ${props => (props.$isselected ? "#308EFC" : "#333")};
   font-weight: ${props => (props.$isselected ? "bold" : "normal")};
   border-radius: 3px;
-  font-size: 20px;
+  font-size: 15px;
   transition: background-color 0.3s;
   &:hover {
     background-color: #f3f3f3;

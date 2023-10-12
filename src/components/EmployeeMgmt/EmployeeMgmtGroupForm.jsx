@@ -101,6 +101,7 @@ export default function EmployeeMgmtGroupForm({ pageId }) {
     if (name === "compId") {
       checkIfCompanyHasCEO(value);
       fetchDepartmentsForCompany(value);
+      
       const updatedGroups = [...groupsInfo];
       updatedGroups[idx] = {
         ...updatedGroups[idx],
@@ -355,7 +356,7 @@ const StyledContainer = styled.div`
     flex-direction: column;
     align-items: center;
     overflow-y: auto;
-   height:  700px;
+   height:  460px;
 `;
 
 const EmployeeMgmtGroupInputForm = styled.div`

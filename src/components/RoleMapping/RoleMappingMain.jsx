@@ -69,7 +69,6 @@
     display: flex;
     height: 75%;
     gap: 30px;
-    
   `;
 
   const StyledCompanySection = styled.div`

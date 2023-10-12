@@ -9,6 +9,6 @@ export default function PageContainer({children}) {
 
 const StyledPage = styled.div`
   width: 100%;
-  height: calc(100% - 100px);
+  height: 100%;
   overflow-y: auto;
 `;

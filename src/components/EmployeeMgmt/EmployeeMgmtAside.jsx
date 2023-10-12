@@ -258,7 +258,7 @@ export default function EmployeeMgmtAside({ pageId }) {
       <NumberOfEmployeesArea>
         <NumberArea>
           <Element>
-            <span style={{ margin: "5px", fontWeight: 600 }}>사용자: </span>
+            <span style={{ margin: "7px", fontWeight: 600 }}>사용자: </span>
             <span style={{ color: "#308EFC", fontWeight: 600 }}>
               {
                 isSearchExecuted
@@ -309,17 +309,20 @@ export default function EmployeeMgmtAside({ pageId }) {
 
 
 const Container = styled.div`
+
   position: relative;   
-  max-width: 250px;  
+ width: 100%;  
   margin-left: 20px;
   margin-top: 10px;
-  border : 1.5px solid #CCCCCC;
-  height: 490px;
+  border: 1.5px solid #CCCCCC;
   box-shadow: inset 1px 1px 1px 0px rgba(255,255,255,.3),
             3px 3px 3px 0px rgba(0,0,0,.1),
             1px 1px 3px 0px rgba(0,0,0,.1);
-            outline: none;
-   `;
+  outline: none;
+  display: flex;  
+  flex-direction: column;  
+  height: auto;  // 자동으로 높이를 조절하여 내용을 모두 포함
+`;
 
 const NumberOfEmployeesArea = styled.div`
   position: sticky;
@@ -331,34 +334,32 @@ const NumberOfEmployeesArea = styled.div`
   background-color: #F8F9F9;
   top: 0;
   font-size: 14px;
+  padding : 10px;
 `;
 
 const EmployeeListArea = styled.div`
-position: relative; 
-padding: 10px;
-padding-bottom: 50px;
-height: 350px;
-background-color: #F9F9F9;
-border: none;
-
+  padding: 20px;
+  background-color: #F9F9F9;
+  border: none;
+  height: 570px;
 `;
 
 const EmployeeListPageNation = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  position: absolute;
-  width: 100%;   // Container의 width와 동일하게 설정
+  width: 100%;  
   background-color: #FFFEFE;
   border-top: 1.5px solid #ECECEB;
-  padding: 10px 0; // 상하 패딩 적용
+  padding: 10px 0; 
+  height: auto;  // 페이지네이션 영역의 높이도 자동으로 조절
 `;
 
 
 const NumberArea = styled.div`
   display: flex;
   width: 100%;
-  margin:10px;
+  margin:20px;
   
 `;
 
@@ -372,16 +373,18 @@ const SelectBox = styled.select`
   
 }
 font-weight:bold;
-width: 78px;
+width: 90px;
 border : none;
 background:none;
 cursor: pointer;
-font-size: 12px;
+font-size: 15px;
 `
 const Element = styled.div`
   flex: 1;
   display: flex;
   align-items: center;
+  font-size: 18px;
+  
   
   
 `;
@@ -391,11 +394,12 @@ const Wrapper = styled.div`
 cursor: pointer;
 border: 1.5px solid #CCCCCC;
 margin-bottom: 10px;
+margin-top: 10px;
 padding :10px;
 background-color: ${props => props.$isselected === "true" ? '#e6f4ff' : 'white'};
 border-color: ${props => props.$isselected === "true"? '#7BAAF1' : '#CCCCCC'};
 transition: transform 0.2s ease, box-shadow 0.2s ease;  // 부드러운 변환 효과
-
+height: 70px;
 
 &:hover {
   transform: scale(0.98);  // 원래 크기의 98%로 약간 줄임
@@ -416,15 +420,15 @@ transition: transform 0.2s ease, box-shadow 0.2s ease;  // 부드러운 변환 �
 `;
 const Image = styled.img`
 
-  width: 30px;  // 원하는 이미지 크기로 조절
-  height: 30px;
+  width: 50px;  // 원하는 이미지 크기로 조절
+  height: 50px;
   margin-right: 20px;  // 오른쪽 여백
 `;
 const EmployeeInfo = styled.div`
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  font-size: 12px;
+  font-size: 15px;
 
   & > div + div {
     margin-top: 10px;
@@ -458,11 +462,11 @@ const SpaceArea = styled.div`
 
 const PageNumber = styled.span`
   cursor: pointer;
-  padding: 5px 10px;
+  padding: 10px 10px;
   color: ${props => (props.$isselected ? "#308EFC" : "#333")};
   font-weight: ${props => (props.$isselected ? "bold" : "normal")};
   border-radius: 3px;
-  font-size: 15px;
+  font-size: 20px;
   transition: background-color 0.3s;
   &:hover {
     background-color: #f3f3f3;
@@ -498,6 +502,7 @@ const FilterSection = styled.div`
   justify-content: center;
   align-items: center;
   background-color: #F8F9F9;
+  height: 50px;
 
 `;
 
@@ -508,7 +513,7 @@ const FilterButton = styled.button`
   padding: 5px 10px;
   margin: 5px;
   font-weight: bold;  
-  font-size: 12px; 
+  font-size: 16px; 
   color: ${props => props.$isActive ? '#308EFC' : 'grey'};
   border-bottom: ${props => props.$isActive ? '2px solid #308EFC' : 'none'};
   

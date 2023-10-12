@@ -337,7 +337,6 @@ export default function CompanyMgmtForm({ pageId }) {
         dispatch(companyActions.updateInfo({
                 ...info,
                 parId: selectedValue
-
         }));
 
 
@@ -592,13 +591,13 @@ export default function CompanyMgmtForm({ pageId }) {
                     <option value="direct">선택</option>
                     <option value="010">010</option>
                     <option value="051">051</option>
-                    <option value="02">02</option>
+                    <option value="031">031</option>
                 </PrefixSelect>
                 <Input
                     name="repTel2"
                     value={info.repTel.slice(4, info.repTel.length) || ''}
                     onChange={handleHyphenChange}
-                    placeholder='-'
+                    placeholder='______-_______'
                     maxLength={9}
                     disabled={info.repTel.split('-')[0] === 'direct' || isSignUpChecked}
                 />
@@ -608,14 +607,14 @@ export default function CompanyMgmtForm({ pageId }) {
                 >가입 확인</StyledButton>
             </HalfInputContainer>
 
-            {console.log('gender',info.gender)}
             <InputContainer>
                 <Label>대표자 성별</Label>
                 <label>
-                    <Input type="radio" name="gender" value="여성" checked={info.gender === "여성"} onChange={handleChange} disabled={info.employeeId !== null && info.gender !== '' && info.gender !== "여성"} />여성
+                    <Input type="radio" name="gender" value="여성" checked={info.gender === "여성"} onChange={handleChange} disabled={info.employeeId !== null || idForForm} />여성
                 </label>
                 <label>
-                    <Input type="radio" name="gender" value="남성" checked={info.gender === "남성"} onChange={handleChange} disabled={info.employeeId !== null && info.gender === "여성"} />남성
+                    <Input type="radio" name="gender" value="남성" checked={info.gender === "남성"} 
+                    onChange={handleChange} disabled={info.employeeId !== null || idForForm} />남성
                 </label>
             </InputContainer>
             <HalfInputContainer style={{ borderBottom: "1px solid lightgrey" }}>
@@ -631,6 +630,7 @@ export default function CompanyMgmtForm({ pageId }) {
                 <Label>소속회사</Label>
 
                 <Select name="parId" id="parId" value={info.parId!=''? info.parId : (companyOptions[0]?.id || '')} onChange={handleChange} disabled={!isSignUpChecked}>
+                    <option value="direct">선택</option>
                     {companyOptions.map((company, index) => (
                         <option key={company.id} value={company.id}>{company.nameTree}
                         {console.log('company' , company.id)}

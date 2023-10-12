@@ -20,10 +20,11 @@ export default function GnbLayout() {
 
   const [empId, setEmpId] = useState(localStorage.getItem("empId"));
   const [routeOn, setRouteOn] = useState(false);
-  console.log('라우트리스트',routeList);
+  
   useEffect(() => {
     document.body.style.zoom = "80%";  // 원하는 확대/축소 비율을 설정합니다.
   }, []);
+
   const parseMenuList = (originMenuList) => {
     const menuList = new Map();
     originMenuList.forEach(row => {
@@ -46,20 +47,20 @@ export default function GnbLayout() {
     // 컴포넌트 마운트 시 현재 경로를 기반으로 routeList 업데이트
   };
 
-  const basicInfo = async(empId) => {
-    try{
+  const basicInfo = async (empId) => {
+    try {
       await basicInfoApi(empId).then(res => {
         setProfile(res.data.data.profile);
         setGnb(res.data.data.menu);
-        setFavor(res.data.data.favor);  
+        setFavor(res.data.data.favor);
         setEmpId(res.data.data.empId);
         localStorage.setItem("empId", res.data.data.empId);
         localStorage.setItem("compId", res.data.data.compId);
         initRouteList();
       });
     } catch (error) {
-      console.log('gnb에러',error);
-      window.location.href="/login";
+      console.log('gnb에러', error);
+      window.location.href = "/login";
     }
   };
 
@@ -68,27 +69,27 @@ export default function GnbLayout() {
       basicInfo(empId);
     } else {
       basicInfo(0);
-    }  
+    }
   }, [empId]);
 
   useEffect(() => {
-    try{
-      initRouteList().then(()=>{
+    try {
+      initRouteList().then(() => {
         setRouteOn(true);
       });
-      
-    }catch (error) {
-      console.log('route-list : ',error);
+
+    } catch (error) {
+      console.log('route-list : ', error);
     }
   }, []);
 
   return (
     <>
       <Content>
-        <TB profile={profile} empId={empId} routeList={routeList}/>
-        { routeOn && <LnbLayout routeList={routeList}/> }
+        <TB profile={profile} empId={empId} routeList={routeList} />
+        {routeOn && <LnbLayout routeList={routeList} />}
       </Content>
-      <GNB gnb={gnb} favor={favor}/>
+      <GNB gnb={gnb} favor={favor} />
     </>
   );
 }

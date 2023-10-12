@@ -355,7 +355,7 @@ const StyledContainer = styled.div`
     flex-direction: column;
     align-items: center;
     overflow-y: auto;
-   height:  450px;
+   height:  700px;
 `;
 
 const EmployeeMgmtGroupInputForm = styled.div`

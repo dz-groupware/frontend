@@ -25,7 +25,7 @@ const companyMgmtInitialState = {
     closingDate: '',
     address: '',
     deletedYn: false,
-    employeeId:null,
+    employeeId: null,
   },
   idForForm: null,
   isVisible: false,

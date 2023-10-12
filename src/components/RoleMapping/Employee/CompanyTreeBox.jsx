@@ -133,7 +133,8 @@ export default function CompanyTreeBox({superParentCompId, refresh, item, depth 
 }
 
 const Container = styled.div`
-  `;
+
+`;
 
 const NameBar = styled.div`
     display: flex;

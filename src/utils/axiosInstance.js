@@ -48,6 +48,11 @@ axiosInstance.interceptors.response.use(
       window.location.href='/ERR_NETWORK';
       console.log('net error');
     }
+    if (err.response && err.response.status === 402) {
+      // console.log("에러잘뜨니", err.response.status);
+      localStorage.setItem("isLogin", false);
+      window.location.href='/login';
+    }
     if (err.response && err.response.status === 403) {
       console.log(err);
       window.location.href='/FORBIDDEN';

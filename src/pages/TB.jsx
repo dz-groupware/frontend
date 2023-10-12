@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 
 import styled from 'styled-components';
 import { AiOutlineDeploymentUnit } from "react-icons/ai";
@@ -10,67 +10,89 @@ import ProfileModal from '../components/TB/ProfileModal';
 import OrgModal from '../components/TB/OrgModal';
 
 
-export default function TB({ profile }) {
+export default function TB({ profile, empId, routeList }) {
 
   const [profileModal, setProfileModal] = useState(false);
   const [orgModal, setOrgModal] = useState(false);
+  const [isMain, setIsMain] = useState(false);
+  const location = useLocation();
+
+  useEffect(() => {
+    console.log(isMain, decodeURIComponent(location.pathname))
+    if (!isMain && decodeURIComponent(location.pathname) === '/') {
+      setIsMain(true);
+    } else {
+      setIsMain(false);
+    }
+  }, [location]);
 
   return (
-    <TBArea>
-      <Link to='/'>
-        Amaranth10
-      </Link>
-      <Recent />
-      <div>
+    <Content className={isMain ? 'true' : 'false'}>
+      <Logo to='/'>
+        <Link to='/'>
+        Amaranth2023
+        </Link>
+      </Logo>
+      <Recent routeList={routeList}/>
+      <ModalArea>
         <ProfileArea id='prf' onClick={() => {setProfileModal(true)}}>        
-          <Profile profile={profile}/>
-          {profileModal && <ProfileModal profile={profile} profileModal={profileModal} setProfileModal={setProfileModal}/>}
+          <Profile profile={profile} empId={empId}/>
+          {profileModal && <ProfileModal profile={profile} empId={empId} profileModal={profileModal} setProfileModal={setProfileModal}/>}
         </ProfileArea>
         <IconArea>
           <AiOutlineDeploymentUnit onClick={() => {setOrgModal(true)}}/>
         </IconArea>
-        {orgModal && <OrgModal setOrgModal={setOrgModal}/>}
-      </div>
-    </TBArea>
+        {orgModal && <OrgModal empId={empId} setOrgModal={setOrgModal}/>}
+      </ModalArea>
+    </Content>
   );
 }
 
-const TBArea = styled.div`
+const Content = styled.div`
 display: flex;
 justify-content: space-between;
 position: relative;
 background-color: white;
 color: rgb(66,71,84);
 width:100%;
-height:80px; 
+height: 62px; 
 z-index: 2;
- 
-> a {
+
+&.true {
+  background-color: transparent;
+}
+&.false{
+  background-color: white;
+}
+`;
+const Logo = styled.div` 
+margin: 20px 0 0 20px;
+> a{
   text-decoration: none; 
-  margin-left: 20px;
-  margin-top: 20px;
-  color: rgb(45,49,62);
+  color: #1d2437;
   font-size: xx-large;
   font-weight: bold;
 }
-
-> div {
-  display: flex;
-}
+`;
+const ModalArea = styled.div`
+display: flex;
 `;
 const ProfileArea = styled.div`
 display: flex;
-width: 250px;
+width: 280px;
+right: 50px;
 `;
 const IconArea = styled.div`
 padding-top: 10px;
-width:60px;
+width:55px;
 position: relative;
 right:50px;
-color: rgb(7, 10, 69);
+color: #1d2437;
 > * {
-  width:35px;
-  height:35px;
-  margin:10px;
+  width: 35px;
+  height: 35px;
+  margin: 5px;
+  text-shadow: 1px 1px 1px rgba(255,255,255,0.7),
+                -1px -1px 1px rgba(255,255,255,0.7);
 }
 `;

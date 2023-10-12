@@ -1,7 +1,7 @@
 import { axiosInstance } from "../utils/axiosInstance";
 
 export const getEmployeeMgmtList = async (pageId) => {
-  console.log("페이지아이디 확인좀 하자",pageId);
+  // console.log("페이지아이디 확인좀 하자",pageId);
   axiosInstance.defaults.headers['menuId'] = pageId;
   try {
     const response = await axiosInstance.get('/employeemgmt',
@@ -21,14 +21,40 @@ export const getEmployeeMgmtList = async (pageId) => {
   }
 };
 
+
+export const getOpenedEmployeeMgmtList = async (pageId) => {
+  try {
+    
+    axiosInstance.defaults.headers['menuId'] =  pageId;
+    const response = await axiosInstance.get('/employeemgmt/incumbent');
+    return response.data.data;
+  } catch (error) {
+    console.error("Error fetching company data:", error);
+    alert("오류가 발생했습니다.");  // 사용자에게 오류 메시지를 표시합니다.
+    throw error;
+  }
+};
+
+export const getClosedEmployeeMgmtList = async (pageId) => {
+  try {
+    
+    axiosInstance.defaults.headers['menuId'] =  pageId;
+    const response = await axiosInstance.get('/employeemgmt/quitter');
+    return response.data.data;
+  } catch (error) {
+    console.error("Error fetching company data:", error);
+    alert("오류가 발생했습니다.");  // 사용자에게 오류 메시지를 표시합니다.
+    throw error;
+  }
+};
+
+
+
 export const getEmployeeDetailsById = async (employeeMgmtId,pageId) => {
   try {
     axiosInstance.defaults.headers['menuId'] = pageId;
     const response = await axiosInstance.get(`/employeemgmt/${employeeMgmtId}`);
 
-    console.log("리스폰스",response);
-    console.log("리스폰스",response.data);
-    console.log("리스폰스",response.data.data);
     return response.data.data;
   } catch (error) {
     console.error("Error fetching employee data by id:", error);
@@ -38,10 +64,10 @@ export const getEmployeeDetailsById = async (employeeMgmtId,pageId) => {
 };
 
 
-export const getAllDepartmentMgmtList = async (pageId) => {
+export const getAllDepartmentMgmtList = async (pageId,companyId) => {
   try {
     axiosInstance.defaults.headers['menuId'] = pageId;
-    const response = await axiosInstance.get('/employeemgmt/dep');
+    const response = await axiosInstance.get(`/employeemgmt/dep/${companyId}`);
     return response.data.data;
   } catch (error) {
     console.error("Error fetching company data:", error);
@@ -57,7 +83,8 @@ export const findEmployeeMgmtList = async (searchValue, selectedOption, pageId) 
     if (isNaN(actualSelectedOption)) {
       actualSelectedOption = 0; // 또는 원하는 기본값을 설정하세요.
     }
-    const actualSearchValue = searchValue === "" ? "%25%25" : `%25${searchValue}%25`;
+    const actualSearchValue = (searchValue === "" || searchValue === undefined) ? "%25%25" : `%25${searchValue}%25`;
+
     // console.log("actualSelectedOption:", actualSelectedOption);
 
     const response = await axiosInstance.get(`/employeemgmt/employee-list?compId=${actualSelectedOption}&text=${actualSearchValue}`);
@@ -68,9 +95,6 @@ export const findEmployeeMgmtList = async (searchValue, selectedOption, pageId) 
     throw error;
   }
 };
-
-
-
 
 
 export const addEmployeeMgmt = async (employeeInfo, pageId) => {
@@ -121,7 +145,7 @@ export const checkLoginId = async (loginId, pageId) => {
     const response = await axiosInstance.post(`/employeemgmt/idcheck/${loginId}`);
     return response.data.data;
   } catch (error) {
-    console.error("Error deleting company data:", error);
+    console.error("Error loginId is Duplicated:", error);
     throw error;
   }
 };
@@ -136,13 +160,13 @@ export const checkSignUp = async (signUpInfo, pageId) => {
   } catch (error) {
     console.log("eeeerrrrrorrr",error);
 
-    if (error.status == 404) {
+    if (error.data === "No data found from check") {
       alert("이미 사용중인 정보가 있습니다.");
       return null; // 또는 적절한 에러 처리
     }
-    if (error.status == 403) {
+    if (error.data === "No data found") {
       alert('가입되지 않았습니다. 입력된 정보로 가입하기위해 인증이 진행됩니다.');
-      return error.status; // 또는 적절한 에러 처리
+      return error; // 또는 적절한 에러 처리
     }
     console.error("Error checking sign up:", error);
     alert("An error occurred while checking sign up. Please try again later.");
@@ -152,6 +176,7 @@ export const checkSignUp = async (signUpInfo, pageId) => {
 
 
 export const imageUpload = async (imageFile, pageId) => {
+  // console.log("pageId 알고시퍼",pageId);
   try {
     if (imageFile !== "") {
       let formData = new FormData();
@@ -168,6 +193,7 @@ export const imageUpload = async (imageFile, pageId) => {
       // 서버에서 반환하는 S3 이미지 URL을 반환합니다.
       // 아래 코드는 반환된 데이터 구조에 따라 달라질 수 있습니다.
       // 예를 들어, response.data.url 혹은 response.data.imageUrl 등의 형태일 수 있습니다.
+      console.log("데이터 어케 받아오니",response.data);
       return response.data;
     }
   } catch (error) {
@@ -177,3 +203,13 @@ export const imageUpload = async (imageFile, pageId) => {
   }
 }
 
+export const checkIfCompanyHasCEO = async (companyId, pageId) => {
+  try {
+    axiosInstance.defaults.headers['menuId'] = pageId;
+    const response = await axiosInstance.post(`/employeemgmt/${companyId}/hasCEO`);
+    return response.data.data;
+  } catch (error) {
+    console.error("Error HasCEOApi", error);
+    throw error;
+  }
+};

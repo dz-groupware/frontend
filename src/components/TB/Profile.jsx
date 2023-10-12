@@ -1,57 +1,57 @@
 import styled from 'styled-components';
-import { UnAuthorized } from '../../common/Error/Error';
 
-export default function Profile({ profile }) {
-  const empId = localStorage.getItem("empId");
-  console.log('profile : ', empId);
-  console.log('profile : ', profile);
-  
-  const user = profile.find(prf => prf['empId']+"" === empId);
+export default function Profile({ profile, empId }) {
+  const user = profile.find(prf => prf['empId'] === empId);
 
   if(user) {
     return (
-      <ProfileArea>
+      <Content>
         <img src={user['imageUrl']} alt='profileImg' />
         <div>
-          <div id="profile_name">{user['empName']}</div>
+          <div>{user['empName']}</div>
           <p>{user['compName']} / {user['deptName']}</p>
         </div>
-      </ProfileArea>
+      </Content>
     );
-  } else {
-    console.log('사용자 정보가 일치하지 않습니다.');
-    UnAuthorized();
   }
 }
 
-export const ProfileArea = styled.div`
+const Content = styled.div`
 display: flex;
 width: 300px;
 height: 100%;
-color: black;
+color: #1d2437;
 
 > img {
-  margin-top: 20px;
-  margin-right: 5px;
+  margin: 5px;
   width: 50px;
   height: 50px;
   border-radius: 100%;
+  box-shadow: 2px 2px #9a959563,
+  inset 2px 2px #9a959563;
+  outline: none;
 }
 
 > div {
-  margin-top: 20px;
-  font-weight: bold;
-
+  width: 145px;
   > div {
-    margin: 5px;
+    margin: 10px 5px 5px 5px;
+    font-weight: bold;
+    text-shadow: 1px 1px 1px rgba(255,255,255,0.7),
+                -1px -1px 1px rgba(255,255,255,0.7);
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis; 
   }
-
   > p {
-    margin: 0;
-    margin-left: 7px;
-    padding-top: 5px;
+    margin: 10px 5px 5px 5px;
     font-size: small;
-    color: gray;
+    text-shadow: 1px 1px 1px rgba(255,255,255,0.7),
+                -1px -1px 1px rgba(255,255,255,0.7);
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis; 
+
   }
 }
 `;

@@ -2,56 +2,27 @@ import { useEffect, useState } from "react";
 import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
 
 import styled from 'styled-components';
-import { AiFillFolder, AiFillFolderOpen, AiOutlineProfile, AiFillProfile, AiOutlineMenu } from "react-icons/ai";
+import { AiOutlineMenu } from "react-icons/ai";
+import { MdMenuOpen } from "react-icons/md";
 
 import { searchMenuListAPI } from '../api/gnb';
-import { getMenuList } from '../api/menu';
 
 import Module from './Module';
 
-export default function LnbLayout() {
+export default function LnbLayout({ routeList }) {
   const location = useLocation();
-
   const [gnb, setGnb] = useState({ id: 0, name: '' });
   const [lnbOpen, setLnbOpen] = useState(true);
 
   const [data, setData] = useState([]);
-  const [routeOn, setRouteOn] = useState(false);
-  const [routeList, setRouteList] = useState(new Map([
-    [`/`, { menuId: 0, gnbId: 0, gnbName: 'main', page: 'Main' }],
-    [`/FORBIDDEN`, { menuId: 0, gnbId: 0, gnbName: '403', page: 'FORBIDDEN' }],]));
-
-  useEffect(() => {
-    const parseMenuList = (originMenuList) => {
-      const menuList = new Map();
-      originMenuList.forEach(row => {
-        const { menuId, gnbId, gnbName, nameTree, page } = row;
-        menuList.set(`/${nameTree}`, { menuId, gnbId, gnbName, page });
-      });
-      menuList.set(`/`, { menuId: 0, gnbId: 0, gnbName: 'main', page: 'Main' });
-      menuList.set(`/FORBIDDEN`, { menuId: 0, gnbId: 0, gnbName: '403', page: 'FORBIDDEN' });
-      setRouteList(menuList);
-    }
-
-    const initRouteList = async () => {
-      try {
-        const res = await getMenuList(0);
-        parseMenuList(res.data.data);
-        setRouteOn(true);  
-      } catch (error) {
-        console.log('error in lnb');
-      };
-      // 컴포넌트 마운트 시 현재 경로를 기반으로 routeList 업데이트
-    };
-    initRouteList();
-  }, []);
-
+  const [clicked, setClicked] = useState('');
   useEffect(() => {
     try{
       const res = searchMenuListAPI(gnb.id);
       if (res !== undefined) {
         res.then(res => {
           if (Array.isArray(res.data.data)) {
+            console.log(res.data.data);
             setData(res.data.data)
           }
         });
@@ -64,7 +35,11 @@ export default function LnbLayout() {
   return (
     <Content>
       <LnbTitle className={`${location.pathname === '/' ? 'main' : 'lnb' }`}>
-        <AiOutlineMenu onClick={() => {setLnbOpen(!lnbOpen)}}/>
+        {
+          lnbOpen ? <MdMenuOpen className={`on ${!lnbOpen ? 'open' : 'close'}`} onClick={() => {setLnbOpen(false)}}/>
+          : <AiOutlineMenu className={`off ${lnbOpen ? 'open' : 'close'}`} onClick={() => {setLnbOpen(true)}}/>
+        }
+        
         <p>{gnb.name}</p>
       </LnbTitle>
       <LnbArea>
@@ -73,7 +48,7 @@ export default function LnbLayout() {
             data.map((a, i) => {
               if (a['id'] !== a['parId']) {
                 return (
-                  <MenuTree menu={a} gnb={gnb} key={a['name']+a['id']}/>                                    
+                  <MenuTree menu={a} gnb={gnb} key={a['name']+a['id']} clicked={clicked} setClicked={setClicked}/>                                    
                 )
               }
               return null;
@@ -81,21 +56,20 @@ export default function LnbLayout() {
           }
         </LNBList>
         <OutletArea id='route' className={`${location.pathname === '/' ? 'main' : 'lnb'} ${lnbOpen ? 'true' : 'false'}`} >
-          {routeOn &&
           <Routes>
             <Route path='/*' element={<Module gnb={gnb} setGnb={setGnb} routeList={routeList}/>} />
-          </Routes>}
+          </Routes>
         </OutletArea>
       </LnbArea>
     </Content>
   );
 }
 
-export function MenuTree({ menu, param, gnb }){
+export function MenuTree({ menu, param, gnb, clicked, setClicked }){
   const [open, setOpen] = useState(false);
   const [subItem, setSubItem] = useState([]);
+
   const navigate = useNavigate();
-    
   useEffect(() => {
     if(gnb.id !== undefined){
       setSubItem([]);
@@ -103,7 +77,7 @@ export function MenuTree({ menu, param, gnb }){
     }
   }, [gnb.id]);
 
-  function handleMenuItem() {
+  const handleMenuItem = () => {
     try{
       if(subItem.length === 0) {
         searchMenuListAPI(menu['id'])
@@ -118,29 +92,30 @@ export function MenuTree({ menu, param, gnb }){
     } catch(error) {
       console.log('searchMenuListAPI error : ',error);
     }
+    setClicked(menu['id']);
   }
 
   return (
     <Menu>
-      <MenuItem>
-        { 
-        open ? 
-        (menu['childNodeYn'] === 1 ? <AiFillProfile /> : < AiFillFolderOpen/>)
-        :
-        (menu['childNodeYn'] === 0 ? <AiFillFolder /> : <AiOutlineProfile />) 
+      <MenuItem className={(clicked === menu['id']) ? 'true' : 'false'}>
+        {
+          menu['childNodeYn'] ? <img src='/img/page.png' alt='1' />
+          : (open ? <img src="/img/comp/dept_open_32.png" alt='1' />
+          : <img src="/img/comp/dept_50.png" alt='1' />)
         }
         <div onClick={handleMenuItem}>{menu['name']}</div>
       </MenuItem>
+      <ItemChild>
       {
         open && subItem.map((a, i) => {
           if (a['id'] !== a['parId']) {
             return (
-              <MenuTree menu={a} param={`${param}/${menu['name']}`} gnb={gnb} key={'lnbList/'+a['name']}/>
-            )
+              <MenuTree menu={a} param={`${param}/${menu['name']}`} gnb={gnb} clicked={clicked} setClicked={setClicked} key={'lnbList/'+a['name']}/>              )
           }
           return null;
         })
       }
+      </ItemChild>
     </Menu>
   )
 }
@@ -152,62 +127,92 @@ background-color: white;
 `;
 const OutletArea = styled.div`
 position: fixed;
-top: 130px;
-left: 250px;
-width: calc(100% - 250px);
-height: calc(100% - 50px);
+top: 112px;
+left: 245px;
+width: calc(100% - 245px);
+height: calc(100% - 112px);
 
 &.true {
-  left: 250px;
-  width: calc(100% - 250px);
+  left: 245px;
+  width: calc(100% - 245px);
 }
 &.false {
-  left: 50px;
-  width: calc(100% - 50px);
+  left: 45px;
+  width: calc(100% - 45px);
 }
 &.main {
 top: 80px;
-left: 50px;
-width: calc(100% - 50px);
+left: 45px;
+width: calc(100% - 45px);
 height: 100%;
 }
+
 `;
 const LNBList = styled.div`
 width: 200px;
 height: 100%;
-background-color: white;
 color: black;
-padding: 10px;
 position: absolute;
-&.true {
+overflow: auto;
+height: calc(100% - 112px);
+background-color: #e3e8ed;
+&::-webkit-scrollbar {
+    width: 5px; 
+    height: 5px;
+    background-color: transparent; 
+  }
+  &::-webkit-scrollbar-thumb {
+    background-color: rgb(214,236,248);
+    border-radius: 5px; 
+  }
+  &::-webkit-scrollbar-thumb:hover {
+    background-color: rgb(18, 172, 226);
+  }
+  &.true {
   left:0px;
   opacity:1;
 }
-
 &.false {
   left: -300px;
   top: 0;
   opacity: 0;
-
-  transition: left 2s;
+  transition: left 4s;
 }
 `;
 const LnbTitle = styled.div`
 width: 100%;
 height: 50px;
-background-color: rgb(18,172,226);
+background-color: #308EFC;
 color: white;
 font-size: x-large;
 font-weight: bold;
 padding-left: 10px;
 display:flex;
 > svg {
-  margin: 15px;
+  width: 30px;
+  height: 30px;
+  margin: 10px 10px 15px 5px;
+  transition: all 0.3s ease; 
+  &.on.open {
+    opacity: 1; 
+    transform: scale(1.2);
+  }
+  &.off.open {
+    opacity: 1; 
+    transform: scale(1.2);
+  }
+  &.on.close {
+    opacity: 0; 
+    transform: scale(0.8);
+  }
+  &.off.close {
+    opacity: 0; 
+    transform: scale(0.8);
+  }
 }
 > p {
   margin-top:15px;
 }
-
 &.main {
   display: none;
 }
@@ -217,10 +222,37 @@ display: flex;
 width: 100%;
 height: 100%;
 `;
-const Menu = styled.div`
-margin-left: 15px;
+const Menu = styled.ul`
+margin: 2px;
+background-color: #fefffe;
+cursor: pointer;
 `;
-const MenuItem = styled.div`
+const ItemChild = styled.div`
+background-color: #e3e8ed;
+padding-left: 15px;
+`;
+const MenuItem = styled.li`
 display: flex;
-margin: 10px;
+font-size: large;
+height: auto;
+padding-top: 3px;
+box-shadow: inset 1px 1px 1px 0px rgba(255,255,255,.3),
+            3px 3px 3px 0px rgba(0,0,0,.1),
+            1px 1px 3px 0px rgba(0,0,0,.1);
+            outline: none;
+&.true{
+  background-color: rgb(214,236,248);
+  border: 1px solid #7dafdc;
+  transition: all 0.3s ease;
+}
+> img {
+  width: 20px;
+  height: 20px;
+  margin: 3px;
+}
+> div {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis; 
+}
 `;

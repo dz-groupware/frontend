@@ -73,7 +73,7 @@ export default function RoleModal({ isOpen, modifyMode, onClose,changeRefresh, a
             </Label>
           </FormWrapper>
           <ButtonWrapper>
-            <CreateButton onClick={() => handleSubmit()}> 생성 </CreateButton>
+            <CreateButton onClick={() => handleSubmit()}> {modifyMode? "수정" : "생성"} </CreateButton>
             <CloseModalButton onClick={onClose}> 닫기 </CloseModalButton>
           </ButtonWrapper>
         </Modal>

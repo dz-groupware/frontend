@@ -1,5 +1,4 @@
 import { axiosInstance } from '../utils/axiosInstance';
-import { isUnAuthorized } from '../common/Error/Error';
 
 export function basicInfoApi(empId){
   return axiosInstance.get(`/home`, {
@@ -11,17 +10,14 @@ export function basicInfoApi(empId){
 }
 
 export function searchMenuListAPI(menuId) {
-  const compId = localStorage.getItem("compId");
-  isUnAuthorized(compId);
   if (menuId) {
     return axiosInstance.get(`/menu/lnb`, {
       params: {
         menuId,
-        compId,
       }, 
       headers: {
         "Content-Type": "application/json",
-        "menuId" : "0",
+        "menuId" : menuId,
       }
     });
   }

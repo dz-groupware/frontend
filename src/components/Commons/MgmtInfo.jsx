@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import { BsDot } from "react-icons/bs";
 import { RxCross1 } from "react-icons/rx";
-import StyledButton from "../Commons/StyledButton";
+import { ButtonBlue, ButtonBright } from "../Commons/StyledButton";
 import { useDispatch } from "react-redux";
 
 
@@ -14,10 +14,10 @@ return (
             <span><BsDot />{title}정보</span>
         </InfoArea>
         <ButtonArea>
-            <StyledButton onClick={onSubmit} type="button">저장</StyledButton>
+            <ButtonBlue onClick={onSubmit} type="button">저장</ButtonBlue>
 
-            <StyledButton onClick={onDelete}>삭제</StyledButton>
-            <RxCross1 style = {{cursor : "pointer"}} onClick={() => dispatch(hideFormAction())}  />
+            <ButtonBright onClick={onDelete}>삭제</ButtonBright>
+            <RxCross1 style = {{cursor : "pointer", margin: "5px"}} onClick={() => dispatch(hideFormAction())}  />
         </ButtonArea>
     </Container>
 );

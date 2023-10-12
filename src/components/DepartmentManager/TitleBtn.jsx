@@ -1,12 +1,12 @@
 import styled from 'styled-components';
 import { AiFillStar, AiOutlineStar } from 'react-icons/ai';
+import { ButtonTitle } from '../../common/styles/Button';
 
-export default function TitleBtn({ favor, handleFavor, detail, setDetail, handleTmpSave }){
+export default function TitleBtn({ favor, handleFavor, detail, setDetail, disabled }){
   return(
     <BtnContent>
-      <button onClick={() => {setDetail({...detail, id: 0, state:'tmpSaveButton', save: false})}}>일괄등록</button>
-      <button onClick={() => {setDetail({...detail, id: 0, state:'add'})}}>추가</button>
-      <button onClick={() => {}} style={{display: 'none'}}>변경이력</button>
+      <ButtonTitle className={`${disabled ? 'disabled' : 'able'}`} onClick={() => {setDetail({...detail, id: 0, state:'add'})}}>추가</ButtonTitle>
+      <div><Pipe /></div>
       <div onClick={handleFavor}>{favor === true ? <AiFillStar /> : <AiOutlineStar/>}</div>
     </BtnContent>
   );
@@ -14,15 +14,22 @@ export default function TitleBtn({ favor, handleFavor, detail, setDetail, handle
 
 const BtnContent = styled.div`
 display: flex;
-margin-top: 5px;
 > * {
-  height: 30px;
-  margin: 5px;
+  font-size: 14px;
+  margin: 10px 5px 5px 5px;
 }
-> svg {
-  margin-top: 10px;
-  width: 20px;
-  height: 20px;
-  color: gray;
+> div > svg {
+  margin: 0 5px 0 0;
+  padding: 0 5px 0 0;
+  width: 25px;
+  height: 25px;
+  color: rgb(252,214,80);
 }
+`;
+
+const Pipe = styled.div`
+width: 2px;
+height: 80%;
+background-color: #1d2437;
+margin: 3px 0 0 5px;
 `;

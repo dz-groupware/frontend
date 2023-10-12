@@ -19,19 +19,21 @@ export function GnbApi(pageId){
 
 export function FavorApi(pageId, type){
   if (type === 'load') {
-    return axiosInstance.get(`/common/favor`, {
-  headers: {
-  "Content-Type": "application/json",
-  'menuId' : pageId
-}});
+    return axiosInstance.get(`/common/favor?menuId`, {
+      headers: {
+        "Content-Type": "application/json",
+        'menuId' : pageId
+      }
+    });
   }
   if (type === true) {
     console.log('request off')
-    return axiosInstance.delete(`/common/favor`, {
-  headers: {
-  "Content-Type": "application/json",
-  'menuId' : pageId
-}});
+    return axiosInstance.delete(`/common/favor?menuId`, {
+      headers: {
+        "Content-Type": "application/json",
+        'menuId' : pageId
+      }
+    });
   }
   if (type === false) {
     console.log('request on')
@@ -49,8 +51,9 @@ export function searchAPI(pageId, formData) {
   return axiosInstance.get(
     `/menu/lnbs`,{
       params: {
-        gnbName: `${formData.get("gnbName")}%`,
+        gnbName: `${formData.get("gnbName")}/%`,
         name: `%${formData.get("name")}%`, 
+        pageId: `${formData.get("pageOption")}`, 
       },
       headers: {
         "Content-Type": "application/json",
@@ -87,7 +90,6 @@ export function deleteMenuApi(pageId, menuId){
 }
 
 export function deleteMenuLnbApi(pageId, menuId){
-  console.log(pageId, menuId);
   return axiosInstance.delete(
     `/menu/menu-lnb`, {
       params: {
@@ -157,3 +159,13 @@ export function PageListApi(pageId){
   );
 }
 
+export function test(){
+  return axiosInstance.get(
+    `/menu/defaultMenu`, {
+      headers: { 
+        'Content-Type': 'application/json',
+        'menuId': '0',
+      },
+    }    
+  );
+}

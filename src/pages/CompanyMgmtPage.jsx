@@ -15,15 +15,19 @@ export default function CompanyMgmtPage({pageId}) {
     console.log("페이지아이디확인",pageId);
     dispatch(companyActions.resetState());
   }, []);
+
+ 
   
   return (
     <PageContainer children={
       <>
-        <CompanyMgmtHeader />
+        <CompanyMgmtHeader  pageId={pageId} />
         <CompanyMgmtNav pageId={pageId}/>
         <MgmtMain pageId={pageId} aside={<CompanyMgmtAside pageId={pageId} />} form={<CompanyMgmtForm pageId={pageId} />} />
       </>
     }>
+
+      
     </PageContainer>
   );
 }

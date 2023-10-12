@@ -1,7 +1,6 @@
 import { axiosInstance } from '../utils/axiosInstance';
 
 export function getDepartemnt(pageId){  
-  console.log('getDepartemnt : ',pageId);  
   return axiosInstance.get(`/department`, {
     headers: {
       "Content-Type": "application/json",
@@ -51,9 +50,10 @@ export function modifyDepartment(dept, pageId){
   )
 }
 
-export function getDepartmentById(parId, pageId){
+export function getDepartmentById(compId, parId, pageId){
+  console.log('in api : ', pageId);
   return axiosInstance.get(
-    `/department/dept-list?parId=${parId}`, {
+    `/department/dept-list?compId=${compId}&parId=${parId}`, {
   headers: {
   "Content-Type": "application/json",
   'menuId' : pageId
@@ -61,29 +61,14 @@ export function getDepartmentById(parId, pageId){
   )
 }
 
-
-//*
-
 export function addDepartment(dept, pageId){    
   return axiosInstance.post(
-    `/department/dept-all`, dept, {
+    `/department/dept`, dept, {
   headers: {
   "Content-Type": "application/json",
   'menuId' : pageId
 }})
 }
-
-
-
-export function getDepartmentList(parId, pageId){    
-  return axiosInstance.get(
-    `/department/dept-list?parId=${parId}`, {
-  headers: {
-  "Content-Type": "application/json",
-  'menuId' : pageId
-}})
-}
-
 
 export function deleteDepartment(id, pageId){    
   return axiosInstance.delete(
@@ -106,6 +91,7 @@ export function saveAll(dept, pageId){
 
 
 export function findDeptNameAndCode(compId, text, pageId){
+  console.log(compId, text);
   return axiosInstance.get(
     `/department/dept?compId=${compId}&text=%25${text}%25`, {
   headers: {

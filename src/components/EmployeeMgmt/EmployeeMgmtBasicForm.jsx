@@ -16,13 +16,13 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { employeeActions } from '../../utils/Slice';
-import StyledButton from '../Commons/StyledButton';
 import { MdOutlineAttachFile } from 'react-icons/md';
 import { BsPersonBoundingBox } from 'react-icons/bs';
 import { checkDuplicates, checkLoginId, checkSignUp, getEmployeeDetailsById } from '../../api/employeemgmt';
+import { StyledButton } from '../Commons/StyledButton';
 
 
-export default function EmployeeMgmtBasicForm({pageId}) {
+export default function EmployeeMgmtBasicForm({ pageId }) {
     const dispatch = useDispatch();
     const reduxEmployeeBasicInfo = useSelector(state => state.employeeMgmt.employeeBasicInfo);
     // const idForForm = useSelector(state => state.companyMgmt.idForForm);
@@ -35,6 +35,8 @@ export default function EmployeeMgmtBasicForm({pageId}) {
     const isSignUpChecked = useSelector(state => state.employeeMgmt.isSignUpChecked);
     const fileInput = React.useRef(null);
     const [previewImage, setPreviewImage] = useState(null);
+    const DEFAULT_IMAGE_URL = "https://yourdomain.com/path-to-default-image.jpg"; // 여기에 기본 이미지 URL을 지정하세요.
+
 
 
 
@@ -114,7 +116,7 @@ export default function EmployeeMgmtBasicForm({pageId}) {
                 [name]: finalValue,
 
             };
-          
+
 
             return updatedInfo;
         });
@@ -272,10 +274,9 @@ export default function EmployeeMgmtBasicForm({pageId}) {
         console.log("signUpInfo", signUpInfo);
 
 
-        console.log("이이이이이이잉빕",pageId.pageId);
 
         // 중복 확인 API 요청 로직 구현
-        const response = await checkSignUp(signUpInfo,pageId.pageId);
+        const response = await checkSignUp(signUpInfo, pageId.pageId);
         console.log("사인업체크 제대로 되는지 아마 안될듯", response);
         if (response == null) {
             return;
@@ -283,7 +284,7 @@ export default function EmployeeMgmtBasicForm({pageId}) {
 
 
 
-        if (response === 403) {
+        if (response.data === "No data found") {
 
             dispatch(employeeActions.setSignUpChecked(true)); // 중복 확인된 경우 리덕스 상태 업데이트
             return;
@@ -292,11 +293,9 @@ export default function EmployeeMgmtBasicForm({pageId}) {
             alert('이미 가입된 유저 입니다.');
             dispatch(employeeActions.setSignUpChecked(true));
             try {
-                console.log("가입된 아이디일시 ", response);
 
-                console.log("ㄱ가가가가가가가가이빕",pageId);
 
-                const fetchedEmployeeData = await getEmployeeDetailsById(response[0].id,pageId);
+                const fetchedEmployeeData = await getEmployeeDetailsById(response[0].id, pageId);
                 if (!fetchedEmployeeData) {
                     console.error("No data returned for employee ID:", response[0].id);
                     return;
@@ -374,9 +373,9 @@ export default function EmployeeMgmtBasicForm({pageId}) {
             return; // 여기서 함수를 종료하여 아래의 로직을 실행하지 않습니다.
         }
 
-        console.log("알아보자 메뉴아이디 :",pageId.pageId);
+        console.log("알아보자 메뉴아이디 :", pageId.pageId);
         // 중복 확인 API 요청 로직 구현
-        const response = await checkLoginId(info.loginId,pageId.pageId);
+        const response = await checkLoginId(info.loginId, pageId.pageId);
 
         if (response) {
             alert('중복된 아이디입니다. 다시 시도해주세요.');
@@ -396,31 +395,52 @@ export default function EmployeeMgmtBasicForm({pageId}) {
         fileInput.current.click();
     };
 
-   const handleFileChange = async (e) => {
-    
+
+    const handleFileChange = async (e) => {
+        const originalImageUrl = info.imageUrl;  // 원래의 이미지 URL을 백업
         const file = e.target.files[0];
         if (file) {
             // Read the selected file using FileReader
+            const MAX_FILE_SIZE = 9 * 1024 * 1024;  // 9MB
+            if (file.size > MAX_FILE_SIZE) {
+                alert("파일 크기가 9MB를 초과하였습니다. 다른 파일을 선택해주세요.");
+                return;  // 함수를 종료
+            }
             const reader = new FileReader();
             reader.onloadend = function () {
                 // Use the result as the source for the preview image
                 setPreviewImage(reader.result);
             }
             reader.readAsDataURL(file);
-            const uploadUrl = await dispatch({
-                type: 'UPLOAD_TO_S3',
-                payload: {
-                    file: file,
-                    pageId:pageId.pageId
-                },
-                
-            });
+            try {
+                const uploadUrl = await dispatch({
+                    type: 'UPLOAD_TO_S3',
+                    payload: {
+                        file: file,
+                        pageId: pageId.pageId
+                    }
+                });
+                setInfo(prev => {
+                    const updatedInfo = {
+                        ...prev,
+                        imageUrl: uploadUrl,
+                    };
 
-            
-            dispatch(employeeActions.updateUploadedFile(uploadUrl));   
+                    return updatedInfo;
+                });
+                dispatch(employeeActions.updateUploadedFile(uploadUrl));
+            } catch (error) {
+                console.error("Failed to upload image:", error);
+                setInfo(prev => {
+                    return {
+                        ...prev,
+                        imageUrl: originalImageUrl,  // 원래의 이미지로 되돌림
+                    };
+                });
+
+            }
         }
     };
- 
 
 
     const handleBlur = (e) => {
@@ -445,14 +465,16 @@ export default function EmployeeMgmtBasicForm({pageId}) {
 
     return (
 
-        <Container>
+        <StyledContainer>
             <EmployeeMgmtBasicInputForm>
                 <HalfInputContainer>
                     <FormInput label="이름" name="name"
                         value={info.name || ''}
                         onChange={handleChange}
                         onBlur={handleBlur}
-                        disabled={isSignUpChecked} />
+                        disabled={isSignUpChecked}
+                        maxLength={19} />
+
 
                     <FormInput label="주민등록번호"
                         name="empIdNum"
@@ -486,8 +508,13 @@ export default function EmployeeMgmtBasicForm({pageId}) {
                 </HalfInputContainer>
 
                 <HalfInputContainer>
-                    <FormInput label="휴대전화번호" name="mobileNumber" value={info.mobileNumber || ''} onChange={handleHyphenChange} onBlur={handleBlur}
-                        disabled={isSignUpChecked} />
+                    <FormInput label="휴대전화번호" name="mobileNumber"
+                        value={info.mobileNumber || ''}
+                        onChange={handleHyphenChange}
+                        onBlur={handleBlur}
+                        disabled={isSignUpChecked}
+                        maxLength={13} />
+
 
                     <StyledButton name="signcheck" value="signcheck"
                         onClick={handleSignUpCheck}
@@ -495,9 +522,13 @@ export default function EmployeeMgmtBasicForm({pageId}) {
                         onBlur={handleBlur}
                     >가입 확인</StyledButton>
 
+                    <FormInput label="전화번호(집)" name="homeNumber"
+                        value={info.homeNumber || ''}
+                        onChange={handleHyphenChange}
+                        onBlur={handleBlur}
+                        disabled={!isSignUpChecked}
+                        maxLength={13} />
 
-                    <FormInput label="전화번호(집)" name="homeNumber" value={info.homeNumber || ''} onChange={handleHyphenChange} onBlur={handleBlur}
-                        disabled={!isSignUpChecked} />
 
                 </HalfInputContainer>
 
@@ -506,15 +537,16 @@ export default function EmployeeMgmtBasicForm({pageId}) {
                         disabled={!isSignUpChecked} />
                     <ImageContainer>
                         {
-                            previewImage
-                                ? <img src={previewImage} alt="Preview" style={{ width: '120px', height: '120px' }} />
-                                : info.imageUrl
-                                    ? <img src={info.imageUrl} alt="Existing" style={{ width: '120px', height: '120px' }} />
+                            info.imageUrl
+                                ? <img src={info.imageUrl} alt="Existing" style={{ width: '120px', height: '120px' }} />
+                                : previewImage
+                                    ? <img src={previewImage} alt="Preview" style={{ width: '120px', height: '120px' }} />
                                     : <BsPersonBoundingBox style={{ width: '110px', height: '110px', color: 'gray' }} />
                         }
-                        <StyledButton onClick={handleButtonClick} style={{ width: "50px", height: "50px", margin: "10px" }} disabled={!isSignUpChecked}><MdOutlineAttachFile style={{ width: "30px", height: "30px" }}  /></StyledButton>
+                        <StyledButton onClick={handleButtonClick} style={{ width: "50px", height: "50px", margin: "10px" }} disabled={!isSignUpChecked}><MdOutlineAttachFile style={{ width: "30px", height: "30px" }} /></StyledButton>
                         <input type="file" ref={fileInput} onChange={handleFileChange} style={{ display: "none" }} disabled={!isSignUpChecked} />
                     </ImageContainer>
+
                 </HalfInputContainer>
 
                 <HalfInputContainer>
@@ -549,8 +581,6 @@ export default function EmployeeMgmtBasicForm({pageId}) {
 
 
 
-
-
                 <HalfInputContainer style={{ borderBottom: "1px solid lightgrey" }}>
                     <FormInput customStyle={{ border: "none" }} label="로그인ID" name="loginId" value={info.loginId || ''} onChange={handleChange} disabled={isDataFetched || isDuplicated || !isSignUpChecked} onBlur={handleBlur} />
                     <StyledButton name="duplicatecheck" value="duplicatecheck"
@@ -562,11 +592,13 @@ export default function EmployeeMgmtBasicForm({pageId}) {
 
 
 
+                <FormInput label="주소" name="address"
+                    value={info.address || ''}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    disabled={!isSignUpChecked}
+                    maxLength={99} />
 
-
-
-                <FormInput label="주소" name="address" value={info.address || ''} onChange={handleChange} onBlur={handleBlur}
-                    disabled={!isSignUpChecked} />
 
 
                 <HalfInputContainer>
@@ -581,7 +613,7 @@ export default function EmployeeMgmtBasicForm({pageId}) {
             </EmployeeMgmtBasicInputForm>
 
 
-        </Container>
+        </StyledContainer>
 
     );
 }
@@ -592,5 +624,15 @@ export default function EmployeeMgmtBasicForm({pageId}) {
 const EmployeeMgmtBasicInputForm = styled.div`
   border-top : 2px solid black;
   margin-top : 10px;
-  width : 100%;
+  width : 99%;
+`;
+
+const StyledContainer = styled.div`
+    width:100%;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    // overflow-y: auto;
+   height:  300px;
 `;

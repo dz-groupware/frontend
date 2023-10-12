@@ -10,19 +10,18 @@ export default function LoginPage() {
   return (
     <Container>
       <ImageArea>
-        <img src= {`${process.env.PUBLIC_URL}/img/login_banner.jpg`} alt="아마란스텐 이미지" />
-        <ImageText>아마란스2023입니다.</ImageText>
-      </ImageArea>
-      <LoginArea>
+        {/* <img src= {`${process.env.PUBLIC_URL}/img/login_banner.jpg`} alt="아마란스텐 이미지" /> */}
+        <LoginArea>
       {/* { empId > 0 ? <Hello /> : <LoginForm/>} */}
-      <LoginForm/>
+        <LoginForm/>
       </LoginArea>
+      </ImageArea>
+
     </Container>
   );
 }
 
 function Hello(){
-
   const handleLogOut = () => {
     logOut(); 
     window.location.href='/login';
@@ -70,6 +69,12 @@ const Container = styled.div`
   background-color: white;
   height: 100vh;
   overflow: hidden; // 스크롤바 숨기기
+  box-shadow: 
+    0 0 10px rgba(0, 0, 0, 0.4);  // 우측 하단의 그림자
+
+    /* -5px -5px 10px #ffffff,  // 좌측 상단의 하이라이트
+    5px 5px 10px rgba(0, 0, 0, 0.4);  // 우측 하단의 그림자 */
+  /* box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.2); */
 `;
 
 const ImageArea = styled.div`
@@ -77,12 +82,15 @@ const ImageArea = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-
   position: relative;
+  background-image: url(${process.env.PUBLIC_URL + '/img/login_banner.jpg'});
+  background-size: cover;  // 이미지가 컨테이너 크기에 맞게 조절됩니다.
+  background-repeat: no-repeat;  // 이미지가 반복되지 않습니다.
+  background-position: center;  // 이미지가 중앙에 위치합니다.
   width: 100%;
   height: 100%;
   img {
-    width: 100%;
+    width: 105%;
     height: 100%;
     object-fit: cover;
   }
@@ -90,10 +98,21 @@ const ImageArea = styled.div`
 
 const LoginArea = styled.div`
   box-sizing: border-box;
+  position: absolute;
   width: 495px; // 너비를 400px로 고정
+  height: 100%;
+  right: 0;
   display: flex;
   align-items: center;
   justify-content: center;
+  background-color: white;
+  z-index: 100px;
+  box-shadow: 
+    0 0 25px rgba(0, 0, 0, 0.6);  // 우측 하단의 그림자
+
+    /* -5px -5px 10px #ffffff,  // 좌측 상단의 하이라이트
+    5px 5px 10px rgba(0, 0, 0, 0.4);  // 우측 하단의 그림자 */
+  /* box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.2); */
 `;
 
 const ImageText = styled.div`

@@ -91,27 +91,50 @@ align-items: center;
 flex-direction: column;
 border-radius: 5px;
 width: 300px;
-height: 500px;
+height: 480px;
 color: black;
-background-color: rgb(146,183,214);
+background-color: #f2f3f6;
 z-index:2;
+box-shadow: inset 1px 1px 1px 0px rgba(255,255,255,.3),
+          3px 3px 3px 0px rgba(0,0,0,.1),
+          -3px -3px 3px 0px rgba(0,0,0,.1);
+          outline: none;
 > #menuTitle {
+  margin: 20px 15px 10px 15px;
   display: flex;
-  justify-content: space-around;
+  justify-content: space-between;
   height: 30px;
   font-size: large;
   font-weight: bold;
 }
 `;
 export const MenuArea = styled.div`
+margin: 5px 15px 5px 15px;
 width: 90%;
 height: 100%;
 
 > div {
+  padding: 10px;
   background-color: white;
   width: 100%;
-  height: 450px;
+  height: 400px;
   overflow: scroll;
+  &::-webkit-scrollbar {
+    width: 5px; 
+    height: 5px;
+    background-color: transparent; 
+  }
+  &::-webkit-scrollbar-thumb {
+    background-color: #7dafdc;
+    border-radius: 5px; 
+  }
+  &::-webkit-scrollbar-thumb:hover {
+    background-color: #318dfc;
+  }
+  box-shadow: inset 1px 1px 1px 0px rgba(255,255,255,.3),
+            3px 3px 3px 0px rgba(0,0,0,.1),
+            1px 1px 3px 0px rgba(0,0,0,.1);
+            outline: none;
 }
 `;
 export const Menu = styled.div`

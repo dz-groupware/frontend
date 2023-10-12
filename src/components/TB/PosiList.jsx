@@ -1,9 +1,9 @@
 import { useState } from 'react';
 
+import styled from 'styled-components';
+
 import { changeEmpApi } from '../../api/login';
-
-import { ModalArea, DoneBtn, ExitBtn } from '../../common/Modal/Modal';
-
+import { ButtonBright, ButtonDarkBlue } from '../../common/styles/Button';
 export default function PosiList({ empId, modalOff, profile }) {
   const [radioEmpId, setRadioEmpId] = useState(empId);
 
@@ -12,14 +12,19 @@ export default function PosiList({ empId, modalOff, profile }) {
   }
 
   const handleAnotherEmp = () => {
-    changeEmpApi().then(res => {
-      localStorage.setItem('empId', radioEmpId);
-      window.location.href = '/';
-    });
+    console.log(empId, radioEmpId);
+    try {
+      changeEmpApi(radioEmpId).then(() => {
+        localStorage.setItem('empId', radioEmpId);
+        window.location.href = '/';
+      });  
+    } catch (error) {
+      console.log('error switch emp');
+    }
   }
 
   return (
-    <ModalArea>
+    <Content>
       <table>
         <tbody>
         <tr id='tHeader'>
@@ -27,7 +32,7 @@ export default function PosiList({ empId, modalOff, profile }) {
         </tr>
           {
             profile.map((a, i) => (
-              <tr key={a['empId']}>
+              <tr key={a['empId']+"/"+i}>
                 <td>
                   <input type='radio' name='a' value={a['empId']} checked={String(radioEmpId) === String(a['empId'])} onChange={handleRadio}/>
                   &nbsp;{a['compName']}
@@ -40,14 +45,24 @@ export default function PosiList({ empId, modalOff, profile }) {
                 </td>
               </tr>
             ))                   
+          } 
+          {
+            profile.length < 3 && 
+            new Array(3-profile.length).fill(null).map ((a, i) => (
+              <tr>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+              </tr>
+            ))
           }
         </tbody>
       </table>
       <div id='modal_btn'>
-        <ExitBtn onClick={modalOff}>취소</ExitBtn>
-        <DoneBtn onClick={handleAnotherEmp}>확인</DoneBtn>
+        <ButtonBright onClick={modalOff}>취소</ButtonBright>
+        <ButtonDarkBlue onClick={handleAnotherEmp}>확인</ButtonDarkBlue>
       </div>
-    </ModalArea>
+    </Content>
   );
 }
 
@@ -58,3 +73,58 @@ function Using(){
       </div>
   );
 }
+
+const Content = styled.div`
+width: 100%;
+height: 100%;
+padding: 5px 20px 5px 20px;
+font-size: medium;
+> table > tbody {
+  width: 100%;
+  height: 120px;
+  > tr > td {
+    height: 30px;
+  }
+  > #tHeader {
+    background-color: #8774FE;
+    color: white;
+    text-align : center;
+    font-weight: 500;
+  }
+  > tr {
+    > td:nth-child(1) {
+      min-width: 140px;
+      max-width: 140px;
+      padding: 10px;
+      border: 1px solid #e3e8ed;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis; 
+    }
+    > td:nth-child(2) {
+      min-width: 235px;
+      max-width: 235px;
+      border: 1px solid #e3e8ed;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis; 
+    }
+    > td:nth-child(3) {
+      width: 85px;
+      border: 1px solid #e3e8ed;
+    }
+  }
+}
+
+> #modal_btn {
+  padding-top: 20px;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  > * {
+    margin: 5px;
+    padding: 10px 15px 10px 15px;
+  }
+}
+`;
+

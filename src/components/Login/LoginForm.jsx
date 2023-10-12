@@ -22,7 +22,6 @@ export default function LoginForm() {
 
   const handleInputChange = (e) => {
     setLoginValue({...loginValue, [e.target.name]: e.target.value})
-
   }
 
   const handleLoginAction = async (e) => {
@@ -36,6 +35,7 @@ export default function LoginForm() {
 
   useEffect(()=>{
     if(status===202){
+        localStorage.setItem("isLogin", true);
         navigate('/',{state:{ menuId: "0" }});
     } else if (error && error.data && error.data.message) {  // error 객체에서 message 추출
       setErrorMessage(error.data.message);
@@ -82,6 +82,7 @@ const StyledForm = styled.form`
   align-items: center;
   align-content: end;
   justify-content: center;
+  
 `;
 const LoginText = styled.div`
   align-self: flex-start;  

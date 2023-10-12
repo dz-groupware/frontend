@@ -1,7 +1,7 @@
 import { useLocation } from "react-router-dom";
 import React, { Suspense, useEffect, useState } from "react";
 import { Loading } from './VIEW';
-import FORBIDDEN from '../common/Error/FORBIDDEN';
+import FORBIDDEN from './Error/FORBIDDEN';
 
 export default function Module({ gnb, setGnb, routeList }){
   const location = useLocation();

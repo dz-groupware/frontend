@@ -1,14 +1,14 @@
 import React from 'react'
-import LinkButon from '../../Commons/LinkButon';
 import ActionButton from '../../Commons/ActionButton';
 import styled from 'styled-components';
+import LinkButton from '../../Commons/LinkButton';
 
 export default function MappingMenuTreeTop({isEditMode, setIsEditMode, setIsSaveClicked, setIsDeleteClicked}) {
 
   return (
     <Container>
       <HeaderWrapper>
-        <LinkButon 
+        <LinkButton 
             cursor="none"
             onClick={(e)=>e.preventDefault()}
             name="전체"

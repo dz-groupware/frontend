@@ -1,30 +1,30 @@
 import { useEffect, useState } from 'react';
 
 import styled from 'styled-components';
-import { AiOutlineSearch, AiOutlineTeam } from "react-icons/ai";
-import {LuBuilding2} from 'react-icons/lu';
+import { AiOutlineSearch } from "react-icons/ai";
 
 import {orgTreeApi, orgEmpListApi, searchOrg} from '../../api/modal';
 
 import EmpList from './OrgModal/EmpList';
 import EmpDetail from './OrgModal/EmpDetail';
-import { ModalBackdrop, ModalView } from '../../common/Modal/Modal';
 
-export default function OrgModal({ setOrgModal }){
+export default function OrgModal({ setOrgModal, empId }){
 
   const [data, setData] = useState(JSON.parse('[]'));
   const [empList, setEmpList] = useState(JSON.parse('[]'));
-
-  const empId = localStorage.getItem("empId");
 
   const [searchOption, setSearchOption] = useState("all", "");
   const [searchText, setSearchText] = useState("");
   const [detail, setDetail] = useState();
   const [detailOpen, setDetailOpen] = useState();
 
+  const [clickedComp, setClickedComp] = useState('');
+  const [clickedDept, setClickedDept] = useState('');
+  const [clickedEmp, setClickedEmp] = useState('');
+
   useEffect(() => {
-    async function LoadData(){
-      const res = await orgTreeApi('basic', "","", "");
+    const LoadData = async() => {
+      const res = await orgTreeApi('basic', "","");
       if (Array.isArray(res.data.data)) {
         setData(res.data.data);
       }
@@ -32,26 +32,28 @@ export default function OrgModal({ setOrgModal }){
     LoadData();
   }, []);  
 
-  async function loadEmpList(type, compId, deptId){
+  const loadEmpList = async(type, compId, deptId) => {
     const res = await orgEmpListApi(type, compId, deptId);
     if (Array.isArray(res.data.data)) {
       setEmpList(res.data.data);
     }
   }
 
-  function EmpDetailHandler(detailData){
+  const EmpDetailHandler = (detailData) => {
     if(detail === detailData){
       setDetailOpen(false);
     } else {
       setDetail(detailData);
       setDetailOpen(true);
     }
+    setClickedEmp(detailData['deptName']+detailData['empName']);
   }
 
-  function searchHandler(){
+  const searchHandler = () => {
     setData(JSON.parse('[]'));
     setEmpList(JSON.parse('[]'));
     searchOrg(0, searchOption, searchText).then(res => {
+      console.log("searchOption : ", searchOption);
       if(searchOption === 'all'){
         if (res.data.data.Tree !== 0) {
           setData(res.data.data.Tree)
@@ -61,10 +63,10 @@ export default function OrgModal({ setOrgModal }){
         }
       }
       if(searchOption === 'dept'){
-        setData(res.data.data.data);
+        setData(res.data.data);
       }
       if(searchOption === 'emp'){
-        setEmpList(res.data.data.data);
+        setEmpList(res.data.data);
       }
     });
   };
@@ -81,7 +83,7 @@ export default function OrgModal({ setOrgModal }){
           <div onClick={modalOff}>X</div>
         </div>
       <div>
-        <div id='search'>
+        <SearchBar>
           <div>
             <select value={searchOption} onChange={(e)=>{setSearchOption(e.target.value)}} >
               <option value='all'>전체</option>
@@ -91,16 +93,16 @@ export default function OrgModal({ setOrgModal }){
             <input type="text" placeholder="검색" value={searchText} onChange={(e)=>setSearchText(e.target.value)}/>
           </div>
           <AiOutlineSearch onClick={() => {searchHandler()}}/>
-        </div>
+        </SearchBar>
         <div id='content' className="flex">
           <DeptList>
           {
             data.map((a, i) => (
-              <CompList value={a} loadEmpList={loadEmpList} key={a['name']+a['id']}/>
+              <CompList value={a} loadEmpList={loadEmpList} clickedComp={clickedComp} setClickedComp={setClickedComp} clickedDept={clickedDept} setClickedDept={setClickedDept} key={a['name']+a['id']}/>
             ))
-          }
+          } 
           </DeptList>
-          <EmpList value={empList} handler={EmpDetailHandler}/>
+          <EmpList value={empList} handler={EmpDetailHandler} clickedEmp={clickedEmp} setClickedEmp={setClickedEmp}/>
           {detailOpen ? <EmpDetail list={detail}/> : <Empty/>}
       </div>
       </div>
@@ -109,49 +111,68 @@ export default function OrgModal({ setOrgModal }){
   );
 }
 
-function CompList({ value, loadEmpList }) {
+function CompList({ value, loadEmpList, clickedComp, setClickedComp, clickedDept, setClickedDept }) {
   const [open, setOpen] = useState(false);
   const [subItem, setSubItem] = useState([]);
-
-  function handleItem() {
+  const handleItem = () => {
+    console.log('comp click : ', value);
     if (value['type'] === 'comp') {
-      value['id'] = ""
+      orgTreeApi(value['type'], value['id'], '').then(res => {
+        if (Array.isArray(res.data.data)) {
+          setSubItem(res.data.data);
+        }
+      });
+      loadEmpList(value['type'], value['id'], '');
+      setClickedComp(value['type']+value['id']);
+
+    } else {
+      orgTreeApi(value['type'], value['compId'], value['id']).then(res => {
+        if (Array.isArray(res.data.data)) {
+          setSubItem(res.data.data);
+        }
+      });
+      loadEmpList(value['type'], value['compId'], value['id']);
+      setClickedComp('comp'+value['compId']);
+      setClickedComp(value['type']+value['id']);
     }
-    orgTreeApi(0, value['type'], value['compId'], value['id']).then(res => {
-      if (Array.isArray(res.data.data)) {
-        setSubItem(res.data.data);
-      }
-    });
-    loadEmpList(value['type'], value['compId'], value['id']);
     setOpen(!open);
   }
 
   return (
     <Dept key={value['name']+value['id']}>
-      <div className="title" onClick={() => {
+      <div className={`title ${(value['type']+value['id'] === clickedComp) || (value['type']+value['id'] === clickedDept ) ? 'true' : 'false'}`} onClick={() => {
         handleItem()
         }}>
-        <div>
-        { value['type'] === 'comp' ? <LuBuilding2 /> : <AiOutlineTeam /> }
-        { value['name'] }
-        </div>
+        { value['type'] === 'comp' ? <img src='/img/comp/branch_48.png' alt='icon'/> 
+        : <img src='/img/dept.png' alt='icon'/> }
+        <p>{ value['name'] }</p>
       </div>
       {
         open && subItem.map((a, i) => (
-          <DeptTree value={a} loadEmpList={loadEmpList} key={a['name']+a['id']}/>
+          <DeptTree value={a} loadEmpList={loadEmpList} clickedComp={clickedComp} setClickedComp={setClickedComp} key={a['name']+a['id']}/>
         ))
       }
     </Dept>
   );
 }
 
-export function DeptTree({ value, loadEmpList }) {
+export function DeptTree({ value, loadEmpList, clickedComp, setClickedComp, clickedDept, setClickedDept }) {
   const [open, setOpen] = useState(false);
   const [subItem, setSubItem] = useState([]);
 
-  function handleItem() {
+  const handleItem = () => {
     if (value['type'] === 'comp') {
-      value['id'] = ""
+      orgTreeApi(value['type'], value['compId'], '').then(res => {
+        if (Array.isArray(res.data.data)) {
+          setSubItem(res.data.data);
+        }
+      });
+    } else {
+      orgTreeApi(value['type'], value['compId'], value['id']).then(res => {
+        if (Array.isArray(res.data.data)) {
+          setSubItem(res.data.data);
+        }
+      });
     }
     orgTreeApi(value['type'], value['compId'], value['id']).then(res => {
       if (Array.isArray(res.data.data)) {
@@ -160,81 +181,85 @@ export function DeptTree({ value, loadEmpList }) {
     });
     loadEmpList(value['type'], value['compId'], value['id']);
     setOpen(!open);
+    if(value['type'] === 'comp'){
+      setClickedComp(value['type']+value['id']);
+    }
+    if(value['type'] === 'dept'){
+      setClickedComp('comp'+value['compId']);
+      setClickedComp(value['type']+value['id']);
+    }
   }
 
   return (
     <Dept key={value['name']+value['id']}>
-      <div className='deptList'>
         <div onClick={() => {
           handleItem()
-          }}>
-          { value['type'] === 'comp' ? <LuBuilding2 /> : <AiOutlineTeam /> }
-          {value['name']}</div>
-      </div>
+          }} className={`title ${(value['type']+value['id'] === clickedComp) || (value['type']+value['id'] === clickedDept ) ? 'true' : 'false'}`} >
+          { value['type'] === 'comp' 
+          ? <img src='/img/comp/branch_48.png' alt='icon'/>
+           : <img src='/img/dept.png' alt='icon'/> }
+          <p>{value['name']}</p></div>
       {
         open && subItem.map((a, i) => (
-          <DeptTree value={a} loadEmpList={loadEmpList} key={a['name']+a['id']}/>
+          <DeptTree value={a} loadEmpList={loadEmpList} clickedComp={clickedComp} setClickedComp={setClickedComp} key={a['name']+a['id']}/>
         ))
       }
   </Dept>
   );
 }
 
-const OrgModalView = styled(ModalView)`  
-> #nav {
-  display: flex;
-  justify-content: space-between;
-  width: 100%;
-  > h3 {
-    font-size: x-large;
-    font-weight: bold;
-  }
-  > div {
-    font-size: x-large;
-    font-weight: bold;
-  }
-}
-> div > span {
-  position : right;
-}
-> div > #search {
-  display: flex;
-  justify-content: space-between;
-  width: 100%;
-  border: 1px solid gray;  
-  margin-top: 20px;
-  margin-bottom: 10px;
-  height: 50px;
-
-  > div {
-    > select {
-      width: 200px;
-      height: 25px;
-      margin: 10px;
-    }
-    > input {
-      height: 25px;
-      width: 600px;
-      margin: 10px;
-    }
-  }
-  > svg {
-    width: 25px;
-    height: 25px;
-    border: 1px solid gray;
-    border-radius: 5px;
-    margin: 10px;
-    padding: 5px;
-  }
-}
-> div > #content {
-  display: flex;
-  justify-content: center;
-  height: 400px;
-  width: 100%;
-}
+export const ModalBackdrop = styled.div`
+  // Modal이 떴을 때의 배경을 깔아주는 CSS를 구현
+  z-index: 1; //위치지정 요소
+  position: fixed;
+  display : flex;
+  justify-content : center;
+  align-items : center;
+  background-color: rgba(0,0,0,0.4);
+  border-radius: 10px;
+  top : 0;
+  left : 0;
+  right : 0;
+  bottom : 0;
 `;
-const DeptList = styled.div`
+export const OrgModalView = styled.div`  
+  // Modal창 CSS를 구현합니다.
+  display: flex;
+  position: relative;
+  top:0px;
+  right:0px;
+  align-items: center;
+  flex-direction: column;
+  border-radius: 5px;
+  width: 1000px;
+  height: 550px;
+  color: black;
+  background-color: #ffffff;
+  padding: 20px;
+  > #nav {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    > h3 {
+      font-size: x-large;
+      font-weight: bold;
+    }
+    > div {
+      font-size: x-large;
+      font-weight: bold;
+    }
+  }
+  > div > span {
+    position : right;
+  }
+  > div > #content {
+    display: flex;
+    justify-content: center;
+    height: 400px;
+    width: 100%;
+  }
+`;
+const DeptList = styled.ul`
 margin-top : 5px;
 width: 250px;
 height: 100%;
@@ -243,22 +268,80 @@ overflow: scroll;
 &::-webkit-scrollbar{
   display: none;
 }
+box-shadow: inset 1px 1px 1px 0px rgba(255,255,255,.3),
+            3px 3px 3px 0px rgba(0,0,0,.1),
+            1px 1px 3px 0px rgba(0,0,0,.1);
+            outline: none;
 `;
-export const Dept = styled.div`
-margin-left: 15px;
+export const Dept = styled.li`
+margin-left: 10px;
+list-style: none;
 > .title {
   display: flex;
   margin: 10px;
-}
-> .deptList {
-  display: flex;
-  margin: 10px;
-  width: 100%;
-  height: 20px;
+  cursor: pointer;
+  &:hover {
+    background-color: rgb(214,236,248);
+    border-radius: 5px;
+  }
+  > img {
+    margin: 5px;
+    width: 20px;
+    height: 20px;
+  }
+  &.true {
+    background-color: rgb(214,236,248);
+    border: 1px solid rgb(146,183,214);
+    border-radius: 5px;
+  }
+  > p {
+    padding-top: 10px;
+  }
 }
 `;
 const Empty = styled.div`
 margin-top : 5px;
 width: 250px;
 height: 100%;
+`;
+const SearchBar = styled.div`
+display: flex;
+justify-content: space-between;
+width: 100%;
+border: 1px solid gray;  
+margin-top: 20px;
+margin-bottom: 10px;
+height: 50px;
+box-shadow: inset 1px 1px 1px 0px rgba(255,255,255,.3),
+            3px 3px 3px 0px rgba(0,0,0,.1),
+            1px 1px 3px 0px rgba(0,0,0,.1);
+            outline: none;
+> div {
+  > select {
+    width: 200px;
+    height: 25px;
+    margin: 10px;
+    box-shadow: inset 1px 1px 1px 0px rgba(255,255,255,.3),
+            3px 3px 3px 0px rgba(0,0,0,.1),
+            1px 1px 3px 0px rgba(0,0,0,.1);
+            outline: none;
+  }
+
+  > input {
+    height: 25px;
+    width: 600px;
+    margin: 10px;
+    box-shadow: inset 1px 1px 1px 0px rgba(255,255,255,.3),
+            3px 3px 3px 0px rgba(0,0,0,.1),
+            1px 1px 3px 0px rgba(0,0,0,.1);
+            outline: none;
+  }
+}
+> svg {
+  width: 35px;
+  height: 35px;
+  margin: 5px;
+  padding: 5px;
+  font-weight: bold;
+}
 `;

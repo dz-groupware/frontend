@@ -7,15 +7,17 @@ import { Container } from '../Commons/StyledForm';
 import { useDispatch, useSelector } from 'react-redux';
 import { employeeActions } from '../../utils/Slice';
 import { getEmployeeDetailsById } from '../../api/employeemgmt';
+import { styled } from "styled-components";
 
-export default function EmployeeMgmtForm( pageId ) {
+
+export default function EmployeeMgmtForm(pageId) {
   const dispatch = useDispatch();
   const isVisible = useSelector(state => state.employeeMgmt.isVisible);
   const activeTab = useSelector(state => state.employeeMgmt.activeTab);
   const basicInfo = useSelector(state => state.employeeMgmt.EmployeeMgmtBasicInfo);
   const groupInfo = useSelector(state => state.employeeMgmt.EmployeeMgmtGroupInfo);
-   // const [isInitialRender, setIsInitialRender] = useState(true);
-   
+  // const [isInitialRender, setIsInitialRender] = useState(true);
+
 
 
 
@@ -43,8 +45,8 @@ export default function EmployeeMgmtForm( pageId ) {
   if (!isVisible) return null;
 
   const handleTabClick = async (tabName) => {
-        handleMove();
-    
+    handleMove();
+
     dispatch(employeeActions.setActiveTab(tabName));
   };
 
@@ -63,7 +65,7 @@ export default function EmployeeMgmtForm( pageId ) {
     //   }
     //   showAlertAndDisappear("저장되었습니다.");
     // } else {
-     
+
     //   alert("작성 중이던 정보는 저장되지 않았습니다."); 
     //   return;
     // }
@@ -104,15 +106,15 @@ export default function EmployeeMgmtForm( pageId ) {
 
 
   return (
+
     <Container>
       <EmployeeMgmtInfo pageId={pageId} />
       <MgmtInfoMenu activeTab={activeTab} setActiveTab={handleTabClick} />
-
-      {activeTab === "basic" && <EmployeeMgmtBasicForm  pageId={pageId} />}
-      {activeTab === "department" && <EmployeeMgmtGroupForm pageId={pageId} />}
-
-
+        {activeTab === "basic" && <EmployeeMgmtBasicForm pageId={pageId} />}
+        {activeTab === "department" && <EmployeeMgmtGroupForm pageId={pageId} />}
     </Container>
+
+
   );
 }
 

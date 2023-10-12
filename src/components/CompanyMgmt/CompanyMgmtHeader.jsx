@@ -1,15 +1,16 @@
 
 import MgmtHeader from '../Commons/MgmtHeader';
-import NotificationInfo from '../Commons/NotificationInfo';
 
 
 
-export default function CompanyMgmtHeader() {
-  return (
-    <div>
-      <MgmtHeader title="회사"/>
-      <NotificationInfo/>
+export default function CompanyMgmtHeader({pageId}) {
 
-      </div >
+
+
+    return (
+        <div>
+            <MgmtHeader title="회사관리"  pageId={pageId} />
+            {/* Other components */}
+        </div>
     );
-  }
+}

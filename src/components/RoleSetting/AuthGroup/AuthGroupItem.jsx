@@ -4,10 +4,14 @@ import styled from 'styled-components';
 const AuthGroupItem = forwardRef(({ item, onClick, isActive, isEditMode }, ref) => {
   return (
     <Container ref={ref} $isActive={isActive} $isEditMode={isEditMode} onClick={onClick}>
-      <p>회사id- {item.companyId}</p>
-      <p>회사명- {item.companyName}</p>
-      <p>권한id- {item.authId}</p>
-      <p>권한명- {item.authName}</p>
+      <StyledEnabledYn $enabledYn={item.enabledYn}>
+        {item.enabledYn? "사용" : "미사용"}
+      </StyledEnabledYn> 
+      <StlyedTextWrapper>
+        <p><StyledLabel>회사명 :</StyledLabel>  {item.companyName}</p>
+        <p><StyledLabel>권한명 :</StyledLabel> {item.authName}</p>
+        <p><StyledLabel>메뉴 :</StyledLabel> {item.menuCount} 개</p>
+      </StlyedTextWrapper>
     </Container>
   )
 });
@@ -15,6 +19,7 @@ const AuthGroupItem = forwardRef(({ item, onClick, isActive, isEditMode }, ref) 
 export default AuthGroupItem;
 
 const Container = styled.div`
+position: relative;
   border: 1px solid #ccc;
   border-width: ${props => props.$isActive ? '2px' : '1px'};
   border-radius: 5px;
@@ -38,6 +43,38 @@ const Container = styled.div`
       border-color: #5dc3fb;  
     }
   `}
-  background-color: ${props => props.$isActive ? '#e6f4ff' : 'transparent'};
+  background-color: ${props => props.$isActive ? '#e6f4ff' : 'white'};
   border-color: ${props => props.$isActive ? '#7BAAF1' : '#ccc'};
+`;
+
+
+const StyledEnabledYn  = styled.div`
+  display: flex;
+  width: fit-content;
+  height: 22px;
+  position: absolute;  
+  top: 7px;           
+  right: 10px;
+  align-items: center;
+  background-color: ${props => (props.$enabledYn ? "#51bffa" : "#ccc")};
+  color: #fff;
+  border-radius: 20px;
+  padding: 0 10px;
+  margin-bottom: 10px;
+`;
+ 
+const StlyedTextWrapper= styled.div`
+  margin-top: 19px;
+  margin-left: 5px;
+  p {
+    white-space: nowrap; 
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 92%; 
+    margin-bottom: 4px;
+  }
+`;
+const StyledLabel = styled.label`
+  font-weight: 500;
+  
 `;

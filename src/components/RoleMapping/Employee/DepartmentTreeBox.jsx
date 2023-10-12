@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { getEmployeeByDepartmentIdApi, getSubsidiaryDepartmentsWithEmployeeCount } from "../../../api/company";
 import EmployeeBox from "./EmployeeBox";
 
-export function DepartmentTreeBox({ refresh, item, depth=0, companyId, activeEmp, handleEmpClick, headers, isEditMode }) {
+export function DepartmentTreeBox({superParentCompId, refresh, item, depth=0, companyId, activeEmp, handleEmpClick, headers, isEditMode }) {
   const [expanded, setExpanded] = useState(false);
   const { data: departmentList, isLoading: departmentLoading, error: departmentError, setShouldFetch: setDeptFetch } = useFetchData(getSubsidiaryDepartmentsWithEmployeeCount,
     { 
@@ -55,9 +55,9 @@ export function DepartmentTreeBox({ refresh, item, depth=0, companyId, activeEmp
 
   return (
     <>
-      <NameBar $depth={depth}>
+      <NameBar $depth={depth} onClick={toggleSubDepartment}>
         <>
-          <StyledButton onClick={toggleSubDepartment}>
+          <StyledButton >
             <div style={{ width: '1em' }} >
               {expanded ? <VscChevronDown style={{ fontWeight: 'bold' }}/> : <VscChevronRight style={{ fontWeight: 'bold' }}/>}
             </div>
@@ -70,6 +70,7 @@ export function DepartmentTreeBox({ refresh, item, depth=0, companyId, activeEmp
         <>
           {departmentList.map((subItem) => (
               <DepartmentTreeBox 
+                superParentCompId={superParentCompId}
                 key={"d-"+subItem.departmentId}
                 item={subItem} 
                 depth={depth+1}
@@ -94,7 +95,7 @@ export function DepartmentTreeBox({ refresh, item, depth=0, companyId, activeEmp
               masterYn={subItem.empMasterYn}
               depth={depth+1}
               activeEmp={activeEmp}
-              onClick={() => handleEmpClick({id: subItem.empId, masterYn: subItem.empMasterYn})}
+              onClick={() => handleEmpClick({ id: subItem.empId, compId: companyId, masterYn: subItem.empMasterYn}, superParentCompId)}
               isEditMode={isEditMode}
             />
           ))}
@@ -116,7 +117,23 @@ const StyledButton = styled.button`
 const NameBar = styled.div`
   display: flex;
   flex-direction: row;
+  cursor: pointer;
   padding-left: ${({ $depth }) => `${$depth * 15}px`};
   align-items: center;
   margin-bottom: 4px;
+  ${props => !props.$isEditMode && `
+    &:hover {
+      border-width: 2px;
+      background-color: #d0cece84;  
+      border-color: #d0cece84;          
+    }
+  `}
+
+  ${props => !props.$isEditMode && `
+    &:active {
+      border-width: 2px;
+      background-color: #5dc3fb;  
+      border-color: #5dc3fb;  
+    }
+  `}
 `;

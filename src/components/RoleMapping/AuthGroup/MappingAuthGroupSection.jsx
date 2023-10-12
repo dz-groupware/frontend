@@ -22,6 +22,7 @@ export default function MappingAuthGroupSection({ activeAuthId, activeEmp, handl
 
   const { data: countData, isLoading: isLoadingCount, error: isErrorCount, statusCode, setShouldFetch} = useFetchData(isEditMode ? getCountAuthGroupApi : getEmpAuthCountApi,{
     paths: isEditMode? null :{employeeId: activeEmp.id},
+    params: isEditMode? {canUseAuth: true}: null,
     shouldFetch:false,
     headers
   });
@@ -60,7 +61,7 @@ export default function MappingAuthGroupSection({ activeAuthId, activeEmp, handl
 
   return (
     <Container>
-      <p> 권한그룹목록</p>
+      <Title> 권한그룹목록</Title>
       <SearchBar>
         <StyledInput
           type="text"
@@ -80,7 +81,7 @@ export default function MappingAuthGroupSection({ activeAuthId, activeEmp, handl
           그룹 : 
           {isLoadingCount && 'Loading...'}
           {isErrorCount && 'Error occurred'}
-          {!isLoadingCount && !isErrorCount && `${countData}개`}
+          {!isLoadingCount && !isErrorCount && ` ${countData}개`}
         </p>
         <StyledFilterSelect 
           value={orderBy} 
@@ -119,18 +120,24 @@ const Container = styled.div`
   margin-top: 20px;
   margin-left: 20px;
   width: 350px;
-  height: 95%;
+  height: 97%;
   border-top: 2px solid #747474;
   border-left: 1px solid #ccc;
   border-right: 1px solid #ccc;
   border-bottom: 1px solid #ccc;
   padding: 20px;
+  background-color: #FAFAFA;
+  box-shadow: inset 1px 1px 1px 0px rgba(255,255,255,.3),
+            3px 3px 3px 0px rgba(0,0,0,.1),
+            1px 1px 3px 0px rgba(0,0,0,.1);
+            outline: none;
 `;
 
 const SearchBar = styled.div`
   display: flex;
   align-items: center;
   gap: 10px;
+  margin-top: 20px;
   margin-bottom: 20px;
   height: 30px;
 `;
@@ -156,3 +163,6 @@ const GroupCountFilter = styled.div`
   align-items: center;
 `;
 
+const Title = styled.p`
+  font-weight: 600;
+`;

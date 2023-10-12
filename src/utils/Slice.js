@@ -12,7 +12,11 @@ const companyMgmtInitialState = {
     businessType: '',
     repName: '',
     repIdNum: '',
+    privEmail:'',
     repTel: '',
+    gender: '',
+    loginId:'',
+    loginPw:'',
     businessNum: '',
     corpType: '',
     corpNum: '',
@@ -20,11 +24,14 @@ const companyMgmtInitialState = {
     openingDate: '',
     closingDate: '',
     address: '',
-    deletedYn: false
+    deletedYn: false,
+    employeeId: null,
   },
   idForForm: null,
   isVisible: false,
-  searchList: JSON.parse('[{"":""}]')
+  searchList: JSON.parse('[{"":""}]'),
+  isDuplicated: false,
+  isSignUpChecked: false, 
 };
 
 const employeeMgmtInitialState = {
@@ -61,7 +68,7 @@ const employeeMgmtInitialState = {
   activeTab: 'basic',
   isDuplicated: false,
   isSignUpChecked: false, 
-  uploadedFile: null,
+  // uploadedFile: null,
   
 }
 
@@ -169,8 +176,16 @@ function getIdFormLocal(k, d) {
         },
         updateUploadedFile: (state, action) => {
           state.uploadedFile = action.payload;
-        }
-      
+          state.employeeBasicInfo.imageUrl = action.payload;
+        },
+        setPreviousGroupsInfo: (state, action) => {
+          state.previousGroupsInfo = action.payload;
+      },
+      restorePreviousGroupsInfo: (state) => {
+          if (state.previousGroupsInfo) {
+              state.employeeGroupInfo = state.previousGroupsInfo;
+          }
+      },
 
 
     }

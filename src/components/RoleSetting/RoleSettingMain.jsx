@@ -6,7 +6,6 @@ import MenuTreeTop from './Menu/MenuTreeTop';
 import AuthGroupSection from './AuthGroup/AuthGroupSection';
 import MenuOfAuth from './Menu/MenuOfAuth';
 import MenuOfAuthEditor from './Menu/MenuOfAuthEditor';
-
 export default function RoleSettingMain({refresh, activeAuthId, changeRefresh, isEditMode, setIsEditMode, handleItemClick, headers}) {
   const [visible, setVisible] = useState(true);
   const [isSaveClicked, setIsSaveClicked] = useState(false);
@@ -38,7 +37,6 @@ export default function RoleSettingMain({refresh, activeAuthId, changeRefresh, i
             setIsSaveClicked={setIsSaveClicked}
             setIsDeleteClicked={setIsDeleteClicked}
           />
-          <Line color="black"/>
           {isEditMode ? 
             <MenuOfAuthEditor 
               authId={activeAuthId} 
@@ -61,7 +59,6 @@ export default function RoleSettingMain({refresh, activeAuthId, changeRefresh, i
   );
 };
 
-
 const Container = styled.div`
   display: flex;
   height: 80%;
@@ -78,6 +75,7 @@ const StyledMenuTreeContainer = styled.div`
   height: 90%;
   overflow-y: auto;
   visibility: ${props =>   props.$visible ? 'visible' : 'hidden'};
+  
 `;
 
 const StyledUserListContainer = styled.div`

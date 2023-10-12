@@ -17,6 +17,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   font-family: 'NanumGothic', 'Noto Sans', 'Gothic A1', sans-serif;
+ 
 
   /* 스크롤바의 폭 너비 */
   ::-webkit-scrollbar {

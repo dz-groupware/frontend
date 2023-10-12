@@ -22,7 +22,6 @@ export default function LoginPage() {
 }
 
 function Hello(){
-
   const handleLogOut = () => {
     logOut(); 
     window.location.href='/login';

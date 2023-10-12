@@ -20,12 +20,11 @@ export default function GnbLayout() {
 
   const [empId, setEmpId] = useState(localStorage.getItem("empId"));
   const [routeOn, setRouteOn] = useState(false);
-
+  
   useEffect(() => {
     document.body.style.zoom = "80%";  // 원하는 확대/축소 비율을 설정합니다.
   }, []);
 
-  
   const parseMenuList = (originMenuList) => {
     const menuList = new Map();
     originMenuList.forEach(row => {

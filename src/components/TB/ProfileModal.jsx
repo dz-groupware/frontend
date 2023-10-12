@@ -18,7 +18,7 @@ export default function ProfileModal({ profile, empId, setProfileModal }) {
       .then(() => {
         localStorage.setItem("empId", "0");
         localStorage.setItem("compId", "0");
-        console.log('done');
+        localStorage.setItem("isLogin", false);
         window.location.href = '/login';
       })
       .catch(error => {

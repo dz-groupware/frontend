@@ -5,15 +5,14 @@ import LoginForm from '../components/Login/LoginForm';
 import { logOut } from '../api/login';
 export default function LoginPage() {
   
-  const empId = localStorage.getItem("empId");
+  const isLogin = localStorage.getItem("isLogin");
 
   return (
     <Container>
       <ImageArea>
-        {/* <img src= {`${process.env.PUBLIC_URL}/img/login_banner.jpg`} alt="아마란스텐 이미지" /> */}
         <LoginArea>
-      {/* { empId > 0 ? <Hello /> : <LoginForm/>} */}
-        <LoginForm/>
+        { isLogin === "true" ? <Hello /> : <LoginForm /> }
+        {/* <LoginForm/> */}
       </LoginArea>
       </ImageArea>
 
@@ -23,9 +22,10 @@ export default function LoginPage() {
 
 function Hello(){
   const handleLogOut = () => {
-    logOut(); 
-    window.location.href='/login';
-    localStorage.setItem("empId", 0);
+    logOut().then(() =>{
+      window.location.href='/login';
+      localStorage.setItem("isLogin", false);
+    })
   }
 
 

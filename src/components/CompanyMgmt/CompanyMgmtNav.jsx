@@ -15,12 +15,9 @@ export default function CompanyMgmtNav({pageId}) {
     const handleSearch = async () => {
       try {
           dispatch(companyActions.hideForm());
-  
-          const responseData = await findCompanyMgmtList(searchValue, selectedOption,pageId);
-              
-          // 응답 데이터 처리
-          console.log("API Response:", responseData);
-          dispatch(companyActions.searchInfo(responseData));
+          dispatch(companyActions.setSearchValue(searchValue));
+          dispatch(companyActions.setSelectedOption(selectedOption));  
+         
       } catch (error) {
           console.error("API Error:", error);
       }

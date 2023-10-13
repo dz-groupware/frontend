@@ -107,14 +107,25 @@ export default function EmployeeMgmtForm(pageId) {
 
   return (
 
-    <Container>
+    <StyledContainer>
       <EmployeeMgmtInfo pageId={pageId} />
       <MgmtInfoMenu activeTab={activeTab} setActiveTab={handleTabClick} />
         {activeTab === "basic" && <EmployeeMgmtBasicForm pageId={pageId} />}
         {activeTab === "department" && <EmployeeMgmtGroupForm pageId={pageId} />}
-    </Container>
+    </StyledContainer>
 
 
   );
 }
 
+const StyledContainer = styled.div`
+    max-width: 95%;
+    min-width: 95%;
+    width: 100%;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-left: 40px;
+      
+`;

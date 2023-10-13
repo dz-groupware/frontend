@@ -245,6 +245,7 @@ export default function EmployeeMgmtGroupForm({ pageId }) {
               value={group.compId || ''}
               onChange={(e) => handleChange(e, idx)}
               onBlur={handleBlur}
+              disabled={group.compId}
             >
               <option value="direct">선택</option>
               {companyOptions && companyOptions.map((company, index) => (

@@ -234,5 +234,16 @@ export const authGroupSlice = createSlice({
   },
 });
 
+export const favorSlice = createSlice({
+  name: 'favor',
+  initialState: {
+    favor: [],
+  },
+  reducers: {
+    favor:(state, action) => {state.favor = action.payload}
+  }
+});
+
+export const { favor } = favorSlice.actions;
 export const companyActions = companyMgmtSlice.actions;
 export const employeeActions = employeeMgmtSlice.actions;

@@ -6,24 +6,24 @@ import { basicInfoApi } from '../api/gnb';
 import { getMenuList } from '../api/menu';
 
 import TB from './TB';
-import GNB from '../components/GNB/GNB';
 import LnbLayout from './LnbLayout';
+import GNB from '../components/GNB/GNB';
+
+import Retry from '../common/Error/Retry';
+import Loading from '../common/styles/Loading.jsx';
+
 
 export default function GnbLayout() {
   const [profile, setProfile] = useState(JSON.parse(`[{}]`));
   const [gnb, setGnb] = useState(JSON.parse(`[{}]`));
   const [favor, setFavor] = useState(JSON.parse(`[{}]`));
+  const [empId, setEmpId] = useState(localStorage.getItem("empId"));
+  const [routeOn, setRouteOn] = useState(false);
+  const [error, setError] = useState(false);
   const [routeList, setRouteList] = useState(new Map([
     [`/`, { menuId: 0, gnbId: 0, gnbName: 'main', page: 'Main' }],
     [`/FORBIDDEN`, { menuId: 0, gnbId: 0, gnbName: '403', page: 'Error/FORBIDDEN' }],
     [`/SERVICE_UNAVAILABLE`, { menuId: 0, gnbId: 0, gnbName: '503', page: 'Error/SERVICE_UNAVAILABLE' }]]));
-
-  const [empId, setEmpId] = useState(localStorage.getItem("empId"));
-  const [routeOn, setRouteOn] = useState(false);
-  
-  useEffect(() => {
-    document.body.style.zoom = "80%";  // 원하는 확대/축소 비율을 설정합니다.
-  }, []);
 
   const parseMenuList = (originMenuList) => {
     const menuList = new Map();
@@ -35,7 +35,7 @@ export default function GnbLayout() {
     menuList.set(`/FORBIDDEN`, { menuId: 0, gnbId: 0, gnbName: '403', page: 'Error/FORBIDDEN' });
     menuList.set(`/SERVICE_UNAVAILABLE`, { menuId: 0, gnbId: 0, gnbName: '503', page: 'Error/SERVICE_UNAVAILABLE' });
     setRouteList(menuList);
-  }
+  };
 
   const initRouteList = async () => {
     try {
@@ -44,7 +44,6 @@ export default function GnbLayout() {
     } catch (error) {
       console.log('error in RouteList');
     };
-    // 컴포넌트 마운트 시 현재 경로를 기반으로 routeList 업데이트
   };
 
   const basicInfo = async (empId) => {
@@ -59,37 +58,43 @@ export default function GnbLayout() {
         initRouteList();
       });
     } catch (error) {
-      console.log('gnb에러', error);
-      window.location.href = "/login";
+      console.log('ERR: ', error);
+      window.location.href="/login";
     }
   };
 
   useEffect(() => {
-    if (empId) {
-      basicInfo(empId);
-    } else {
-      basicInfo(0);
-    }
-  }, [empId]);
-
-  useEffect(() => {
+    document.body.style.zoom = "80%";  
     try {
       initRouteList().then(() => {
         setRouteOn(true);
       });
-
     } catch (error) {
       console.log('route-list : ', error);
     }
   }, []);
 
+  useEffect(() => {
+    try {
+      if (empId) {
+        basicInfo(empId);
+      } else {
+        basicInfo(0);
+      }  
+    } catch (error) {
+      setError(true);
+    }
+  }, [empId]);
+
   return (
     <>
       <Content>
-        <TB profile={profile} empId={empId} routeList={routeList} />
-        {routeOn && <LnbLayout routeList={routeList} />}
+        <TB profile={profile} empId={empId} routeList={routeList}/>
+        { error ? <Retry /> : (
+          routeOn ? <LnbLayout routeList={routeList}/> : <Loading />
+        )}
       </Content>
-      <GNB gnb={gnb} favor={favor} />
+      <GNB gnb={gnb} favor={favor}/>
     </>
   );
 }
@@ -103,3 +108,14 @@ const Content = styled.div`
   width: 100%;
   height: 100%;
 `;
+
+// const Fail = styled.div`
+// display:block;
+// width: 46px;
+// height: 100%;
+// background-color:#1d2437;
+// color:rgb(181,194,200);
+// position : absolute;
+// overflow : scroll;
+// z-index: 1;
+// `;

@@ -1,11 +1,13 @@
 import React from 'react';
+
 import styled from 'styled-components';
 
 export default function Retry ({ onRetryClick }) {
+
   return (
     <RetryContainer>
       <ErrorMessage>일시적인 오류입니다.</ErrorMessage>
-      <RetryButton onClick={onRetryClick}>다시 시도</RetryButton>
+      <RetryButton onClick={() => {window.history.go(0)}}>다시 시도</RetryButton>
     </RetryContainer>
   );
 };

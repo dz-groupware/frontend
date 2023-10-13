@@ -28,7 +28,7 @@ export default function TB({ profile, empId, routeList }) {
 
   return (
     <Content className={isMain ? 'true' : 'false'}>
-      <Logo to='/'>
+      <Logo onClick={() => {window.location.href='/'}}>
         <Link to='/'>
         Amaranth2023
         </Link>

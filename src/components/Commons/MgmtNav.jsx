@@ -1,10 +1,21 @@
 import styled from 'styled-components';
 import {StyledButton} from './StyledButton';
 import { FiSearch } from "react-icons/fi";
+import { useDispatch } from 'react-redux';
+import { companyActions, employeeActions } from '../../utils/Slice';
 
 
 export default function MgmtNav({children, onSearch}) {
+  // const dispatch = useDispatch();
   
+  const handleReset = async () => {
+    // dispatch(companyActions.resetState());
+    // dispatch(employeeActions.resetState());
+    window.location.reload();
+};
+
+
+
   return (
       <Container>
         
@@ -13,6 +24,7 @@ export default function MgmtNav({children, onSearch}) {
         </SearchArea>
         <ButtonArea onClick={onSearch}>
         <SearchButton><FiSearch style={{ color: "grey" }} /></SearchButton>
+        <StyledButton onClick={handleReset}> 검색 초기화 </StyledButton>
         </ButtonArea>
       </Container>
     );

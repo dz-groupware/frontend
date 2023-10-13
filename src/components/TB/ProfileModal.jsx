@@ -2,7 +2,6 @@ import { AiOutlinePoweroff } from 'react-icons/ai';
 import styled from 'styled-components';
 
 import { logOut } from '../../api/login';
-import { UnAuthorized } from '../../common/Error/Error';
 
 import PosiList from './PosiList';
 import { useEffect, useState } from 'react';
@@ -84,7 +83,7 @@ export default function ProfileModal({ profile, empId, setProfileModal }) {
 };
 
 export const ModalBackdrop = styled.div`
-  z-index: 1; 
+  z-index: 3; 
   position: fixed;
   display : flex;
   justify-content : center;
@@ -172,7 +171,6 @@ width: 100%;
   margin: 0 0 0 5px;
 }
 `;
-
 const Page = styled.div`
 width: 150px;
 height: 20px;

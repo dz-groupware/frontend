@@ -32,6 +32,8 @@ const companyMgmtInitialState = {
   searchList: JSON.parse('[{"":""}]'),
   isDuplicated: false,
   isSignUpChecked: false, 
+  isSearchValue: null,
+  isSelectedOption: "",
 };
 
 const employeeMgmtInitialState = {
@@ -68,7 +70,8 @@ const employeeMgmtInitialState = {
   activeTab: 'basic',
   isDuplicated: false,
   isSignUpChecked: false, 
-  // uploadedFile: null,
+  isSearchValue: null,
+  isSelectedOption: "",
   
 }
 
@@ -186,6 +189,14 @@ function getIdFormLocal(k, d) {
               state.employeeGroupInfo = state.previousGroupsInfo;
           }
       },
+      setSearchValue: (state, action) => {
+        state.isSearchValue = action.payload;
+        state.isSearchExecuted = true;
+    },
+      setSelectedOption: (state, action) => {
+        state.isSelectedOption = action.payload;
+        state.isSearchExecuted = true;
+    },
 
 
     }
@@ -234,5 +245,16 @@ export const authGroupSlice = createSlice({
   },
 });
 
+export const favorSlice = createSlice({
+  name: 'favor',
+  initialState: {
+    favor: [],
+  },
+  reducers: {
+    favor:(state, action) => {state.favor = action.payload}
+  }
+});
+
+export const { favor } = favorSlice.actions;
 export const companyActions = companyMgmtSlice.actions;
 export const employeeActions = employeeMgmtSlice.actions;

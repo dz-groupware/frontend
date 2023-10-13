@@ -22,6 +22,10 @@ export default function DetailBasic({ data, setData, detail, setDetail, pageId, 
     setForm({ ...form, [name]:value });
     setIsModified(true);
   }
+  const handleParChange = (parId, parName) => {
+    setIsModified(true);
+    setForm({ ...form, parId: parId, parName: parName });
+  }
   // 수정 없음
   const handleNotModified = () => {
     let timerInterval
@@ -95,8 +99,21 @@ export default function DetailBasic({ data, setData, detail, setDetail, pageId, 
         }
         if (detail.id > 0) {
           // 저장 : 수정
-          setData({ ...form, status: 'modify' });    
-          setIsModified(false);  
+          console.log(form.parId);
+          if (form.parId === "0" || form.parId === 0){
+            // 만약 수정인데 상위부서를 없음으로 했다면 저장 안되게 
+            setDetail({ ...detail, state: false, isChanging: false });
+            Swal.fire({
+              title: '상위부서 "없음"은 선택할 수 없습니다.',
+              text: '자기 자신을 선택해 주세요',
+              icon: 'warning',
+              confirmButtonColor: '#3085d6',
+              confirmButtonText: '확인'
+            })
+          } else {
+            setData({ ...form, status: 'modify' });    
+            setIsModified(false);    
+          }
         } else {
           console.log('저장 요청 실패 : 알수없는 요청(id)');
         }
@@ -126,21 +143,25 @@ export default function DetailBasic({ data, setData, detail, setDetail, pageId, 
     }
 
   },[data]);
+
   useEffect(() => {
     // 다른 부서를 눌렀을 때
-    console.log('useEffect 오나')
-    if ( typeof detail.isChanging === 'number' ) {
+    if ( typeof detail.isChanging === 'number') {
       if(isModified){
-        console.log("수정 중 : ", isModified)
         setNoti(true);
       } else {
-        console.log("수정 중 아님 : ", detail.isChanging)
         setDetail({ ...detail, id: detail.isChanging, state: false, isChanging: false });
         setValidText({code: '', abbr: '', name: ''});
       }
     }
+    console.log('설마 0? :', detail.isChanging, typeof detail.isChanging);
     if (detail.isChanging === 'save' || detail.isChanging === 'delete') {
-      setNoti(true);
+      if(isModified){
+        saveAlert();
+      } else {
+        setNoti(true);
+      }
+      
     }
   }, [detail.isChanging]);
 
@@ -197,6 +218,7 @@ export default function DetailBasic({ data, setData, detail, setDetail, pageId, 
     }
   }, [modalOn]);
 
+  console.log(form);
   return (
     <Detail>
       <BasicForm>
@@ -285,7 +307,7 @@ export default function DetailBasic({ data, setData, detail, setDetail, pageId, 
         </form>
       </BasicForm>
       {
-        modalOn && <DeptModal form={form} setModalOn={setModalOn} setForm={setForm} pageId={pageId}/>
+        modalOn && <DeptModal itemId={form.id} setModalOn={setModalOn} handleParChange={handleParChange} pageId={pageId}/>
       }
     </Detail>
   )

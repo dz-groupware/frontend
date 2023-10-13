@@ -72,6 +72,7 @@ export default function EmployeeMgmtInfo({ pageId }) {
         if (idForForm) {
             for (const info of combinedEmployeeInfo) {
                 try {
+                    console.log("api 요청시 어떻게 보내는지 확인",info);
 
                     await modifyEmployeeMgmt(info, pageId);
 
@@ -85,7 +86,7 @@ export default function EmployeeMgmtInfo({ pageId }) {
             if (!isErrorOccurred) {
                 alert("사원 데이터가 수정되었습니다.");
                 dispatch(employeeActions.hideForm());
-                window.location.reload();
+                // window.location.reload();
             }
 
         } else {
@@ -112,6 +113,8 @@ export default function EmployeeMgmtInfo({ pageId }) {
 
 
     const handleSubmit = async (e) => {
+
+        console.log("컴바인드 인포", combinedEmployeeInfo);
 
 
         if (!isDataFetched) {
@@ -141,9 +144,9 @@ export default function EmployeeMgmtInfo({ pageId }) {
         const missingFields = [];
 
         for (const employeeInfo of combinedEmployeeInfo) {
-            console.log("departmentId",employeeInfo);
+            console.log("departmentId", employeeInfo);
             const currentRequiredFields = [...requiredFields]; // 필수 입력 필드 목록을 복사하여 초기화
-          
+
 
             if (employeeInfo.position !== "대표") {
                 currentRequiredFields.push('transferredYn', 'edjoinDate', 'deptId');
@@ -188,9 +191,23 @@ export default function EmployeeMgmtInfo({ pageId }) {
                 return;
             }
 
-            const ecjoinDate = new Date(employeeInfo.ecjoinDate);
+            
+            console.log('ecjoinDate value:', employeeInfo.edjoinDate);
+            console.log('leftDate value:', employeeInfo.leftDate);
+
+            const edjoinDate = new Date(employeeInfo.edjoinDate);
             const leftDate = employeeInfo.leftDate ? new Date(employeeInfo.leftDate) : null;
-            if (leftDate && ecjoinDate > leftDate) {
+
+            if (edjoinDate && joinDate > edjoinDate) {
+                alert("부서배정일은 입사일 이후의 날짜여야 합니다.");
+                return;
+            }
+
+            console.log('ecjoinDate 새로운거:',edjoinDate);
+            console.log('leftDate 새로운거:',leftDate);
+            
+
+            if (leftDate && edjoinDate > leftDate) {
                 alert("부서 이동일은 부서 배정일 이후의 날짜여야 합니다.");
                 return;
             }

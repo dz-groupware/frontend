@@ -15,13 +15,15 @@ export default function GNB({ gnb, favor }){
   return (
     <>
       <GNBIconArea id='gnbIcon'>   
-        <BiSolidGrid onClick={() => {
+        <div style={{borderBottom: '1px solid white', width: '50px', height: '50px', marginTop: '10px', paddingTop: '7px'}}>
+        <BiSolidGrid size='35px' onClick={() => {
           if (menuOn[0] || menuOn[1]) {
             setMenuOn([false, false]);
           } else {
             setMenuOn([true, false]);
           }
         }}/>
+        </div>
         <IconList gnb={gnb}/>
       </GNBIconArea>
       <GNBMenuArea id='gnbMenu' className={`menu ${menuOn[0]} ? 'true' : 'false'}`}>
@@ -61,15 +63,21 @@ z-index: 1;
   margin: 15px 7px 7px 5px;  
   cursor: pointer;
 }
-> div > div > a {
+> div {
+  display: flex;
+  justify-content: center;
+  > a {
   text-decoration: none;
+  width: 70%;
+  height: 50%;
   > img {
     position: relative;
     width:30px;
     height:30px;
-    margin: 20px 7px 5px 7px;
   }
 }
+}
+
 `;
 export const GNBMenuArea = styled.div`
 padding-top: 10px;
@@ -85,16 +93,6 @@ box-shadow: inset 1px 1px 1px 0px rgba(255,255,255,.3),
             3px 3px 3px 0px rgba(0,0,0,.7),
             1px 1px 3px 0px rgba(0,0,0,.7);
             outline: none;
-/* &:hover + .menu.false {
-  left: 0;
-  opacity: 1;
-  transition: left 2s;
-} */
-/* &:hover + .menu.true {
-  left: 0;
-  opacity: 1;
-  transition: left 2s;
-} */
 &.false {
   left: -200px;
   top: 0;
@@ -106,45 +104,37 @@ box-shadow: inset 1px 1px 1px 0px rgba(255,255,255,.3),
   opacity:1;
   transition: all 1s ease;
 }
-> a {
-  color:rgb(181,194,200);
-  list-style: none;
-  margin-top: 20px;
-  text-decoration: none;
-  font-size: x-large;
-}
 `;
 export const GNBFavArea = styled.div`
 padding-top: 10px;
 position: absolute;
-margin-left: 45px;
+margin-left: 44px;
 width: 200px;
 height: 100%;
-background-color: rgb(66,71,84);
+background-color: #1d2437;
 color:rgb(181,194,200);
 cursor: pointer;
 overflow: hidden;
-  &.false {
+
+&.false {
   left: -200px;
   top: 0;
   opacity: 1;
   transition: all 1s ease;
-  }
-  &.true {
-    left: 0;
-    opacity:1;
-    transition: all 1s ease;
-  }
-  > div > img {
-    width: 30px;
-    height: 30px;
-    margin-left: 10px;
-    margin-right: 20px;
-    margin-bottom: 10px;
-  }
+}
+&.true {
+  left: 0;
+  opacity:1;
+  transition: all 1s ease;
+  box-shadow: inset 1px 1px 1px 0px rgba(255,255,255,.3),
+            3px 3px 3px 0px rgba(0,0,0,.7),
+            1px 1px 3px 0px rgba(0,0,0,.7);
+            outline: none;
+}
 `;
 export const TopIconArea = styled.div`
 display: flex;
+border-bottom: 1px solid white;
 > * {
   width: 30px;
   height: 30px;

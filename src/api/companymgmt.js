@@ -184,6 +184,38 @@ export const findCompanyMgmtList = async (searchValue, selectedOption, pageId) =
     throw error;
   }
 };
+export const findOpenCompanyMgmtList = async (searchCriteria, searchOption, pageId) => {
+  try {
+    axiosInstance.defaults.headers['menuId'] = pageId;
+
+    const actualSearchValue = searchCriteria === "" ? "%25%25" : `%25${searchCriteria}%25`;
+    const actualSelectedOption = searchOption === "" ? 2 : `${searchOption}`;
+
+    const response = await axiosInstance.get(`/companies/company-list/open?name=${actualSearchValue}&enabledType=${actualSelectedOption}`);
+
+    return response.data.data;
+  } catch (error) {
+    console.error("API Error:", error);
+    alert("오류가 발생했습니다.");  // 사용자에게 오류 메시지를 표시합니다.
+    throw error;
+  }
+};
+export const findCloseCompanyMgmtList = async (searchCriteria, searchOption, pageId) => {
+  try {
+    axiosInstance.defaults.headers['menuId'] = pageId;
+
+    const actualSearchValue = searchCriteria === "" ? "%25%25" : `%25${searchCriteria}%25`;
+    const actualSelectedOption = searchOption === "" ? 2 : `${searchOption}`;
+
+    const response = await axiosInstance.get(`/companies/company-list/close?name=${actualSearchValue}&enabledType=${actualSelectedOption}`);
+
+    return response.data.data;
+  } catch (error) {
+    console.error("API Error:", error);
+    alert("오류가 발생했습니다.");  // 사용자에게 오류 메시지를 표시합니다.
+    throw error;
+  }
+};
 
 export const getAllCompanyMgmtParList = async (pageId) => {
   try {

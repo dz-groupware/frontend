@@ -4,10 +4,11 @@ import { GnbFavorDeleteApi, GnbFavorApi, } from '../../api/gnb';
 import { useEffect, useState } from 'react';
 
 import styled from 'styled-components';
+import { useSelector } from 'react-redux';
 
 export function MenuList({ gnb }) {
   return (
-    <ListArea>
+    <>
       {
         gnb.map((a, i) => (
           <StyledLink key={a['id']+i+'gnb'}>
@@ -17,16 +18,25 @@ export function MenuList({ gnb }) {
           </StyledLink>
         ))
       }
-    </ListArea>
+    </>
   );
 }
 
-export function FavList({ favor }) {
-  const [favorList, setFavorList] = useState(JSON.parse(`[{}]`));
+export function FavList() {
+  const loadFavor = useSelector(state => state.favor.favor);
+  const [favorList, setFavorList] = useState([]);
 
   useEffect(()=> {
-    setFavorList(favor);
-  }, []);
+      try {
+        GnbFavorApi().then((res) => {
+          console.log(res);
+          if (Array.isArray(res.data.data)) {
+            setFavorList(res.data.data) ;
+          }});
+      } catch (error) {
+        setFavorList([]);
+      }
+  }, [loadFavor]);
 
   const handleFavor = (menuId) => {
     try {
@@ -34,7 +44,7 @@ export function FavList({ favor }) {
       .then(GnbFavorApi()
       .then(res => {
         if (Array.isArray(res.data.data)) {
-          setFavorList(res.data)  
+          setFavorList(res.data.data)  
         }
       }));
     } catch (error){
@@ -43,8 +53,8 @@ export function FavList({ favor }) {
   };
 
   return (
-    <ListArea>
-      {
+    <>
+      { favorList.length > 0 &&
         favorList.map((a, i) => (
           <StyledLink key={a['id']+i+'fav'}>
             <Link to={a['nameTree']}>
@@ -54,48 +64,41 @@ export function FavList({ favor }) {
           </StyledLink>
         ))
       }
-    </ListArea>
+    </>
   );
 }
 
 export function IconList({ gnb }) {
   return (
-    <ListArea>
-      <div>
+    <>
       {
         gnb.map((a, i) => (
+          <StyledLink>
           <Link to={a['name']} key={a['name']+i+'icon'}>
             <img src={a['iconUrl']} alt={a['name']}/> 
           </Link>
+          </StyledLink>
         ))
       }
-      </div>
-    </ListArea>
+    </>
   );
 }  
 
-const ListArea = styled.div`
-border-top: 2px solid rgb(181,194,200);
-height: 100%;
-`;
 const StyledLink = styled.div`
 color:rgb(181,194,200);
 font-size: x-large;
 display: flex;
+justify-content: center;
+align-items: center;
+height: 60px;
 > a {
   list-style: none;
   text-decoration: none;
   color:rgb(181,194,200);
-  margin: 22px 10px 12px 10px;
   width: calc(100% - 32px);
   &:hover {
     color: #9ec8f7;
   }
 }
 
-> span {
-  margin: 10px;
-  margin-top: 22px;
-  margin-bottom: 37px;
-}
 `;

@@ -3,7 +3,7 @@ import styled from 'styled-components';
 
 import { getDepartemnt, getDepartmentById } from '../../api/department';
 
-export default function DeptModal({ form, setModalOn, setForm, pageId }){
+export default function DeptModal({ itemId, setModalOn, handleParChange, pageId }){
   const [item, setItem] = useState(JSON.parse('[{"":""}]'));
 
   useEffect(() => {
@@ -29,12 +29,12 @@ export default function DeptModal({ form, setModalOn, setForm, pageId }){
         </div>
         <MenuArea>
           <div>
-          <div onClick={() => {setForm({...form, parId: '0', parName: '없음'});}}>
+          <div onClick={() => {handleParChange('0', '없음')}}>
             <img style={{width: '15px', height: '15px', marginRight: '5px'}} src='/img/comp/dept_50.png' alt='icon' />'선택없음'
           </div>
           {
-            item.map((a, i) => (
-              <Item form={form} data={a} setModalOn={setModalOn} setForm={setForm} pageId={pageId} key={a['name']+'gnb'}/>
+            item.map((a, i) => ( itemId === a['id'] ? null :
+              <Item itemId={itemId} data={a} setModalOn={setModalOn} handleParChange={handleParChange} pageId={pageId} className={`${itemId === a['id'] ? 'disabled' : 'able'}`} key={a['name']+'gnb'}/>
             ))
           }
           </div>
@@ -45,7 +45,7 @@ export default function DeptModal({ form, setModalOn, setForm, pageId }){
   );
 }
 
-function Item({ form, data, setModalOn, setForm, pageId }) {
+function Item({ itemId, data, setModalOn, handleParChange, pageId }) {
   const [open, setOpen] = useState(false);
   const [subItem, setSubItem] = useState([]);
 
@@ -62,18 +62,20 @@ function Item({ form, data, setModalOn, setForm, pageId }) {
       getDepartmentById(data['compId'], data['id'], pageId).then(res => setSubItem(res.data.data));
     }
     setOpen(!open);
-    setForm({...form, parId: data['id'], parName: data['name']});
+    handleParChange(data['id'], data['name']);
   }
-
+  console.log("itemId : ", itemId, "data : ", data['id']);
+  
   return (
     <Menu>
-      <div onClick={handleMenuItem}>
-      <img style={{width: '15px', height: '15px', marginRight: '5px'}} src='/img/comp/dept_50.png' alt='icon' />{data['name']}
+      <div className='itemTitle' onClick={handleMenuItem}>
+        <img style={{width: '15px', height: '15px', marginRight: '5px'}} src='/img/comp/dept_50.png' alt='icon' />{data['name']}
       </div>
-      { subItem.length > 1 && open &&
+      { 
+      subItem.length > 1 && open &&
         subItem.map((a, i) => (
-          data['id'] === a['id'] ? null : (
-            <Item form={form} data={a} setModalOn={setModalOn} setForm={setForm} pageId={pageId} key={a['name']+'lnb'}/>
+          ((data['id'] === a['id']) || (itemId === data['id'])) ? null : (
+            <Item itemId={itemId} data={a} setModalOn={setModalOn} handleParChange={handleParChange} pageId={pageId} key={a['name']+'lnb'}/>
           )
         ))
       }
@@ -151,7 +153,11 @@ height: 100%;
 export const Menu = styled.div`
 margin: 10px;
 margin-left: 20px;
-> div:hover {
+
+&.disabled {
+  display: none;
+}
+> div.itemTitle:hover {
   color: #1b75ce;
   cursor: pointer;
 }

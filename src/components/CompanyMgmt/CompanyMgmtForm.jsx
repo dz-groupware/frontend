@@ -133,7 +133,7 @@ export default function CompanyMgmtForm({ pageId }) {
         if (name === "loginPw") {
             const regex = /^[a-zA-Z0-9_]{0,98}$/;
             if (!regex.test(value))
-                return console.log("비밀번호형식을지켜주세요");
+                return alert("비밀번호형식을지켜주세요");
 
         }
 
@@ -561,7 +561,7 @@ export default function CompanyMgmtForm({ pageId }) {
                 <FormInput label="대표자명" name="repName" value={info.repName || ''} disabled={isSignUpChecked} onChange={handleChange} maxLength={19} />
 
                 <HalfInputContainer>
-                    <FormInput label="대표자주민등록번호" name="repIdNum" value={info.repIdNum || ''} disabled={isSignUpChecked} onChange={handleCombinedChange} placeholder="______-_______" />
+                    <FormInput label="대표자주민등록번호" type="password" name="repIdNum" value={info.repIdNum || ''} disabled={isSignUpChecked} onChange={handleCombinedChange} placeholder="______-_______" />
                 </HalfInputContainer>
             </HalfInputContainer>
             <HalfInputContainer style={{ borderBottom: "1px solid lightgrey" }}>

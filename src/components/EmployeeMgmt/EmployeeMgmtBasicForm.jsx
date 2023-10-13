@@ -478,10 +478,12 @@ export default function EmployeeMgmtBasicForm({ pageId }) {
 
                     <FormInput label="주민등록번호"
                         name="empIdNum"
+                        type="password"
                         value={info.empIdNum || ''}
                         onChange={handleHyphenChange}
                         onBlur={handleBlur}
-                        disabled={isSignUpChecked} />
+                        disabled={isSignUpChecked} 
+                        />
 
 
                 </HalfInputContainer>

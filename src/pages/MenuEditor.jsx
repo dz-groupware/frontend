@@ -10,12 +10,14 @@ import GnbDetail from '../components/MenuEditor/GnbDetail';
 import MenuDetail from '../components/MenuEditor/MenuDetail';
 import Retry from '../common/Error/Retry';
 import { ButtonTitle } from '../common/styles/Button';
+import { useDispatch } from 'react-redux';
+import { favor } from '../utils/Slice';
 
 export default function MenuEditor({ pageId }){
   const [gnbList, setGnbList] = useState([]);
   const [result, setResult] = useState([]);
   const [page, setPage] = useState([]);
-  const [favor, setFavor] = useState(false);
+  const [favorOn, setFavorOn] = useState(false);
   const [reRender, setReRender] = useState(true);
   const [clicked, setClicked] = useState('');
   const [error, setError] = useState({
@@ -25,6 +27,7 @@ export default function MenuEditor({ pageId }){
 
   const [detail, setDetail] = useState([false, false]);
   const [menuDetail, setMenuDetail] = useState("");
+  const dispatch = useDispatch();
 
   // 대메뉴/메뉴 디테일 on/off
   const menuDetailHandler = (type, detail) => {
@@ -53,7 +56,6 @@ export default function MenuEditor({ pageId }){
   const detailOff = () => {
     setDetail([false, false]);
   };
-
   // 메뉴 검색 결과
   const searchHandler = (event) => {
     if(event !== undefined){
@@ -67,13 +69,13 @@ export default function MenuEditor({ pageId }){
 
   // 즐겨찾기 추가/삭제 요청
   const FavorHandler = () => {
-    FavorApi(pageId, favor).then(res => {
-      console.log("favor", favor, " -> ", res.data.data);
+    FavorApi(pageId, favorOn).then(res => {
+      console.log("favorOn", favorOn, " -> ", res.data.data);
       if(res.data.data === 1) {
-        setFavor(!favor);
+        setFavorOn(!favorOn);
       }else {
         console.log('즐겨찾기 오류 : 강제 off')
-        setFavor(false);
+        setFavorOn(false);
       }
     });
   };
@@ -91,11 +93,11 @@ export default function MenuEditor({ pageId }){
         console.log(res.data.data);
         if (res.data.data === 1){
           console.log('즐겨찾기 on')
-          setFavor(true);
+          setFavorOn(true);
         } 
         if (res.data.data === 0) {
           console.log('즐겨찾기 off')
-          setFavor(false);
+          setFavorOn(false);
         } else {
           console.log('즐겨찾기 에러')
         }  
@@ -109,6 +111,10 @@ export default function MenuEditor({ pageId }){
       });
     }
   }, []);
+
+  useEffect(() => {
+    dispatch(favor(favorOn));
+  }, [favorOn]);
 
   useEffect(() => {
     if(reRender){
@@ -137,7 +143,7 @@ export default function MenuEditor({ pageId }){
           <ButtonTitle onClick={() => {menuDetailHandler('newGnb', '')}}>대메뉴추가</ButtonTitle>
           <ButtonTitle onClick={() => {menuDetailHandler('newMenu', '')}}>메뉴추가</ButtonTitle>
           <div><Pipe /></div>
-          <div onClick={FavorHandler}>{favor ? <AiFillStar /> : <AiOutlineStar/>}</div>
+          <div onClick={FavorHandler}>{favorOn ? <AiFillStar /> : <AiOutlineStar/>}</div>
         </div>
       </Nav>
       <Line />

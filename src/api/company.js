@@ -12,7 +12,6 @@ export const getSubsidiaryCompaniesWithEmployeeCountApi = async ( {paths, header
   axiosInstance.defaults.headers['menuId'] = headers.pageId;
   return axiosInstance.get(`/company/par/${companyId}/sub`)
   .then(response =>{ 
-    console.log(response)
     return response; })
   .catch(error => { throw error; });
 }

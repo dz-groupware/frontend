@@ -30,12 +30,7 @@ background-color: rgb(252,252,252);
     height: auto;
   }
   > h1 {
-    position: absolute;
-    padding: 50% 50% 50% 50%;
-    > div {
-      color: #72adbc;
-      width: 150px;
-      height: 300px;
-    }
+    position: relative;
+    top: -80px;
   }
 `;

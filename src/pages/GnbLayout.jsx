@@ -24,7 +24,7 @@ export default function GnbLayout() {
     [`/`, { menuId: 0, gnbId: 0, gnbName: 'main', page: 'Main' }],
     [`/FORBIDDEN`, { menuId: 0, gnbId: 0, gnbName: '403', page: 'Error/FORBIDDEN' }],
     [`/SERVICE_UNAVAILABLE`, { menuId: 0, gnbId: 0, gnbName: '503', page: 'Error/SERVICE_UNAVAILABLE' }]]));
-    
+
   const parseMenuList = (originMenuList) => {
     const menuList = new Map();
     originMenuList.forEach(row => {
@@ -46,12 +46,12 @@ export default function GnbLayout() {
     };
   };
 
-  const basicInfo = async(empId) => {
-    try{
+  const basicInfo = async (empId) => {
+    try {
       await basicInfoApi(empId).then(res => {
         setProfile(res.data.data.profile);
         setGnb(res.data.data.menu);
-        setFavor(res.data.data.favor);  
+        setFavor(res.data.data.favor);
         setEmpId(res.data.data.empId);
         localStorage.setItem("empId", res.data.data.empId);
         localStorage.setItem("compId", res.data.data.compId);
@@ -64,12 +64,13 @@ export default function GnbLayout() {
   };
 
   useEffect(() => {
-    try{
-      initRouteList().then(()=>{
+    document.body.style.zoom = "80%";  
+    try {
+      initRouteList().then(() => {
         setRouteOn(true);
       });
-    }catch (error) {
-      setError(true);
+    } catch (error) {
+      console.log('route-list : ', error);
     }
   }, []);
 
@@ -86,7 +87,7 @@ export default function GnbLayout() {
   }, [empId]);
 
   return (
-    <Page>
+    <>
       <Content>
         <TB profile={profile} empId={empId} routeList={routeList}/>
         { error ? <Retry /> : (
@@ -94,14 +95,10 @@ export default function GnbLayout() {
         )}
       </Content>
       <GNB gnb={gnb} favor={favor}/>
-    </Page>
+    </>
   );
 }
 
-const Page = styled.div`
-width: 80vw;
-height: 80vh;
-`;
 const Content = styled.div`
   position: fixed;
   top: 0px;

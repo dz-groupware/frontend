@@ -3,7 +3,7 @@ import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
 
 import styled from 'styled-components';
 import { AiOutlineMenu } from "react-icons/ai";
-import { MdMenuOpen } from "react-icons/md";
+import { RiMenuUnfoldLine } from "react-icons/ri";
 
 import { searchMenuListAPI } from '../api/gnb';
 
@@ -13,7 +13,6 @@ import Loading from '../common/styles/Loading.jsx';
 
 export default function LnbLayout({ routeList }) {
   const [content, setContent] = useState(false);
-  const [loading, setLoading] = useState(false);
   const location = useLocation();
   const [gnb, setGnb] = useState({ id: 0, name: '' });
   const [lnbOpen, setLnbOpen] = useState(true);
@@ -26,15 +25,14 @@ export default function LnbLayout({ routeList }) {
       if (res !== undefined) {
         res.then(res => {
           if (Array.isArray(res.data.data)) {
-            console.log(res.data.data);
+            // console.log(res.data.data);
             setData(res.data.data)
           }
-          // setContent(
-            
-          // );
-          // setLoading(false);
         });
       }
+      setContent(
+        <Module gnb={gnb} setGnb={setGnb} routeList={routeList}/>
+      )
     } catch(error) {
       setContent(<Retry />);
     }
@@ -43,10 +41,10 @@ export default function LnbLayout({ routeList }) {
   // return ( loading ? <Loading /> : content );
   return (<Content>
     <LnbTitle className={`${location.pathname === '/' ? 'main' : 'lnb' }`}>
-      {
-        lnbOpen ? <MdMenuOpen className={`on ${!lnbOpen ? 'open' : 'close'}`} onClick={() => {setLnbOpen(false)}}/>
-        : <AiOutlineMenu className={`off ${lnbOpen ? 'open' : 'close'}`} onClick={() => {setLnbOpen(true)}}/>
-      }
+      <IconContainer className={`icon-container ${lnbOpen ? 'open' : 'close'}`}>
+        <AiOutlineMenu className="close-icon" onClick={() => {setLnbOpen(false)}}/>
+        <RiMenuUnfoldLine className="open-icon" onClick={() => {setLnbOpen(true)}}/>
+      </IconContainer>
       
       <p>{gnb.name}</p>
     </LnbTitle>
@@ -65,7 +63,7 @@ export default function LnbLayout({ routeList }) {
       </LNBList>
       <OutletArea id='route' className={`${location.pathname === '/' ? 'main' : 'lnb'} ${lnbOpen ? 'true' : 'false'}`} >
         <Routes>
-          <Route path='/*' element={<Module gnb={gnb} setGnb={setGnb} routeList={routeList}/>} />
+          <Route path='/*' element={content} />
         </Routes>
       </OutletArea>
     </LnbArea>
@@ -97,7 +95,7 @@ export function MenuTree({ menu, param, gnb, clicked, setClicked }){
       setOpen(!open);
       navigate(`/${menu['nameTree']}`);  
     } catch(error) {
-      console.log('searchMenuListAPI error : ',error);
+      console.info('searchMenuListAPI error : ',error);
     }
     setClicked(menu['id']);
   }
@@ -195,25 +193,18 @@ font-weight: bold;
 padding-left: 10px;
 display:flex;
 > svg {
-  width: 30px;
-  height: 30px;
-  margin: 10px 10px 15px 5px;
-  transition: all 0.3s ease; 
-  &.on.open {
+  width: 25px;
+  height: 25px;
+  margin: 12px 10px 15px 5px;
+  cursor: pointer;
+  opacity: 0;
+  &.open {
     opacity: 1; 
-    transform: scale(1.2);
+    transition: all 0.3s ease; 
   }
-  &.off.open {
-    opacity: 1; 
-    transform: scale(1.2);
-  }
-  &.on.close {
+  &.close {
     opacity: 0; 
-    transform: scale(0.8);
-  }
-  &.off.close {
-    opacity: 0; 
-    transform: scale(0.8);
+    transition: all 0.3s ease; 
   }
 }
 > p {
@@ -261,4 +252,34 @@ box-shadow: inset 1px 1px 1px 0px rgba(255,255,255,.3),
   white-space: nowrap;
   text-overflow: ellipsis; 
 }
+`;
+const IconContainer = styled.div`
+  position: relative;
+  width: 30px;
+  height: 25px;
+  cursor: pointer;
+
+  .open-icon {
+    position: absolute;
+    top: 12px;
+    left: 1px;
+    transition: all 0.3s ease;
+  }
+  .close-icon {
+    position: absolute;
+    top: 12px;
+    left: 1px;
+    display: none;
+    transition: all 0.3s ease;
+  }
+
+  &.open .open-icon {
+    display: none;
+    transition: all 0.3s ease;
+  }
+
+  &.open .close-icon {
+    display: block;
+    transition: all 0.3s ease;
+  }
 `;

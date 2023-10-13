@@ -1,6 +1,6 @@
 import { Suspense, useEffect, useState } from "react";
 import {  AiOutlineInfoCircle } from 'react-icons/ai';
-import {  IoIosArrowDown, IoIosArrowUp } from 'react-icons/io';
+import {  IoIosArrowDown } from 'react-icons/io';
 
 import styled from 'styled-components';
 import Swal from 'sweetalert2';
@@ -9,6 +9,7 @@ import { getDepartemnt, getOptionCompList, getBasicDetailById, getEmpListByDeptI
   modifyDepartment, getDepartmentById, deleteDepartment, addDepartment, 
   findDeptNameAndCode } from '../api/department';
 import { FavorApi } from '../api/menu';
+import { favor } from '../utils/Slice';
 
 import DetailBasic from '../components/DepartmentManager/DetailBasic';
 import DetailEmp from '../components/DepartmentManager/DetailEmp';
@@ -17,6 +18,7 @@ import SearchForm from '../components/DepartmentManager/SearchForm';
 import SearchResult from '../components/DepartmentManager/SearchResult';
 import DetailTitle from '../components/DepartmentManager/DetailTitle';
 import Loading from '../common/styles/Loading';
+import { useDispatch } from "react-redux";
 
 export default function DepartmentManager({ pageId }) {
   // initialState
@@ -51,7 +53,7 @@ export default function DepartmentManager({ pageId }) {
   const [item, setItem] = useState('');
   const [info, setInfo] = useState(false);
 
-  const [favor, setFavor] = useState(false);
+  const [favorOn, setFavorOn] = useState(false);
 
   const [option, setOption] = useState([]);
   const [result, setResult] = useState([]);
@@ -60,22 +62,17 @@ export default function DepartmentManager({ pageId }) {
 
   const [filter, setFilter] = useState('all');
   const [pageLoading, setPageLoading] = useState(false);
-  // console.log(detail);
-  // console.log(search)
-  // console.log(value)
-  // console.log(form);
-  // console.log("error:", error);
-  console.log("result : ", result);
+  const dispatch = useDispatch();
 
   // 즐겨찾기 추가/삭제 요청
   const handleFavor = () => {
-    FavorApi(pageId, favor).then(res => {
+    FavorApi(pageId, favorOn).then(res => {
       if(res.data.data === 1) {
-        setFavor(!favor);
-      }else {
+        setFavorOn(!favorOn);
+      } else {
         console.log('즐겨찾기 오류 : 강제 off')
-        setFavor(false);
-      }
+        setFavorOn(false);
+      };
     });
   };
   // 삭제
@@ -108,13 +105,12 @@ export default function DepartmentManager({ pageId }) {
             text: "삭제에 실패하였습니다.",
             icon: 'error',
           });  
-        }
-      }
+        };
+      };
     });
   }
   // 상세정보 열람
   const handleModifyNoti = () => {
-    console.log('in hmn', detail);
     if(detail.id === 0){
       // 추가 시
       setValue(initValue);
@@ -124,7 +120,6 @@ export default function DepartmentManager({ pageId }) {
         console.log('부서 상세 요청 : ', detail.id)
         getBasicDetailById(detail.id, pageId).then(res => {
           setValue(res.data.data);
-          console.log('try disabled');
               // 자신의 회사가 아닌 다른 회사의 부서 정보 열람 시도
           const compId = localStorage.getItem("compId");
           const myForm = document.getElementById('basic');
@@ -154,9 +149,9 @@ export default function DepartmentManager({ pageId }) {
         });
       } catch (error) {
         console.log(error);
-      }
-    }
-  }
+      };
+    };
+  };
   // 부서트리 하위 부서 찾기
   const findItemAndSetSubItem = (items, itemId, newSubItem) => {
     console.log('여기도 옴')
@@ -171,7 +166,7 @@ export default function DepartmentManager({ pageId }) {
       }
     }
     return false; // 아무것도 찾지 못한 경우
-  }
+  };
   // 부서트리 하위 부서 추가
   const updateSubItem = (itemId, newSubItem) => {
     console.log('여기도')
@@ -180,7 +175,7 @@ export default function DepartmentManager({ pageId }) {
       findItemAndSetSubItem(updateRes, itemId, newSubItem);
       return updateRes;
     });
-  }
+  };
   // 저장/수정/삭제 시 조직도 트리 리렌더링 
   const renderOrgTree = () => {
     try {
@@ -192,27 +187,22 @@ export default function DepartmentManager({ pageId }) {
     } catch (error) {
       console.log(error);
     }
-  }
+  };
   
   useEffect(()=>{
     const loadDeptList = async () => {
       try {
         setPageLoading(true);
         const menu = await getDepartemnt(pageId);
-        console.log(menu);
         setResult(menu.data.data);
         // 즐겨찾기 가져오기
         FavorApi(pageId, 'load').then(res => {
-          console.log(res.data.data);
           if (res.data.data === 1){
-            console.log('즐겨찾기 on')
-            setFavor(true);
-          } 
-          if (res.data.data === 0) {
-            console.log('즐겨찾기 off')
-            setFavor(false);
+            setFavorOn(true);
+          } else if (res.data.data === 0) {
+            setFavorOn(false);
           } else {
-            console.log('즐겨찾기 에러')
+            console.log('즐겨찾기 에러');
           }  
         });
         const opt = await getOptionCompList(pageId);
@@ -229,20 +219,18 @@ export default function DepartmentManager({ pageId }) {
     }
     loadDeptList();
   }, []);
-  
+  useEffect(() => {
+    dispatch(favor(favorOn));
+  }, [favorOn]);
   // 부서 상세 정보 요청
   useEffect(()=>{ 
-    console.log('상세 요청', detail);
     handleModifyNoti();
   },[detail.id, detail.type]);
+
   useEffect(() => {
-    // console.log('updated value : ', value, detail);
-    // 데이터 업데이트 (저장 시)
     if (detail.state === 'save') {
       try {
-        console.log('save request', value);
         addDepartment(value, pageId).then(() => {
-          console.log('저장 후 조직도 리렌더링');
           renderOrgTree();
         }).then(() => {
           Swal.fire({
@@ -268,14 +256,8 @@ export default function DepartmentManager({ pageId }) {
         if(detail.state === 'save'){
             if(detail.id === 0){
               console.log('추가 요청');
-              try {
-
-              } catch (error) {
-
-              }
             }
-            if(detail.id > 0) {
-              console.log('수정 요청');            
+            if(detail.id > 0) {            
               try {
                 modifyDepartment(value, pageId).then(res => {
                   Swal.fire({
@@ -301,7 +283,6 @@ export default function DepartmentManager({ pageId }) {
       }
     }
     setDetail({ ...detail, state: false, save: false });
-    // console.log('저장 삭제 버튼 마무리 : ', detail);
   }, [detail.save]);
 
   useEffect(() => {
@@ -319,10 +300,7 @@ export default function DepartmentManager({ pageId }) {
   }, [detail.isChanging]);
 
   useEffect(() => {
-    console.log("item : ", typeof item['id']);
     if (item['id'] > 0 ){
-      console.log('item id : ', item)
-      console.log('pageId : ', pageId)
       getDepartmentById(item['compId'], item['id'], pageId).then(res => { 
         updateSubItem(item['id'], res.data.data);
       });      
@@ -333,7 +311,6 @@ export default function DepartmentManager({ pageId }) {
     if (search.on){
       try {
         findDeptNameAndCode(search.option, search.text, pageId).then(res => {
-          console.log('res : ', res.data.data);
           setResult(res.data.data);
           setSearch({ ...search, on: false });
         });  
@@ -351,7 +328,7 @@ export default function DepartmentManager({ pageId }) {
     <ContentDept>
       <DeptTitle>
         <div id="deptTitle">부서관리</div>
-        <TitleBtn favor={favor} handleFavor={handleFavor} detail={detail} setDetail={setDetail} disabled={disabled}/>
+        <TitleBtn favorOn={favorOn} handleFavor={handleFavor} detail={detail} setDetail={setDetail} disabled={disabled}/>
       </DeptTitle>
       <Line />
       <Info>

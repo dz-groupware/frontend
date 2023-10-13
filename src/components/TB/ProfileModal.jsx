@@ -13,14 +13,18 @@ export default function ProfileModal({ profile, empId, setProfileModal }) {
   const [emp, setEmp] = useState([]);
   const [currentTime, setCurrentTime] = useState(new Date());
   const handleLogOut = () => {
-    logOut().then(() => {
-      localStorage.setItem("empId", 0);
-      localStorage.setItem("compId", 0);
-      console.log('done')
-      window.location.href = '/login';
-    });
+    logOut()
+      .then(() => {
+        localStorage.setItem("empId", "0");
+        localStorage.setItem("compId", "0");
+        localStorage.setItem("isLogin", false);
+        window.location.href = '/login';
+      })
+      .catch(error => {
+        console.error("로그아웃 중 오류 발생:", error);
+      });
   };
-
+  
   const modalOff = () => {
     setProfileModal(false);
   };
@@ -167,7 +171,6 @@ width: 100%;
   margin: 0 0 0 5px;
 }
 `;
-
 const Page = styled.div`
 width: 150px;
 height: 20px;

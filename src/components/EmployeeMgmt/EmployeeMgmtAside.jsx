@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
 import { employeeActions } from "../../utils/Slice";
-import { getClosedEmployeeMgmtList, getEmployeeDetailsById, getEmployeeMgmtList, getOpenedEmployeeMgmtList } from "../../api/employeemgmt";
+import { findCloseEmployeeMgmtList, findEmployeeMgmtList, findOpenEmployeeMgmtList, getClosedEmployeeMgmtList, getEmployeeDetailsById, getEmployeeMgmtList, getOpenedEmployeeMgmtList } from "../../api/employeemgmt";
 import { GrNext, GrPrevious } from 'react-icons/gr';
 
 export default function EmployeeMgmtAside({ pageId }) {
@@ -13,26 +13,20 @@ export default function EmployeeMgmtAside({ pageId }) {
   const isSearchExecuted = useSelector(state => state.employeeMgmt.isSearchExecuted);
   const [selectedEmployeeId, setSelectedEmployeeId] = useState(null);
   const isVisible = useSelector(state => state.employeeMgmt.isVisible);
-  const reduxbasicInfo = useSelector(state => state.employeeMgmt.employeeBasicInfo);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageRange, setPageRange] = useState([1, 5]);
   const [selectedFilter, setSelectedFilter] = useState("전체");
   const [openEmployeeDataList, setOpenEmployeeDataList] = useState([]);
   const [closeEmployeeDataList, setCloseEmployeeDataList] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const searchCriteria = useSelector(state => state.employeeMgmt.isSearchValue);
+  const searchOption = useSelector(state => state.employeeMgmt.isSelectedOption);
 
   useEffect(() => {
     setCurrentPage(1); // 페이지를 1로 초기화
 }, [selectedFilter]);
 
-  useEffect(() => {
-    async function fetchEmployees() {
-      const data = await getEmployeeMgmtList(pageId);
-      // console.log("data", data);
-      setEmployeeDataList(data);
-    }
 
-    fetchEmployees();
-  }, [searchedEmployeeDataList]);
 
   useEffect(() => {
 
@@ -42,38 +36,63 @@ export default function EmployeeMgmtAside({ pageId }) {
       setSelectedEmployeeId(null);
     }
   }, [isVisible]);
+ 
+  
+
   useEffect(() => {
+    setEmployeeDataList([]);
     async function fetchEmployeesByFilter() {
+      let data;
       if (selectedFilter === "재직자") {
-        // 해당 API로 데이터 가져오기
-        const data = await getOpenedEmployeeMgmtList(pageId);
-        setOpenEmployeeDataList(data);
+        if (isSearchExecuted) {
+          data = await findOpenEmployeeMgmtList(searchCriteria, searchOption, pageId);
+          setOpenEmployeeDataList(prevData => data);
+        } else {
+          data = await getOpenedEmployeeMgmtList(pageId);
+          setOpenEmployeeDataList(prevData => data);
+        }
       } else if (selectedFilter === "퇴사자") {
-        // 해당 API로 데이터 가져오기
-        const data = await getClosedEmployeeMgmtList(pageId);
-        setCloseEmployeeDataList(data);
+        if (isSearchExecuted) {
+          console.log("퇴사자니");
+          data = await findCloseEmployeeMgmtList(searchCriteria, searchOption, pageId);
+          setCloseEmployeeDataList(prevData => data);
+        } else {
+          data = await getClosedEmployeeMgmtList(pageId);
+          setCloseEmployeeDataList(prevData => data);
+        }
       } else {
-        const data = await getEmployeeMgmtList(pageId);
-        setEmployeeDataList(data);
+        if (isSearchExecuted) {
+          console.log("전체인경우");
+          data = await findEmployeeMgmtList(searchCriteria, searchOption,pageId);
+          setEmployeeDataList(prevData => data);
+        } else {
+          data = await getEmployeeMgmtList(pageId);
+          setEmployeeDataList(prevData => data);
+        }
       }
+      setLoading(false); // 모든 데이터 상태 업데이트 후 로딩 상태 업데이트
     }
-    fetchEmployeesByFilter();
-  }, [selectedFilter, searchedEmployeeDataList]);
+    fetchEmployeesByFilter().finally(() => setLoading(false));
+  }, [selectedFilter, searchedEmployeeDataList, searchCriteria, searchOption, isSearchExecuted]);
+  
+
 
 
   if (!employeeDataList) {
     return <div>Loading...</div>;
   };
-
+  if (loading) {
+    return <div>Loading...</div>;
+  }
   const itemsPerPage = 5;
   const dataForPagination =
-    isSearchExecuted
-      ? searchedEmployeeDataList
-      : selectedFilter === "재직자"
-        ? openEmployeeDataList
-        : selectedFilter === "퇴사자"
-          ? closeEmployeeDataList
-          : employeeDataList;
+  isSearchExecuted? 
+  selectedFilter === "재직자" ? openEmployeeDataList
+    :selectedFilter === "퇴사자" ?closeEmployeeDataList
+      :employeeDataList
+      :selectedFilter === "재직자" ? openEmployeeDataList
+    :selectedFilter === "퇴사자" ?closeEmployeeDataList
+      :employeeDataList;
 
 
 
@@ -261,13 +280,13 @@ export default function EmployeeMgmtAside({ pageId }) {
             <span style={{ margin: "7px", fontWeight: 600 }}>사용자: </span>
             <span style={{ color: "#308EFC", fontWeight: 600 }}>
               {
-                isSearchExecuted
-                  ? Object.keys(searchedEmployeeDataList).length
-                  : selectedFilter === "재직자"
-                    ? openEmployeeDataList.length
-                    : selectedFilter === "퇴사자"
-                      ? closeEmployeeDataList.length
-                      : employeeDataList.length
+                isSearchExecuted? 
+                selectedFilter === "재직자" ? openEmployeeDataList.length
+                  :selectedFilter === "퇴사자" ?closeEmployeeDataList.length
+                    :employeeDataList.length
+                    :selectedFilter === "재직자" ? openEmployeeDataList.length
+                  :selectedFilter === "퇴사자" ?closeEmployeeDataList.length
+                    :employeeDataList.length
               }
             </span>
 
@@ -282,13 +301,13 @@ export default function EmployeeMgmtAside({ pageId }) {
       </NumberOfEmployeesArea>
 
       <EmployeeListArea>
-        {isSearchExecuted
-          ? renderEmployeeDataList(searchedEmployeeDataList)
-          : selectedFilter === "재직자"
-            ? renderEmployeeDataList(openEmployeeDataList)
-            : selectedFilter === "퇴사자"
-              ? renderEmployeeDataList(closeEmployeeDataList)
+        {isSearchExecuted?
+            selectedFilter === "재직자" ? renderEmployeeDataList(openEmployeeDataList) 
+            :  selectedFilter === "퇴사자" ? renderEmployeeDataList(closeEmployeeDataList)
               : renderEmployeeDataList(employeeDataList)
+          : selectedFilter === "재직자" ? renderEmployeeDataList(openEmployeeDataList) 
+          :  selectedFilter === "퇴사자" ? renderEmployeeDataList(closeEmployeeDataList)
+            : renderEmployeeDataList(employeeDataList)
         }
       </EmployeeListArea>
       <EmployeeListPageNation>
@@ -314,6 +333,7 @@ const Container = styled.div`
  width: 100%;  
   margin-left: 20px;
   margin-top: 10px;
+  margin-right: 20px;
   border: 1.5px solid #CCCCCC;
   box-shadow: inset 1px 1px 1px 0px rgba(255,255,255,.3),
             3px 3px 3px 0px rgba(0,0,0,.1),
@@ -326,14 +346,14 @@ const Container = styled.div`
 
 const NumberOfEmployeesArea = styled.div`
   position: sticky;
-  height: 50px;
+  height: 40px;
   display:flex;
   justify-content: space-between;
   align-items: center;
   border-bottom:1px solid #ECECEB;
   background-color: #F8F9F9;
   top: 0;
-  font-size: 14px;
+  font-size: 10px;
   padding : 10px;
 `;
 
@@ -341,7 +361,7 @@ const EmployeeListArea = styled.div`
   padding: 20px;
   background-color: #F9F9F9;
   border: none;
-  height: 570px;
+  height: 400px;
 `;
 
 const EmployeeListPageNation = styled.div`
@@ -351,7 +371,7 @@ const EmployeeListPageNation = styled.div`
   width: 100%;  
   background-color: #FFFEFE;
   border-top: 1.5px solid #ECECEB;
-  padding: 10px 0; 
+  padding: 5px 0; 
   height: auto;  // 페이지네이션 영역의 높이도 자동으로 조절
 `;
 
@@ -359,7 +379,7 @@ const EmployeeListPageNation = styled.div`
 const NumberArea = styled.div`
   display: flex;
   width: 100%;
-  margin:20px;
+  margin:15px;
   
 `;
 
@@ -383,7 +403,7 @@ const Element = styled.div`
   flex: 1;
   display: flex;
   align-items: center;
-  font-size: 18px;
+  font-size: 16px;
   
   
   
@@ -394,12 +414,12 @@ const Wrapper = styled.div`
 cursor: pointer;
 border: 1.5px solid #CCCCCC;
 margin-bottom: 10px;
-margin-top: 10px;
+margin-top: 5px;
 padding :10px;
 background-color: ${props => props.$isselected === "true" ? '#e6f4ff' : 'white'};
 border-color: ${props => props.$isselected === "true"? '#7BAAF1' : '#CCCCCC'};
 transition: transform 0.2s ease, box-shadow 0.2s ease;  // 부드러운 변환 효과
-height: 70px;
+height: 60px;
 
 &:hover {
   transform: scale(0.98);  // 원래 크기의 98%로 약간 줄임
@@ -420,8 +440,8 @@ height: 70px;
 `;
 const Image = styled.img`
 
-  width: 50px;  // 원하는 이미지 크기로 조절
-  height: 50px;
+  width: 40px;  // 원하는 이미지 크기로 조절
+  height: 40px;
   margin-right: 20px;  // 오른쪽 여백
 `;
 const EmployeeInfo = styled.div`
@@ -466,7 +486,7 @@ const PageNumber = styled.span`
   color: ${props => (props.$isselected ? "#308EFC" : "#333")};
   font-weight: ${props => (props.$isselected ? "bold" : "normal")};
   border-radius: 3px;
-  font-size: 20px;
+  font-size: 15px;
   transition: background-color 0.3s;
   &:hover {
     background-color: #f3f3f3;

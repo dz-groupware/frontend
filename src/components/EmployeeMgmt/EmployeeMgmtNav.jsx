@@ -5,7 +5,7 @@ import { axiosInstance } from '../../utils/axiosInstance';
 import { styled } from 'styled-components';
 import { employeeActions } from '../../utils/Slice';
 import { getCompanyMgmtList } from '../../api/companymgmt';
-import { findEmployeeMgmtList } from '../../api/employeemgmt';
+import { findEmployeeMgmtList, getDepartmentList } from '../../api/employeemgmt';
 //회사 목록 선택시 보내는 Search 부분 api 변경해야함 선택 옵션도 달라져야함 
 
 
@@ -13,20 +13,20 @@ export default function EmployeeMgmtNav({pageId}) {
   const dispatch = useDispatch();
   const [searchValue, setSearchValue] = useState("");
   const [selectedOption, setSelectedOption] = useState("");
-  const [companyOptions, setCompanyOptions] = useState([]); // 회사 옵션을 담을 상태
+  const [departmentOptions, setDepartmentOptions] = useState([]); // 회사 옵션을 담을 상태
 
 
-  const fetchCompanies = async () => {
+  const fetchdepartment = async () => {
     try {
-        const companyList = await getCompanyMgmtList(pageId);
-        setCompanyOptions(companyList);
+        const departmentList = await getDepartmentList(pageId);
+        setDepartmentOptions(departmentList);
     } catch (error) {
         console.error("Error fetching company data:", error);
     }
 };
 
   useEffect(() => {
-    fetchCompanies(); 
+    fetchdepartment(); 
   }, []);
 
 
@@ -34,12 +34,11 @@ export default function EmployeeMgmtNav({pageId}) {
   const handleSearch = async () => {
     try {
         dispatch(employeeActions.hideForm());
+        dispatch(employeeActions.setSearchValue(searchValue));
+        dispatch(employeeActions.setSelectedOption(selectedOption));  
+    
         
-        const responseData = await findEmployeeMgmtList(searchValue, selectedOption,pageId);
-            
-        // 응답 데이터 처리
-        console.log("API Response:", responseData);
-        dispatch(employeeActions.searchInfo(responseData));
+        
     } catch (error) {
         console.error("API Error:", error);
     }
@@ -55,7 +54,7 @@ const handleKeyDown  = (e) => {
 
   const searchFields = (
     <>
-      <Label>회사</Label>
+      <Label>부서</Label>
       <Select style={{ width: 'fitContent' }}
         value={selectedOption}
         onChange={(e) => setSelectedOption(e.target.value)}
@@ -63,9 +62,9 @@ const handleKeyDown  = (e) => {
         <option value="0">전체</option>
 
 
-        {Array.isArray(companyOptions) && companyOptions.length > 0 ? companyOptions.map((company) => (
-          <option key={company.id} value={company.id}>{company.name}</option>
-        )) : <option disabled>Loading companies...</option>}
+        {Array.isArray(departmentOptions) && departmentOptions.length > 0 ? departmentOptions.map((department) => (
+          <option key={department.id} value={department.id}>{department.name}</option>
+        )) : <option disabled>Loading department...</option>}
 
       </Select>
 

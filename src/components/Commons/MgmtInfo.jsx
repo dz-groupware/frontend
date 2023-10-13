@@ -37,7 +37,7 @@ height: 40px;
 const InfoArea = styled.div`
 display: flex;
 & > span {
-    font-size: 15px;
+    font-size: 18px;
     font-weight: 900;
     margin: 5px;
 }

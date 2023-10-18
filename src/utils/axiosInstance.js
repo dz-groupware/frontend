@@ -1,8 +1,8 @@
 import axios from "axios";
 
 export const axiosInstance = axios.create({
-  baseURL: "https://dev.amaranth2023.site/api/v1",
-  // baseURL: "http://localhost:8010/api/v1",
+  // baseURL: "https://dev.amaranth2023.site/api/v1",
+  baseURL: "http://localhost:8010/api/v1",
   headers: { "Content-Type": "application/json", },
   withCredentials: true,
   timeout: 20000,
@@ -48,10 +48,6 @@ axiosInstance.interceptors.response.use(
       window.location.href='/ERR_NETWORK';
       console.log('net error');
     }
-    if (err.response && err.response.status === 402) {
-      localStorage.setItem("isLogin",false);
-      window.location.href='/login';
-    } 
     if (err.response && err.response.status === 403) {
       console.log(err);
       window.location.href='/FORBIDDEN';

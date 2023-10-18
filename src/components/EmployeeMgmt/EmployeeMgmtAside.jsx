@@ -21,6 +21,7 @@ export default function EmployeeMgmtAside({ pageId }) {
   const [loading, setLoading] = useState(true);
   const searchCriteria = useSelector(state => state.employeeMgmt.isSearchValue);
   const searchOption = useSelector(state => state.employeeMgmt.isSelectedOption);
+  
 
   useEffect(() => {
     setCurrentPage(1); // 페이지를 1로 초기화
@@ -66,8 +67,12 @@ export default function EmployeeMgmtAside({ pageId }) {
           data = await findEmployeeMgmtList(searchCriteria, searchOption,pageId);
           setEmployeeDataList(prevData => data);
         } else {
-          data = await getEmployeeMgmtList(pageId);
+          data = await getEmployeeMgmtList(pageId)
+          console.log("무슨 값 받아왓니?",data);
+    
+          dispatch(employeeActions.setLoginCompanyId(data[0].companyId));
           setEmployeeDataList(prevData => data);
+          console.log("로그인한 컴퍼니 아이디",data[0].companyId);
         }
       }
       setLoading(false); // 모든 데이터 상태 업데이트 후 로딩 상태 업데이트

@@ -4,15 +4,8 @@ export const getEmployeeMgmtList = async (pageId) => {
   // console.log("페이지아이디 확인좀 하자",pageId);
   axiosInstance.defaults.headers['menuId'] = pageId;
   try {
-    const response = await axiosInstance.get('/employeemgmt',
-    // {
-    //   headers:{
-    //     'Content-Type': "application/json",
-    //     'menuId': pageId 
-    //   },
-    // }
-      
-    );
+    const response = await axiosInstance.get('/employeemgmt');
+
     return response.data.data;
   } catch (error) {
     console.error("Error fetching employee data:", error);

@@ -12,11 +12,11 @@ const companyMgmtInitialState = {
     businessType: '',
     repName: '',
     repIdNum: '',
-    privEmail:'',
+    privEmail: '',
     repTel: '',
     gender: '',
-    loginId:'',
-    loginPw:'',
+    loginId: '',
+    loginPw: '',
     businessNum: '',
     corpType: '',
     corpNum: '',
@@ -31,7 +31,10 @@ const companyMgmtInitialState = {
   isVisible: false,
   searchList: JSON.parse('[{"":""}]'),
   isDuplicated: false,
-  isSignUpChecked: false, 
+  isSignUpChecked: false,
+  isSearchValue: null,
+  isSelectedOption: "",
+  loginCompanyId: "",
 };
 
 const employeeMgmtInitialState = {
@@ -50,10 +53,10 @@ const employeeMgmtInitialState = {
     address: '',
     joinDate: '',
     resignationDate: '',
-    
+
   },
   employeeGroupInfo: [{
-    departmentId:'',
+    departmentId: '',
     compId: '',
     deptId: '',
     position: '',
@@ -61,15 +64,18 @@ const employeeMgmtInitialState = {
     edjoinDate: '',
     leftDate: '',
     deletedYn: false,
+    empId:'',
+    
   }],
   idForForm: null,
   isVisible: false,
   searchList: JSON.parse('[{"":""}]'),
   activeTab: 'basic',
   isDuplicated: false,
-  isSignUpChecked: false, 
-  // uploadedFile: null,
-  
+  isSignUpChecked: false,
+  isSearchValue: null,
+  isSelectedOption: "",
+  loginCompanyId: "",
 }
 
 function getIdFormLocal(k, d) {
@@ -83,108 +89,129 @@ function getIdFormLocal(k, d) {
     return d;
   }
 }
-  
-  export const companyMgmtSlice = createManagementSlice(companyMgmtInitialState, 'companyMgmt');
-  export const employeeMgmtSlice = createManagementSlice(employeeMgmtInitialState, 'employeeMgmt');
-  
-  function createManagementSlice(initialState, sliceName) {
-    // info의 키 이름을 동적으로 가져옵니다 (예: companyInfo 또는 employeeBasicInfo).
-    const infoKey = Object.keys(initialState).find(key => key.endsWith('Info'));
-  
-    return createSlice({
-      name: sliceName,
-      initialState,
-      reducers: {
-        searchInfo: (state, action) => {
-          state.searchList = action.payload;
-          state.isSearchExecuted = true;
-        },
-        updateInfo: (state, action) => {
-  
-          state[infoKey] = action.payload; // 수정
-  
-        },
-        updateBasicInfo: (state, action) => {
-          state.employeeBasicInfo = action.payload;
-        },
-        updateGroupInfo: (state, action) => {
-          if (Array.isArray(action.payload)) {  // 전달된 payload가 배열인지 확인
-            state.employeeGroupInfo = action.payload.map(data => ({
-              departmentId: data.departmentId,
-              position: data.position,
-              compId: data.compId,
-              deptId: data.deptId,
-              transferredYn: data.transferredYn,
-              edjoinDate: data.edjoinDate,
-              leftDate: data.leftDate,
-              deletedYn: data.deletedYn
-            }));
-          } else {
-            console.warn("Expected an array for updateGroupInfo but received:", action.payload);
-          }
-        },
-  
-        clearInfo: (state) => {
-          // 현재 활성화된 탭에 따라 정보를 초기화
-          if (state.activeTab === 'basic') {
-            state.employeeBasicInfo = { ...initialState.employeeBasicInfo };
-          } else if (state.activeTab === 'group') {
-            state.employeeGroupInfo = { ...initialState.employeeGroupInfo };
-          }
-        },
-  
-        showForm: (state, action) => {
-          state.isVisible = true;
-          if (Array.isArray(action.payload)) { // 배열로 받아온 경우
-            const firstItem = action.payload[0];
-            state[infoKey] = {
-              ...state[infoKey],
-              ...firstItem,
-            };
-  
-            state.idForForm = firstItem.id;
-          } else if (action.payload && action.payload[infoKey]) {
-            
-            state[infoKey] = {
-              ...state[infoKey],
-              ...action.payload[infoKey],
-            };
-            
-            state.idForForm = action.payload[infoKey].id;
-          } else {
-            state.idForForm = null;
-          }
-          state.activeTab = initialState.activeTab;
 
-        },
-        hideForm: (state) => {
-          state.isVisible = false;
+export const companyMgmtSlice = createManagementSlice(companyMgmtInitialState, 'companyMgmt');
+export const employeeMgmtSlice = createManagementSlice(employeeMgmtInitialState, 'employeeMgmt');
+
+function createManagementSlice(initialState, sliceName) {
+  // info의 키 이름을 동적으로 가져옵니다 (예: companyInfo 또는 employeeBasicInfo).
+  const infoKey = Object.keys(initialState).find(key => key.endsWith('Info'));
+
+  return createSlice({
+    name: sliceName,
+    initialState,
+    reducers: {
+      searchInfo: (state, action) => {
+        state.searchList = action.payload;
+        state.isSearchExecuted = true;
+      },
+      updateInfo: (state, action) => {
+
+        state[infoKey] = action.payload; // 수정
+
+      },
+      updateBasicInfo: (state, action) => {
+        state.employeeBasicInfo = action.payload;
+      },
+      updateGroupInfo: (state, action) => {
+        if (Array.isArray(action.payload)) {  // 전달된 payload가 배열인지 확인
+          state.employeeGroupInfo = action.payload.map(data => ({
+            departmentId: data.departmentId,
+            position: data.position,
+            compId: data.compId,
+            deptId: data.deptId,
+            transferredYn: data.transferredYn,
+            edjoinDate: data.edjoinDate,
+            leftDate: data.leftDate,
+            deletedYn: data.deletedYn,
+            empId: data.empId,
+          }));
+        } else {
+          console.warn("Expected an array for updateGroupInfo but received:", action.payload);
+        }
+      },
+
+      clearInfo: (state) => {
+        // 현재 활성화된 탭에 따라 정보를 초기화
+        if (state.activeTab === 'basic') {
+          state.employeeBasicInfo = { ...initialState.employeeBasicInfo };
+        } else if (state.activeTab === 'group') {
+          state.employeeGroupInfo = { ...initialState.employeeGroupInfo };
+        }
+      },
+
+      showForm: (state, action) => {
+        state.isVisible = true;
+        if (Array.isArray(action.payload)) { // 배열로 받아온 경우
+          const firstItem = action.payload[0];
+          state[infoKey] = {
+            ...state[infoKey],
+            ...firstItem,
+          };
+
+          state.idForForm = firstItem.id;
+        } else if (action.payload && action.payload[infoKey]) {
+
+          state[infoKey] = {
+            ...state[infoKey],
+            ...action.payload[infoKey],
+          };
+
+          state.idForForm = action.payload[infoKey].id;
+        } else {
           state.idForForm = null;
-        },
-        resetState: (state) => {
-          return { ...initialState };
-        },
-        setActiveTab: (state, action) => {
-          state.activeTab = action.payload;
-        },
-  
-        setDuplicated: (state, action) => {
-          state.isDuplicated = action.payload;
-        },
-        setSignUpChecked: (state, action) => {
-          state.isSignUpChecked = action.payload;
-        },
-        updateUploadedFile: (state, action) => {
-          state.uploadedFile = action.payload;
-          state.employeeBasicInfo.imageUrl = action.payload;
-        },
-        setPreviousGroupsInfo: (state, action) => {
-          state.previousGroupsInfo = action.payload;
+        }
+        state.activeTab = initialState.activeTab;
+
+      },
+      hideForm: (state) => {
+        state.isVisible = false;
+        state.idForForm = null;
+      },
+      resetState: (state) => {
+        // 기존 loginCompanyId 값을 임시 변수에 저장합니다.
+        const currentLoginCompanyId = state.loginCompanyId;
+      
+        // state를 initialState로 재설정합니다.
+        state = { ...initialState };
+      
+        // loginCompanyId만 이전 상태를 유지하도록 다시 설정합니다.
+        state.loginCompanyId = currentLoginCompanyId;
+      
+        return state;  // 수정된 상태를 반환합니다.
+      },
+      setActiveTab: (state, action) => {
+        state.activeTab = action.payload;
+      },
+
+      setDuplicated: (state, action) => {
+        state.isDuplicated = action.payload;
+      },
+      setSignUpChecked: (state, action) => {
+        state.isSignUpChecked = action.payload;
+      },
+      updateUploadedFile: (state, action) => {
+        state.uploadedFile = action.payload;
+        state.employeeBasicInfo.imageUrl = action.payload;
+      },
+      setPreviousGroupsInfo: (state, action) => {
+        state.previousGroupsInfo = action.payload;
       },
       restorePreviousGroupsInfo: (state) => {
-          if (state.previousGroupsInfo) {
-              state.employeeGroupInfo = state.previousGroupsInfo;
-          }
+        if (state.previousGroupsInfo) {
+          state.employeeGroupInfo = state.previousGroupsInfo;
+        }
+      },
+      setSearchValue: (state, action) => {
+        state.isSearchValue = action.payload;
+        state.isSearchExecuted = true;
+      },
+      setSelectedOption: (state, action) => {
+        state.isSelectedOption = action.payload;
+        state.isSearchExecuted = true;
+      },
+      setLoginCompanyId: (state, action) => {
+        state.loginCompanyId = action.payload;
       },
 
 
@@ -240,7 +267,7 @@ export const favorSlice = createSlice({
     favor: [],
   },
   reducers: {
-    favor:(state, action) => {state.favor = action.payload}
+    favor: (state, action) => { state.favor = action.payload }
   }
 });
 

@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useEffect,useState } from "react";
 import { axiosInstance } from "../../utils/axiosInstance";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import MgmtNav from "../Commons/MgmtNav";
 import { companyActions } from "../../utils/Slice";
 import { findCompanyMgmtList } from "../../api/companymgmt";
@@ -12,15 +12,14 @@ export default function CompanyMgmtNav({pageId}) {
     const [searchValue, setSearchValue] = useState("");
     const [selectedOption, setSelectedOption] = useState("");
 
+
+
     const handleSearch = async () => {
       try {
           dispatch(companyActions.hideForm());
-  
-          const responseData = await findCompanyMgmtList(searchValue, selectedOption,pageId);
-              
-          // 응답 데이터 처리
-          console.log("API Response:", responseData);
-          dispatch(companyActions.searchInfo(responseData));
+          dispatch(companyActions.setSearchValue(searchValue));
+          dispatch(companyActions.setSelectedOption(selectedOption));  
+         
       } catch (error) {
           console.error("API Error:", error);
       }

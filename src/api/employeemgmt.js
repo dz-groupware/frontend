@@ -4,15 +4,21 @@ export const getEmployeeMgmtList = async (pageId) => {
   // console.log("페이지아이디 확인좀 하자",pageId);
   axiosInstance.defaults.headers['menuId'] = pageId;
   try {
-    const response = await axiosInstance.get('/employeemgmt',
-    // {
-    //   headers:{
-    //     'Content-Type': "application/json",
-    //     'menuId': pageId 
-    //   },
-    // }
-      
-    );
+    const response = await axiosInstance.get('/employeemgmt');
+
+    return response.data.data;
+  } catch (error) {
+    console.error("Error fetching employee data:", error);
+    alert("오류가 발생했습니다.");  // 사용자에게 오류 메시지를 표시합니다.
+    throw error;
+  }
+};
+
+
+export const getDepartmentList = async (pageId) => {
+  axiosInstance.defaults.headers['menuId'] = pageId;
+  try {
+    const response = await axiosInstance.get('/employeemgmt/departmentlist');
     return response.data.data;
   } catch (error) {
     console.error("Error fetching employee data:", error);
@@ -87,7 +93,7 @@ export const findEmployeeMgmtList = async (searchValue, selectedOption, pageId) 
 
     // console.log("actualSelectedOption:", actualSelectedOption);
 
-    const response = await axiosInstance.get(`/employeemgmt/employee-list?compId=${actualSelectedOption}&text=${actualSearchValue}`);
+    const response = await axiosInstance.get(`/employeemgmt/employee-list?deptId=${actualSelectedOption}&text=${actualSearchValue}`);
     return response.data.data;
   } catch (error) {
     console.error("API Error:", error);
@@ -95,6 +101,48 @@ export const findEmployeeMgmtList = async (searchValue, selectedOption, pageId) 
     throw error;
   }
 };
+
+
+export const findOpenEmployeeMgmtList = async (searchValue, selectedOption, pageId) => {
+  try {
+    axiosInstance.defaults.headers['menuId'] = pageId;
+    let actualSelectedOption = selectedOption === "0" ? 0 : parseInt(selectedOption);
+    if (isNaN(actualSelectedOption)) {
+      actualSelectedOption = 0; // 또는 원하는 기본값을 설정하세요.
+    }
+    const actualSearchValue = (searchValue === "" || searchValue === undefined) ? "%25%25" : `%25${searchValue}%25`;
+
+    // console.log("actualSelectedOption:", actualSelectedOption);
+
+    const response = await axiosInstance.get(`/employeemgmt/employee-list/open?deptId=${actualSelectedOption}&text=${actualSearchValue}`);
+    return response.data.data;
+  } catch (error) {
+    console.error("API Error:", error);
+    alert("오류가 발생했습니다.");  // 사용자에게 오류 메시지를 표시합니다.
+    throw error;
+  }
+};
+
+export const findCloseEmployeeMgmtList = async (searchValue, selectedOption, pageId) => {
+  try {
+    axiosInstance.defaults.headers['menuId'] = pageId;
+    let actualSelectedOption = selectedOption === "0" ? 0 : parseInt(selectedOption);
+    if (isNaN(actualSelectedOption)) {
+      actualSelectedOption = 0; // 또는 원하는 기본값을 설정하세요.
+    }
+    const actualSearchValue = (searchValue === "" || searchValue === undefined) ? "%25%25" : `%25${searchValue}%25`;
+
+    // console.log("actualSelectedOption:", actualSelectedOption);
+
+    const response = await axiosInstance.get(`/employeemgmt/employee-list/close?deptId=${actualSelectedOption}&text=${actualSearchValue}`);
+    return response.data.data;
+  } catch (error) {
+    console.error("API Error:", error);
+    alert("오류가 발생했습니다.");  // 사용자에게 오류 메시지를 표시합니다.
+    throw error;
+  }
+};
+
 
 
 export const addEmployeeMgmt = async (employeeInfo, pageId) => {

@@ -8,7 +8,6 @@ export const axiosInstance = axios.create({
   timeout: 20000,
 });
 
-
 //요청 인터셉터
 axiosInstance.interceptors.request.use(
   (config) => {
@@ -16,17 +15,14 @@ axiosInstance.interceptors.request.use(
     return config;
   },
   (err) => {
+    console.log('request Error : ', err);
     if (err.code && err.code === 'ERR_NETWORK') {
       window.location.href='/ERR_NETWORK';
-      console.log('net error');
     }
-    console.log('request Error : ', err);
-    //요청 에러 시 수행 로직
     if (err.response && err.response.status === 401) {
       throw new Error('UNAUTHORIZED');
     }
     if (err.response && err.response.status === 403) {
-      console.log(err);
       window.location.href='/FORBIDDEN';
     } else {
       return Promise.reject(err);
@@ -44,21 +40,18 @@ axiosInstance.interceptors.response.use(
     return { status, data };
   },
   (err) => {
+    console.log('response Error : ', err);
     if (err.code && err.code === 'ERR_NETWORK') {
       window.location.href='/ERR_NETWORK';
-      console.log('net error');
     }
     if (err.response && err.response.status === 402) {
-      // console.log("에러잘뜨니", err.response.status);
       localStorage.setItem("isLogin", false);
       window.location.href='/login';
+      // return;
     }
     if (err.response && err.response.status === 403) {
-      console.log(err);
       window.location.href='/FORBIDDEN';
     } 
-    console.log('response Error : ', err);
-    // 오류 응답의 상태 코드와 본문을 얻으려면 err.response.status와 err.response.data를 확인해야 합니다.
     if (err.response) {
       const errorStatus = err.response.status;
       const errorData = err.response.data;

@@ -11,7 +11,6 @@ export default function DetailBasic({ data, setData, detail, setDetail, pageId, 
   const [form, setForm] = useState('');
   const [isModified, setIsModified] = useState(false);
   const [useableCode, setUseableCode] = useState(false);
-  const [noti, setNoti] = useState(false);
   const [isValid, setIsValid] = useState({code: false, abbr: false, name: false});
   const [validText, setValidText] = useState({code: '', abbr: '', name: ''});
 
@@ -26,19 +25,6 @@ export default function DetailBasic({ data, setData, detail, setDetail, pageId, 
     setIsModified(true);
     setForm({ ...form, parId: parId, parName: parName });
   }
-  // 수정 없음
-  const handleNotModified = () => {
-    let timerInterval
-    Swal.fire({
-      title: '수정 사항이 없습니다',
-      html: '저장되지 않음',
-      timer: 1500,
-      timerProgressBar: false,
-      willClose: () => {
-        clearInterval(timerInterval)
-      }
-    })
-  };
   // 유효성 검사
   const handleCheckCode = () => {
     const { validText, isValid } = validate(form);
@@ -77,9 +63,10 @@ export default function DetailBasic({ data, setData, detail, setDetail, pageId, 
       }  
     } else {
       console.log('중복검사 : 코드 유효성 불충족 : ', isValid.code, form.code);
+      setDetail({ ...detail, state: false, isChanging: false });
     }
   };
-  // 저장 
+  // 저장 알림
   const saveAlert = () => {
     Swal.fire({
       title: '저장하시겠습니까?',
@@ -90,16 +77,15 @@ export default function DetailBasic({ data, setData, detail, setDetail, pageId, 
       confirmButtonText: '확인',
       cancelButtonText: '취소',
     }).then((result) => {
+      console.log(detail)
       if (result.isConfirmed) {
-        console.log('try add : ',detail);
-        if (detail.id === 0) {
+        if (detail.id === 0 || detail.id === "0") {
+          console.log('추가 분기에 걸림')
           // 저장 : 추가
           setData({ ...form, status: 'add' });    
           setIsModified(false);  
-        }
-        if (detail.id > 0) {
+        } else if (detail.id > 0) {
           // 저장 : 수정
-          console.log(form.parId);
           if (form.parId === "0" || form.parId === 0){
             // 만약 수정인데 상위부서를 없음으로 했다면 저장 안되게 
             setDetail({ ...detail, state: false, isChanging: false });
@@ -116,6 +102,7 @@ export default function DetailBasic({ data, setData, detail, setDetail, pageId, 
           }
         } else {
           console.log('저장 요청 실패 : 알수없는 요청(id)');
+          setDetail({ ...detail, state: false, isChanging: false });
         }
   
       }
@@ -125,51 +112,68 @@ export default function DetailBasic({ data, setData, detail, setDetail, pageId, 
       }
     });
   }
-  useEffect(()=>{
-    setForm(data);
-    setIsModified(false);
-    if(data.id !== 0) {
-      setUseableCode(true);
-    }
-  },[]);
+  // 수정 중 이동 알림
+  const confirmAlert = () => {
+    Swal.fire({
+      title: "페이지 이동",
+      text: "수정 중인 내용은 모두 삭제 됩니다.",
+      showCancelButton: true,
+      confirmButtonText: '확인',
+      cancelButtonText: '취소',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        setDetail({ ...detail, id: detail.isChanging, state: false, isChanging: false });
+        setIsModified(false);
+        setValidText({code: '', abbr: '', name: ''});
+      } else if (result.isDismissed) {
+        setDetail({ ...detail, isChanging: false });
+      }
+    });
+  };
+  // 수정 없음
+  const noChangesAlert = () => {
+    let timerInterval
+    Swal.fire({
+      title: '수정 사항이 없습니다',
+      html: '저장되지 않음',
+      timer: 1500,
+      timerProgressBar: false,
+      willClose: () => {
+        clearInterval(timerInterval)
+      }
+    })
+  };
 
+  //useEffect
   useEffect(()=>{
     setUseableCode(false);
     if (data !== undefined){
       setForm(data);
+      setIsModified(false);
       if(data.id !== 0) {
         setUseableCode(true);
       }
     }
-
   },[data]);
+  
+  useEffect(() => {
+    if (modalOn === true && data.parId !== form.parId) {
+      setIsModified(true);
+    }
+  }, [modalOn]);
 
   useEffect(() => {
     // 다른 부서를 눌렀을 때
-    if ( typeof detail.isChanging === 'number') {
+    if (typeof detail.isChanging === 'number') {
       if(isModified){
-        setNoti(true);
+        confirmAlert();
       } else {
         setDetail({ ...detail, id: detail.isChanging, state: false, isChanging: false });
         setValidText({code: '', abbr: '', name: ''});
       }
     }
-    console.log('설마 0? :', detail.isChanging, typeof detail.isChanging);
-    if (detail.isChanging === 'save' || detail.isChanging === 'delete') {
+    if (detail.isChanging === 'save') {
       if(isModified){
-        saveAlert();
-      } else {
-        setNoti(true);
-      }
-      
-    }
-  }, [detail.isChanging]);
-
-  useEffect(() => {    
-    // 저장
-    if (detail.state === 'save') {
-      console.log('저장 클릭', form);
-      if (isModified){
         const { validText, isValid } = validate(form);
         setValidText(validText);
         setIsValid(isValid);  
@@ -179,46 +183,12 @@ export default function DetailBasic({ data, setData, detail, setDetail, pageId, 
           console.log('valid : no');
         }
       } else {
-        handleNotModified();
+        noChangesAlert();
         setDetail({ ...detail, state: detail.isChanging, isChanging: false });
       }
     }
-  }, [detail.state]);
-  // 다른 아이템을 눌렀을 때
-  useEffect(() => {
-    if (noti) {
-      Swal.fire({
-        title: "페이지 이동",
-        text: "수정 중인 내용은 모두 삭제 됩니다.",
-        showCancelButton: true,
-        confirmButtonText: '확인',
-        cancelButtonText: '취소',
-      }).then((result) => {
-        /* Read more about isConfirmed, isDenied below */
-        console.log(result)
-        if (result.isConfirmed) {
-          console.log('수정 삭제 후 이동');
-          setDetail({ ...detail, id: detail.isChanging, state: false, isChanging: false });
-          setIsModified(false);
-          setValidText({code: '', abbr: '', name: ''});
-        } else if (result.isDismissed) {
-          console.log('취소');
-          setDetail({ ...detail, isChanging: false });
-        }
-      })
-      setNoti(false);
-    }
-  }, [noti]);
+  }, [detail.isChanging]);
 
-  useEffect(() => {
-    console.log('모달 ', console.log(data.parId, form.parId));
-    if (modalOn === true && data.parId !== form.parId) {
-      console.log('상위부서 변경');
-      setIsModified(true);
-    }
-  }, [modalOn]);
-
-  console.log(form);
   return (
     <Detail>
       <BasicForm>

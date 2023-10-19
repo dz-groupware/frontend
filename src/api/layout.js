@@ -1,12 +1,13 @@
 import { axiosInstance } from '../utils/axiosInstance';
 
-export function basicInfoApi(empId){
+export function basicInfoApi(){
   return axiosInstance.get(`/home`, {
     headers: {
       "Content-Type": "application/json",
       "menuId" : "0",
     }
-  });
+  }).then(response => response)
+  .catch(error => { throw error; });
 }
 
 export function searchMenuListAPI(menuId) {
@@ -44,7 +45,8 @@ export function GnbFavorApi(){
       "Content-Type": "application/json",
       'menuId' : "0"
     }
-  });
+  }).then(response => response)
+  .catch(error => { throw error; });
 }
 
 // *

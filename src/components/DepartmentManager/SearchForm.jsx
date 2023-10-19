@@ -6,9 +6,16 @@ import { useEffect, useState } from 'react';
 export default function SearchForm ({ option, setSearch }){
   const [value, setValue] = useState({ option: '', text: '' });
 
+  const handleSearch = (e) => {
+    console.log('in handleSearch')
+    if(e !== undefined){
+      e.preventDefault();
+    }
+    setSearch({ ...value, on: true });
+  }
+
   useEffect(() => {    
     if(option[0]){
-      // console.log('compId : ',  option[0].compId);
       setValue({ ...value, option: option[0].compId});
     } else {
       console.log('error');
@@ -19,7 +26,7 @@ export default function SearchForm ({ option, setSearch }){
     return <div> try again </div>
   } else {
     return(
-      <SearchContent>
+      <SearchContent onSubmit={(e) => {e.preventDefault();}}>
         <select 
           name='searchOption' 
           value={value.option} 
@@ -30,9 +37,18 @@ export default function SearchForm ({ option, setSearch }){
             ))
           }
         </select>
-        <input placeholder='코드/부서명을 입력하세요' value={value.text} 
-        onChange={(e) => setValue({ ...value, text: e.target.value })} />
-        <AiOutlineSearch onClick={() => {setSearch({ ...value, on: true })}}/>
+        <input 
+          placeholder='코드/부서명을 입력하세요' 
+          value={value.text} 
+          onChange={(e) => setValue({ ...value, text: e.target.value })}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              console.log('enter')
+              handleSearch();
+            }
+          }} 
+        />
+        <AiOutlineSearch onClick={handleSearch}/>
       </SearchContent>
     );
   }
@@ -75,5 +91,6 @@ color: #1d2437;
   font-weight: bold;
   position: relative;
   top: 8px;
+  cursor: pointer;
 }
 `;

@@ -31,7 +31,7 @@ function Hello(){
     <HelloContent>
       <HelloTitle>반갑습니다.</HelloTitle>
       <div>
-        <HelloSpan onClick={() => {window.location.href='/'}}>메인페이지</HelloSpan>
+        <HelloSpan onClick={() => {window.location.href='/home'}}>메인페이지</HelloSpan>
         <HelloSpan onClick={handleLogOut}>로그아웃</HelloSpan>
       </div>
     </HelloContent>

@@ -16,7 +16,7 @@ export default function PosiList({ empId, modalOff, profile }) {
     try {
       changeEmpApi(radioEmpId).then(() => {
         localStorage.setItem('empId', radioEmpId);
-        window.location.href = '/';
+        window.location.href = '/home';
       });  
     } catch (error) {
       console.log('error switch emp');

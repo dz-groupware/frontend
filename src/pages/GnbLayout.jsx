@@ -19,7 +19,7 @@ export default function GnbLayout() {
   const [routeOn, setRouteOn] = useState(false);
   const [error, setError] = useState(false);
   const [routeList, setRouteList] = useState(new Map([
-    [`/`, { menuId: 0, gnbId: 0, gnbName: "main", page: "Main" }],
+    [`/home`, { menuId: 0, gnbId: 0, gnbName: "main", page: "Main" }],
     [`/FORBIDDEN`, { menuId: 0, gnbId: 0, gnbName: "FORBIDDEN", page: "Error/Fobidden" }],
     [`/SERVICE_UNAVAILABLE`, { menuId: 0, gnbId: 0, gnbName: "SERVICE_UNAVAILABLE", page: "Error/ServiceUnavailable" }]
   ]));

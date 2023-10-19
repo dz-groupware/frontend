@@ -51,7 +51,6 @@ export function modifyDepartment(dept, pageId){
 }
 
 export function getDepartmentById(compId, parId, pageId){
-  console.log('in api : ', pageId);
   return axiosInstance.get(
     `/department/dept-list?compId=${compId}&parId=${parId}`, {
   headers: {
@@ -91,13 +90,22 @@ export function saveAll(dept, pageId){
 
 
 export function findDeptNameAndCode(compId, text, pageId){
-  console.log(compId, text);
   return axiosInstance.get(
     `/department/dept?compId=${compId}&text=%25${text}%25`, {
   headers: {
   "Content-Type": "application/json",
   'menuId' : pageId
 }})
+}
+
+export function getCountSearchDept(compId, text, pageId){
+  return axiosInstance.get(
+    `/department/dept/count?compId=${compId}&text=%25${text}%25`, {
+      headers: {
+      "Content-Type": "application/json",
+      'menuId' : pageId
+    }
+  });
 }
 
 export function checkDeptCode(id, text, pageId){

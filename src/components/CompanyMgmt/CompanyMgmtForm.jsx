@@ -10,9 +10,9 @@ import {
     Label,
     Input,
     DoubleInputContainer,
-    PrefixSelect,
     FormInput,
-    Select
+    Select,
+    PrefixSelect
 } from '../Commons/StyledForm';
 import { companyActions } from '../../utils/Slice';
 import { addCompanyMgmt, checkCEOSignUp, getCompanyMgmtList, getCompanyMgmtNameTreeList, modifyCompanyMgmt } from '../../api/companymgmt';
@@ -30,11 +30,33 @@ export default function CompanyMgmtForm({ pageId }) {
     const isSignUpChecked = useSelector(state => state.companyMgmt.isSignUpChecked);
     const [privEmail1, setPrivEmail1] = useState('');
     const [privEmail2, setPrivEmail2] = useState('');
+    const [isFormDisabled, setFormDisabled] = useState(false);
+    const loginCompanyId = useSelector(state => state.companyMgmt.loginCompanyId);
 
- 
+
 
     useEffect(() => {
-             
+        console.log("idForForm", idForForm);
+        console.log("loginCompanyId", loginCompanyId);
+
+        if (idForForm === null) {
+            // idForForm이 null인 경우, 로직을 반대로 적용 (예: 폼을 활성화)
+            setFormDisabled(false); // 이 부분은 실제 요구사항에 따라 true로 설정할 수도 있습니다.
+        } else if (idForForm && loginCompanyId) {
+            // idForForm과 loginCompanyId 둘 다 있는 경우, 동일한지 확인
+            const isSame = idForForm === loginCompanyId;
+
+            // 동일하다면 폼을 비활성화하거나 다른 로직을 적용
+            setFormDisabled(!isSame);
+        }
+
+        console.log("isFormDisabled", isFormDisabled);
+
+    }, [idForForm, loginCompanyId]);
+
+
+    useEffect(() => {
+
         if (reduxCompanyInfo && reduxCompanyInfo.privEmail) {
             const [email1, email2] = reduxCompanyInfo.privEmail.split('@');
             setPrivEmail1(email1);
@@ -44,17 +66,19 @@ export default function CompanyMgmtForm({ pageId }) {
             setPrivEmail1('');
             setPrivEmail2('');
         }
-        setInfo((prev)=>
-        ({...prev,
-        ...reduxCompanyInfo}));
+        setInfo((prev) =>
+        ({
+            ...prev,
+            ...reduxCompanyInfo
+        }));
     }, [reduxCompanyInfo, isVisible]);
 
 
     useEffect(() => {
         fetchCompanyOptions()
-        .then(()=> {
-            // dispatch(companyActions.updateInfo(info));
-                })
+            .then(() => {
+                // dispatch(companyActions.updateInfo(info));
+            })
     }, []);
 
 
@@ -89,13 +113,13 @@ export default function CompanyMgmtForm({ pageId }) {
                     parId: companyList[0].id
                 }));
             }
-    
+
         } catch (error) {
             console.error("Error fetching company data:", error);
         }
     };
-    
-    
+
+
 
     if (!isVisible) return null;
     if (!info) {
@@ -330,18 +354,23 @@ export default function CompanyMgmtForm({ pageId }) {
     const handleSubmit = async (e) => {
         var selectElement = document.getElementById('parId');
         var selectedValue = selectElement.value;
-        console.log("useffect로 확인하기",selectedValue);
+        console.log("useffect로 확인하기", selectedValue);
 
 
 
         dispatch(companyActions.updateInfo({
-                ...info,
-                parId: selectedValue
+            ...info,
+            parId: selectedValue
         }));
 
+        if (selectedValue === 'direct') { // 'direct'는 '선택' 옵션의 value입니다.
+            alert("소속회사를 선택해주세요.");
+            return; // 선택이 되지 않았으므로 나머지 로직을 중지하고 함수를 빠져나갑니다.
+        }
+    
 
 
-        console.log("info 확인",info);
+        console.log("info 확인", info);
         if (!idForForm) {
             console.log("isSignUpChecked", isSignUpChecked);
             if (isSignUpChecked === false) {
@@ -507,7 +536,7 @@ export default function CompanyMgmtForm({ pageId }) {
         } else if (response[0].id !== null) {
 
             alert('이미 가입된 유저 입니다.');
-   
+
             // console.log("가입된 유저", response);
             // if (!response[0].id) {
             //     console.error("No data returned for employee ID:", response[0].id);
@@ -517,18 +546,19 @@ export default function CompanyMgmtForm({ pageId }) {
             dispatch(companyActions.setDuplicated(true));
 
             // dispatch(companyActions.updateInfo(response[0]));
- 
-           setInfo((prev)=>({...prev, 
-            employeeId: response[0].id,
-            gender: response[0].gender,
-            loginId: response[0].loginId,
-            loginPw: response[0].loginPw,
-        }));
+
+            setInfo((prev) => ({
+                ...prev,
+                employeeId: response[0].id,
+                gender: response[0].gender,
+                loginId: response[0].loginId,
+                loginPw: response[0].loginPw,
+            }));
 
         } else {
             console.error("Unexpected response:", response);
         }
-        
+
     }
 
     const handleLoginIdCheck = async () => {
@@ -557,157 +587,157 @@ export default function CompanyMgmtForm({ pageId }) {
 
         <Container>
             <CompanyMgmtInfo handleSubmit={handleSubmit} isCodeDisabled={!!idForForm} idForForm={idForForm} pageId={pageId} />
-            <HalfInputContainer>
-                <FormInput label="대표자명" name="repName" value={info.repName || ''} disabled={isSignUpChecked} onChange={handleChange} maxLength={19} />
-
+            <fieldset disabled={isFormDisabled} style={{ width: "100%" }}>
                 <HalfInputContainer>
-                    <FormInput label="대표자주민등록번호" type="password" name="repIdNum" value={info.repIdNum || ''} disabled={isSignUpChecked} onChange={handleCombinedChange} placeholder="______-_______" />
+                    <FormInput label="대표자명" name="repName" value={info.repName || ''} disabled={isSignUpChecked} onChange={handleChange} maxLength={19} />
+
+                    <HalfInputContainer>
+                        <FormInput label="대표자주민등록번호" type="password" name="repIdNum" value={info.repIdNum || ''} disabled={isSignUpChecked} onChange={handleCombinedChange} placeholder="______-_______" />
+                    </HalfInputContainer>
                 </HalfInputContainer>
-            </HalfInputContainer>
-            <HalfInputContainer style={{ borderBottom: "1px solid lightgrey" }}>
-                <DoubleInputContainer>
-                    <FormInput customStyle={{ border: "none" }}
-                        label="대표자 이메일"
-                        name="privEmail1"
-                        value={privEmail1 || ''}
-                        onChange={handleEmailChange}
-                        disabled={isSignUpChecked} />
+                <HalfInputContainer style={{ borderBottom: "1px solid lightgrey" }}>
+                    <DoubleInputContainer>
+                        <FormInput customStyle={{ border: "none" }}
+                            label="대표자 이메일"
+                            name="privEmail1"
+                            value={privEmail1 || ''}
+                            onChange={handleEmailChange}
+                            disabled={isSignUpChecked} />
 
-                    <Select style={{ width: "300px" }} name="privEmail2" value={privEmail2 || ''} onChange={handleEmailChange} disabled={isSignUpChecked}>
+                        <Select style={{ width: "300px" }} name="privEmail2" value={privEmail2 || ''} onChange={handleEmailChange} disabled={isSignUpChecked}>
 
-                        <option value="">선택</option>
-                        <option value="@naver.com">@naver.com</option>
-                        <option value="@daum.com">@daum.com</option>
-                        <option value="@google.com">@google.com</option>
-                        <option value="@email.com">@email.com</option>
-                    </Select>
-                </DoubleInputContainer>
+                            <option value="">선택</option>
+                            <option value="@naver.com">@naver.com</option>
+                            <option value="@daum.com">@daum.com</option>
+                            <option value="@google.com">@google.com</option>
+                            <option value="@email.com">@email.com</option>
+                        </Select>
+                    </DoubleInputContainer>
 
-            </HalfInputContainer>
+                </HalfInputContainer>
 
-            <HalfInputContainer style={{ borderBottom: "1px solid lightgrey" }}>
-                <Label>대표자번호</Label>
-                <PrefixSelect name="repTel1" value={info.repTel.split('-')[0] || "direct"} onChange={handleHyphenChange} disabled={isSignUpChecked}>
-                    <option value="direct">선택</option>
-                    <option value="010">010</option>
-                    <option value="051">051</option>
-                    <option value="031">031</option>
-                </PrefixSelect>
-                <Input
-                    name="repTel2"
-                    value={info.repTel.slice(4, info.repTel.length) || ''}
-                    onChange={handleHyphenChange}
-                    placeholder='______-_______'
-                    maxLength={9}
-                    disabled={info.repTel.split('-')[0] === 'direct' || isSignUpChecked}
-                />
-                <StyledButton name="signcheck" value="signcheck"
-                    onClick={handleSignUpCheck}
-                    disabled={isSignUpChecked || idForForm}
-                >가입 확인</StyledButton>
-            </HalfInputContainer>
+                <HalfInputContainer style={{ borderBottom: "1px solid lightgrey" }}>
+                    <Label>대표자번호</Label>
+                    <PrefixSelect name="repTel1" value={info.repTel.split('-')[0] || "direct"} onChange={handleHyphenChange} disabled={isSignUpChecked}>
+                        <option value="direct">선택</option>
+                        <option value="010">010</option>
+                        <option value="051">051</option>
+                        <option value="031">031</option>
+                    </PrefixSelect>
+                    <Input
+                        name="repTel2"
+                        value={info.repTel.slice(4, info.repTel.length) || ''}
+                        onChange={handleHyphenChange}
+                        placeholder='______-_______'
+                        maxLength={9}
+                        disabled={info.repTel.split('-')[0] === 'direct' || isSignUpChecked}
+                    />
+                    <StyledButton name="signcheck" value="signcheck"
+                        onClick={handleSignUpCheck}
+                        disabled={isSignUpChecked || idForForm}
+                    >가입 확인</StyledButton>
+                </HalfInputContainer>
 
-            <InputContainer>
-                <Label>대표자 성별</Label>
-                <label>
-                    <Input type="radio" name="gender" value="여성" checked={info.gender === "여성"} onChange={handleChange} disabled={info.employeeId !== null || idForForm} />여성
-                </label>
-                <label>
-                    <Input type="radio" name="gender" value="남성" checked={info.gender === "남성"} 
-                    onChange={handleChange} disabled={info.employeeId !== null || idForForm} />남성
-                </label>
-            </InputContainer>
-            <HalfInputContainer style={{ borderBottom: "1px solid lightgrey" }}>
-                <FormInput customStyle={{ border: "none" }} label="로그인ID" name="loginId" value={info.loginId || ''} onChange={handleChange} disabled={info.employeeId !== null || idForForm || isDuplicated  } />
-                <StyledButton name="duplicatecheck" value="duplicatecheck"
-                    onClick={handleLoginIdCheck}
-                    disabled={ info.employeeId !== null || isDuplicated || idForForm  }>중복확인</StyledButton>
-                <FormInput customStyle={{ border: "none" }} label="로그인PW" name="loginPw" type="password" value={info.loginPw || ''} onChange={handleChange} disabled={info.employeeId !== null || idForForm  }
-                />
-            </HalfInputContainer>
-
-            <InputContainer>
-                <Label>소속회사</Label>
-
-                <Select name="parId" id="parId" value={info.parId!=''? info.parId : (companyOptions[0]?.id || '')} onChange={handleChange} disabled={!isSignUpChecked}>
-                    <option value="direct">선택</option>
-                    {companyOptions.map((company, index) => (
-                        <option key={company.id} value={company.id}>{company.nameTree}
-                        {console.log('company' , company.id)}
-                        </option>
-                    ))}
-                </Select>
-            </InputContainer>
-
-            <HalfInputContainer>
-                <FormInput label="회사코드" name="code" maxLength={6} value={info.code || ''} disabled={!!idForForm || !isSignUpChecked} onChange={handleChange} />
                 <InputContainer>
-                    <Label>사용여부</Label>
+                    <Label>대표자 성별</Label>
                     <label>
-                        <Input type="radio" name="enabledYn" value="true" checked={info.enabledYn === true} onChange={handleChange} disabled={!isSignUpChecked} />사용
+                        <Input type="radio" name="gender" value="여성" checked={info.gender === "여성"} onChange={handleChange} disabled={info.employeeId !== null || idForForm} />여성
                     </label>
                     <label>
-                        <Input type="radio" name="enabledYn" value="false" checked={info.enabledYn === false} onChange={handleChange} disabled={!isSignUpChecked} />미사용
+                        <Input type="radio" name="gender" value="남성" checked={info.gender === "남성"}
+                            onChange={handleChange} disabled={info.employeeId !== null || idForForm} />남성
                     </label>
                 </InputContainer>
-            </HalfInputContainer>
-
-            <FormInput label="회사명" name="name" value={info.name || ''} onChange={handleChange} maxLength={99} disabled={!isSignUpChecked} />
-
-            <FormInput label="회사약칭" name="abbr" value={info.abbr || ''} onChange={handleChange} maxLength={49} disabled={!isSignUpChecked} />
-            <FormInput label="업태" name="businessType" value={info.businessType || ''} onChange={handleChange} maxLength={49} disabled={!isSignUpChecked} />
-
-
-
-            <HalfInputContainer>
-                <HalfInputContainer>
-                    <FormInput label="사업자번호" name="businessNum" value={info.businessNum || ''} disabled={!!idForForm || !isSignUpChecked} onChange={handleCombinedChange} placeholder="___-__-_____" maxLength={12} />
+                <HalfInputContainer style={{ borderBottom: "1px solid lightgrey" }}>
+                    <FormInput customStyle={{ border: "none" }} label="로그인ID" name="loginId" value={info.loginId || ''} onChange={handleChange} disabled={info.employeeId !== null || idForForm || isDuplicated} />
+                    <StyledButton name="duplicatecheck" value="duplicatecheck"
+                        onClick={handleLoginIdCheck}
+                        disabled={info.employeeId !== null || isDuplicated || idForForm}>중복확인</StyledButton>
+                    <FormInput customStyle={{ border: "none" }} label="로그인PW" name="loginPw" type="password" value={info.loginPw || ''} onChange={handleChange} disabled={info.employeeId !== null || idForForm}
+                    />
                 </HalfInputContainer>
-                <HalfInputContainer>
-                    <Label>법인등록번호</Label>
-                    <PrefixSelect name="corpType" value={info.corpType || "direct"} disabled={!!idForForm || !isSignUpChecked} onChange={handleChange}>
+
+                <InputContainer>
+                    <Label>소속회사</Label>
+
+                    <Select name="parId" id="parId" value={info.parId || 'direct'} onChange={handleChange} disabled={!isSignUpChecked}>
                         <option value="direct">선택</option>
-                        <option value="1">개인</option>
-                        <option value="2">법인</option>
-                    </PrefixSelect>
-                    <Input name="corpNum" value={info.corpNum || ''} disabled={!!idForForm || !isSignUpChecked} onChange={handleCombinedChange} placeholder="______-_______" />
-                    {/* // Limit to 9 characters including dash   */}
+                        {companyOptions.map((company, index) => (
+                            <option key={company.id} value={company.id}>{company.nameTree}</option>
+                        ))}
+                    </Select>
+
+                </InputContainer>
+
+                <HalfInputContainer>
+                    <FormInput label="회사코드" name="code" maxLength={6} value={info.code || ''} disabled={!!idForForm || !isSignUpChecked} onChange={handleChange} />
+                    <InputContainer>
+                        <Label>사용여부</Label>
+                        <label>
+                            <Input type="radio" name="enabledYn" value="true" checked={info.enabledYn === true} onChange={handleChange} disabled={!isSignUpChecked} />사용
+                        </label>
+                        <label>
+                            <Input type="radio" name="enabledYn" value="false" checked={info.enabledYn === false} onChange={handleChange} disabled={!isSignUpChecked} />미사용
+                        </label>
+                    </InputContainer>
                 </HalfInputContainer>
-            </HalfInputContainer>
 
-            <HalfInputContainer>
-                <FormInput
-                    label="설립일"
-                    name="establishmentDate"
-                    type="date"
-                    value={info.establishmentDate || ''}
-                    onChange={handleChange}
-                    disabled={!isSignUpChecked}
-                />
+                <FormInput label="회사명" name="name" value={info.name || ''} onChange={handleChange} maxLength={99} disabled={!isSignUpChecked} />
 
-                <DoubleInputContainer>
-                    <Label>개/폐업일</Label>
-                    <Input
-                        name="openingDate"
+                <FormInput label="회사약칭" name="abbr" value={info.abbr || ''} onChange={handleChange} maxLength={49} disabled={!isSignUpChecked} />
+                <FormInput label="업태" name="businessType" value={info.businessType || ''} onChange={handleChange} maxLength={49} disabled={!isSignUpChecked} />
+
+
+
+                <HalfInputContainer>
+                    <HalfInputContainer>
+                        <FormInput label="사업자번호" name="businessNum" value={info.businessNum || ''} disabled={!!idForForm || !isSignUpChecked} onChange={handleCombinedChange} placeholder="___-__-_____" maxLength={12} />
+                    </HalfInputContainer>
+                    <HalfInputContainer>
+                        <Label>법인등록번호</Label>
+                        <PrefixSelect name="corpType" value={info.corpType || "direct"} disabled={!!idForForm || !isSignUpChecked} onChange={handleChange}>
+                            <option value="direct">선택</option>
+                            <option value="1">개인</option>
+                            <option value="2">법인</option>
+                        </PrefixSelect>
+                        <Input name="corpNum" value={info.corpNum || ''} disabled={!!idForForm || !isSignUpChecked} onChange={handleCombinedChange} placeholder="______-_______" />
+                        {/* // Limit to 9 characters including dash   */}
+                    </HalfInputContainer>
+                </HalfInputContainer>
+
+                <HalfInputContainer>
+                    <FormInput
+                        label="설립일"
+                        name="establishmentDate"
                         type="date"
-                        value={info.openingDate || ''}
+                        value={info.establishmentDate || ''}
                         onChange={handleChange}
                         disabled={!isSignUpChecked}
                     />
-                    <span>/</span>
-                    <Input
-                        name="closingDate"
-                        type="date"
-                        value={info.closingDate || ''}
-                        onChange={handleChange}
-                        disabled={!info.openingDate || !info.establishmentDate || !isSignUpChecked}
-                    />
-                </DoubleInputContainer>
-            </HalfInputContainer>
 
-            <FormInput label="주소" name="address" value={info.address || ''} onChange={handleChange} maxLength={199} disabled={!isSignUpChecked} />
+                    <DoubleInputContainer>
+                        <Label>개/폐업일</Label>
+                        <Input
+                            name="openingDate"
+                            type="date"
+                            value={info.openingDate || ''}
+                            onChange={handleChange}
+                            disabled={!isSignUpChecked}
+                        />
+                        <span>/</span>
+                        <Input
+                            name="closingDate"
+                            type="date"
+                            value={info.closingDate || ''}
+                            onChange={handleChange}
+                            disabled={!info.openingDate || !info.establishmentDate || !isSignUpChecked}
+                        />
+                    </DoubleInputContainer>
+                </HalfInputContainer>
 
+                <FormInput label="주소" name="address" value={info.address || ''} onChange={handleChange} maxLength={199} disabled={!isSignUpChecked} />
 
+            </fieldset>
         </Container>
 
     );

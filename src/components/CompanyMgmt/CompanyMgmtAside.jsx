@@ -54,6 +54,7 @@ export default function CompanyMgmtAside({ pageId }) {
           setCompanyDataList(prevData => data);
         } else {
           data = await getCompanyMgmtList(pageId);
+          dispatch(companyActions.setLoginCompanyId(data[0].companyId));
           setCompanyDataList(prevData => data);
         }
       }

@@ -64,6 +64,8 @@ const employeeMgmtInitialState = {
     edjoinDate: '',
     leftDate: '',
     deletedYn: false,
+    empId:'',
+    
   }],
   idForForm: null,
   isVisible: false,
@@ -121,7 +123,8 @@ function createManagementSlice(initialState, sliceName) {
             transferredYn: data.transferredYn,
             edjoinDate: data.edjoinDate,
             leftDate: data.leftDate,
-            deletedYn: data.deletedYn
+            deletedYn: data.deletedYn,
+            empId: data.empId,
           }));
         } else {
           console.warn("Expected an array for updateGroupInfo but received:", action.payload);

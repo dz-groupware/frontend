@@ -19,7 +19,6 @@ export default function EmployeeMgmtGroupForm({ pageId }) {
   const dispatch = useDispatch();
   const reduxEmployeeGroupInfo = useSelector(state => state.employeeMgmt.employeeGroupInfo);
   const isVisible = useSelector(state => state.employeeMgmt.isVisible);
-  const [info, setInfo] = useState(reduxEmployeeGroupInfo);
   const [companyOptions, setCompanyOptions] = useState([]);
   const [departmentOptions, setDepartmentOptions] = useState({});
   const [groupsInfo, setGroupsInfo] = useState([reduxEmployeeGroupInfo]);
@@ -28,7 +27,7 @@ export default function EmployeeMgmtGroupForm({ pageId }) {
   const [loading, setLoading] = useState(true); // 로딩 상태 추가
 
   const loginCompanyId = useSelector(state => state.employeeMgmt.loginCompanyId);
-
+ 
 
   useEffect(() => {
     const fetchCompanies = async () => {
@@ -112,7 +111,8 @@ export default function EmployeeMgmtGroupForm({ pageId }) {
         deptId: "",
         transferredYn: "",
         edjoinDate: "",
-        leftDate: ""
+        leftDate: "",
+        empId:"",
       };
       setGroupsInfo(updatedGroups);
       return;
@@ -128,7 +128,8 @@ export default function EmployeeMgmtGroupForm({ pageId }) {
         deptId: "",
         transferredYn: "",
         edjoinDate: "",
-        leftDate: ""
+        leftDate: "",
+        empId:"",
       };
       setGroupsInfo(updatedGroups);
       return;
@@ -242,6 +243,7 @@ export default function EmployeeMgmtGroupForm({ pageId }) {
 
     // 상태를 업데이트합니다.
     setGroupsInfo(updatedGroups);
+    dispatch(employeeActions.updateGroupInfo(groupsInfo));
     // 서버에 저장 로직이 있다면 그 부분도 업데이트가 필요합니다.
   };
 
@@ -251,135 +253,148 @@ export default function EmployeeMgmtGroupForm({ pageId }) {
     return <p>Loading...</p>;
   }
 
+  console.log("리덕스값 확인",reduxEmployeeGroupInfo);
+
   return (
 
     <StyledContainer>
-      {groupsInfo.map((group, idx) => (
-        <EmployeeMgmtGroupInputForm key={idx} style={{ color: group.deletedYn ? 'red' : 'black' }}>
-          <div style={{ display: 'flex', justifyContent: 'flex-end' }}>  {/* 이 div가 버튼들을 오른쪽으로 정렬하는 컨테이너 역할을 합니다. */}
-            {/* 그룹이 삭제되지 않았거나 새 그룹인 경우에만 X 버튼 표시 */}
-            {!group.deletedYn && (group.new || group.compId === loginCompanyId) && (
-              <CloseButton onClick={() => removeGroup(idx)}>x</CloseButton>
-            )}
-            {group.deletedYn && (
-              <div style={{ display: 'flex', alignItems: 'center' }}> {/* 이 div가 버튼과 텍스트를 한 줄에 정렬합니다. */}
-                <span style={{ marginRight: '10px' }}>삭제되었습니다.</span>
-                {/* "복구하기" 버튼. 여기서는 CloseButton 컴포넌트를 재사용하지만, 필요에 따라 별도의 스타일을 적용할 수 있습니다. */}
-                <CloseButton onClick={() => restoreGroup(idx)}>복구하기</CloseButton>
-              </div>
-            )}
-            {!group.new && group.compId !== loginCompanyId && (
-              <p style={{ margin: '5px 0', alignSelf: 'center' }}>로그인한 회사만 수정 삭제할 수 있습니다.</p>
+      {groupsInfo.map((group, idx) => {
+        console.log("groupsInfo", groupsInfo);
+        // 폼 비활성화 상태를 결정하는 조건.
+        const isFormDisabled = group.empId ? group.compId !== loginCompanyId : false;
 
-            )}
-          </div>
-          <InputContainer>
-            <Label>회사</Label>
+        // "X" 버튼을 표시해야 하는지 여부를 결정하는 조건.
+        const showDeleteButton = (group.new || group.compId === loginCompanyId || !group.empId) && !group.deletedYn;
 
-            <Select
-              name="compId"
-              value={group.compId || ''}
-              onChange={(e) => handleChange(e, idx)}
-              onBlur={handleBlur}
-              disabled={group.compId}
-            >
-              <option value="direct">선택</option>
-              {companyOptions && companyOptions.map((company, index) => (
-                <option key={index} value={company.id}>{company.name}</option>
-              ))}
-            </Select>
-          </InputContainer>
+        // "로그인한 회사만 수정 삭제할 수 있습니다." 메시지를 표시하는 조건.
+        const showRestrictionMessage = !group.new && group.compId !== loginCompanyId && group.empId;
 
-          <HalfInputContainer>
+        return (
+          <EmployeeMgmtGroupInputForm key={idx} style={{ color: group.deletedYn ? 'red' : 'black' }}>
+            <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+              {/* 여기서 "X" 버튼의 표시 여부를 결정합니다. */}
+              {showDeleteButton && (
+                <CloseButton onClick={() => removeGroup(idx)}>x</CloseButton>
+              )}
+              {group.deletedYn && (
+                <div style={{ display: 'flex', alignItems: 'center' }}>
+                  <span style={{ marginRight: '10px' }}>삭제되었습니다.</span>
+                  <CloseButton onClick={() => restoreGroup(idx)}>복구하기</CloseButton>
+                </div>
+              )}
+              {/* 로그인한 회사의 수정/삭제 제한을 알리는 메시지 표시 여부를 결정합니다. */}
+              {showRestrictionMessage && (
+                <p style={{ margin: '5px 0', alignSelf: 'center' }}>로그인한 회사만 수정 삭제할 수 있습니다.</p>
+              )}
+            </div>
             <InputContainer>
-              <Label>직급</Label>
+              <Label>회사</Label>
+
               <Select
-                name="position"
-                value={group.position}
+                name="compId"
+                value={group.compId || ''}
                 onChange={(e) => handleChange(e, idx)}
                 onBlur={handleBlur}
-                disabled={!group.compId}
+                disabled={isFormDisabled || group.compId}
               >
                 <option value="direct">선택</option>
-                {(showCEOOption || group.position === "대표") && <option value="대표">대표</option>}
-                {(!showCEOOption || group.position === "팀장") && <option value="팀장">팀장</option>}
-                {(!showCEOOption || group.position === "부장") && <option value="부장">부장</option>}
-                {(!showCEOOption || group.position === "대리") && <option value="대리">대리</option>}
-                {(!showCEOOption || group.position === "사원") && <option value="사원">사원</option>}
-              </Select>
-            </InputContainer>
-
-
-            <InputContainer>
-              <Label>부서</Label>
-              <Select
-                name="deptId"
-                value={group.deptId || ""}
-                onChange={(e) => handleChange(e, idx)}
-                onBlur={handleBlur}
-                disabled={!group.compId || group.position === "대표"}
-              >
-                <option value="direct">선택</option>
-                {departmentOptions[group.compId] && departmentOptions[group.compId].map((department, index) => (
-                  <option key={index} value={department.id}>{department.name}</option>
+                {companyOptions && companyOptions.map((company, index) => (
+                  <option key={index} value={company.id}>{company.name}</option>
                 ))}
               </Select>
             </InputContainer>
-          </HalfInputContainer>
 
-          <InputContainer>
-            <Label>인사이동유무</Label>
-            <label>
-              <Input
-                type="radio"
-                name={`transferredYn-${idx}`}
-                value={"true" || ""}
-                checked={group.transferredYn === true}
+            <HalfInputContainer>
+              <InputContainer>
+                <Label>직급</Label>
+                <Select
+                  name="position"
+                  value={group.position}
+                  onChange={(e) => handleChange(e, idx)}
+                  onBlur={handleBlur}
+                  disabled={isFormDisabled || !group.compId}
+                >
+                  <option value="direct">선택</option>
+                  {(showCEOOption || group.position === "대표") && <option value="대표">대표</option>}
+                  {(!showCEOOption || group.position === "팀장") && <option value="팀장">팀장</option>}
+                  {(!showCEOOption || group.position === "부장") && <option value="부장">부장</option>}
+                  {(!showCEOOption || group.position === "대리") && <option value="대리">대리</option>}
+                  {(!showCEOOption || group.position === "사원") && <option value="사원">사원</option>}
+                </Select>
+              </InputContainer>
+
+
+              <InputContainer>
+                <Label>부서</Label>
+                <Select
+                  name="deptId"
+                  value={group.deptId || ""}
+                  onChange={(e) => handleChange(e, idx)}
+                  onBlur={handleBlur}
+                  disabled={isFormDisabled || (!group.compId || group.position === "대표")}
+                >
+                  <option value="direct">선택</option>
+                  {departmentOptions[group.compId] && departmentOptions[group.compId].map((department, index) => (
+                    <option key={index} value={department.id}>{department.name}</option>
+                  ))}
+                </Select>
+              </InputContainer>
+            </HalfInputContainer>
+
+            <InputContainer>
+              <Label>인사이동유무</Label>
+              <label>
+                <Input
+                  type="radio"
+                  name={`transferredYn-${idx}`}
+                  value={"true" || ""}
+                  checked={group.transferredYn === true}
+                  onChange={(e) => handleChange(e, idx)}
+                  onBlur={handleBlur}
+                  disabled={isFormDisabled || (!group.compId || group.position === "대표")}
+                />
+                이동
+              </label>
+              <label>
+                <Input
+                  type="radio"
+                  name={`transferredYn-${idx}`}
+                  value={"false" || ""}
+                  checked={group.transferredYn === false}
+                  onChange={(e) => handleChange(e, idx)}
+                  onBlur={handleBlur}
+                  disabled={isFormDisabled || (!group.compId || group.position === "대표")}
+                />
+                미이동
+              </label>
+            </InputContainer>
+
+            <HalfInputContainer>
+              <FormInput
+                label="부서 배정일"
+                name="edjoinDate"
+                type="date"
+                value={group.edjoinDate || ''}
                 onChange={(e) => handleChange(e, idx)}
                 onBlur={handleBlur}
-                disabled={!group.compId || group.position === "대표"}
+                disabled={isFormDisabled || (!group.compId || group.position === "대표")}
+
               />
-              이동
-            </label>
-            <label>
-              <Input
-                type="radio"
-                name={`transferredYn-${idx}`}
-                value={"false" || ""}
-                checked={group.transferredYn === false}
+              <FormInput
+                label="부서 이동일"
+                name="leftDate"
+                type="date"
+                value={group.leftDate || ''}
                 onChange={(e) => handleChange(e, idx)}
                 onBlur={handleBlur}
-                disabled={!group.compId || group.position === "대표"}
+
+                disabled={isFormDisabled || (!group.compId || group.transferredYn !== true)}
               />
-              미이동
-            </label>
-          </InputContainer>
+            </HalfInputContainer>
 
-          <HalfInputContainer>
-            <FormInput
-              label="부서 배정일"
-              name="edjoinDate"
-              type="date"
-              value={group.edjoinDate || ''}
-              onChange={(e) => handleChange(e, idx)}
-              onBlur={handleBlur}
-              disabled={!group.compId || group.position === "대표"}
-
-            />
-            <FormInput
-              label="부서 이동일"
-              name="leftDate"
-              type="date"
-              value={group.leftDate || ''}
-              onChange={(e) => handleChange(e, idx)}
-              onBlur={handleBlur}
-
-              disabled={!group.compId || group.transferredYn !== true}
-            />
-          </HalfInputContainer>
-
-        </EmployeeMgmtGroupInputForm>
-      ))}
+          </EmployeeMgmtGroupInputForm>
+        );
+      })}
       <AddButton onClick={addNewGroup}>소속 부서 추가</AddButton>
     </StyledContainer>
 

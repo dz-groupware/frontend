@@ -6,12 +6,18 @@ export default function DeptItem({ dept, setItem, detail, setDetail }){
 
   const handleDetail = () => {
     console.log('clicked in ', dept.id, ' and is open ', open);
-    if(!open && dept.subItem) {
+    if(!open && !dept.subItem) {
       setItem(dept);
     }
     setOpen(!open);
-    setDetail({ ...detail, isChanging: dept["id"] , type:( detail.type ? detail.type : "basic")});
+
   };
+
+  useEffect(() => {
+    if (open) {
+      setDetail({ ...detail, isChanging: dept["id"] , type:( detail.type ? detail.type : "basic")});
+    } 
+  }, [open]);
 
   useEffect(() => {
     console.log('useEffect in ', dept.id, ' and is open ', open);

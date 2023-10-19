@@ -36,7 +36,7 @@ export default function LoginForm() {
   useEffect(()=>{
     if(status===202){
         localStorage.setItem("isLogin", true);
-        navigate('/',{state:{ menuId: "0" }});
+        navigate('/home',{state:{ menuId: "0" }});
     } else if (error && error.data && error.data.message) {  // error 객체에서 message 추출
       console.log("에러발생" , error);
       setErrorMessage(error.data.message);

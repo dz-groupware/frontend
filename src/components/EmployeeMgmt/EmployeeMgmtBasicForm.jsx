@@ -292,6 +292,7 @@ export default function EmployeeMgmtBasicForm({ pageId }) {
 
             alert('이미 가입된 유저 입니다.');
             dispatch(employeeActions.setSignUpChecked(true));
+            dispatch(employeeActions.setDuplicated(true))
             try {
 
 
@@ -331,7 +332,8 @@ export default function EmployeeMgmtBasicForm({ pageId }) {
                             edjoinDate: null,
                             leftDate: employee.leftDate,
                             deletedYn: employee.deletedYn,
-                            compId: employee.compId
+                            compId: employee.compId,
+                            empId: employee.empId,
                         };
                     } else {
                         return {
@@ -342,7 +344,8 @@ export default function EmployeeMgmtBasicForm({ pageId }) {
                             transferredYn: employee.transferredYn,
                             edjoinDate: employee.edjoinDate,
                             leftDate: employee.leftDate,
-                            deletedYn: employee.deletedYn
+                            deletedYn: employee.deletedYn,
+                            empId: employee.empId,
                         };
                     }
                 });
@@ -478,10 +481,12 @@ export default function EmployeeMgmtBasicForm({ pageId }) {
 
                     <FormInput label="주민등록번호"
                         name="empIdNum"
+                        type="password"
                         value={info.empIdNum || ''}
                         onChange={handleHyphenChange}
                         onBlur={handleBlur}
-                        disabled={isSignUpChecked} />
+                        disabled={isSignUpChecked} 
+                        />
 
 
                 </HalfInputContainer>

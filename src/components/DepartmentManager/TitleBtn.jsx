@@ -5,9 +5,19 @@ import { ButtonTitle } from '../../common/styles/Button';
 export default function TitleBtn({ favor, handleFavor, detail, setDetail, disabled }){
   return(
     <BtnContent>
-      <ButtonTitle className={`${disabled ? 'disabled' : 'able'}`} onClick={() => {setDetail({...detail, id: 0, state:'add'})}}>추가</ButtonTitle>
+      <ButtonTitle 
+        className={`${disabled ? 'disabled' : 'able'}`} 
+        onClick={() => {setDetail({...detail, id: 0})}}
+      >
+        추가
+      </ButtonTitle>
       <div><Pipe /></div>
-      <div onClick={handleFavor}>{favor === true ? <AiFillStar /> : <AiOutlineStar/>}</div>
+      <div onClick={handleFavor}>
+        {favor === true ? 
+          <AiFillStar />
+          : <AiOutlineStar/>
+        }
+      </div>
     </BtnContent>
   );
 };

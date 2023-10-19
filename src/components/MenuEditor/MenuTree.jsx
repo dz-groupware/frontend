@@ -5,14 +5,18 @@ import { GnbListApi, LnbListApi } from '../../api/menu';
 
 export default function MenuTree({ itemId, pageId, setModalOn, handleParMenu }) {
   const [menuTree, setMenuTree] = useState(JSON.parse('[{"":""}]'));
+  const [clicked, setClicked] = useState('');
+  const [error, setError] = useState(false);
 
   useEffect(() => {
-    GnbListApi(pageId).then(res => {
-      console.log(res);
+    GnbListApi(pageId)
+    .then(res => {
       setMenuTree(res.data.data);
+      setError(false);
+    }).catch(() => {
+      setError(true);
     });
   }, []);
-
 
   return (
     <ModalBackdrop onClick={() => setModalOn(false)}>
@@ -24,8 +28,18 @@ export default function MenuTree({ itemId, pageId, setModalOn, handleParMenu }) 
         <MenuArea>
           <div>
           {
-            menuTree.map((a, i) => ( itemId === a['id'] ? null :
-              <MenuItem itemId={itemId} pageId={pageId} data={a} setModalOn={setModalOn} handleParMenu={handleParMenu} key={a['name']+'gnb'}/>
+            menuTree.map((a, i) => (itemId === a['id'] ? null :
+              <MenuItem 
+                itemId={itemId} 
+                pageId={pageId} 
+                data={a} 
+                setModalOn={setModalOn} 
+                handleParMenu={handleParMenu} 
+                clicked={clicked}
+                setClicked={setClicked}
+                setError={setError}
+                key={a['name']+'gnb'+i}
+              />
             ))
           }
           </div>
@@ -35,7 +49,7 @@ export default function MenuTree({ itemId, pageId, setModalOn, handleParMenu }) 
   );
 };
 
-export function MenuItem({ itemId, pageId, data, setModalOn, handleParMenu }) {
+export function MenuItem({ itemId, pageId, data, setModalOn, handleParMenu, clicked, setClicked, setError }) {
   const [open, setOpen] = useState(false);
   const [subItem, setSubItem] = useState([]);
 
@@ -49,20 +63,34 @@ export function MenuItem({ itemId, pageId, data, setModalOn, handleParMenu }) {
   const handleMenuItem = (a) => {
     if(subItem.length === 0) {
       LnbListApi(pageId, data['id'])
-      .then(res => setSubItem(res.data.data));
+      .then((res) => {
+        setSubItem(res.data.data);
+        setError(false);
+      }).catch(() => setError(true));
     }
     setOpen(!open);
-    handleParMenu(data)
+    handleParMenu(data);
+    setClicked(data['id']);
   }
 
   return (
     <Menu>
-      <div onClick={handleMenuItem}>
+      <div onClick={handleMenuItem} className={clicked === data['id'] ? 'clicked' : ' '}>
         └{data['name']}
       </div>
-      { subItem.length > 1 && open &&
+      {subItem.length > 1 && open &&
         subItem.map((a, i) => ( itemId === a['id'] ? null : 
-          <MenuItem itemId={itemId} pageId={pageId} data={a} setModalOn={setModalOn} handleParMenu={handleParMenu} key={a['name']+'lnb'}/>
+          <MenuItem 
+            itemId={itemId} 
+            pageId={pageId} 
+            data={a} 
+            setModalOn={setModalOn} 
+            handleParMenu={handleParMenu}
+            clicked={clicked}
+            setClicked={setClicked}
+            setError={setError}
+            key={a['name']+'lnb'+i}
+          />
         ))
       }
     </Menu>
@@ -140,4 +168,10 @@ height: 100%;
 export const Menu = styled.div`
 margin: 10px;
 margin-left: 20px;
+cursor: pointer;
+
+> div.clicked {
+  background-color: rgb(214,236,248);
+  border-radius: 5px;
+}
 `;

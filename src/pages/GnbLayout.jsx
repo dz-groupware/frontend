@@ -1,17 +1,15 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
 
-import styled from 'styled-components';
+import styled from "styled-components";
 
-import { basicInfoApi } from '../api/gnb';
-import { getMenuList } from '../api/menu';
+import { basicInfoApi } from "../api/layout";
+import { getMenuList } from "../api/menu";
 
-import TB from './TB';
-import LnbLayout from './LnbLayout';
-import GNB from '../components/GNB/GNB';
-
-import Retry from '../common/Error/Retry';
-import Loading from '../common/styles/Loading.jsx';
-
+import TB from "./TB";
+import LnbLayout from "./LnbLayout";
+import GNB from "../components/GNB/GNB";
+import Retry from "./Error/Retry";
+import Loading from "../common/styles/Loading.jsx";
 
 export default function GnbLayout() {
   const [profile, setProfile] = useState(JSON.parse(`[{}]`));
@@ -21,69 +19,49 @@ export default function GnbLayout() {
   const [routeOn, setRouteOn] = useState(false);
   const [error, setError] = useState(false);
   const [routeList, setRouteList] = useState(new Map([
-    [`/`, { menuId: 0, gnbId: 0, gnbName: 'main', page: 'Main' }],
-    [`/FORBIDDEN`, { menuId: 0, gnbId: 0, gnbName: '403', page: 'Error/FORBIDDEN' }],
-    [`/SERVICE_UNAVAILABLE`, { menuId: 0, gnbId: 0, gnbName: '503', page: 'Error/SERVICE_UNAVAILABLE' }]]));
+    [`/`, { menuId: 0, gnbId: 0, gnbName: "main", page: "Main" }],
+    [`/FORBIDDEN`, { menuId: 0, gnbId: 0, gnbName: "FORBIDDEN", page: "Error/Fobidden" }],
+    [`/SERVICE_UNAVAILABLE`, { menuId: 0, gnbId: 0, gnbName: "SERVICE_UNAVAILABLE", page: "Error/ServiceUnavailable" }]
+  ]));
 
   const parseMenuList = (originMenuList) => {
-    const menuList = new Map();
-    originMenuList.forEach(row => {
-      const { menuId, gnbId, gnbName, nameTree, page } = row;
-      menuList.set(`/${nameTree}`, { menuId, gnbId, gnbName, page });
-    });
-    menuList.set(`/`, { menuId: 0, gnbId: 0, gnbName: 'main', page: 'Main' });
-    menuList.set(`/FORBIDDEN`, { menuId: 0, gnbId: 0, gnbName: '403', page: 'Error/FORBIDDEN' });
-    menuList.set(`/SERVICE_UNAVAILABLE`, { menuId: 0, gnbId: 0, gnbName: '503', page: 'Error/SERVICE_UNAVAILABLE' });
-    setRouteList(menuList);
-  };
-
-  const initRouteList = async () => {
     try {
-      const res = await getMenuList(0);
-      parseMenuList(res.data.data);
+      const menuList = new Map();
+      originMenuList.forEach(row => {
+        const { menuId, gnbId, gnbName, nameTree, page } = row;
+        menuList.set(`/${nameTree}`, { menuId, gnbId, gnbName, page });
+      });
+      menuList.set(`/`, { menuId: 0, gnbId: 0, gnbName: "main", page: "Main" });
+      menuList.set(`/FORBIDDEN`, { menuId: 0, gnbId: 0, gnbName: "FORBIDDEN", page: "Error/Fobidden" });
+      menuList.set(`/SERVICE_UNAVAILABLE`, { menuId: 0, gnbId: 0, gnbName: "SERVICE_UNAVAILABLE", page: "Error/ServiceUnavailable" });
+      setRouteList(menuList);  
+      setError(false);
+      setRouteOn(true);   
     } catch (error) {
-      console.log('error in RouteList');
-    };
+      return Promise.reject(error);
+    }
   };
 
-  const basicInfo = async (empId) => {
-    try {
-      await basicInfoApi(empId).then(res => {
+  useEffect(() => {
+    document.body.style.zoom = "80%";  
+      basicInfoApi().then(res => {
         setProfile(res.data.data.profile);
         setGnb(res.data.data.menu);
         setFavor(res.data.data.favor);
         setEmpId(res.data.data.empId);
         localStorage.setItem("empId", res.data.data.empId);
         localStorage.setItem("compId", res.data.data.compId);
-        initRouteList();
+        getMenuList(0).then(res => {
+          return parseMenuList(res.data.data);
+        }).catch((error) => {
+          throw Promise.reject(error);
+        });
+      }).catch((err) => {
+        setError(true);
+        setRouteOn(false);
+        window.location.href="/SERVICE_UNAVAILABLE";
+        return;
       });
-    } catch (error) {
-      console.log('ERR: ', error);
-      window.location.href="/login";
-    }
-  };
-
-  useEffect(() => {
-    document.body.style.zoom = "80%";  
-    try {
-      initRouteList().then(() => {
-        setRouteOn(true);
-      });
-    } catch (error) {
-      console.log('route-list : ', error);
-    }
-  }, []);
-
-  useEffect(() => {
-    try {
-      if (empId) {
-        basicInfo(empId);
-      } else {
-        basicInfo(0);
-      }  
-    } catch (error) {
-      setError(true);
-    }
   }, [empId]);
 
   return (
@@ -108,14 +86,3 @@ const Content = styled.div`
   width: 100%;
   height: 100%;
 `;
-
-// const Fail = styled.div`
-// display:block;
-// width: 46px;
-// height: 100%;
-// background-color:#1d2437;
-// color:rgb(181,194,200);
-// position : absolute;
-// overflow : scroll;
-// z-index: 1;
-// `;

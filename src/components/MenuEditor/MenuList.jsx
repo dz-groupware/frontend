@@ -3,7 +3,6 @@ import styled from 'styled-components';
 
 export default function MenuList(props) {
   const [clicked, setClicked] = useState('');
-  console.log(clicked);
   return (
     <ListArea>
       <div>

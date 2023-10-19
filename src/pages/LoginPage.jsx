@@ -15,7 +15,6 @@ export default function LoginPage() {
         {/* <LoginForm/> */}
       </LoginArea>
       </ImageArea>
-
     </Container>
   );
 }
@@ -27,7 +26,6 @@ function Hello(){
       localStorage.setItem("isLogin", false);
     })
   }
-
 
   return (
     <HelloContent>

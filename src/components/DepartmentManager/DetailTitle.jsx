@@ -5,25 +5,37 @@ export default function DetailTitle ({ detail, setDetail, disabled }){
   return(
     <>
       {detail.type && 
-      <>
-      <TitleContent>
-        <p>상세정보</p> {disabled && (<div style={{color: '#fa7f33', paddingTop: '5px'}}> 다른 회사의 정보는 변경할 수 없습니다.</div>)}
-        <ButtonArea >
-          <ButtonBlue className={`${disabled ? 'disabled' : 'able'}`} onClick={() => setDetail({...detail, state: 'save', isChanging: detail.state})}>저장</ButtonBlue> 
-          <ButtonBright className={`${disabled ? 'disabled' : 'able'}`} onClick={() => setDetail({...detail, state: 'delete', isChanging: detail.state})}>삭제</ButtonBright> 
-          <Pipe />
-          <span onClick={() => setDetail({...detail, id:'', type: false, state: false, save: false})}>X</span>
-        </ButtonArea> 
-      </TitleContent>
-      
-      <DetailType>
-        <div className={detail.type === 'basic' ? 'on' : 'off'} 
-        onClick={() => setDetail({...detail, type: 'basic'})}>기본 정보</div>
-        <span>|</span>
-        <div className={detail.type === 'emp'  ? 'on' : 'off'} 
-        onClick={() => setDetail({...detail, type: 'emp'})}>부서원 정보</div>
-      </DetailType>
-      </>
+        <>
+          <TitleContent>
+            <p>상세정보</p> 
+              {disabled && (
+                <div style={{color: '#fa7f33', paddingTop: '5px'}}> 다른 회사의 부서 정보는 변경할 수 없습니다.</div>)}
+            <ButtonArea >
+              <ButtonBlue 
+                className={`${disabled ? 'disabled' : 'able'}`} 
+                onClick={() => setDetail({...detail, isChanging: 'save'})}
+              >
+                저장
+              </ButtonBlue> 
+              <ButtonBright 
+                className={`${disabled ? 'disabled' : 'able'}`} 
+                onClick={() => setDetail({...detail, isChanging: 'delete'})}
+              >
+                삭제
+              </ButtonBright> 
+              <Pipe />
+              <span onClick={() => setDetail({...detail, id:'', type: false, state: false, save: false})}>X</span>
+            </ButtonArea> 
+          </TitleContent>
+          
+          <DetailType>
+            <div className={detail.type === 'basic' ? 'on' : 'off'} 
+            onClick={() => setDetail({...detail, type: 'basic'})}>기본 정보</div>
+            <span>|</span>
+            <div className={detail.type === 'emp'  ? 'on' : 'off'} 
+            onClick={() => setDetail({...detail, type: 'emp'})}>부서원 정보</div>
+          </DetailType>
+        </>
       }
     </>
   );

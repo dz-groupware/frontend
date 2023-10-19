@@ -1,27 +1,32 @@
-import { AiOutlinePoweroff } from 'react-icons/ai';
-import styled from 'styled-components';
+import { useEffect, useState } from "react";
 
-import { logOut } from '../../api/login';
+import styled from "styled-components";
+import { AiOutlinePoweroff } from "react-icons/ai";
 
-import PosiList from './PosiList';
-import { useEffect, useState } from 'react';
-import { getProfilePage } from '../../api/modal';
+import { getProfilePage } from "../../api/modal";
+import { logOut } from "../../api/login";
 
-export default function ProfileModal({ profile, empId, setProfileModal }) {
-  const user = profile.find(prf => prf['empId'] === empId);
+import PosiList from "./PosiList";
+
+export default function ProfileModal({ profile, setProfileModal }) {
   const [page, setPage] = useState({ pageNumber: 1, pageSize:3, totalElements: 1, totalPages: 1 });
   const [emp, setEmp] = useState([]);
   const [currentTime, setCurrentTime] = useState(new Date());
+  const options = { year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit",};
+
   const handleLogOut = () => {
     logOut()
       .then(() => {
         localStorage.setItem("empId", "0");
         localStorage.setItem("compId", "0");
         localStorage.setItem("isLogin", false);
-        window.location.href = '/login';
+        window.location.href = "/login";
       })
       .catch(error => {
-        console.error("로그아웃 중 오류 발생:", error);
+        localStorage.setItem("empId", "0");
+        localStorage.setItem("compId", "0");
+        localStorage.setItem("isLogin", false);
+        window.location.href = "/login";
       });
   };
   
@@ -45,41 +50,37 @@ export default function ProfileModal({ profile, empId, setProfileModal }) {
     });
   }, [page.pageNumber]);
 
-  if (user) {
-    return (
-      <ModalBackdrop onClick={() => {setProfileModal(false)}}>
-        <ModalView onClick={(e) => e.stopPropagation()}>
-          <Profile>  
-            <img src={user['imageUrl']} alt='p_img' />
-            <div className='prf'>
-              <div id="prf_name">{user['empName']}</div>
-              <div>{user['compName']} / {user['deptName']}</div>
-              <p>최근접속 : {user['lastAccess']}</p>
-              <p>현재접속 : {currentTime.toLocaleString().replace('. ', '-').replace('. ', '-').replace('. ', '-').replace('-오후', '')}</p>
-            </div>
-            <div onClick={handleLogOut}>
-              <AiOutlinePoweroff />
-            </div>
-          </Profile>
+  return (
+    <ModalBackdrop onClick={() => {setProfileModal(false)}}>
+      <ModalView onClick={(e) => e.stopPropagation()}>
+        <Profile>  
+          <img src={profile["imageUrl"]} alt="p_img" />
+          <div className="prf">
+            <div id="prf_name">{profile["empName"]}</div>
+            <div>{profile["compName"]} / {profile["deptName"]}</div>
+            <p>최근접속 : {profile["lastAccess"]}</p>
+            <p>현재접속 : {currentTime.toLocaleString(undefined, options).replace(". ", "-").replace(". ", "-").replace(". 오전 ", " ").replace(". 오후 ", " ")}</p>
+          </div>
+          <div onClick={handleLogOut}>
+            <AiOutlinePoweroff />
+          </div>
+        </Profile>
 
-          <div id='tableName'>
-            <div> • 회사정보</div>
-            <Page>
-              {
-                emp.map((a, i) => (
-                  <Idx className={`${page.pageNumber === (i+1) ? 'true' : 'false'}`}
-                  onClick={() => {setPage({ ...page, pageNumber: (i+1)})}} key={`page${i}`} />
-                ))
-              }
-            </Page>            
-            </div>
-          <PosiList empId={user['empId']} modalOff={modalOff} profile={emp}/>
-        </ModalView>
-      </ModalBackdrop>
-    );
-  } else {
-    console.log('사용자 정보가 일치하지 않습니다.');
-  }
+        <div id="tableName">
+          <div> • 회사정보</div>
+          <Page>
+            {
+              [...Array(page.totalPages)].map((a, i) => (
+                <Idx className={`${page.pageNumber === (i+1) ? "true" : "false"}`}
+                onClick={() => {setPage({ ...page, pageNumber: (i+1)})}} key={`page${i}`} />
+              ))
+            }
+          </Page>            
+          </div>
+        <PosiList empId={profile["empId"]} modalOff={modalOff} profile={emp} />
+      </ModalView>
+    </ModalBackdrop>
+  );
 };
 
 export const ModalBackdrop = styled.div`
@@ -98,7 +99,7 @@ export const ModalBackdrop = styled.div`
   height:100%;
 `;
 export const ModalView = styled.div`
-background-image: url('/img/page/profile_bgi.png');
+background-image: url("/img/page/profile_bgi.png");
 display: block;
 position: absolute;
 z-index: 2;

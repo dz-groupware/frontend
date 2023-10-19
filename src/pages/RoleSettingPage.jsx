@@ -2,8 +2,6 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import Line from '../components/Commons/Line';
 import RoleSettingMain from '../components/RoleSetting/RoleSettingMain';
-import { MdDisplaySettings, MdSmartDisplay, MdOutlineMapsUgc } from 'react-icons/md'
-import { PiCalendarCheck, PiStarBold } from 'react-icons/pi'
 import RoleModal from '../components/RoleSetting/RoleModal';
 import ActionButton from '../components/Commons/ActionButton';
 import { addAuthApi, updateAuthApi } from '../api/authgroup';
@@ -39,7 +37,6 @@ export default function RoleSettingPage({pageId}) {
         <ButtonArea>
         <ActionsContainer>
           <ActionButton 
-            width={'3rem'}
             fontWeight={400} 
             fontSize={'1.0rem'} 
             name="추가"
@@ -52,7 +49,6 @@ export default function RoleSettingPage({pageId}) {
             }}/> 
             {activeAuthId &&(         
               <ActionButton 
-                width={'3rem'}
                 fontWeight={400} 
                 fontSize={'1.0rem'} 
                 name="수정"

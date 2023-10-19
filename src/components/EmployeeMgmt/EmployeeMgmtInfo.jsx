@@ -86,7 +86,7 @@ export default function EmployeeMgmtInfo({ pageId }) {
             if (!isErrorOccurred) {
                 alert("사원 데이터가 수정되었습니다.");
                 dispatch(employeeActions.hideForm());
-                // window.location.reload();
+                window.location.reload();
             }
 
         } else {

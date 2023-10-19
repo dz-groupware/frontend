@@ -228,7 +228,8 @@ export default function EmployeeMgmtAside({ pageId }) {
         transferredYn: employee.transferredYn,
         edjoinDate: employee.edjoinDate,
         leftDate: employee.leftDate,
-        deletedYn: employee.deletedYn
+        deletedYn: employee.deletedYn,
+        empId: employee.empId,
       }));
 
 
@@ -238,7 +239,7 @@ export default function EmployeeMgmtAside({ pageId }) {
       dispatch(employeeActions.updateGroupInfo(employeeGroupInfo)); // Redux action이 배열을 받아야 함
 
       // console.log("3333basic", reduxbasicInfo.id);//잘나옴
-      // console.log("3333group", employeeGroupInfo);//잘나옴
+      console.log("3333group", employeeGroupInfo);//잘나옴
 
 
       dispatch(employeeActions.showForm({

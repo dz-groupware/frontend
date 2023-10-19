@@ -39,6 +39,7 @@ export default function CompanyMgmtInfo({ handleSubmit, isCodeDisabled,idForForm
                alert("회사 데이터가 삭제되었습니다.");
                window.location.reload();
                dispatch(companyActions.hideForm());
+               
             } catch (error) {
                console.error("Error deleting company data:", error);
             }

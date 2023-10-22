@@ -15,7 +15,7 @@ import {
     PrefixSelect
 } from '../Commons/StyledForm';
 import { companyActions } from '../../utils/Slice';
-import { addCompanyMgmt, checkCEOSignUp, getCompanyMgmtList, getCompanyMgmtNameTreeList, modifyCompanyMgmt } from '../../api/companymgmt';
+import { addCompanyMgmt, checkCEOSignUp, getCompanyMgmtList, getFinalNameTree, modifyCompanyMgmt } from '../../api/companymgmt';
 import { StyledButton } from '../Commons/StyledButton';
 import { checkLoginId, checkSignUp, getEmployeeDetailsById } from '../../api/employeemgmt';
 
@@ -105,7 +105,7 @@ export default function CompanyMgmtForm({ pageId }) {
 
     const fetchCompanyOptions = async () => {
         try {
-            const companyList = await getCompanyMgmtNameTreeList(pageId);
+            const companyList = await getFinalNameTree(pageId);
             setCompanyOptions(companyList);
             if (companyList && companyList.length > 0) {
                 setInfo(prev => ({
@@ -587,12 +587,12 @@ export default function CompanyMgmtForm({ pageId }) {
 
         <Container>
             <CompanyMgmtInfo handleSubmit={handleSubmit} isCodeDisabled={!!idForForm} idForForm={idForForm} pageId={pageId} />
-            <fieldset disabled={isFormDisabled} style={{ width: "100%" }}>
+           
                 <HalfInputContainer>
-                    <FormInput label="대표자명" name="repName" value={info.repName || ''} disabled={isSignUpChecked} onChange={handleChange} maxLength={19} />
+                    <FormInput label="대표자명" name="repName" value={info.repName || ''} disabled={isFormDisabled||isSignUpChecked} onChange={handleChange} maxLength={19} />
 
                     <HalfInputContainer>
-                        <FormInput label="대표자주민등록번호" type="password" name="repIdNum" value={info.repIdNum || ''} disabled={isSignUpChecked} onChange={handleCombinedChange} placeholder="______-_______" />
+                        <FormInput label="대표자주민등록번호" type="password" name="repIdNum" value={info.repIdNum || ''} disabled={isFormDisabled||isSignUpChecked} onChange={handleCombinedChange} placeholder="______-_______" />
                     </HalfInputContainer>
                 </HalfInputContainer>
                 <HalfInputContainer style={{ borderBottom: "1px solid lightgrey" }}>
@@ -602,9 +602,9 @@ export default function CompanyMgmtForm({ pageId }) {
                             name="privEmail1"
                             value={privEmail1 || ''}
                             onChange={handleEmailChange}
-                            disabled={isSignUpChecked} />
+                            disabled={isFormDisabled||isSignUpChecked} />
 
-                        <Select style={{ width: "300px" }} name="privEmail2" value={privEmail2 || ''} onChange={handleEmailChange} disabled={isSignUpChecked}>
+                        <Select style={{ width: "300px" }} name="privEmail2" value={privEmail2 || ''} onChange={handleEmailChange} disabled={isFormDisabled||isSignUpChecked}>
 
                             <option value="">선택</option>
                             <option value="@naver.com">@naver.com</option>
@@ -618,7 +618,7 @@ export default function CompanyMgmtForm({ pageId }) {
 
                 <HalfInputContainer style={{ borderBottom: "1px solid lightgrey" }}>
                     <Label>대표자번호</Label>
-                    <PrefixSelect name="repTel1" value={info.repTel.split('-')[0] || "direct"} onChange={handleHyphenChange} disabled={isSignUpChecked}>
+                    <PrefixSelect name="repTel1" value={info.repTel.split('-')[0] || "direct"} onChange={handleHyphenChange} disabled={isFormDisabled||isSignUpChecked}>
                         <option value="direct">선택</option>
                         <option value="010">010</option>
                         <option value="051">051</option>
@@ -630,30 +630,30 @@ export default function CompanyMgmtForm({ pageId }) {
                         onChange={handleHyphenChange}
                         placeholder='______-_______'
                         maxLength={9}
-                        disabled={info.repTel.split('-')[0] === 'direct' || isSignUpChecked}
+                        disabled={info.repTel.split('-')[0] === 'direct' || isFormDisabled||isSignUpChecked}
                     />
                     <StyledButton name="signcheck" value="signcheck"
                         onClick={handleSignUpCheck}
-                        disabled={isSignUpChecked || idForForm}
+                        disabled={isSignUpChecked ||isFormDisabled|| idForForm}
                     >가입 확인</StyledButton>
                 </HalfInputContainer>
 
                 <InputContainer>
                     <Label>대표자 성별</Label>
                     <label>
-                        <Input type="radio" name="gender" value="여성" checked={info.gender === "여성"} onChange={handleChange} disabled={info.employeeId !== null || idForForm} />여성
+                        <Input type="radio" name="gender" value="여성" checked={info.gender === "여성"} onChange={handleChange} disabled={isFormDisabled||info.employeeId !== null || idForForm} />여성
                     </label>
                     <label>
                         <Input type="radio" name="gender" value="남성" checked={info.gender === "남성"}
-                            onChange={handleChange} disabled={info.employeeId !== null || idForForm} />남성
+                            onChange={handleChange} disabled={info.employeeId !== null || isFormDisabled|| idForForm} />남성
                     </label>
                 </InputContainer>
                 <HalfInputContainer style={{ borderBottom: "1px solid lightgrey" }}>
-                    <FormInput customStyle={{ border: "none" }} label="로그인ID" name="loginId" value={info.loginId || ''} onChange={handleChange} disabled={info.employeeId !== null || idForForm || isDuplicated} />
+                    <FormInput customStyle={{ border: "none" }} label="로그인ID" name="loginId" value={info.loginId || ''} onChange={handleChange} disabled={isFormDisabled||info.employeeId !== null || idForForm || isDuplicated} />
                     <StyledButton name="duplicatecheck" value="duplicatecheck"
                         onClick={handleLoginIdCheck}
                         disabled={info.employeeId !== null || isDuplicated || idForForm}>중복확인</StyledButton>
-                    <FormInput customStyle={{ border: "none" }} label="로그인PW" name="loginPw" type="password" value={info.loginPw || ''} onChange={handleChange} disabled={info.employeeId !== null || idForForm}
+                    <FormInput customStyle={{ border: "none" }} label="로그인PW" name="loginPw" type="password" value={info.loginPw || ''} onChange={handleChange} disabled={isFormDisabled||info.employeeId !== null || idForForm}
                     />
                 </HalfInputContainer>
 
@@ -670,37 +670,37 @@ export default function CompanyMgmtForm({ pageId }) {
                 </InputContainer>
 
                 <HalfInputContainer>
-                    <FormInput label="회사코드" name="code" maxLength={6} value={info.code || ''} disabled={!!idForForm || !isSignUpChecked} onChange={handleChange} />
+                    <FormInput label="회사코드" name="code" maxLength={6} value={info.code || ''} disabled={isFormDisabled||!!idForForm || !isSignUpChecked} onChange={handleChange} />
                     <InputContainer>
                         <Label>사용여부</Label>
                         <label>
-                            <Input type="radio" name="enabledYn" value="true" checked={info.enabledYn === true} onChange={handleChange} disabled={!isSignUpChecked} />사용
+                            <Input type="radio" name="enabledYn" value="true" checked={info.enabledYn === true} onChange={handleChange} disabled={isFormDisabled||!isSignUpChecked} />사용
                         </label>
                         <label>
-                            <Input type="radio" name="enabledYn" value="false" checked={info.enabledYn === false} onChange={handleChange} disabled={!isSignUpChecked} />미사용
+                            <Input type="radio" name="enabledYn" value="false" checked={info.enabledYn === false} onChange={handleChange} disabled={isFormDisabled||!isSignUpChecked} />미사용
                         </label>
                     </InputContainer>
                 </HalfInputContainer>
 
-                <FormInput label="회사명" name="name" value={info.name || ''} onChange={handleChange} maxLength={99} disabled={!isSignUpChecked} />
+                <FormInput label="회사명" name="name" value={info.name || ''} onChange={handleChange} maxLength={99} disabled={isFormDisabled||!isSignUpChecked} />
 
-                <FormInput label="회사약칭" name="abbr" value={info.abbr || ''} onChange={handleChange} maxLength={49} disabled={!isSignUpChecked} />
-                <FormInput label="업태" name="businessType" value={info.businessType || ''} onChange={handleChange} maxLength={49} disabled={!isSignUpChecked} />
+                <FormInput label="회사약칭" name="abbr" value={info.abbr || ''} onChange={handleChange} maxLength={49} disabled={isFormDisabled||!isSignUpChecked} />
+                <FormInput label="업태" name="businessType" value={info.businessType || ''} onChange={handleChange} maxLength={49} disabled={isFormDisabled||!isSignUpChecked} />
 
 
 
                 <HalfInputContainer>
                     <HalfInputContainer>
-                        <FormInput label="사업자번호" name="businessNum" value={info.businessNum || ''} disabled={!!idForForm || !isSignUpChecked} onChange={handleCombinedChange} placeholder="___-__-_____" maxLength={12} />
+                        <FormInput label="사업자번호" name="businessNum" value={info.businessNum || ''} disabled={isFormDisabled||!!idForForm || !isSignUpChecked} onChange={handleCombinedChange} placeholder="___-__-_____" maxLength={12} />
                     </HalfInputContainer>
                     <HalfInputContainer>
                         <Label>법인등록번호</Label>
-                        <PrefixSelect name="corpType" value={info.corpType || "direct"} disabled={!!idForForm || !isSignUpChecked} onChange={handleChange}>
+                        <PrefixSelect name="corpType" value={info.corpType || "direct"} disabled={isFormDisabled||!!idForForm || !isSignUpChecked} onChange={handleChange}>
                             <option value="direct">선택</option>
                             <option value="1">개인</option>
                             <option value="2">법인</option>
                         </PrefixSelect>
-                        <Input name="corpNum" value={info.corpNum || ''} disabled={!!idForForm || !isSignUpChecked} onChange={handleCombinedChange} placeholder="______-_______" />
+                        <Input name="corpNum" value={info.corpNum || ''} disabled={isFormDisabled||!!idForForm || !isSignUpChecked} onChange={handleCombinedChange} placeholder="______-_______" />
                         {/* // Limit to 9 characters including dash   */}
                     </HalfInputContainer>
                 </HalfInputContainer>
@@ -712,7 +712,7 @@ export default function CompanyMgmtForm({ pageId }) {
                         type="date"
                         value={info.establishmentDate || ''}
                         onChange={handleChange}
-                        disabled={!isSignUpChecked}
+                        disabled={isFormDisabled||!isSignUpChecked}
                     />
 
                     <DoubleInputContainer>
@@ -722,7 +722,7 @@ export default function CompanyMgmtForm({ pageId }) {
                             type="date"
                             value={info.openingDate || ''}
                             onChange={handleChange}
-                            disabled={!isSignUpChecked}
+                            disabled={isFormDisabled||!isSignUpChecked}
                         />
                         <span>/</span>
                         <Input
@@ -730,14 +730,14 @@ export default function CompanyMgmtForm({ pageId }) {
                             type="date"
                             value={info.closingDate || ''}
                             onChange={handleChange}
-                            disabled={!info.openingDate || !info.establishmentDate || !isSignUpChecked}
+                            disabled={isFormDisabled||!info.openingDate || !info.establishmentDate || !isSignUpChecked}
                         />
                     </DoubleInputContainer>
                 </HalfInputContainer>
 
-                <FormInput label="주소" name="address" value={info.address || ''} onChange={handleChange} maxLength={199} disabled={!isSignUpChecked} />
+                <FormInput label="주소" name="address" value={info.address || ''} onChange={handleChange} maxLength={199} disabled={isFormDisabled||!isSignUpChecked} />
 
-            </fieldset>
+            
         </Container>
 
     );

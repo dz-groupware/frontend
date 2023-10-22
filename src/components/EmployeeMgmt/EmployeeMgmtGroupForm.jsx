@@ -284,7 +284,7 @@ export default function EmployeeMgmtGroupForm({ pageId }) {
               )}
               {/* 로그인한 회사의 수정/삭제 제한을 알리는 메시지 표시 여부를 결정합니다. */}
               {showRestrictionMessage && (
-                <p style={{ margin: '5px 0', alignSelf: 'center' }}>로그인한 회사만 수정 삭제할 수 있습니다.</p>
+                <p style={{ margin: '5px 0', alignSelf: 'center' , color: 'red'}}>로그인한 회사만 수정 삭제할 수 있습니다.</p>
               )}
             </div>
             <InputContainer>

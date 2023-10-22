@@ -18,9 +18,11 @@ export default function LnbLayout({ routeList }) {
   const [lnbOpen, setLnbOpen] = useState(true);
   const [data, setData] = useState([]);
   const [clicked, setClicked] = useState("");
+  console.log(routeList);
 
   useEffect(() => {
     if ( gnb.id > 0 ) {
+      setLnbOpen(true);
       searchMenuListAPI(gnb.id)
       .then((res) => {
         if (res.data.data) {
@@ -48,7 +50,7 @@ export default function LnbLayout({ routeList }) {
 
   return (
     <Content>
-      <LnbTitle className={`${location.pathname === "/" ? "main" : "lnb" }`}>
+      <LnbTitle className={`${location.pathname === "/home" ? "main" : "lnb" }`}>
         <IconContainer className={`icon-container ${lnbOpen ? "open" : "close"}`}>
           <AiOutlineMenu className="close-icon" onClick={() => {setLnbOpen(false)}}/>
           <RiMenuUnfoldLine className="open-icon" onClick={() => {setLnbOpen(true)}}/>
@@ -75,7 +77,7 @@ export default function LnbLayout({ routeList }) {
             })
           }
         </LNBList>
-        <OutletArea id="route" className={`${location.pathname === "/" ? "main" : "lnb"} ${lnbOpen ? "true" : "false"}`} >
+        <OutletArea id="route" className={`${location.pathname === "/home" ? "main" : "lnb"} ${lnbOpen ? "true" : "false"}`} >
           <Routes>
             <Route path="/*" element={content} />
           </Routes>

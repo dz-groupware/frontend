@@ -65,7 +65,7 @@ export default function EmployeeMgmtHeader({ pageId }) {
   }
 
   const handleCloseModal = () => {
-    if (window.confirm("모달을 닫으면 정보가 날라갑니다. 계속하시겠습니까?")) {
+    if (window.confirm("창을 닫으면 정보가 날라갑니다. 계속하시겠습니까?")) {
       setModalIsOpen(false);
       setSelectedEmployees([]);  // selectedEmployees 상태 초기화
     }

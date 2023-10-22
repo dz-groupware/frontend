@@ -47,7 +47,7 @@ export default function MgmtInfo({ isCompanyMgmt, title, onSubmit, onDelete, nob
                             <ButtonBright onClick={onDelete}>삭제</ButtonBright>
                         </>
                     ) : (
-                        <p style={{ margin: '10px', color: 'red' }}>로그인한 회사를 제외하곤 수정 및 삭제가 불가능합니다.</p>
+                        <ButtonBlue onClick={onSubmit} type="button">소속회사 수정</ButtonBlue>
                     )
                 ) : (
                     isDataSame ? (

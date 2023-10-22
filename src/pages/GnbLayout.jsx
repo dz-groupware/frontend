@@ -20,20 +20,25 @@ export default function GnbLayout() {
   const [error, setError] = useState(false);
   const [routeList, setRouteList] = useState(new Map([
     [`/home`, { menuId: 0, gnbId: 0, gnbName: "main", page: "Main" }],
+    [`/test`, { menuId: 0, gnbId: 0, gnbName: "test", page: "Test" }],
     [`/FORBIDDEN`, { menuId: 0, gnbId: 0, gnbName: "FORBIDDEN", page: "Error/Fobidden" }],
     [`/SERVICE_UNAVAILABLE`, { menuId: 0, gnbId: 0, gnbName: "SERVICE_UNAVAILABLE", page: "Error/ServiceUnavailable" }]
   ]));
 
+  console.log(routeList);
   const parseMenuList = (originMenuList) => {
     try {
       const menuList = new Map();
       originMenuList.forEach(row => {
         const { menuId, gnbId, gnbName, nameTree, page } = row;
+        console.log(nameTree, gnbId);
         menuList.set(`/${nameTree}`, { menuId, gnbId, gnbName, page });
       });
-      menuList.set(`/`, { menuId: 0, gnbId: 0, gnbName: "main", page: "Main" });
+      menuList.set(`/home`, { menuId: 0, gnbId: 0, gnbName: "main", page: "Main" });
+      menuList.set(`/test`, { menuId: 0, gnbId: 0, gnbName: "test", page: "Test" });
       menuList.set(`/FORBIDDEN`, { menuId: 0, gnbId: 0, gnbName: "FORBIDDEN", page: "Error/Fobidden" });
       menuList.set(`/SERVICE_UNAVAILABLE`, { menuId: 0, gnbId: 0, gnbName: "SERVICE_UNAVAILABLE", page: "Error/ServiceUnavailable" });
+      console.log('?? : ', menuList);
       setRouteList(menuList);  
       setError(false);
       setRouteOn(true);   

@@ -2,7 +2,7 @@ import React, { Suspense, useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 
 import Loading from "../common/styles/Loading.jsx";
-import FORBIDDEN from "./Error/Robidden.jsx";
+import FORBIDDEN from "./Error/Fobidden.jsx";
 
 export default function Module({ gnb, setGnb, routeList }){
   const location = useLocation();
@@ -32,7 +32,7 @@ export default function Module({ gnb, setGnb, routeList }){
     try {
       handleLoad(routeList.get(decodeURIComponent(location.pathname)));
     } catch (error) {
-      window.location.href="/";
+      window.location.href="/home";
     }
   }, [location.pathname]);
   

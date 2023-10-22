@@ -1,24 +1,24 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from "react";
 
-import styled from 'styled-components';
-import Swal from 'sweetalert2';
+import styled from "styled-components";
+import Swal from "sweetalert2";
 
-import { AiOutlinePaperClip } from 'react-icons/ai';
-import { MdOutlineRefresh } from 'react-icons/md';
+import { AiOutlinePaperClip } from "react-icons/ai";
+import { MdOutlineRefresh } from "react-icons/md";
 
-import { saveMenuAPI, deleteMenuApi, saveIconAPI } from '../../api/menu';
-import IconImageList from './IconImageList';
+import { saveMenuAPI, deleteMenuApi, saveIconAPI } from "../../api/menu";
+import IconImageList from "./IconImageList";
 
-import { ButtonBright, ButtonBlue } from '../../common/styles/Button';
+import { ButtonBright, ButtonBlue } from "../../common/styles/Button";
 
 export default function GnbDetail({ pageId, value, detailOff, on, setReRender }) {
   const initValue = {
-    id: '',
-    parId: '',
-    name: '',
-    enabledYn: '',
-    sortOrder: '',
-    iconUrl: '',
+    id: "",
+    parId: "",
+    name: "",
+    enabledYn: "",
+    sortOrder: "",
+    iconUrl: "",
   };
   const [detail, setDetail] = useState(initValue);
   const [isDragging, setIsDragging] = useState(false);
@@ -26,8 +26,8 @@ export default function GnbDetail({ pageId, value, detailOff, on, setReRender })
   const [newIconFile, setNewIconFile] = useState("");
   const [newIconUrl, setNewIconUrl] = useState("");
   const [iconRender, setIconRender] = useState(true);
-  const path = 'https://dz-test-image.s3.ap-northeast-2.amazonaws.com/';
-  const prefix = 'icon/';
+  const path = "https://dz-test-image.s3.ap-northeast-2.amazonaws.com/";
+  const prefix = localStorage.getItem("compId")+"/";
 
   const onDragEnter = (e) => {
     e.preventDefault();
@@ -63,11 +63,11 @@ export default function GnbDetail({ pageId, value, detailOff, on, setReRender })
     setIsDragging(false);
 
     if ((e.dataTransfer.files[0] instanceof Blob)) {
-      console.error('image is not a Blob');
+      console.error("image is not a Blob");
       readImage(e.dataTransfer.files[0]);
       setNewIconFile(e.dataTransfer.files[0]);
-      setDetail({ ...detail, iconUrl: path+prefix+e.dataTransfer.files[0]['name']});
-    }
+      setDetail({ ...detail, iconUrl: path+prefix+e.dataTransfer.files[0]["name"]});
+    };
   };
 
   const updateMenu = async () => {
@@ -85,16 +85,16 @@ export default function GnbDetail({ pageId, value, detailOff, on, setReRender })
         setErrorMessage(null);
         Swal.fire({
           text: "저장 되었습니다.",
-          icon: 'success',
+          icon: "success",
         }); 
       } catch (error) {
         setErrorMessage("다시 시도해주세요. (메뉴 수정/저장 실패)");
-      }
+      };
   
       try{
         if (newIconFile !== "") {
           let formData = new FormData();
-          formData.append('images', newIconFile);
+          formData.append("images", newIconFile);
           saveIconAPI(pageId, formData)
           .then(() => {
             setNewIconFile("");
@@ -109,8 +109,8 @@ export default function GnbDetail({ pageId, value, detailOff, on, setReRender })
         setErrorMessage("다시 시도해주세요. (이미지 추가 실패)");
       } finally {
         setReRender(true);
-      }  
-    }
+      };
+    };
   };
 
   const deleteMenu = () => {
@@ -121,29 +121,29 @@ export default function GnbDetail({ pageId, value, detailOff, on, setReRender })
       detailOff();  
       Swal.fire({
         text: "완료되었습니다.",
-        icon: 'success',
+        icon: "success",
       });        
     } catch (error) {
       Swal.fire({
         text: "삭제에 실패하였습니다.",
-        icon: 'cancle',
+        icon: "cancle",
       }); 
-    }
+    };
   };
 
   const handleRadio = (e) => {
-    setDetail({ ...detail, enabledYn: e.target.getAttribute('value') === "true"});
+    setDetail({ ...detail, enabledYn: e.target.getAttribute("value") === "true"});
   };
 
   useEffect (() => {
     setDetail({ 
-      id: value['id'], 
-      parId: value['id'], 
-      name: value['name'], 
-      enabledYn: value['enabledYn'] === 1 || value['enabledYn'] === true, 
-      sortOrder: value['sortOrder'], 
-      iconUrl: value['iconUrl'].length < path.length ? (path+prefix+value['iconUrl']) : value['iconUrl'], 
-    })
+      id: value["id"], 
+      parId: value["id"], 
+      name: value["name"], 
+      enabledYn: value["enabledYn"] === 1 || value["enabledYn"] === true, 
+      sortOrder: value["sortOrder"], 
+      iconUrl: value["iconUrl"], 
+    });
   }, [value]);
 
   return on && (
@@ -168,9 +168,9 @@ export default function GnbDetail({ pageId, value, detailOff, on, setReRender })
             <td>메뉴명</td>
             <td>
               <input 
-                type='text' 
+                type="text" 
                 value={detail.name} 
-                placeholder='메뉴명을 입력해주세요'
+                placeholder="메뉴명을 입력해주세요"
                 onChange={(e) => {
                   setDetail({ ...detail, name: e.target.value });
                 }}
@@ -180,21 +180,21 @@ export default function GnbDetail({ pageId, value, detailOff, on, setReRender })
           <tr>
             <td>사용여부</td>
             <td>
-              <div value='true' onClick={(e) => {handleRadio(e)}}>
+              <div value="true" onClick={(e) => {handleRadio(e)}}>
                 <input 
-                  className='radio' 
-                  type='radio' 
-                  value='true'
+                  className="radio" 
+                  type="radio" 
+                  value="true"
                   checked={detail.enabledYn === true}
                   onChange={() => {}}
                 /> 
                 사용
               </div>
-              <div value='false' onClick={(e) => {handleRadio(e)}}>
+              <div value="false" onClick={(e) => {handleRadio(e)}}>
                 <input 
-                  className='radio' 
-                  type='radio' 
-                  value='false'
+                  className="radio" 
+                  type="radio" 
+                  value="false"
                   checked={detail.enabledYn === false}
                   onClick={handleRadio}
                   onChange={() => {}}
@@ -207,8 +207,8 @@ export default function GnbDetail({ pageId, value, detailOff, on, setReRender })
             <td>정렬</td>
             <td>
               <input 
-                type='number' 
-                placeholder='숫자가 작을수록 위에 보입니다' 
+                type="number" 
+                placeholder="숫자가 작을수록 위에 보입니다" 
                 value={detail.sortOrder}
                 onChange={(e) => setDetail({ ...detail, sortOrder: e.target.value })}
               />
@@ -216,7 +216,7 @@ export default function GnbDetail({ pageId, value, detailOff, on, setReRender })
           </tr>
           <tr>
             <td>아이콘(48*44)<MdOutlineRefresh onClick={() => {setIconRender(true)}}/></td>
-            <td className='dndBox'>
+            <td className="dndBox">
               <DnDBox
                 onDragEnter={onDragEnter} 
                 onDragLeave={onDragLeave} 
@@ -226,21 +226,22 @@ export default function GnbDetail({ pageId, value, detailOff, on, setReRender })
               >
                 <div>
                   <textarea 
-                    name='iconUrl' 
-                    value={detail.iconUrl === undefined || detail.iconUrl === "" || detail.iconUrl.length < path.length ? "not found" : detail.iconUrl.slice(path.length+prefix.length)} 
+                    name="iconUrl" 
+                    value={detail.iconUrl && (
+                      detail.iconUrl.length < path.length ? "not found" : detail.iconUrl.replace(path, "").replace(prefix, ""))} 
                     onChange={() => {}} 
                     readOnly
                   ></textarea>
-                  <label htmlFor="iconFile" className='iconFileInput'>
+                  <label htmlFor="iconFile" className="iconFileInput">
                     <AiOutlinePaperClip/>
                     <input 
-                      type='file' 
+                      type="file" 
                       id="iconFile" 
                       onChange={(e) => {
                         readImage(e.target.files[0]);
                         setNewIconFile(e.target.files[0]);
-                        setDetail({ ...detail, iconUrl: path+prefix+e.target.files[0]['name']});
-                        setNewIconUrl(path+prefix+e.target.files[0]['name']);
+                        setDetail({ ...detail, iconUrl: path+prefix+e.target.files[0]["name"]});
+                        setNewIconUrl(path+prefix+e.target.files[0]["name"]);
                       }}
                     />
                   </label>

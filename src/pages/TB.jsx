@@ -16,7 +16,7 @@ export default function TB({ profile, empId, routeList }) {
   const location = useLocation();
 
   useEffect(() => {
-    if ( !isMain && decodeURIComponent(location.pathname) === "/" ) {
+    if ( !isMain && decodeURIComponent(location.pathname) === "/home" ) {
       setIsMain(true);
     } else {
       setIsMain(false);
@@ -25,8 +25,8 @@ export default function TB({ profile, empId, routeList }) {
 
   return (
     <Content className={ isMain ? "true" : "false" }>
-      <Logo onClick={() => {window.location.href="/"}}>
-        <Link to="/">
+      <Logo onClick={() => {window.location.href="/home"}}>
+        <Link to="/home">
         Amaranth2023
         </Link>
       </Logo>

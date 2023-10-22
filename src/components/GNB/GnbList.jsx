@@ -6,12 +6,17 @@ import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { useSelector } from 'react-redux';
 
-export function MenuList({ gnb }) {
+
+export function MenuList({ gnb, hoveredIndex, onHover, onLeave }) {
   return (
     <>
       {
         gnb.map((a, i) => (
-          <StyledLink key={a['id']+i+'gnb'}>
+          <StyledLink 
+          className={i === hoveredIndex ? 'hovered' : ''}
+          onMouseEnter={() => onHover(i)}
+          onMouseLeave={onLeave}
+          key={a['id']+i+'gnb'}>
             <Link to={a['name']}>
               {a["name"]}
             </Link>
@@ -30,7 +35,6 @@ export function FavList() {
       try {
         GnbFavorApi()
         .then((res) => {
-          console.log(res);
           if (Array.isArray(res.data.data)) {
             setFavorList(res.data.data) ;
           }}).catch((err) => {
@@ -71,12 +75,17 @@ export function FavList() {
   );
 }
 
-export function IconList({ gnb }) {
+export function IconList({ gnb, hoveredIndex, onHover, onLeave }) {
   return (
     <>
       {
         gnb.map((a, i) => (
-          <StyledLink key={a['name']+i+'icon'}>
+          <StyledLink 
+            className={i === hoveredIndex ? 'hovered' : ''}
+            onMouseEnter={() => onHover(i)}
+            onMouseLeave={onLeave}
+            key={a['name']+i+'icon'}
+          >
           <Link to={a['name']}>
             <img src={a['iconUrl']} alt={a['name']} /> 
           </Link>
@@ -99,9 +108,9 @@ height: 60px;
   text-decoration: none;
   color:rgb(181,194,200);
   width: calc(100% - 32px);
-  &:hover {
-    color: #9ec8f7;
-  }
-}
 
+}
+& .hovered {
+  background-color: #02172f;
+}
 `;

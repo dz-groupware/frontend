@@ -59,6 +59,7 @@ display: flex; /* flex 레이아웃 사용 */
   margin: 5px;
   background-color: #1d2437;
   border-radius: 10px;
+  cursor: pointer;
   > #clicked {
     & img{
       border-radius: 5px;

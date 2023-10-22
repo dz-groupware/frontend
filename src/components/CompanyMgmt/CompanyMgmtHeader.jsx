@@ -16,7 +16,7 @@ export default function CompanyMgmtHeader({ pageId }) {
             {/* Other components */}
             <NotificationArea>
                 <NotificationInfo>
-                    로그인 하신 회사의 정보 외에는 수정 및 삭제가 불가능 합니다.
+                    로그인 하신 회사의 정보 외에는 삭제가 불가능 합니다. 
                 </NotificationInfo>
             </NotificationArea>
         </div>

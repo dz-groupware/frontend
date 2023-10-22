@@ -65,7 +65,7 @@ export default function EmployeeMgmtHeader({ pageId }) {
   }
 
   const handleCloseModal = () => {
-    if (window.confirm("모달을 닫으면 정보가 날라갑니다. 계속하시겠습니까?")) {
+    if (window.confirm("창을 닫으면 정보가 날라갑니다. 계속하시겠습니까?")) {
       setModalIsOpen(false);
       setSelectedEmployees([]);  // selectedEmployees 상태 초기화
     }
@@ -189,7 +189,7 @@ const handleSearch = async () => {
       alert("퇴사 처리할 사원을 선택해주세요.");
       return;
     }
-    if (!window.confirm("진짜로 일괄 퇴사처리 하시겠습니까?")) {
+    if (!window.confirm("정말로 일괄 퇴사처리 하시겠습니까?")) {
       return;  // 사용자가 취소를 누르면 함수를 종료합니다.
     }
   

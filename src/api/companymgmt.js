@@ -13,7 +13,9 @@ export const getCompanyMgmtList = async ( pageId) => {
   }
 };
 
-export const getCompanyMgmtNameTreeList = async ( pageId) => {
+
+
+export const getFinalNameTree = async (pageId) => {
   try {
     
     axiosInstance.defaults.headers['menuId'] =  pageId;

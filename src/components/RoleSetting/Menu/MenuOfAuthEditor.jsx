@@ -61,7 +61,7 @@ export default function MenuOfAuthEditor({ authId , isSaveClicked, setIsSaveClic
 
   useEffect(() => {
     if (isDeleteClicked) {
-      const confirmDelete = window.confirm("진짜로 삭제하시겠습니까?");
+      const confirmDelete = window.confirm("정말로 삭제하시겠습니까?");
       if (confirmDelete) {
         setDelteShouldFetch(true);
       }

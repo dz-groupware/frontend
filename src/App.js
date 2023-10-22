@@ -1,31 +1,52 @@
-import React, { Suspense } from 'react';
-import { Provider } from 'react-redux';
-import { Route, Routes } from 'react-router-dom';
+import React, { Suspense } from "react";
+import { Provider } from "react-redux";
+import { Route, Routes } from "react-router-dom";
 
-import GlobalStyle from './GlobalStyle';
+import { ThemeProvider } from "styled-components";
 
-import store from './utils/Store';
+import theme from "./utils/theme";
+import store from "./utils/Store";
+import GlobalStyle from "./GlobalStyle";
+
 import LoginPage from "./pages/LoginPage";
-
-import GnbLayout from './pages/GnbLayout';
-import { Test } from './pages/VIEW';
-import ERR_NETWORK from './pages/Error/ERR_NETWORK';
-import { ThemeProvider } from 'styled-components';
-import theme from './utils/theme';
+import GnbLayout from "./pages/GnbLayout";
+import ErrNetwork from "./pages/Error/ErrNetwork";
+import ServiceUnavailable from "./pages/Error/ServiceUnavailable";
+// import Test from './pages/Test'
 
 export default function App() {
   return (
     <>
-      <GlobalStyle/>
+      <GlobalStyle />
       <Provider store={store}>
-        <div className="App" >
+        <div className="App">
           <Suspense fallback={<div>로딩중...</div>}>
             <ThemeProvider theme={theme}>
               <Routes>
-                <Route path='/login' element={<LoginPage />} /> 
-                <Route path='/*' element={<GnbLayout/>}/>
-                <Route path='/test' element={<Test />} />
-                <Route path='/ERR_NETWORK' element={<ERR_NETWORK />} />
+                <Route 
+                  path="/login" 
+                  element={<LoginPage />} 
+                /> 
+                <Route 
+                  path="/" 
+                  element={<LoginPage />} 
+                /> 
+                <Route 
+                  path="/*" 
+                  element={<GnbLayout />}
+                />
+                {/* <Route 
+                  path="/test" 
+                  element={<Test />}
+                 />  */}
+                <Route 
+                  path="/ERR_NETWORK" 
+                  element={<ErrNetwork />}
+                 />                
+                <Route 
+                  path="/SERVICE_UNAVAILABLE" 
+                  element={<ServiceUnavailable />}
+                />
               </Routes>
             </ThemeProvider>
           </Suspense>

@@ -1,46 +1,68 @@
-import { useState } from 'react';
-import styled from 'styled-components';
+import { useEffect, useState } from "react";
+import styled from "styled-components";
 
 export default function DeptItem({ dept, setItem, detail, setDetail }){
   const [open, setOpen] = useState(false);
 
-  // console.log('request subItem : ', dept);
   const handleDetail = () => {
+    console.log('clicked in ', dept.id, ' and is open ', open);
     if(!open && !dept.subItem) {
-      console.log('request subItem : ', dept['id']);
       setItem(dept);
     }
     setOpen(!open);
-    setDetail({ ...detail, isChanging: dept['id'] , type:( detail.type ? detail.type : 'basic')});
-  }
+
+  };
+
+  useEffect(() => {
+    if (open) {
+      setDetail({ ...detail, isChanging: dept["id"] , type:( detail.type ? detail.type : "basic")});
+    } 
+  }, [open]);
+
+  useEffect(() => {
+    console.log('useEffect in ', dept.id, ' and is open ', open);
+    if (detail.id === dept.id) {
+      setOpen(true);
+    }
+  }, [detail.id]);
 
   return (
     <> 
     <DeptArea>
-      <div className={`DeptTreeItem ${detail.id === dept['id'] ? 'true' : 'false'}`}>
-      { 
-        open ? 
-        (dept['childNodeYn'] === true 
-        ? <img src="/img/page.png"width={18} alt="example" />
-        : <img src="/img/comp/dept_open_32.png"width={20} alt="example" />)
-        :    
-        (dept['childNodeYn'] === true 
-        ? <img src="/img/page.png"width={18} alt="example" /> 
-        : <img src="/img/comp/dept_50.png"width={18} alt="example" />) 
+      <div 
+        onClick={handleDetail}  
+        className={`DeptTreeItem ${detail.id === dept["id"] ? "true" : "false"}`}
+      >
+      {open ? 
+        (dept["childNodeYn"] === true ? (
+          <img src="/img/page.png" width={18} alt="example" />
+        ) : (
+           <img src="/img/comp/dept_open_32.png" width={20} alt="example" />
+        )) :   
+        (dept["childNodeYn"] === true ? (
+          <img src="/img/page.png" width={18} alt="example" /> 
+        ) : (
+          <img src="/img/comp/dept_50.png" width={18} alt="example" />
+        )) 
       }
-      
-      <Item onClick={handleDetail} >
-        {dept['code']}.{dept['name']}
+      <Item>
+        {dept["code"]}.{dept["name"]}
       </Item>
       </div>
       <ItemChild>
-      {
-        open && dept.subItem && dept.subItem.map((a, i) => {
-          if (a['id'] !== a['parId']) {
+      {open && dept.subItem && dept.subItem.length !== 1 &&
+        dept.subItem.map((a, i) => {
+          if (a["id"] !== a["parId"]) {
             return (
-              <DeptItem dept={a} setItem={setItem} detail={detail} setDetail={setDetail} key={'item::'+a['name']} />
-            )
-          }
+              <DeptItem 
+                dept={a} 
+                setItem={setItem} 
+                detail={detail} 
+                setDetail={setDetail} 
+                key={"item::"+a["name"]}
+              />
+            );
+          };
           return null;
         })
       }    
@@ -49,7 +71,6 @@ export default function DeptItem({ dept, setItem, detail, setDetail }){
     </>
   );
 }
-
 
 const DeptArea = styled.li`
 width: 100%;
@@ -64,7 +85,7 @@ list-style: none;
   /* width: 350px; */
   box-shadow: inset 1px 1px 1px 0px rgba(255,255,255,.3),
             3px 3px 3px 0px rgba(0,0,0,.1),
-            1px 1px 3px 0px rgba(0,0,0,.1);
+            -1px -1px 3px 0px rgba(0,0,0,.1);
             outline: none;
 &.true {
   background-color: rgb(214,236,248);
@@ -72,11 +93,9 @@ list-style: none;
 }
 }
 `;
-
 const ItemChild = styled.div`
 padding-left: 10px;
 `;
-
 const Item = styled.div`
 margin-left: 5px;
   overflow: hidden;

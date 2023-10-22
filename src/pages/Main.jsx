@@ -3,7 +3,7 @@ import styled from 'styled-components';
 export default function Main() {
   return (
     <MainArea id="Main">
-        <img src="/img/main_bgi.png" alt="bgiMain" />
+        <img src="/img/main_bgi.png" alt="bgiMain" draggable="false"  />
     </MainArea>
   );
 }
@@ -17,9 +17,10 @@ const MainArea = styled.div`
   
   > img {
     position: absolute;
-    width: 100%;
-    height: 100%;
+    width: calc(100% + 150px);
+    height: calc(100% + 120px);
     object-fit: cover;
-    top: -80px;
+    top: -120px;
+    right: 0px;
   }
 `;

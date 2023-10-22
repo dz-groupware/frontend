@@ -20,7 +20,6 @@ export default function MenuTreeTop({isEditMode, setIsEditMode, setIsSaveClicked
         <ActionButtonWrapper>
           {isEditMode && (
             <ActionButton 
-              width={'3rem'}
               fontWeight={400} 
               fontSize={'1.0rem'} 
               name="저장"
@@ -30,7 +29,6 @@ export default function MenuTreeTop({isEditMode, setIsEditMode, setIsSaveClicked
           )}
           {isEditMode && (
             <ActionButton 
-              width={'3rem'}
               fontWeight={400} 
               fontSize={'1.0rem'} 
               name="삭제"
@@ -38,7 +36,6 @@ export default function MenuTreeTop({isEditMode, setIsEditMode, setIsSaveClicked
             />
           )}
           <ActionButton 
-            width={'3rem'}
             fontWeight={400} 
             fontSize={'1.0rem'} 
             name={isEditMode ? '닫기' : '수정'}

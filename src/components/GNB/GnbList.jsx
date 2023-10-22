@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 
-import { GnbFavorDeleteApi, GnbFavorApi, } from '../../api/gnb';
+import { GnbFavorDeleteApi, GnbFavorApi, } from '../../api/layout';
 import { useEffect, useState } from 'react';
 
 import styled from 'styled-components';
@@ -28,28 +28,31 @@ export function FavList() {
 
   useEffect(()=> {
       try {
-        GnbFavorApi().then((res) => {
+        GnbFavorApi()
+        .then((res) => {
           console.log(res);
           if (Array.isArray(res.data.data)) {
             setFavorList(res.data.data) ;
-          }});
+          }}).catch((err) => {
+            setFavorList([]);
+          });
       } catch (error) {
         setFavorList([]);
       }
   }, [loadFavor]);
 
   const handleFavor = (menuId) => {
-    try {
       GnbFavorDeleteApi(menuId)
       .then(GnbFavorApi()
       .then(res => {
         if (Array.isArray(res.data.data)) {
           setFavorList(res.data.data)  
         }
-      }));
-    } catch (error){
-      console.log('error in handleFavor : ',error);
-    };
+      })).catch(() => {
+        setFavorList([]);
+        // 일시적인 오류 입니다 띄우기
+      });
+
   };
 
   return (
@@ -73,9 +76,9 @@ export function IconList({ gnb }) {
     <>
       {
         gnb.map((a, i) => (
-          <StyledLink>
-          <Link to={a['name']} key={a['name']+i+'icon'}>
-            <img src={a['iconUrl']} alt={a['name']}/> 
+          <StyledLink key={a['name']+i+'icon'}>
+          <Link to={a['name']}>
+            <img src={a['iconUrl']} alt={a['name']} /> 
           </Link>
           </StyledLink>
         ))

@@ -19,14 +19,11 @@ export default function MenuDetail({ pageId, value, detailOff, on, setReRender, 
   }
   const [detail, setDetail] = useState(initValue);  
   const [modalOn, setModalOn] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const updateMenu = async () => {
-    console.log(detail.parId);
-    if (detail.parId === null || detail.parId === "" || detail.parId === "0" || detail.parId === 0 ) {
-      Swal.fire({
-        text: "양식을 지켜주세요",
-        icon: 'cancle'
-      }); 
+    if (detail.parId === null || detail.parId === "" || detail.parId === "0" || detail.parId === 0 || detail.name === "" ) {
+      setErrorMessage("양식을 확인해 주세요");
     } else {
       try {
         const menu = new FormData();
@@ -42,12 +39,13 @@ export default function MenuDetail({ pageId, value, detailOff, on, setReRender, 
             icon: 'success'
           }); 
         });
-
+        setErrorMessage("");
       } catch (error) {
         Swal.fire({
           text: "저장에 실패하였습니다.",
           icon: 'cancle'
         }); 
+        setErrorMessage("메뉴 저장에 실패하였습니다.");
       };
     };
   };
@@ -55,7 +53,6 @@ export default function MenuDetail({ pageId, value, detailOff, on, setReRender, 
     setDetail({ ...detail, enabledYn: e.target.value === "true"});
   };
   const handleParMenu = (value) => {
-    console.log(value);
     setDetail({ ...detail, parId: value['id'], parName: value['name'] });
   };
   const deleteMenu = () => {
@@ -92,6 +89,11 @@ export default function MenuDetail({ pageId, value, detailOff, on, setReRender, 
     <DetailDiv>
       <DetailTitle> 
         <p> • 메뉴 정보</p>
+        {errorMessage && (
+          <Error>
+            {errorMessage}
+          </Error>
+        )} 
         <div>
           <ButtonBlue onClick={updateMenu}>저장</ButtonBlue>
           <ButtonBright onClick={deleteMenu}>삭제</ButtonBright>
@@ -116,6 +118,7 @@ export default function MenuDetail({ pageId, value, detailOff, on, setReRender, 
               name='name' 
               type='text' 
               value={detail.name} 
+              placeholder='메뉴명을 입력해주세요'
               onChange={(e) => {
                 setDetail({ ...detail, name:e.target.value });
               }}/>
@@ -127,7 +130,7 @@ export default function MenuDetail({ pageId, value, detailOff, on, setReRender, 
               <select onChange={(e) => {setDetail({ ...detail, pageId: e.target.value})}}>
                 {
                   page.map((a, i) => (
-                    <option value={a['id']} key={'option'+i}>
+                    <option value={a['id']} key={'option'+i+a['name']}>
                       {a['name']}
                     </option>
                   ))
@@ -184,7 +187,8 @@ min-width: 450px;
 width: calc(100% - 710px);
 height: calc(100% - 151px);
 > table {
-  border-top: 2px solid black;
+  border: 1px solid #1d2437;
+  border-top: 3px solid #1d2437;
   border-collapse: collapse;
   width: 100%;
   height: calc(100% - 35px);
@@ -280,4 +284,7 @@ const Pipe = styled.div`
 width: 2px;
 height: 70%;
 background-color: black;
+`;
+const Error = styled.div`
+color: #e64f25;
 `;

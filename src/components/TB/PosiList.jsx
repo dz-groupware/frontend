@@ -1,9 +1,9 @@
-import { useState } from 'react';
+import { useState } from "react";
 
-import styled from 'styled-components';
+import styled from "styled-components";
 
-import { changeEmpApi } from '../../api/login';
-import { ButtonBright, ButtonDarkBlue } from '../../common/styles/Button';
+import { changeEmpApi } from "../../api/login";
+import { ButtonBright, ButtonDarkBlue } from "../../common/styles/Button";
 export default function PosiList({ empId, modalOff, profile }) {
   const [radioEmpId, setRadioEmpId] = useState(empId);
 
@@ -15,11 +15,12 @@ export default function PosiList({ empId, modalOff, profile }) {
     console.log(empId, radioEmpId);
     try {
       changeEmpApi(radioEmpId).then(() => {
-        localStorage.setItem('empId', radioEmpId);
-        window.location.href = '/';
+        localStorage.setItem("empId", radioEmpId);
+        window.location.href = "/home";
+
       });  
     } catch (error) {
-      console.log('error switch emp');
+      console.log("error switch emp");
     }
   }
 
@@ -27,21 +28,21 @@ export default function PosiList({ empId, modalOff, profile }) {
     <Content>
       <table>
         <tbody>
-        <tr id='tHeader'>
+        <tr id="tHeader">
           <td>회사명</td><td>부서명(관리부서)</td><td>상태</td>
         </tr>
           {
             profile.map((a, i) => (
-              <tr key={a['empId']+"/"+i}>
+              <tr key={a["empId"]+"/"+i}>
                 <td>
-                  <input type='radio' name='a' value={a['empId']} checked={String(radioEmpId) === String(a['empId'])} onChange={handleRadio}/>
-                  &nbsp;{a['compName']}
+                  <input type="radio" name="a" value={a["empId"]} checked={String(radioEmpId) === String(a["empId"])} onChange={handleRadio}/>
+                  &nbsp;{a["compName"]}
                 </td>
                 <td>
-                  &nbsp;&nbsp;{a['deptName']}
+                  &nbsp;&nbsp;{a["deptName"]}
                 </td>
                 <td>
-                  {empId === a['empId'] && <Using />}
+                  {empId === a["empId"] && <Using />}
                 </td>
               </tr>
             ))                   
@@ -49,7 +50,7 @@ export default function PosiList({ empId, modalOff, profile }) {
           {
             profile.length < 3 && 
             new Array(3-profile.length).fill(null).map ((a, i) => (
-              <tr>
+              <tr key={"empty"+i}>
                 <td>&nbsp;</td>
                 <td>&nbsp;</td>
                 <td>&nbsp;</td>
@@ -58,7 +59,7 @@ export default function PosiList({ empId, modalOff, profile }) {
           }
         </tbody>
       </table>
-      <div id='modal_btn'>
+      <div id="modal_btn">
         <ButtonBright onClick={modalOff}>취소</ButtonBright>
         <ButtonDarkBlue onClick={handleAnotherEmp}>확인</ButtonDarkBlue>
       </div>
@@ -68,8 +69,8 @@ export default function PosiList({ empId, modalOff, profile }) {
 
 function Using(){
   return (
-      <div style={{color: 'rgb(40,175,20)', display:'flex', justifyContent:'center'}}>
-          <img src={`${process.env.PUBLIC_URL}/img/use.PNG`} alt='useing' style={{width:'15px', height:'15px', marginTop:'5px'}}/>사용중
+      <div style={{color: "rgb(40,175,20)", display:"flex", justifyContent:"center"}}>
+          <img src={`${process.env.PUBLIC_URL}/img/use.PNG`} alt="useing" style={{width:"15px", height:"15px", marginTop:"5px"}}/>사용중
       </div>
   );
 }

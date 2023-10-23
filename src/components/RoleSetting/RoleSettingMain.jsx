@@ -61,7 +61,7 @@ export default function RoleSettingMain({refresh, activeAuthId, changeRefresh, i
 
 const Container = styled.div`
   display: flex;
-  height: 80%;
+  height: 100%;
   gap: 30px;
 `;
 const StyledAuthGroupContainer = styled.div`
@@ -72,7 +72,7 @@ const StyledMenuTreeContainer = styled.div`
   flex: 1;
   min-width: 400px;
   margin-top: 1.2rem;
-  height: 90%;
+  height: 100%;
   overflow-y: auto;
   visibility: ${props =>   props.$visible ? 'visible' : 'hidden'};
   

@@ -11,6 +11,7 @@ import { MenuList, FavList, IconList } from './GnbList';
 
 export default function GNB({ gnb, favor }){
   const [menuOn, setMenuOn] = useState([false, false]);
+
   
   return (
     <>
@@ -24,14 +25,14 @@ export default function GNB({ gnb, favor }){
           }
         }}/>
         </div>
-        <IconList gnb={gnb}/>
+        <IconList gnb={gnb} />
       </GNBIconArea>
       <GNBMenuArea id='gnbMenu' className={`menu ${menuOn[0]} ? 'true' : 'false'}`}>
         <TopIconArea>
           <AiOutlineMenu onClick={() => {setMenuOn([true, false]);}} />
           <AiOutlineStar onClick={() => {setMenuOn([false, true]);}} />
         </TopIconArea>
-        <MenuList gnb={gnb}/>
+        <MenuList gnb={gnb} />
       </GNBMenuArea>
       <GNBFavArea id='gnbFav' className={`main ${menuOn[1]} ? 'true' : 'false'}`}>
         <TopIconArea>

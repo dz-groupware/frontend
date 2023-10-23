@@ -13,7 +13,6 @@ export default function OrgModal({ setOrgModal, empId }){
 
   const [data, setData] = useState([]);
   const [empList, setEmpList] = useState([]);
-  const [search, setSearch] = useState([]);
 
   const [searchOption, setSearchOption] = useState("all", "");
   const [searchText, setSearchText] = useState("");
@@ -41,76 +40,15 @@ export default function OrgModal({ setOrgModal, empId }){
   };
 
   const searchHandler = () => {
-    setSearch([]);
     setEmpList([]);
-    searchOrg(0, searchOption, searchText).then(res => {
-      if(searchOption === "all"){
-        if (res.data.data.Tree !== 0) {
-          setSearch(res.data.data.Tree)
-        };
-        if (res.data.data.List !== 1) {
-          setEmpList(res.data.data.List)
-        };
-      };
-      if(searchOption === "dept"){
-        setSearch(res.data.data);
-      };
-      if(searchOption === "emp"){
-        setEmpList(res.data.data);
-      };
+    searchOrg(0, searchOption, searchText)
+    .then((res) => {
+      setEmpList(res.data.data);
     });
   };
 
   const modalOff = () => {
     setOrgModal(false);
-  };
-
-  const findItemAndSetSearchResult = async (items, ids, depth) => {
-    // if (items) {
-    //   for (let i = 0; i < items.length; i++) {
-    //     if (items[i].id === ids[depth]) {
-    //       if (depth < ids.length -1) {
-    //         const r = await findItemAndSetSearchResult(items[i].subItem, ids, depth+1);
-    //         items[i].subItem = r;
-    //         return items;
-    //       } else {
-    //         return items;
-    //       }
-    //     }
-    //   }  
-    // } else {  
-    //   orgTreeApi(value["type"], value["id"], "").then(res => {
-    //     if (Array.isArray(res.data.data)) {
-    //       setSubItem(res.data.data);
-    //     }
-    //   });
-    //   const result = await orgTreeApi(value[type],"basic", "","")
-    //   // orgTree에선 depth가 1이면 comp이고 그 이후론 dept일거임.. 아마...
-    //   const result = await getDeptItem(search.option, ids[depth-1], "0");
-    //   items = result.find(item => item.id === ids[depth-1]);
-    //   items.subItem = result.filter(item => item.id !== ids[depth-1]);
-    //   for (let i = 0; i < items.subItem.length; i++) {
-    //     if (items.subItem[i].id === ids[depth]) {
-    //       if (depth < ids.length -1) {
-    //         const r = await findItemAndSetSearchResult(items.subItem[i].subItem, ids, depth+1);
-    //         items[i].subItem = r;
-    //         return items;
-    //       } else {
-    //         return items.subItem;
-    //       }
-    //     }
-    //   }  
-    // }
-  };
-
-  const updateTree = async() => {
-    // let updateResult = data;
-    // for (let i = 0; i < search.length; i++) {
-    //   const numbers = (search[i].idTree).split(">").map(Number);
-    //   updateResult = await findItemAndSetSearchResult(updateResult, numbers, 0);
-    // };
-    // setData(updateResult);
-    
   };
 
   // 부서트리 하위 부서 찾기
@@ -128,7 +66,7 @@ export default function OrgModal({ setOrgModal, empId }){
 
     return false; 
   };
-  // 부서트리 하위 부서 추가
+  // 트리 하위 추가
   const updateSubItem = (itemId, newSubItem) => {
     setData((prevRes) => {
       const updateRes = [...prevRes];
@@ -171,10 +109,6 @@ export default function OrgModal({ setOrgModal, empId }){
     };
     LoadData();
   }, []);  
-
-  useEffect(() => {
-    updateTree();
-  }, [search]);
 
   useEffect(() => {
     loadEmpList(clicked["type"], clicked["compId"], clicked["id"]);

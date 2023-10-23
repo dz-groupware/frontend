@@ -17,4 +17,5 @@ const StyledTd = styled.td`
   border: 1.5px solid #ccc;
   padding: 8px;
   text-align: left;
+  text-align: center;
 `;

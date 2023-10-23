@@ -47,6 +47,7 @@ export default function MenuDetail({ pageId, value, detailOff, on, setReRender, 
         }); 
         setErrorMessage("메뉴 저장에 실패하였습니다.");
       };
+      window.location.href = '/home'; // 현재 페이지로 이동
     };
   };
   const handleRadio = (e) => {

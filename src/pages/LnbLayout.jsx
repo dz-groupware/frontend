@@ -18,7 +18,6 @@ export default function LnbLayout({ routeList }) {
   const [lnbOpen, setLnbOpen] = useState(true);
   const [data, setData] = useState([]);
   const [clicked, setClicked] = useState("");
-  console.log(routeList);
 
   useEffect(() => {
     if ( gnb.id > 0 ) {

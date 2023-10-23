@@ -103,6 +103,7 @@ const StyledInput = styled.input`
   }
 `
 const StyledLabel = styled.label`
+  font-weight: 600;
 `;
 
 

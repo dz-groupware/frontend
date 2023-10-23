@@ -31,15 +31,21 @@ export default function UserListSection({ authId, headers }) {
           </tr>
         </thead>
         <tbody>
-          {data.map((item, index) => (
+        {data.length > 0 ? (
+          data.map((item, index) => (
             <tr key={index}>
               <UserListItem
                 key={item.id}
                 item={item}
               />
             </tr>
-          ))}
-        </tbody>
+          ))
+        ) : (
+          <tr>
+            <StyledTd colSpan="3">현재 권한이 부여된 사원이 없습니다</StyledTd>
+          </tr>
+        )}
+      </tbody>
       </StyledTable>
     </Container>
   )
@@ -65,8 +71,19 @@ const StyledTable = styled.table`
 const StyledTh = styled.th`
   background-color: #f2f2f2;
   color: black;
+  height: 2rem;
+  font-size: 18px; 
+  font-weight: bold;
   border-left: 1.5px solid #ccc;
   border-right: 1.5px solid #ccc;
   padding: 8px;
-  text-align: left;
+  text-align: center;
+`;
+const StyledTd = styled.td`
+  border-top: 1.5px solid #ccc;
+  border-bottom: 1.5px solid #ccc;
+  border-left: 1.5px solid #ccc;
+  border-right: 1.5px solid #ccc;
+  padding: 8px;
+  text-align: center;
 `;

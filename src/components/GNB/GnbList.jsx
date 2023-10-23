@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { useSelector } from 'react-redux';
 
+
 export function MenuList({ gnb }) {
   return (
     <>
@@ -30,7 +31,6 @@ export function FavList() {
       try {
         GnbFavorApi()
         .then((res) => {
-          console.log(res);
           if (Array.isArray(res.data.data)) {
             setFavorList(res.data.data) ;
           }}).catch((err) => {
@@ -76,7 +76,8 @@ export function IconList({ gnb }) {
     <>
       {
         gnb.map((a, i) => (
-          <StyledLink key={a['name']+i+'icon'}>
+          <StyledLink key={a['name']+i+'icon'}
+          >
           <Link to={a['name']}>
             <img src={a['iconUrl']} alt={a['name']} /> 
           </Link>
@@ -99,9 +100,7 @@ height: 60px;
   text-decoration: none;
   color:rgb(181,194,200);
   width: calc(100% - 32px);
-  &:hover {
-    color: #9ec8f7;
-  }
+
 }
 
 `;

@@ -27,7 +27,6 @@ export function FavorApi(pageId, type){
     });
   }
   if (type === true) {
-    console.log('request off')
     return axiosInstance.delete(`/common/favor?menuId`, {
       headers: {
         "Content-Type": "application/json",
@@ -36,7 +35,6 @@ export function FavorApi(pageId, type){
     });
   }
   if (type === false) {
-    console.log('request on')
     return axiosInstance.post(`/common/favor`, null, {
       headers: {
         "Content-Type": "application/json",
@@ -64,7 +62,6 @@ export function searchAPI(pageId, formData) {
 }
 
 export function saveMenuAPI(pageId, menu, type) {
-  console.log('request save');
   return axiosInstance.post(
     `/menu/menu?type=${type}`, menu, {
       headers: {
@@ -75,7 +72,6 @@ export function saveMenuAPI(pageId, menu, type) {
 };
 
 export function deleteMenuApi(pageId, menuId){
-  console.log(pageId, menuId);
   return axiosInstance.delete(
     `/menu/menu`, {
       params: {
@@ -104,7 +100,6 @@ export function deleteMenuLnbApi(pageId, menuId){
 }
 
 export function iconListAPI(pageId){
-  console.log('iconList : ', pageId);
   return axiosInstance.get(`/s3/imgList`, {
     headers: {
       "Content-Type": "application/json",
@@ -123,7 +118,6 @@ export function GnbListApi(pageId){
 }
 
 export function LnbListApi(pageId, menuId){
-  console.log(pageId, menuId);
   return axiosInstance.get(
     `menu/lnb/admin`, {
       params: {

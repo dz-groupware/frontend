@@ -181,11 +181,12 @@ function ItemList({ data, clicked, setClicked }) {
     setClicked(data);
     setOpen(!open);
   };
-
+  console.log('data', data);
+  console.log('clicked', clicked);
   return (
     <Item key={data["name"]+data["id"]}>
       <div 
-        className={`title ${(data["type"]+data["id"] === clicked) ? "true" : "false"}`} 
+        className={`title ${(data["type"]+data["id"] === clicked["type"]+clicked["id"]) ? "true" : "false"}`} 
         onClick={() => {
           handleItem()
         }}>

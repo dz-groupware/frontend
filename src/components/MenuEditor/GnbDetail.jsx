@@ -222,7 +222,7 @@ export default function GnbDetail({ pageId, value, detailOff, on, setReRender })
                 onDragLeave={onDragLeave} 
                 onDragOver={onDragOver} 
                 onDrop={onDrop} 
-                isDragging={isDragging}
+                Dragging={isDragging}
               >
                 <div>
                   <textarea 
@@ -295,8 +295,8 @@ height: calc(100% - 35px);
         vertical-align: middle;
         > svg {
           cursor: pointer;
-          width: 20px;
-          height: 20px;
+          width: 22px;
+          height: 22px;
           margin: 2px;
         }
       }
@@ -316,7 +316,7 @@ height: calc(100% - 35px);
         }   
         > div {
           margin-right: 10px;
-          cursor: pointer;
+
           > input {
             margin-right: 5px;
           }

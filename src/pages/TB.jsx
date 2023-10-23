@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 
 import styled from "styled-components";
-import { AiOutlineDeploymentUnit } from "react-icons/ai";
+import { MdOutlineAccountTree } from "react-icons/md";
 
 import Recent from "../components/TB/Recent";
 import Profile from "../components/TB/Profile";
@@ -37,7 +37,7 @@ export default function TB({ profile, empId, routeList }) {
           {profileModal && <ProfileModal profile={profile} profileModal={profileModal} setProfileModal={setProfileModal}/>}
         </ProfileArea>
         <IconArea>
-          <AiOutlineDeploymentUnit onClick={() => {setOrgModal(true)}}/>
+          <MdOutlineAccountTree onClick={() => {setOrgModal(true)}}/>
         </IconArea>
         {orgModal && <OrgModal empId={empId} setOrgModal={setOrgModal}/>}
       </ModalArea>

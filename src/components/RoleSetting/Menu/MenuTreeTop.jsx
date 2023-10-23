@@ -72,11 +72,6 @@ const HeaderWrapper = styled.div`
   margin-bottom: 0.6rem;
 `;
 
-const SearchWrapper = styled.div`
-  display: flex;
-  border: 1px solid lightgrey;
-`;
-
 const ActionButtonWrapper = styled.div`
   
 `;

@@ -137,7 +137,7 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   flex: 1;
-  height: 78%;
+  height: 70%;
 
   overflow-y: auto; 
   p {

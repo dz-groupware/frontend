@@ -149,11 +149,11 @@ const Table = styled.table`
 
 const Th = styled.th`
   text-align: center;
+  height: 2.5rem;
   padding: 0.5rem;
   background-color: #f2f2f2;
   border-bottom: 2px solid #ddd;
-  &:nth-child(2) {
-    width: 10px;  
-  }
+    font-weight: bold; // 글씨를 진하게
+    font-size: 18px; // 글씨 크기를 18px로
 
 `;

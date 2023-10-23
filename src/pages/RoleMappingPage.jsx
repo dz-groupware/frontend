@@ -111,6 +111,10 @@ export default function RoleMappingPage({ pageId }) {
       alert(updateMasterYnError.data.message);
     }
   },[updateMasterYnError]);
+  
+  useEffect(() => {
+    setActiveAuthId(null);
+  }, [activeEmp]);
   return (
     <Container>
       <RoleTopContainer

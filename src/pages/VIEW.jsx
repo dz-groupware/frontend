@@ -15,7 +15,7 @@ export function EmptyPage(props){
 
 export function UNAUTHORIZED(){
   useEffect(() => {
-    setTimeout(() => window.location.href="/", 3000);
+    setTimeout(() => window.location.href="/home", 3000);
   }, []);
 
   return(

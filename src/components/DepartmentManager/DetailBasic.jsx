@@ -17,7 +17,6 @@ export default function DetailBasic({ data, setData, detail, setDetail, pageId, 
   // 수정
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    // console.log("handleInputChange : ",value);
     setForm({ ...form, [name]:value });
     setIsModified(true);
   }
@@ -77,29 +76,28 @@ export default function DetailBasic({ data, setData, detail, setDetail, pageId, 
       confirmButtonText: '확인',
       cancelButtonText: '취소',
     }).then((result) => {
-      console.log(detail)
       if (result.isConfirmed) {
         if (detail.id === 0 || detail.id === "0") {
-          console.log('추가 분기에 걸림')
           // 저장 : 추가
           setData({ ...form, status: 'add' });    
           setIsModified(false);  
         } else if (detail.id > 0) {
-          // 저장 : 수정
-          if (form.parId === "0" || form.parId === 0){
-            // 만약 수정인데 상위부서를 없음으로 했다면 저장 안되게 
-            setDetail({ ...detail, state: false, isChanging: false });
-            Swal.fire({
-              title: '상위부서 "없음"은 선택할 수 없습니다.',
-              text: '자기 자신을 선택해 주세요',
-              icon: 'warning',
-              confirmButtonColor: '#3085d6',
-              confirmButtonText: '확인'
-            })
-          } else {
+          // setData({ ...form, status: 'modify' });    
+          // // 저장 : 수정
+          // if (form.parId === "0" || form.parId === 0){
+          //   // 만약 수정인데 상위부서를 없음으로 했다면 저장 안되게 
+          //   setDetail({ ...detail, state: false, isChanging: false });
+          //   // Swal.fire({
+          //   //   title: '상위부서 "없음"은 선택할 수 없습니다.',
+          //   //   text: '자기 자신을 선택해 주세요',
+          //   //   icon: 'warning',
+          //   //   confirmButtonColor: '#3085d6',
+          //   //   confirmButtonText: '확인'
+          //   // })
+          // } else {
             setData({ ...form, status: 'modify' });    
             setIsModified(false);    
-          }
+          // }
         } else {
           console.log('저장 요청 실패 : 알수없는 요청(id)');
           setDetail({ ...detail, state: false, isChanging: false });
@@ -107,7 +105,6 @@ export default function DetailBasic({ data, setData, detail, setDetail, pageId, 
   
       }
       if (result.isDismissed) {
-        console.log('취소 클릭');
         setDetail({ ...detail, state: false, isChanging: false });
       }
     });
@@ -304,7 +301,6 @@ function validate(form) {
     abbr : abbrIsValid ? '' : '6자리 이하 :: 영어 대/소문자',
   };
 
-  console.log('in validate : ', validText, isValid);
   return { validText, isValid };
 }
 const Detail = styled.div`

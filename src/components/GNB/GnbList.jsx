@@ -7,16 +7,12 @@ import styled from 'styled-components';
 import { useSelector } from 'react-redux';
 
 
-export function MenuList({ gnb, hoveredIndex, onHover, onLeave }) {
+export function MenuList({ gnb }) {
   return (
     <>
       {
         gnb.map((a, i) => (
-          <StyledLink 
-          className={i === hoveredIndex ? 'hovered' : ''}
-          onMouseEnter={() => onHover(i)}
-          onMouseLeave={onLeave}
-          key={a['id']+i+'gnb'}>
+          <StyledLink key={a['id']+i+'gnb'}>
             <Link to={a['name']}>
               {a["name"]}
             </Link>
@@ -75,16 +71,12 @@ export function FavList() {
   );
 }
 
-export function IconList({ gnb, hoveredIndex, onHover, onLeave }) {
+export function IconList({ gnb }) {
   return (
     <>
       {
         gnb.map((a, i) => (
-          <StyledLink 
-            className={i === hoveredIndex ? 'hovered' : ''}
-            onMouseEnter={() => onHover(i)}
-            onMouseLeave={onLeave}
-            key={a['name']+i+'icon'}
+          <StyledLink key={a['name']+i+'icon'}
           >
           <Link to={a['name']}>
             <img src={a['iconUrl']} alt={a['name']} /> 
@@ -110,7 +102,5 @@ height: 60px;
   width: calc(100% - 32px);
 
 }
-& .hovered {
-  background-color: #02172f;
-}
+
 `;

@@ -64,7 +64,6 @@ function Item({ itemId, data, setModalOn, handleParChange, pageId }) {
     setOpen(!open);
     handleParChange(data['id'], data['name']);
   }
-  console.log("itemId : ", itemId, "data : ", data['id']);
   
   return (
     <Menu>

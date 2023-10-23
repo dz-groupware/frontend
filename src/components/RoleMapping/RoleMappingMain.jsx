@@ -66,7 +66,7 @@
 
   const Container = styled.div`
     display: flex;
-    height: 100%;
+    height: calc(100% - 110px);
     gap: 30px;
   `;
 

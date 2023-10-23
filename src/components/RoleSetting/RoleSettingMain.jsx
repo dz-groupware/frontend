@@ -61,7 +61,7 @@ export default function RoleSettingMain({refresh, activeAuthId, changeRefresh, i
 
 const Container = styled.div`
   display: flex;
-  height: 100%;
+  height: calc(100% - 110px);
   gap: 30px;
 `;
 const StyledAuthGroupContainer = styled.div`

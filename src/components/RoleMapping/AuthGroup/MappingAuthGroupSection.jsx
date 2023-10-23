@@ -120,7 +120,8 @@ const Container = styled.div`
   margin-top: 20px;
   margin-left: 20px;
   width: 350px;
-  height: 97%;
+  min-width: 350px;
+  height: 94%;
   border-top: 2px solid #747474;
   border-left: 1px solid #ccc;
   border-right: 1px solid #ccc;

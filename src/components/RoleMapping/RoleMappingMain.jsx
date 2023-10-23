@@ -34,7 +34,6 @@
           />
         </StyledCompanySection>
         {isSameCompany ?  (<>
-          <StyledAuthGroupContainer>
           <MappingAuthGroupSection
             activeAuthId={activeAuthId}
             handleAuthClick={handleAuthClick}
@@ -45,12 +44,12 @@
             handleCheckboxChange={handleCheckboxChange}
             headers={headers}
           />
-        </StyledAuthGroupContainer>
         {activeAuthId &&
           <StyledMenuContainer>
               {/* && <MappingMenuTreeTop />  */}
               {/*&& <Line color="black"/> */}
             <MappingMenuOfAuth 
+              refresh={refresh}
               authId={activeAuthId}
               headers={headers}
             />
@@ -67,7 +66,7 @@
 
   const Container = styled.div`
     display: flex;
-    height: 75%;
+    height: 100%;
     gap: 30px;
   `;
 
@@ -76,6 +75,7 @@
     margin-left: 1.2rem;
     min-width: 300px;
     width: 350px;
+    height: 94%;
     border-top: 2px solid #747474;
     border-left: 1px solid #ccc;
     border-right: 1px solid #ccc;
@@ -87,12 +87,6 @@
             3px 3px 3px 0px rgba(0,0,0,.1),
             1px 1px 3px 0px rgba(0,0,0,.1);
             outline: none;
-  `;
-
-  const StyledAuthGroupContainer = styled.div`
-    min-width: 400px;
-    
-    
   `;
 
   const StyledMenuContainer = styled.div`

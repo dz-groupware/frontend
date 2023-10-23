@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import { useFetchData } from '../../../hooks/useFetchData';
 import MappingMenuItemView from './MappingMenuItemView';
 
-export default function MappingMenuOfAuth({ authId, headers }) {
+export default function MappingMenuOfAuth({ refresh, authId, headers }) {
   const { data, isLoading, setShouldFetch, error } = useFetchData(getGnbListOfAuthApi,{
     paths: {
       authId,
@@ -34,7 +34,8 @@ export default function MappingMenuOfAuth({ authId, headers }) {
           </tr>
         </thead>
         <tbody>
-          {data.map((item, index) => (
+        {data.length > 0 ? (
+          data.map((item, index) => (
             <MappingMenuItemView
               key={item.menuId} 
               item={item}
@@ -43,7 +44,12 @@ export default function MappingMenuOfAuth({ authId, headers }) {
               paths={{authId, parId: item.menuId }}
               headers={headers}
             />
-          ))}
+            ))
+          ) : (
+            <tr>
+              <StyledTd colSpan="2">현재 매핑된 메뉴가 없습니다</StyledTd>
+            </tr>
+          )}
         </tbody>
       </Table>
     </Container>
@@ -77,10 +83,19 @@ const Table = styled.table`
 `;
 
 const Th = styled.th`
-  text-align: left;
-  padding: 0.5rem;
-  background-color: #f2f2f2;
-  border-top: 2px solid #f2f2f2;
-  border-bottom: 2px solid #f2f2f2;
-  font-weight: 600;
+    text-align: left;
+    height: 2.5rem;
+    padding: 0.5rem;
+    background-color: #f2f2f2;
+    border-bottom: 2px solid #ddd;
+    font-weight: bold; // 글씨를 진하게
+    font-size: 18px; // 글씨 크기를 18px로
+`;
+const StyledTd = styled.td`
+  border-top: 1.5px solid #ccc;
+  border-bottom: 1.5px solid #ccc;
+  border-left: 1.5px solid #ccc;
+  border-right: 1.5px solid #ccc;
+  padding: 8px;
+  text-align: center;
 `;

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { VscChevronDown, VscChevronRight } from "react-icons/vsc";
 import styled from 'styled-components';
 import { useFetchData } from '../../../hooks/useFetchData';
@@ -6,11 +6,17 @@ import { useFetchData } from '../../../hooks/useFetchData';
 export default function MenuItemEditor({ item, depth=1 , fetchApi, paths, checkedItems, setCheckedItems, curChecked, hasMappedChild, headers}) {
   const [expanded, setExpanded] = useState(item.hasMenu);
   const [checked, setChecked] = useState(curChecked);
+  const checkboxRef = useRef(null);
   const { data: subMenuItems, setShouldFetch, isLoading, error } = useFetchData(fetchApi, { 
     paths: { ...paths },
     shouldFetch: false,
     headers
   });
+  const handleIconClick = () => {
+    if (checkboxRef.current) {
+      checkboxRef.current.click();
+    }
+  };
   const handleCheckboxChange = (e) => {
     const isChecked = e.target.checked;
 
@@ -52,7 +58,11 @@ export default function MenuItemEditor({ item, depth=1 , fetchApi, paths, checke
     setExpanded(checked);
     toggleSubMenu();
   }, [checked]);
-  
+  useEffect(() => {
+    if (checkboxRef.current) {
+      checkboxRef.current.checked = checked;
+    }
+  }, [checked]);
   return (
     <>
       <StyledRow as="tr" $depth={depth} $childNodeYn={item.childNodeYn} $hasMenu={item.hasMenu}>
@@ -60,13 +70,14 @@ export default function MenuItemEditor({ item, depth=1 , fetchApi, paths, checke
           {item.childNodeYn ? (
             <div style={{ width: '1em' }}></div>
             ) : (
-            <div style={{ width: '1em' }}>
-              <Icon>
+            <div style={{ width: '1em' }} onClick={handleIconClick}>
+              <Icon >
                 {expanded ? <VscChevronDown /> : <VscChevronRight />}
               </Icon>
             </div>
           )}
           <input 
+            ref={checkboxRef}
             type="checkbox" 
             checked={checked} 
             onChange={(e) => {

@@ -75,6 +75,6 @@ const StlyedTextWrapper= styled.div`
   }
 `;
 const StyledLabel = styled.label`
-  font-weight: 500;
+  font-weight: 600;
   
 `;

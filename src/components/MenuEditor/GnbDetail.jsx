@@ -26,6 +26,7 @@ export default function GnbDetail({ pageId, value, detailOff, on, setReRender })
   const [newIconFile, setNewIconFile] = useState("");
   const [newIconUrl, setNewIconUrl] = useState("");
   const [iconRender, setIconRender] = useState(true);
+  const [uploadImage, setUploadImage] = useState(false);
   const path = "https://dz-test-image.s3.ap-northeast-2.amazonaws.com/";
   const prefix = localStorage.getItem("compId")+"/";
 
@@ -81,34 +82,43 @@ export default function GnbDetail({ pageId, value, detailOff, on, setReRender })
             menu.set(key, detail[key]);
           }
         }
-        await saveMenuAPI(pageId, menu, on);
-        setErrorMessage(null);
-        Swal.fire({
-          text: "저장 되었습니다.",
-          icon: "success",
-        }); 
+        await saveMenuAPI(pageId, menu, on).then((res) => {
+          console.log(res)
+          if (res.data === 10) {
+            Swal.fire({
+              text: "저장 되었습니다.",
+              icon: "success",
+            }); 
+            setErrorMessage(null);
+          } else {
+            setErrorMessage("다시 시도해주세요. (메뉴 수정/저장 실패)");
+          }
+        }).catch((err) => {
+          setErrorMessage("다시 시도해주세요. (메뉴 수정/저장 실패)");
+        });
       } catch (error) {
         setErrorMessage("다시 시도해주세요. (메뉴 수정/저장 실패)");
       };
   
       try{
         if (newIconFile !== "") {
+          setUploadImage(false);
           let formData = new FormData();
           formData.append("images", newIconFile);
           saveIconAPI(pageId, formData)
           .then(() => {
             setNewIconFile("");
             setNewIconUrl("");
+            setErrorMessage(null);
           })
           .catch(() => {
             setErrorMessage("다시 시도해주세요. (이미지 추가 실패)");
           });
         }
-        setErrorMessage(null);
       } catch (error) {
         setErrorMessage("다시 시도해주세요. (이미지 추가 실패)");
       } finally {
-        setReRender(true);
+        setUploadImage(true);
       };
     };
   };
@@ -146,6 +156,13 @@ export default function GnbDetail({ pageId, value, detailOff, on, setReRender })
     });
   }, [value]);
 
+  useEffect (() => {
+    setUploadImage(false); 
+    if(uploadImage) {
+      setTimeout(() => setReRender(true), 1000);
+    }
+  }, [uploadImage]);
+
   return on && (
     <DetailDiv>
       <DetailTitle> 
@@ -171,6 +188,7 @@ export default function GnbDetail({ pageId, value, detailOff, on, setReRender })
                 type="text" 
                 value={detail.name} 
                 placeholder="메뉴명을 입력해주세요"
+                maxLength="15"
                 onChange={(e) => {
                   setDetail({ ...detail, name: e.target.value });
                 }}
@@ -210,6 +228,14 @@ export default function GnbDetail({ pageId, value, detailOff, on, setReRender })
                 type="number" 
                 placeholder="숫자가 작을수록 위에 보입니다" 
                 value={detail.sortOrder}
+                maxLength="5"
+                min="0"
+                step="1"
+                onInput={(e) => {
+                  if (e.target.value.length > 5) {
+                    e.target.value = e.target.value.slice(0, 5);
+                  }
+                }}
                 onChange={(e) => setDetail({ ...detail, sortOrder: e.target.value })}
               />
             </td>

@@ -7,9 +7,8 @@ export default function DeptItem({ dept, setItem, detail, setDetail }){
   const handleDetail = () => {
     if(!open && !dept.subItem) {
       setItem(dept);
-    }
+    };
     setOpen(!open);
-
   };
 
   useEffect(() => {
@@ -51,7 +50,6 @@ export default function DeptItem({ dept, setItem, detail, setDetail }){
       {open && dept.subItem && dept.subItem.length !== 1 &&
         dept.subItem.map((a, i) => {
           if (a["id"] !== a["parId"] && a["id"] !== dept["id"]) {
-            console.log(a['id'], '||', dept['id'], '||', a['name'], '||', dept['name'])
             return (
               <DeptItem 
                 dept={a} 

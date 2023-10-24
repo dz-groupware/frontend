@@ -10,34 +10,53 @@ import { MenuList, FavList, IconList } from './GnbList';
 
 
 export default function GNB({ gnb, favor }){
-  const [menuOn, setMenuOn] = useState([false, false]);
+  const [menuOn, setMenuOn] = useState([false, false, false]);
+  const [idx, setIdx] = useState({ hover: false, click: false});
+  const [icon, setIcon] = useState(false);
+  const handleMouseEnter = () => {
+    if (!menuOn[2]) {
+      setMenuOn([true, false, false]);
+    };
+  };
+  const handleMouseLeave = () => {
+    if (!menuOn[2]) {
+      setMenuOn([false, false, false]);
+    };
+  };
 
-  
   return (
     <>
-      <GNBIconArea id='gnbIcon'>   
+      <GNBIconArea id='gnbIcon'         
+      onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}>   
         <div style={{borderBottom: '1px solid white', width: '50px', height: '50px', marginTop: '10px', paddingTop: '7px'}}>
         <BiSolidGrid size='35px' onClick={() => {
-          if (menuOn[0] || menuOn[1]) {
-            setMenuOn([false, false]);
+          if (!menuOn[2]) {
+            setMenuOn([menuOn[0], menuOn[1], true]);
           } else {
-            setMenuOn([true, false]);
+            setMenuOn([menuOn[0], menuOn[1], false]);
           }
-        }}/>
+        }} className={`${menuOn[2] ? 'true' : 'false'}`}/>
         </div>
-        <IconList gnb={gnb} />
+        <IconList gnb={gnb} idx={idx} setIdx={setIdx} />
       </GNBIconArea>
-      <GNBMenuArea id='gnbMenu' className={`menu ${menuOn[0]} ? 'true' : 'false'}`}>
+      <GNBMenuArea 
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+      id='gnbMenu' className={`menu ${menuOn[0]} ? 'true' : 'false'}`}>
         <TopIconArea>
-          <AiOutlineMenu onClick={() => {setMenuOn([true, false]);}} />
-          <AiOutlineStar onClick={() => {setMenuOn([false, true]);}} />
+          <AiOutlineMenu className={`${menuOn[0] ? 'true' : 'false'}`} onClick={() => {setMenuOn([true, false, true]);}} />
+          <AiOutlineStar className={`${menuOn[1] ? 'true' : 'false'}`} onClick={() => {setMenuOn([false, true, true]);}} />
         </TopIconArea>
-        <MenuList gnb={gnb} />
+        <MenuList gnb={gnb} idx={idx} setIdx={setIdx} />
       </GNBMenuArea>
-      <GNBFavArea id='gnbFav' className={`main ${menuOn[1]} ? 'true' : 'false'}`}>
+      <GNBFavArea 
+                  onMouseEnter={handleMouseEnter}
+                  onMouseLeave={handleMouseLeave}
+      id='gnbFav' className={`main ${menuOn[1]} ? 'true' : 'false'}`}>
         <TopIconArea>
-          <AiOutlineMenu onClick={() => {setMenuOn([true, false]);}} />
-          <AiOutlineStar onClick={() => {setMenuOn([false, true]);}} />
+          <AiOutlineMenu className={`${menuOn[0] ? 'true' : 'false'}`} onClick={() => {setMenuOn([true, false, true]);}} />
+          <AiOutlineStar className={`${menuOn[1] ? 'true' : 'false'}`} onClick={() => {setMenuOn([false, true, true]);}} />
         </TopIconArea>
         <FavList favor={favor} />
       </GNBFavArea>
@@ -64,6 +83,11 @@ z-index: 1;
   margin: 15px 7px 7px 5px;  
   cursor: pointer;
 }
+
+> div > svg.true {
+  color: rgb(252,214,80);
+}
+
 > div {
   display: flex;
   justify-content: center;
@@ -76,6 +100,7 @@ z-index: 1;
     width:30px;
     height:30px;
   }
+
 }
 }
 
@@ -145,4 +170,8 @@ border-bottom: 1px solid white;
   margin-bottom: 10px;
   cursor: pointer;
 } 
+
+> svg.true {
+  color: rgb(252,214,80);
+}
 `;

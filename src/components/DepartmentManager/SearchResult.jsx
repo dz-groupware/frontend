@@ -47,7 +47,7 @@ export default function SearchResult ({ result, setItem, detail, setDetail, filt
       }
     } else {
       setData([]);
-    }
+    };
   }, [filter, result]);
   
   return (

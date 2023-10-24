@@ -221,6 +221,7 @@ export default function MenuEditor({ pageId }){
             pageId={pageId} 
             value={menuDetail} 
             detailOff={detailOff} 
+            gnbList={gnbList}
             on={detail[0]} 
             setReRender={setReRender} 
           />

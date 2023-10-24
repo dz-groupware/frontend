@@ -26,11 +26,11 @@ export default function Recent({ routeList }){
   useEffect(() => {
     const splitURL =  currentURL.split("/");
     const pathName = splitURL[splitURL.length - 1];
-    if(routeLink.includes("/"+currentURL.split("https://dev.amaranth2023.site/")[1])){
-      if (currentURL.split("https://dev.amaranth2023.site/")[1].length !== 0) {
+    if(routeLink.includes("/"+currentURL.split("https://www.amaranth2023.site/")[1])){
+      if (currentURL.split("https://www.amaranth2023.site/")[1].length !== 0) {
         setChipData((chips) => {
           const newChips = chips.filter((chip) => chip.name !== pathName);
-          newChips.unshift({ name: pathName, path: "/"+currentURL.split("https://dev.amaranth2023.site/")[1] })
+          newChips.unshift({ name: pathName, path: "/"+currentURL.split("https://www.amaranth2023.site/")[1] })
           return newChips;
         });  
       }

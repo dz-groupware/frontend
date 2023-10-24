@@ -27,6 +27,58 @@ export default function EmployeeMgmtGroupForm({ pageId }) {
   const [loading, setLoading] = useState(true); // 로딩 상태 추가
 
   const loginCompanyId = useSelector(state => state.employeeMgmt.loginCompanyId);
+  const [isLoaded, setIsLoaded] = useState(false);  // 데이터가 로드되었는지 확인하는 상태
+  
+  // 컴포넌트가 렌더링되면 실행될 함수
+  useEffect(() => {
+    const fetchInitialData = async () => {
+      try {
+        // companyId가 필요할 수 있으므로 이를 얻는 로직을 추가해야 합니다.
+        // 예를 들어, 현재 선택된 회사 또는 사용자의 기본 회사 등
+        const initialCompanyId = loginCompanyId;  // 적절한 ID로 변경해야 합니다.
+        fetchDepartmentsForCompany(initialCompanyId);
+       
+
+        setIsLoaded(true);  // 데이터 로딩이 끝났음을 표시
+      } catch (error) {
+        console.error("An error occurred while fetching the initial data:", error);
+        // 에러 처리 로직 추가
+      }
+    };
+
+    fetchInitialData();  // 초기 데이터 로딩 함수 호출
+  }, []); 
+
+  useEffect(() => {
+    if (Array.isArray(reduxEmployeeGroupInfo)) {
+      setGroupsInfo(reduxEmployeeGroupInfo.map(item => ({ ...item })));
+      for (const item of reduxEmployeeGroupInfo) {
+        if (item.compId) {
+          fetchDepartmentsForCompany(item.compId);
+        } else {
+          fetchDepartmentsForCompany(loginCompanyId);
+        }
+      }
+    } else {
+      setGroupsInfo([reduxEmployeeGroupInfo]);
+      if (reduxEmployeeGroupInfo.compId) {
+        fetchDepartmentsForCompany(reduxEmployeeGroupInfo.compId);
+      } else {
+        fetchDepartmentsForCompany(loginCompanyId);
+      }
+    }
+  }, [reduxEmployeeGroupInfo, isVisible]);
+
+
+  console.log("부서정보 확인 DepartmentOptions", departmentOptions);
+
+  
+  useEffect(() => {
+    if (reduxEmployeeGroupInfo.compId || loginCompanyId) {
+      fetchDepartmentsForCompany(reduxEmployeeGroupInfo.compId || loginCompanyId);
+    }
+  }, [reduxEmployeeGroupInfo, loginCompanyId]); // 의존성 배열에 loginCompanyId 추가
+
 
 
   useEffect(() => {
@@ -45,48 +97,7 @@ export default function EmployeeMgmtGroupForm({ pageId }) {
     fetchCompanies();
   }, [pageId]); // pageId가 변경될 때만 useEffect가 실행되도록 의존성 배열 추가
 
-  // 로딩 중일 때는 로딩 인디케이터 렌더링
 
-  // useEffect(() => {
-  //   const checkIfCompanyHasCEO = async (compId) => {
-  //     console.log("대표변화되니", compId);
-
-  //     try {
-  //       // const response = await axiosInstance.get(`/companies/${compId}/hasCEO`);
-  //       // ... 나머지 로직
-  //     } catch (error) {
-  //       console.error("Error checking if company has CEO:", error);
-  //     }
-  //   };
-
-  //   // groupsInfo 배열을 순회하며 각 compId에 대한 체크를 실행
-  //   for (const group of groupsInfo) {
-  //     if (group.compId) {
-  //       checkIfCompanyHasCEO(group.compId);
-  //     }
-  //   }
-
-  // }, [groupsInfo.map(item => item.compId).join(",")]);
-
-
-
-
-
-  useEffect(() => {
-    if (Array.isArray(reduxEmployeeGroupInfo)) {
-      setGroupsInfo(reduxEmployeeGroupInfo.map(item => ({ ...item })));
-      for (const item of reduxEmployeeGroupInfo) {
-        if (item.compId) {
-          fetchDepartmentsForCompany(item.compId);
-        }
-      }
-    } else {
-      setGroupsInfo([reduxEmployeeGroupInfo]);
-      if (reduxEmployeeGroupInfo.compId) {
-        fetchDepartmentsForCompany(reduxEmployeeGroupInfo.compId);
-      }
-    }
-  }, [reduxEmployeeGroupInfo, isVisible]);
 
 
   useEffect(() => {
@@ -168,23 +179,21 @@ export default function EmployeeMgmtGroupForm({ pageId }) {
   };
 
 
-  const fetchDepartmentsForCompany = async (loginCompanyId) => {
-    console.log("부서체크하니");
-
+  const fetchDepartmentsForCompany = async (companyId) => {
     try {
       axiosInstance.defaults.headers['menuId'] = pageId;
-      const response = await axiosInstance.get(`/employeemgmt/dep/${loginCompanyId}`);
+      const response = await axiosInstance.get(`/employeemgmt/dep/${companyId}`);
 
+      // 서버에서 받은 데이터로 상태를 업데이트합니다.
       setDepartmentOptions(prevOptions => ({
         ...prevOptions,
-        [loginCompanyId]: response.data.data
+        [companyId]: response.data.data
       }));
-
-      console.log("부서값 받아왓니");
     } catch (error) {
       console.error("API Error:", error);
     }
   };
+
 
 
   const checkIfCompanyHasCEO = async (companyId) => {
@@ -225,14 +234,14 @@ export default function EmployeeMgmtGroupForm({ pageId }) {
     // 새 그룹을 추가하기 전에 현재의 groupsInfo 상태를 previousGroupsInfo에 저장합니다.
     // 이렇게 하면 새 그룹이 추가되기 전의 상태를 '스냅샷'으로써 저장하는 것입니다.
     previousGroupsInfo.current = [...groupsInfo];
-  
+
     const newGroup = {
       compId: loginCompanyId,
       deletedYn: false,
       new: true,
       temp: true, // 임시 플래그를 사용하여 새로 추가된 그룹임을 표시합니다.
     };
-  
+
     setGroupsInfo([...groupsInfo, newGroup]);
   };
 
@@ -240,9 +249,9 @@ export default function EmployeeMgmtGroupForm({ pageId }) {
   const removeGroup = (index) => {
     setGroupsInfo((prevGroups) => {
       let updatedGroups = [...prevGroups]; // 현재 그룹 배열을 복사합니다.
-  
+
       const groupToRemove = updatedGroups[index];
-  
+
       if (groupToRemove.departmentId) {
         // departmentId가 있는 경우, deletedYn을 true로 설정합니다.
         updatedGroups[index] = {
@@ -255,14 +264,14 @@ export default function EmployeeMgmtGroupForm({ pageId }) {
         updatedGroups = updatedGroups.filter((_, idx) => idx !== index);
         dispatch(employeeActions.updateGroupInfo(updatedGroups));
       }
-  
+
       return updatedGroups; // 업데이트된 그룹 배열을 반환합니다.
     });
   };
-  
-  
-  
-  
+
+
+
+
 
 
 
@@ -293,7 +302,7 @@ export default function EmployeeMgmtGroupForm({ pageId }) {
               {showDeleteButton && (
                 <CloseButton onClick={() => removeGroup(idx)}>x</CloseButton>
               )}
-              {group.deletedYn  && (
+              {group.deletedYn && (
                 <div style={{ display: 'flex', alignItems: 'center' }}>
                   <span style={{ marginRight: '10px' }}>삭제되었습니다.</span>
                   <CloseButton onClick={() => restoreGroup(idx)}>복구하기</CloseButton>
@@ -311,10 +320,10 @@ export default function EmployeeMgmtGroupForm({ pageId }) {
 
               <Select
                 name="compId"
-                value={group.compId || loginCompanyId}
+                value={group.compId}
                 onChange={(e) => handleChange(e, idx)}
                 onBlur={handleBlur}
-                disabled={isFormDisabled || group.compId || loginCompanyId}
+                disabled={isFormDisabled || group.compId }
               >
                 <option value="direct">선택</option>
                 {companyOptions && companyOptions.map((company, index) => (
@@ -352,8 +361,9 @@ export default function EmployeeMgmtGroupForm({ pageId }) {
                   onBlur={handleBlur}
                   disabled={isFormDisabled || (group.position === "대표")}
                 >
-                  <option value="direct">선택</option>
-                  {departmentOptions[group.compId] && departmentOptions[group.compId].map((department, index) => (
+                  <option value="">선택</option>
+                  {/* 상태를 사용하여 부서 목록을 렌더링합니다. */}
+                  {isLoaded && departmentOptions[group.compId] && departmentOptions[group.compId].map((department, index) => (
                     <option key={index} value={department.id}>{department.name}</option>
                   ))}
                 </Select>
@@ -370,7 +380,7 @@ export default function EmployeeMgmtGroupForm({ pageId }) {
                   checked={group.transferredYn === true}
                   onChange={(e) => handleChange(e, idx)}
                   onBlur={handleBlur}
-                  disabled={isFormDisabled || ( group.position === "대표")}
+                  disabled={isFormDisabled || (group.position === "대표")}
                 />
                 이동
               </label>
@@ -396,7 +406,7 @@ export default function EmployeeMgmtGroupForm({ pageId }) {
                 value={group.edjoinDate || ''}
                 onChange={(e) => handleChange(e, idx)}
                 onBlur={handleBlur}
-                disabled={isFormDisabled || ( group.position === "대표")}
+                disabled={isFormDisabled || (group.position === "대표")}
 
               />
               <FormInput
@@ -407,7 +417,7 @@ export default function EmployeeMgmtGroupForm({ pageId }) {
                 onChange={(e) => handleChange(e, idx)}
                 onBlur={handleBlur}
 
-                disabled={isFormDisabled || ( group.transferredYn !== true)}
+                disabled={isFormDisabled || (group.transferredYn !== true)}
               />
             </HalfInputContainer>
 

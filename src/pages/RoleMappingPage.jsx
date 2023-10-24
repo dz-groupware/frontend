@@ -88,7 +88,7 @@ export default function RoleMappingPage({ pageId }) {
     setSelectedAuthIds(prevSelectedAuthIds => {
       const newState = { ...prevSelectedAuthIds };
       if (newState[authId]) {
-        delete newState[authId];
+        newState[authId] = false;
       } else {
         newState[authId] = true;
       }

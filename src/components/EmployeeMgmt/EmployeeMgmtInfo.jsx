@@ -87,7 +87,7 @@ export default function EmployeeMgmtInfo({ pageId }) {
             if (!isErrorOccurred) {
                 alert("사원 데이터가 수정되었습니다.");
                 dispatch(employeeActions.hideForm());
-                // window.location.reload();
+                window.location.reload();
             }
 
         } else {
@@ -105,7 +105,7 @@ export default function EmployeeMgmtInfo({ pageId }) {
                 alert("사원 데이터가 저장되었습니다.");
                 dispatch(employeeActions.hideForm());
 
-                // window.location.reload();
+                window.location.reload();
             }
         }
     };
@@ -170,8 +170,8 @@ export default function EmployeeMgmtInfo({ pageId }) {
 
 
             if (missingFields.length > 0) {
-                console.log("Missing fields:", missingFields);
-                alert("모든 필수 필드를 채워주세요: " + missingFields.join(", "));
+                console.log("Missing fields:");
+                alert("모든 필수 필드를 채워주세요: ");
                 return;
             }
 

@@ -1,4 +1,6 @@
 import { Suspense, useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
+
 import {  AiOutlineInfoCircle } from "react-icons/ai";
 import {  MdArrowLeft, MdArrowRight } from "react-icons/md";
 import {  IoIosArrowDown } from "react-icons/io";
@@ -7,7 +9,7 @@ import styled from "styled-components";
 import Swal from "sweetalert2";
 
 import { getDepartemnt, getOptionCompList, getBasicDetailById, getEmpListByDeptId, 
-  modifyDepartment, getDepartmentById, deleteDepartment, addDepartment, 
+  getDepartmentById, deleteDepartment, addDepartment, 
   findDeptNameAndCode } from "../api/department";
 import { FavorApi } from "../api/menu";
 import { favor } from "../utils/Slice";
@@ -19,7 +21,7 @@ import SearchForm from "../components/DepartmentManager/SearchForm";
 import SearchResult from "../components/DepartmentManager/SearchResult";
 import DetailTitle from "../components/DepartmentManager/DetailTitle";
 import Loading from "../common/styles/Loading";
-import { useDispatch } from "react-redux";
+
 
 export default function DepartmentManager({ pageId }) {
   // initialState
@@ -78,12 +80,13 @@ export default function DepartmentManager({ pageId }) {
       };
     });
   };
+
   // 상세정보 열람
   const getDeptDetail = () => {
     if(detail.id === 0){
       // 추가 시
       setValue(initValue);
-      setDetail({ ...detail, type: "basic"});
+      setDetail({ ...detail, id: 0, type: "basic"});
     } else if (detail.type === "basic" && detail.id > 0) {
       try {
         getBasicDetailById(detail.id, pageId)
@@ -147,7 +150,6 @@ export default function DepartmentManager({ pageId }) {
             });  
           });
         } catch (error) {
-          console.log("삭제에 실패하였습니다.");
           Swal.fire({
             text: "삭제에 실패하였습니다.",
             icon: "error",
@@ -155,7 +157,7 @@ export default function DepartmentManager({ pageId }) {
         };
       };
     });
-  }
+  };
   // 저장/수정/삭제 시 조직도 트리 리렌더링 
   const renderOrgTree = () => {
     try {
@@ -167,7 +169,6 @@ export default function DepartmentManager({ pageId }) {
       console.log(error);
     }
   };
-
   const handleSearch = (direction) => {
     if (search.idx) {
       if (direction === "left") {
@@ -218,12 +219,10 @@ export default function DepartmentManager({ pageId }) {
       return updateRes;
     });
   };
-
   const getDeptItem = async (compId, deptId, pageId) => {
     const res = await getDepartmentById(compId, deptId, pageId)
     return res.data.data;
   };
-
   const findItemAndSetSearchResult = async (items, ids, depth) => {
     if (items) {
       for (let i = 0; i < items.length; i++) {
@@ -254,7 +253,6 @@ export default function DepartmentManager({ pageId }) {
       }  
     }
   };
-
   const updateTree = async() => {
     let updateResult = result;
     for (let i = 0; i < searchResult.length; i++) {
@@ -304,11 +302,19 @@ export default function DepartmentManager({ pageId }) {
   }, []);
 
   useEffect(() => {
-    dispatch(favor(favorOn));
+    if (favorOn) {
+      dispatch(favor(pageId+"true"));
+    } else {
+      dispatch(favor(pageId+"false"));
+    };
   }, [favorOn]);
 
   useEffect(()=>{ 
-    getDeptDetail();
+    try{
+      getDeptDetail();      
+    } catch (err) {
+      console.log(err);
+    }
   },[detail.id, detail.type]);
 
   useEffect(() => {
@@ -362,11 +368,12 @@ export default function DepartmentManager({ pageId }) {
   }, [value]);
 
   useEffect(() => {
-    if(detail.type === "emp") {
-      setDetail({ ...detail, id: detail.isChanging, isChanging: false });
-    }
     if(detail.isChanging === "delete") {
       deleteAlert();
+    }
+    if(detail.isChanging === "new") {
+      setValue(initValue);
+      setDetail({ ...detail, id: 0, type: "basic", isChanging: false});
     }
   }, [detail.isChanging]);
 
@@ -390,7 +397,7 @@ export default function DepartmentManager({ pageId }) {
       
     }
   }, [search.idx]);
-  
+  console.log(favorOn);
   return(
     <>  
       {pageLoading && 

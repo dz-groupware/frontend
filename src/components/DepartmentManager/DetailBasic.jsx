@@ -1,18 +1,18 @@
-import { useEffect, useState } from 'react';
-import styled from 'styled-components';
+import { useEffect, useState } from "react";
+import styled from "styled-components";
 
-import DeptModal from './DeptModal';
-import Swal from 'sweetalert2';
+import DeptModal from "./DeptModal";
+import Swal from "sweetalert2";
 
-import { checkDeptCode } from '../../api/department';
+import { checkDeptCode } from "../../api/department";
 
 export default function DetailBasic({ data, setData, detail, setDetail, pageId, disabled, setDisabled }){
   const [modalOn, setModalOn] = useState(false);
-  const [form, setForm] = useState('');
+  const [form, setForm] = useState("");
   const [isModified, setIsModified] = useState(false);
   const [useableCode, setUseableCode] = useState(false);
   const [isValid, setIsValid] = useState({code: false, abbr: false, name: false});
-  const [validText, setValidText] = useState({code: '', abbr: '', name: ''});
+  const [validText, setValidText] = useState({code: "", abbr: "", name: ""});
 
   // 수정
   const handleInputChange = (e) => {
@@ -30,16 +30,18 @@ export default function DetailBasic({ data, setData, detail, setDetail, pageId, 
     setValidText(validText);
     setIsValid(isValid);
     if(isValid.code) {
-      console.log('중복검사 : 코드 유효성 충족 : ', isValid.code, form.code);
+      console.log("중복검사 : 코드 유효성 충족 : ", isValid.code, form.code);
       try {
         // api 요청
         checkDeptCode(form.id, form.code, pageId).then(res => {
           if(res.data.data === "true" || res.data.data === true){
             let timerInterval
             Swal.fire({
-              title: '사용 가능한 코드 입니다.',
+              title: "사용 가능한 코드 입니다.",
               timer: 1500,
               timerProgressBar: false,
+              showCancelButton: false,
+              showConfirmButton: false,
               willClose: () => {
                 clearInterval(timerInterval)
               }
@@ -48,9 +50,11 @@ export default function DetailBasic({ data, setData, detail, setDetail, pageId, 
           } else {
             let timerInterval
             Swal.fire({
-              title: '사용할 수 없는 코드 입니다',
+              title: "사용할 수 없는 코드 입니다",
               timer: 1500,
               timerProgressBar: false,
+              showCancelButton: false,
+              showConfirmButton: false,
               willClose: () => {
                 clearInterval(timerInterval)
               }
@@ -58,55 +62,46 @@ export default function DetailBasic({ data, setData, detail, setDetail, pageId, 
           }
         });
       } catch (error) {
-        console.log('중복 검사 요청 에러 : ', error);
+        console.log("중복 검사 요청 에러 : ", error);
       }  
     } else {
-      console.log('중복검사 : 코드 유효성 불충족 : ', isValid.code, form.code);
+      console.log("중복검사 : 코드 유효성 불충족 : ", isValid.code, form.code);
       setDetail({ ...detail, state: false, isChanging: false });
     }
   };
   // 저장 알림
   const saveAlert = () => {
     Swal.fire({
-      title: '저장하시겠습니까?',
-      icon: 'warning',
+      title: "저장하시겠습니까?",
+      icon: "warning",
       showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: '확인',
-      cancelButtonText: '취소',
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "확인",
+      cancelButtonText: "취소",
     }).then((result) => {
       if (result.isConfirmed) {
         if (detail.id === 0 || detail.id === "0") {
           // 저장 : 추가
-          setData({ ...form, status: 'add' });    
+          setData({ ...form, status: "add" });    
           setIsModified(false);  
         } else if (detail.id > 0) {
-          // setData({ ...form, status: 'modify' });    
-          // // 저장 : 수정
-          // if (form.parId === "0" || form.parId === 0){
-          //   // 만약 수정인데 상위부서를 없음으로 했다면 저장 안되게 
-          //   setDetail({ ...detail, state: false, isChanging: false });
-          //   // Swal.fire({
-          //   //   title: '상위부서 "없음"은 선택할 수 없습니다.',
-          //   //   text: '자기 자신을 선택해 주세요',
-          //   //   icon: 'warning',
-          //   //   confirmButtonColor: '#3085d6',
-          //   //   confirmButtonText: '확인'
-          //   // })
-          // } else {
-            setData({ ...form, status: 'modify' });    
-            setIsModified(false);    
-          // }
+          setData({ ...form, status: "modify" });    
+          setIsModified(false);    
         } else {
-          console.log('저장 요청 실패 : 알수없는 요청(id)');
+          Swal.fire({
+            text: "저장에 실패하였습니다.",
+            icon: "error",
+            showCancelButton: false,
+            showConfirmButton: false,
+          });
+          // 저장 이전 상태로 되돌리기
           setDetail({ ...detail, state: false, isChanging: false });
-        }
-  
-      }
+        };
+      };
       if (result.isDismissed) {
         setDetail({ ...detail, state: false, isChanging: false });
-      }
+      };
     });
   }
   // 수정 중 이동 알림
@@ -115,26 +110,28 @@ export default function DetailBasic({ data, setData, detail, setDetail, pageId, 
       title: "페이지 이동",
       text: "수정 중인 내용은 모두 삭제 됩니다.",
       showCancelButton: true,
-      confirmButtonText: '확인',
-      cancelButtonText: '취소',
+      confirmButtonText: "확인",
+      cancelButtonText: "취소",
     }).then((result) => {
       if (result.isConfirmed) {
-        setDetail({ ...detail, id: detail.isChanging, state: false, isChanging: false });
+        setDetail({ ...detail, id: detail.isChanging, state: false, save: false, isChanging: false });
         setIsModified(false);
-        setValidText({code: '', abbr: '', name: ''});
+        setValidText({code: "", abbr: "", name: ""});
       } else if (result.isDismissed) {
         setDetail({ ...detail, isChanging: false });
-      }
+      };
     });
   };
   // 수정 없음
   const noChangesAlert = () => {
     let timerInterval
     Swal.fire({
-      title: '수정 사항이 없습니다',
-      html: '저장되지 않음',
+      title: "수정 사항이 없습니다",
+      html: "저장되지 않음",
       timer: 1500,
       timerProgressBar: false,
+      showCancelButton: false,
+      showConfirmButton: false,
       willClose: () => {
         clearInterval(timerInterval)
       }
@@ -159,17 +156,21 @@ export default function DetailBasic({ data, setData, detail, setDetail, pageId, 
     }
   }, [modalOn]);
 
+  // 페이지 동작 감지
   useEffect(() => {
     // 다른 부서를 눌렀을 때
-    if (typeof detail.isChanging === 'number') {
+    if (typeof detail.isChanging === "number" && detail.type === "emp") {
+      setDetail({ ...detail, id: detail.isChanging, isChanging: false });
+    };
+    if (typeof detail.isChanging === "number" && detail.type === "basic") {
       if(isModified){
         confirmAlert();
       } else {
-        setDetail({ ...detail, id: detail.isChanging, state: false, isChanging: false });
-        setValidText({code: '', abbr: '', name: ''});
-      }
-    }
-    if (detail.isChanging === 'save') {
+        setDetail({ ...detail, id: detail.isChanging, state: false, save: false, isChanging: false });
+        setValidText({code: "", abbr: "", name: ""});
+      };
+    };
+    if (detail.isChanging === "save" && detail.type === "basic") {
       if(isModified){
         const { validText, isValid } = validate(form);
         setValidText(validText);
@@ -177,19 +178,26 @@ export default function DetailBasic({ data, setData, detail, setDetail, pageId, 
         if (isValid.code && isValid.abbr && isValid.name) {
           saveAlert();
         } else {
-          console.log('valid : no');
-        }
+          Swal.fire({
+            title: "입력한 값을 확인해주세요",
+            icon: "warning",
+            showCancelButton: false,
+            showConfirmButton: false
+          });
+          // 저장버튼을 누르기 전의 값으로 바꿈
+          setDetail({ ...detail, state: detail.isChanging, isChanging: false });
+        };
       } else {
         noChangesAlert();
         setDetail({ ...detail, state: detail.isChanging, isChanging: false });
-      }
-    }
+      };
+    };
   }, [detail.isChanging]);
 
   return (
     <Detail>
       <BasicForm>
-        <form id='basic'>
+        <form id="basic">
         <table>
           <tbody>
           <tr>
@@ -201,28 +209,47 @@ export default function DetailBasic({ data, setData, detail, setDetail, pageId, 
           <tr>
             <td>부서코드</td>
             <td colSpan="3">
-              <input name='code' placeholder='부서코드를 입력하세요'
-              value={form.code} onChange={handleInputChange}
-              data-valid={!isValid.code} disabled={useableCode} className={`input ${useableCode}`}/> 
+              <input 
+                name="code" 
+                placeholder="부서코드를 입력하세요"
+                value={form.code} 
+                onChange={handleInputChange}
+                data-valid={!isValid.code} 
+                disabled={useableCode} 
+                className={`input ${useableCode}`}
+                maxLength="15"
+              /> 
               {useableCode ? 
-              <CheckBtn className={`${disabled ? 'disabled' : 'abled'}`} onClick={() => setUseableCode(false)} >다른 부서 코드 사용</CheckBtn> 
-              : <CancelBtn className={`${disabled ? 'disabled' : 'abled'}`} onClick={handleCheckCode}>중복 검사</CancelBtn>}<div>{validText.code}</div>
+              <CheckBtn className={`${disabled ? "disabled" : "abled"}`} onClick={() => setUseableCode(false)} >다른 부서 코드 사용</CheckBtn> 
+              : <CancelBtn className={`${disabled ? "disabled" : "abled"}`} onClick={handleCheckCode}>중복 검사</CancelBtn>}<div>{validText.code}</div>
             </td>
           </tr>
           <tr>
             <td>부서명</td>
             <td colSpan="3">
-              <input className='input' name='name' placeholder='부서명을 입력하세요'
-              value={form.name}  onChange={handleInputChange} 
-              data-valid={!isValid.name}/> <div>{validText.name}</div>
+              <input 
+              className="input" 
+              name="name" 
+              placeholder="부서명을 입력하세요"
+              value={form.name}  
+              onChange={handleInputChange} 
+              maxLength="50"
+              data-valid={!isValid.name}
+              /> <div>{validText.name}</div>
             </td>
           </tr>
           <tr>
             <td>부서약칭</td>
             <td colSpan="3">
-              <input className='input' name='abbr' placeholder='부서약칭을 입력하세요'
-              value={form.abbr}  onChange={handleInputChange}
-              data-valid={!isValid.abbr} /> <div>{validText.abbr}</div>
+              <input 
+              className="input" 
+              name="abbr" 
+              placeholder="부서약칭을 입력하세요"
+              value={form.abbr}  
+              onChange={handleInputChange}
+              maxLength="15"
+              data-valid={!isValid.abbr} 
+              /> <div>{validText.abbr}</div>
             </td>
           </tr>
           <tr>
@@ -230,10 +257,10 @@ export default function DetailBasic({ data, setData, detail, setDetail, pageId, 
               사용여부
             </td>
             <td className="data">
-              <input name='enabledYn' value="true" type='radio' 
+              <input name="enabledYn" value="true" type="radio" 
               checked={form.enabledYn === true } 
               onChange={e => setForm({...form, enabledYn: true})}/><p>사용</p>
-              <input name='enabledYn' value="false" type='radio' 
+              <input name="enabledYn" value="false" type="radio" 
               checked={form.enabledYn === false} 
               onChange={e => setForm({...form, enabledYn: false})}/><p>미사용</p>
             </td>
@@ -241,10 +268,10 @@ export default function DetailBasic({ data, setData, detail, setDetail, pageId, 
               관리부서
             </td>
             <td className="data">
-              <input name='managementYn' value="true" type='radio' 
+              <input name="managementYn" value="true" type="radio" 
               checked={form.managementYn === true} 
               onChange={e => setForm({...form, managementYn: true})}/><p>설정</p>
-              <input name='managementYn' value="false" type='radio' 
+              <input name="managementYn" value="false" type="radio" 
               checked={form.managementYn === false} 
               onChange={e => setForm({...form, managementYn: false})}/><p>미설정</p>
             </td>
@@ -254,10 +281,10 @@ export default function DetailBasic({ data, setData, detail, setDetail, pageId, 
               조직도 표시
             </td>
             <td className="data">
-              <input name='includedYn' value="true" type='radio' 
+              <input name="includedYn" value="true" type="radio" 
               checked={form.includedYn === true} 
               onChange={e => setForm({...form, includedYn: true})}/><p>표시</p>
-              <input name='includedYn' value="false" type='radio' 
+              <input name="includedYn" value="false" type="radio" 
               checked={form.includedYn === false} 
               onChange={e => setForm({...form, includedYn: false})}/><p>미표시</p>
             </td>
@@ -265,8 +292,21 @@ export default function DetailBasic({ data, setData, detail, setDetail, pageId, 
               정렬
             </td>
             <td className="data">
-              <input name='sortOrder' type="number" value={form.sortOrder} className='input'
-              onChange={e => setForm({...form, sortOrder: parseInt(e.target.value, 10)})}  />
+              <input 
+              name="sortOrder" 
+              type="number" 
+              value={form.sortOrder} 
+              className="input"
+              maxLength="5"
+              min="0"
+              step="1"
+              onInput={(e) => {
+                if (e.target.value.length > 5) {
+                  e.target.value = e.target.value.slice(0, 5);
+                }
+              }}
+              onChange={e => setForm({...form, sortOrder: parseInt(e.target.value, 10)})}  
+              />
             </td>
           </tr>
           </tbody>
@@ -296,13 +336,14 @@ function validate(form) {
   }
 
   const validText = {
-    code : codeIsValid ? '' : '8자리 이하 :: 영어 대/소문자',
-    name : nameIsValid ? '' : '10잘자리 이하 :: / 제외 특수문자 불가',
-    abbr : abbrIsValid ? '' : '6자리 이하 :: 영어 대/소문자',
+    code : codeIsValid ? "" : "8자리 이하 :: 영어 대/소문자",
+    name : nameIsValid ? "" : "10잘자리 이하 :: / 제외 특수문자 불가",
+    abbr : abbrIsValid ? "" : "6자리 이하 :: 영어 대/소문자",
   };
 
   return { validText, isValid };
-}
+};
+
 const Detail = styled.div`
 display: block;
 width: 100%;

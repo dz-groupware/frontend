@@ -1,18 +1,18 @@
-import { useEffect, useState } from 'react';
-import styled from 'styled-components';
-import Swal from 'sweetalert2';
+import { useEffect, useState } from "react";
+import styled from "styled-components";
+import Swal from "sweetalert2";
 
-import { saveMenuAPI, deleteMenuLnbApi } from '../../api/menu';
-import MenuTree from './MenuTree';
-import { ButtonBright, ButtonBlue } from '../../common/styles/Button';
+import { saveMenuAPI, deleteMenuLnbApi } from "../../api/menu";
+import MenuTree from "./MenuTree";
+import { ButtonBright, ButtonBlue } from "../../common/styles/Button";
 
 
 export default function MenuDetail({ pageId, value, detailOff, on, setReRender, page }) {
   const initValue = {
     id: 0,
     parId: 0,
-    name: '',
-    parName: '상위메뉴 선택 필수', 
+    name: "",
+    parName: "상위메뉴 선택 필수", 
     enabledYn: true,
     sortOrder: 0,
     pageId: 0,
@@ -27,34 +27,34 @@ export default function MenuDetail({ pageId, value, detailOff, on, setReRender, 
     } else {
       try {
         const menu = new FormData();
-        menu.set('id', detail.id);
-        menu.set('parId', detail.parId);
-        menu.set('name', detail.name);
-        menu.set('enabledYn', detail.enabledYn);
-        menu.set('sortOrder', detail.sortOrder);
-        menu.set('pageId', detail.pageId);
+        menu.set("id", detail.id);
+        menu.set("parId", detail.parId);
+        menu.set("name", detail.name);
+        menu.set("enabledYn", detail.enabledYn);
+        menu.set("sortOrder", detail.sortOrder);
+        menu.set("pageId", detail.pageId);
         await saveMenuAPI(pageId, menu, ((on)+2)).then(() => {
           Swal.fire({
             text: "저장되었습니다.",
-            icon: 'success'
+            icon: "success"
           }); 
         });
         setErrorMessage("");
       } catch (error) {
         Swal.fire({
           text: "저장에 실패하였습니다.",
-          icon: 'cancle'
+          icon: "cancle"
         }); 
         setErrorMessage("메뉴 저장에 실패하였습니다.");
       };
-      window.location.href = '/home'; // 현재 페이지로 이동
+      window.location.href = "/home"; // 현재 페이지로 이동
     };
   };
   const handleRadio = (e) => {
     setDetail({ ...detail, enabledYn: e.target.value === "true"});
   };
   const handleParMenu = (value) => {
-    setDetail({ ...detail, parId: value['id'], parName: value['name'] });
+    setDetail({ ...detail, parId: value["id"], parName: value["name"] });
   };
   const deleteMenu = () => {
     try{
@@ -63,12 +63,12 @@ export default function MenuDetail({ pageId, value, detailOff, on, setReRender, 
       detailOff();  
       Swal.fire({
         text: "완료되었습니다.",
-        icon: 'success'
+        icon: "success"
       });  
     } catch (error) {
       Swal.fire({
         text: "저장에 실패하였습니다.",
-        icon: 'cancle',
+        icon: "cancle",
       }); 
     }
   };
@@ -77,8 +77,8 @@ export default function MenuDetail({ pageId, value, detailOff, on, setReRender, 
     setDetail({ 
       id: value.id || 0,
       parId: value.parId || 0,
-      name: value.name || '',
-      parName: value.parName || '',
+      name: value.name || "",
+      parName: value.parName || "",
       enabledYn: value.enabledYn || true,
       sortOrder: value.sortOrder || 0,
       pageId: value.pageId || 1,
@@ -108,18 +108,19 @@ export default function MenuDetail({ pageId, value, detailOff, on, setReRender, 
             <td>상위메뉴</td>
             <td>
               <textarea value={detail.parName === undefined || detail.parName === "" ? "상위메뉴 선택 필수" : detail.parName} onClick={() => {setModalOn(true)}} readOnly></textarea>
-              <textarea className='readOnly' value={detail.parId === undefined ? "" : detail.parId} readOnly></textarea>
-              <textarea className='readOnly' value={detail.id === undefined ? "" : detail.id} readOnly></textarea>
+              <textarea className="readOnly" value={detail.parId === undefined ? "" : detail.parId} readOnly></textarea>
+              <textarea className="readOnly" value={detail.id === undefined ? "" : detail.id} readOnly></textarea>
             </td>
           </tr>
           <tr>
             <td>메뉴명</td>
             <td>
               <input 
-              name='name' 
-              type='text' 
+              name="name" 
+              type="text" 
               value={detail.name} 
-              placeholder='메뉴명을 입력해주세요'
+              placeholder="메뉴명을 입력해주세요"
+              maxLength="15"
               onChange={(e) => {
                 setDetail({ ...detail, name:e.target.value });
               }}/>
@@ -131,8 +132,8 @@ export default function MenuDetail({ pageId, value, detailOff, on, setReRender, 
               <select onChange={(e) => {setDetail({ ...detail, pageId: e.target.value})}}>
                 {
                   page.map((a, i) => (
-                    <option value={a['id']} key={'option'+i+a['name']}>
-                      {a['name']}
+                    <option value={a["id"]} key={"option"+i+a["name"]}>
+                      {a["name"]}
                     </option>
                   ))
                 }
@@ -144,29 +145,37 @@ export default function MenuDetail({ pageId, value, detailOff, on, setReRender, 
             <td>
               <div>
                 <input 
-                  className='radio' 
-                  type='radio' 
-                  value='true'
+                  className="radio" 
+                  type="radio" 
+                  value="true"
                   checked={detail.enabledYn === true}
                   onChange={handleRadio}
                 />사용
                 <input 
-                  className='radio' 
-                  type='radio' 
-                  value='false'
+                  className="radio" 
+                  type="radio" 
+                  value="false"
                   checked={detail.enabledYn === false}
                   onChange={handleRadio}
                 />미사용
               </div>
             </td>
           </tr>
-          <tr className='iconList'>
+          <tr className="iconList">
             <td>정렬</td>
             <td>
               <input 
-              type='number' 
-              placeholder='숫자가 작을수록 위에 보입니다' 
+              type="number" 
+              placeholder="숫자가 작을수록 위에 보입니다" 
               value={detail.sortOrder}
+              maxLength="5"
+                min="0"
+                step="1"
+                onInput={(e) => {
+                  if (e.target.value.length > 5) {
+                    e.target.value = e.target.value.slice(0, 5);
+                  }
+                }}
               onChange={(e) => setDetail({ ...detail, sortOrder: e.target.value })}
               />
             </td>             

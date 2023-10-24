@@ -33,7 +33,7 @@ body {
       background: #F2F2F2;  /*스크롤바 뒷 배경 색상*/
   }
 
-  & div.swal2-icon.swal2-success.swal2-icon-show {
+  /* & div.swal2-icon.swal2-success.swal2-icon-show {
     margin: 20px 0 0 220px;
   }
   & div.swal2-icon.swal2-warning.swal2-icon-show {
@@ -41,7 +41,7 @@ body {
     height: 100px;
     padding: 0 50% 0 50%;
     font-size: 50px;
-  }
+  } */
 }
 
 `;

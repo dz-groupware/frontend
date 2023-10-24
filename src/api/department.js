@@ -30,7 +30,6 @@ export function getBasicDetailById(id, pageId){
 }
 
 export function getEmpListByDeptId(id, pageId){   
-  console.log('reqeust emp list : ', id); 
   return axiosInstance.get(
     `/department/detail-emp?id=${id}`, {
   headers: {
@@ -79,7 +78,6 @@ export function deleteDepartment(id, pageId){
 }
 
 export function saveAll(dept, pageId){    
-  console.log(dept, typeof(dept));
   return axiosInstance.post(
     `/department/dept-all`, dept, {
   headers: {

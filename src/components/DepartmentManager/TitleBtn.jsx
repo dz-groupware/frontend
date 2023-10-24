@@ -1,19 +1,44 @@
 import styled from 'styled-components';
 import { AiFillStar, AiOutlineStar } from 'react-icons/ai';
 import { ButtonTitle } from '../../common/styles/Button';
+import Swal from "sweetalert2";
 
-export default function TitleBtn({ favor, handleFavor, detail, setDetail, disabled }){
+export default function TitleBtn({ favorOn, handleFavor, detail, setDetail, disabled }){
   return(
     <BtnContent>
       <ButtonTitle 
         className={`${disabled ? 'disabled' : 'able'}`} 
-        onClick={() => {setDetail({...detail, id: 0})}}
+        onClick={() => {
+          if (detail.id === 0) {
+            Swal.fire({
+              title: "이미 새로운 부서를 추가중입니다.",
+              text: "새로 작성하시겠습니까? 작성중인 내용은 삭제됩니다.",
+              icon: "warning",
+              showCancelButton: true,
+              confirmButtonColor: "#3085d6",
+              cancelButtonColor: "#d33",
+              confirmButtonText: "확인",
+              cancelButtonText: "취소",
+            }).then((result) => {
+              console.log(result);
+              if (result.isConfirmed) {
+                setDetail({...detail, id: 0});
+              };
+              if (result.isDismissed) {
+                Swal.fire({
+                  title: "취소되었습니다",
+                });
+              };
+            });
+          }
+          setDetail({...detail, id: 0})
+        }}
       >
         추가
       </ButtonTitle>
       <div><Pipe /></div>
       <div onClick={handleFavor}>
-        {favor === true ? 
+        {favorOn === true ? 
           <AiFillStar />
           : <AiOutlineStar/>
         }

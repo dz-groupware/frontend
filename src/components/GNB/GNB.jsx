@@ -12,7 +12,7 @@ import { MenuList, FavList, IconList } from './GnbList';
 export default function GNB({ gnb, favor }){
   const [menuOn, setMenuOn] = useState([false, false, false]);
   const [idx, setIdx] = useState({ hover: false, click: false});
-  const [icon, setIcon] = useState(false);
+
   const handleMouseEnter = () => {
     if (!menuOn[2]) {
       setMenuOn([true, false, false]);
@@ -114,7 +114,10 @@ height: 100%;
 background-color: #1d2437;
 color:rgb(181,194,200);
 cursor: pointer;
-overflow: hidden;
+overflow : scroll;
+&::-webkit-scrollbar{
+  display: none;
+}
 box-shadow: inset 1px 1px 1px 0px rgba(255,255,255,.3),
             3px 3px 3px 0px rgba(0,0,0,.7),
             1px 1px 3px 0px rgba(0,0,0,.7);

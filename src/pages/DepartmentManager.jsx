@@ -147,6 +147,8 @@ export default function DepartmentManager({ pageId }) {
             Swal.fire({
               text: "완료되었습니다.",
               icon: "success",
+              showCancelButton: false,
+              showConfirmButton: false,
             });  
           });
         } catch (error) {
@@ -354,6 +356,8 @@ export default function DepartmentManager({ pageId }) {
           Swal.fire({
             text: "완료되었습니다.",
             icon: "success",
+            showCancelButton: false,
+            showConfirmButton: false,
           });  
         });
         setDetail({ ...initDetail});
@@ -361,6 +365,8 @@ export default function DepartmentManager({ pageId }) {
         Swal.fire({
           text: "저장에 실패하였습니다.",
           icon: "cancle",
+          showCancelButton: false,
+          showConfirmButton: false,
         });  
         setDetail({ ...detail, state: false, isChanging: false });
       }

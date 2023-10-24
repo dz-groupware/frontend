@@ -34,19 +34,18 @@ export function FavList() {
   const dispatch = useDispatch();
 
   useEffect(()=> {
-
-      try {
-        GnbFavorApi()
-        .then((res) => {
-          if (Array.isArray(res.data.data)) {
-            console.log(res.data);
-            setFavorList(res.data.data) ;
-          }}).catch((err) => {
-            setFavorList([]);
-          });
-      } catch (error) {
-        setFavorList([]);
-      };
+    try {
+      GnbFavorApi()
+      .then((res) => {
+        if (Array.isArray(res.data.data)) {
+          console.log(res.data);
+          setFavorList(res.data.data) ;
+        }}).catch(() => {
+          setFavorList([]);
+        });
+    } catch (error) {
+      setFavorList([]);
+    };
   }, [loadFavor]);
 
   const handleFavor = (menuId) => {

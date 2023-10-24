@@ -11,7 +11,7 @@ import IconImageList from "./IconImageList";
 
 import { ButtonBright, ButtonBlue } from "../../common/styles/Button";
 
-export default function GnbDetail({ pageId, value, detailOff, on, setReRender }) {
+export default function GnbDetail({ pageId, value, detailOff, on, setReRender, gnbList }) {
   const initValue = {
     id: "",
     parId: "",
@@ -20,15 +20,16 @@ export default function GnbDetail({ pageId, value, detailOff, on, setReRender })
     sortOrder: "",
     iconUrl: "",
   };
+  const path = "https://dz-test-image.s3.ap-northeast-2.amazonaws.com/";
+  const prefix = localStorage.getItem("compId")+"/";
+
   const [detail, setDetail] = useState(initValue);
   const [isDragging, setIsDragging] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [newIconFile, setNewIconFile] = useState("");
-  const [newIconUrl, setNewIconUrl] = useState("");
+  const [newIconUrl, setNewIconUrl] = useState(path+prefix+"default.png");
   const [iconRender, setIconRender] = useState(true);
   const [uploadImage, setUploadImage] = useState(false);
-  const path = "https://dz-test-image.s3.ap-northeast-2.amazonaws.com/";
-  const prefix = localStorage.getItem("compId")+"/";
 
   const onDragEnter = (e) => {
     e.preventDefault();
@@ -70,57 +71,75 @@ export default function GnbDetail({ pageId, value, detailOff, on, setReRender })
       setDetail({ ...detail, iconUrl: path+prefix+e.dataTransfer.files[0]["name"]});
     };
   };
-
+console.log(gnbList);
   const updateMenu = async () => {
-    if (detail.name === "") {
-      setErrorMessage("대메뉴 이름을 확인해 주세요");
-    } else {
-      const menu = new FormData();
-      try {
-        for (const key in detail) {
-          if (detail.hasOwnProperty(key)) {
-            menu.set(key, detail[key]);
+    const usedName = gnbList.filter(gnb => gnb.name === detail.name);
+    if (usedName.length === 0) {
+      if (detail.name === "") {
+        setErrorMessage("대메뉴 이름을 확인해 주세요");
+      } else {
+        
+        const menu = new FormData();
+        try {
+          for (const key in detail) {
+            if (detail.hasOwnProperty(key)) {
+              if (key === "iconUrl" && detail["iconUrl"] === "default.png") {
+                menu.set(key, path+prefix+"default.png");
+              } else {
+                menu.set(key, detail[key]);
+              }
+            }
           }
-        }
-        await saveMenuAPI(pageId, menu, on).then((res) => {
-          console.log(res)
-          if (res.data === 10) {
-            Swal.fire({
-              text: "저장 되었습니다.",
-              icon: "success",
-            }); 
-            setErrorMessage(null);
-          } else {
+          await saveMenuAPI(pageId, menu, on).then((res) => {
+            console.log(res)
+            if (res.data === 1 || res.data === 10) {
+              Swal.fire({
+                text: "저장 되었습니다.",
+                icon: "success",
+                showCancelButton: false,
+                showConfirmButton: false,
+              }); 
+              setErrorMessage(null);
+            } else {
+              setErrorMessage("다시 시도해주세요. (메뉴 수정/저장 실패)");
+            }
+          }).catch((err) => {
             setErrorMessage("다시 시도해주세요. (메뉴 수정/저장 실패)");
-          }
-        }).catch((err) => {
-          setErrorMessage("다시 시도해주세요. (메뉴 수정/저장 실패)");
-        });
-      } catch (error) {
-        setErrorMessage("다시 시도해주세요. (메뉴 수정/저장 실패)");
-      };
-  
-      try{
-        if (newIconFile !== "") {
-          setUploadImage(false);
-          let formData = new FormData();
-          formData.append("images", newIconFile);
-          saveIconAPI(pageId, formData)
-          .then(() => {
-            setNewIconFile("");
-            setNewIconUrl("");
-            setErrorMessage(null);
-          })
-          .catch(() => {
-            setErrorMessage("다시 시도해주세요. (이미지 추가 실패)");
           });
-        }
-      } catch (error) {
-        setErrorMessage("다시 시도해주세요. (이미지 추가 실패)");
-      } finally {
-        setUploadImage(true);
+        } catch (error) {
+          setErrorMessage("다시 시도해주세요. (메뉴 수정/저장 실패)");
+        };
+    
+        try{
+          if (newIconFile !== "") {
+            setUploadImage(false);
+            let formData = new FormData();
+            formData.append("images", newIconFile);
+            saveIconAPI(pageId, formData)
+            .then(() => {
+              setNewIconFile("");
+              setNewIconUrl(path+prefix+"default.png");
+              setErrorMessage(null);
+            })
+            .catch(() => {
+              setErrorMessage("다시 시도해주세요. (이미지 추가 실패)");
+            });
+          }
+        } catch (error) {
+          setErrorMessage("다시 시도해주세요. (이미지 추가 실패)");
+        } finally {
+          setUploadImage(true);
+        };
       };
-    };
+    } else {
+      Swal.fire({
+        text: "이미 사용중인 대메뉴명입니다. ",
+        icon: "cancle",
+        showCancelButton: false,
+        showConfirmButton: false,
+      }); 
+    }
+
   };
 
   const deleteMenu = () => {
@@ -132,11 +151,15 @@ export default function GnbDetail({ pageId, value, detailOff, on, setReRender })
       Swal.fire({
         text: "완료되었습니다.",
         icon: "success",
+        showCancelButton: false,
+        showConfirmButton: false,
       });        
     } catch (error) {
       Swal.fire({
         text: "삭제에 실패하였습니다.",
         icon: "cancle",
+        showCancelButton: false,
+        showConfirmButton: false,
       }); 
     };
   };
@@ -254,7 +277,7 @@ export default function GnbDetail({ pageId, value, detailOff, on, setReRender })
                   <textarea 
                     name="iconUrl" 
                     value={detail.iconUrl && (
-                      detail.iconUrl.length < path.length ? "not found" : detail.iconUrl.replace(path, "").replace(prefix, ""))} 
+                      detail.iconUrl.length < path.length ? "default.png" : detail.iconUrl.replace(path, "").replace(prefix, ""))} 
                     onChange={() => {}} 
                     readOnly
                   ></textarea>

@@ -168,16 +168,16 @@ export default function EmployeeMgmtGroupForm({ pageId }) {
   };
 
 
-  const fetchDepartmentsForCompany = async (companyId) => {
+  const fetchDepartmentsForCompany = async (loginCompanyId) => {
     console.log("부서체크하니");
 
     try {
       axiosInstance.defaults.headers['menuId'] = pageId;
-      const response = await axiosInstance.get(`/employeemgmt/dep/${companyId}`);
+      const response = await axiosInstance.get(`/employeemgmt/dep/${loginCompanyId}`);
 
       setDepartmentOptions(prevOptions => ({
         ...prevOptions,
-        [companyId]: response.data.data
+        [loginCompanyId]: response.data.data
       }));
 
       console.log("부서값 받아왓니");

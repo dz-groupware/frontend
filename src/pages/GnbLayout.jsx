@@ -33,7 +33,7 @@ export default function GnbLayout() {
         menuList.set(`/${nameTree}`, { menuId, gnbId, gnbName, page });
       });
       menuList.set(`/home`, { menuId: 0, gnbId: 0, gnbName: "main", page: "Main" });
-      menuList.set(`/test`, { menuId: 0, gnbId: 0, gnbName: "test", page: "Test" });
+      menuList.set(`/ThankYou`, { menuId: 0, gnbId: 0, gnbName: "ThankYou", page: "ThankYou" });
       menuList.set(`/FORBIDDEN`, { menuId: 0, gnbId: 0, gnbName: "FORBIDDEN", page: "Error/Fobidden" });
       menuList.set(`/SERVICE_UNAVAILABLE`, { menuId: 0, gnbId: 0, gnbName: "SERVICE_UNAVAILABLE", page: "Error/ServiceUnavailable" });
       setRouteList(menuList);  

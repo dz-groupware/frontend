@@ -36,18 +36,21 @@ export default function MenuDetail({ pageId, value, detailOff, on, setReRender, 
         await saveMenuAPI(pageId, menu, ((on)+2)).then(() => {
           Swal.fire({
             text: "저장되었습니다.",
-            icon: "success"
+            icon: "success",
+            showCancelButton: false,
+            showConfirmButton: false,
           }); 
         });
         setErrorMessage("");
       } catch (error) {
         Swal.fire({
           text: "저장에 실패하였습니다.",
-          icon: "cancle"
+          icon: "cancle",
+          showCancelButton: false,
+          showConfirmButton: false,
         }); 
         setErrorMessage("메뉴 저장에 실패하였습니다.");
       };
-      window.location.href = "/home"; // 현재 페이지로 이동
     };
   };
   const handleRadio = (e) => {
@@ -63,12 +66,16 @@ export default function MenuDetail({ pageId, value, detailOff, on, setReRender, 
       detailOff();  
       Swal.fire({
         text: "완료되었습니다.",
-        icon: "success"
+        icon: "success",
+        showCancelButton: false,
+        showConfirmButton: false,
       });  
     } catch (error) {
       Swal.fire({
         text: "저장에 실패하였습니다.",
         icon: "cancle",
+        showCancelButton: false,
+        showConfirmButton: false,
       }); 
     }
   };

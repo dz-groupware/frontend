@@ -17,6 +17,7 @@ export default function EmployeeMgmtInfo({ pageId }) {
     const isDuplicated = useSelector(state => state.employeeMgmt.isDuplicated);
     const isSignUpChecked = useSelector(state => state.employeeMgmt.isSignUpChecked);
     const isDataFetched = useSelector(state => state.employeeMgmt.idForForm);
+    const loginCompanyId = useSelector(state=> state.employeeMgmt.loginCompanyId);
 
 
 
@@ -86,7 +87,7 @@ export default function EmployeeMgmtInfo({ pageId }) {
             if (!isErrorOccurred) {
                 alert("사원 데이터가 수정되었습니다.");
                 dispatch(employeeActions.hideForm());
-                window.location.reload();
+                // window.location.reload();
             }
 
         } else {
@@ -104,7 +105,7 @@ export default function EmployeeMgmtInfo({ pageId }) {
                 alert("사원 데이터가 저장되었습니다.");
                 dispatch(employeeActions.hideForm());
 
-                window.location.reload();
+                // window.location.reload();
             }
         }
     };
@@ -144,6 +145,7 @@ export default function EmployeeMgmtInfo({ pageId }) {
         const missingFields = [];
 
         for (const employeeInfo of combinedEmployeeInfo) {
+            const isDifferentCompany = employeeInfo.compId !== loginCompanyId;
             console.log("departmentId", employeeInfo);
             const currentRequiredFields = [...requiredFields]; // 필수 입력 필드 목록을 복사하여 초기화
 
@@ -185,32 +187,28 @@ export default function EmployeeMgmtInfo({ pageId }) {
             }
 
             const joinDate = new Date(employeeInfo.joinDate);
-            const resignationDate = employeeInfo.resignationDate ? new Date(employeeInfo.resignationDate) : null;
-            if (resignationDate && joinDate > resignationDate) {
-                alert("퇴사일은 입사일 이후의 날짜여야 합니다.");
-                return;
-            }
+    const resignationDate = employeeInfo.resignationDate ? new Date(employeeInfo.resignationDate) : null;
 
-            
-            console.log('ecjoinDate value:', employeeInfo.edjoinDate);
-            console.log('leftDate value:', employeeInfo.leftDate);
+    if (resignationDate && joinDate > resignationDate) {
+        alert("퇴사일은 입사일 이후의 날짜여야 합니다.");
+        return;
+    }
 
-            const edjoinDate = new Date(employeeInfo.edjoinDate);
-            const leftDate = employeeInfo.leftDate ? new Date(employeeInfo.leftDate) : null;
+    // 부서배정일과 입사일 비교는 동일 회사 내의 직원에 대해서만 수행합니다.
+    if (!isDifferentCompany) {
+        const edjoinDate = new Date(employeeInfo.edjoinDate);
+        const leftDate = employeeInfo.leftDate ? new Date(employeeInfo.leftDate) : null;
 
-            if (edjoinDate && joinDate > edjoinDate) {
-                alert("부서배정일은 입사일 이후의 날짜여야 합니다.");
-                return;
-            }
+        if (edjoinDate && joinDate > edjoinDate) {
+            alert("부서배정일은 입사일 이후의 날짜여야 합니다.");
+            return;
+        }
 
-            console.log('ecjoinDate 새로운거:',edjoinDate);
-            console.log('leftDate 새로운거:',leftDate);
-            
-
-            if (leftDate && edjoinDate > leftDate) {
-                alert("부서 이동일은 부서 배정일 이후의 날짜여야 합니다.");
-                return;
-            }
+        if (leftDate && edjoinDate > leftDate) {
+            alert("부서 이동일은 부서 배정일 이후의 날짜여야 합니다.");
+            return;
+        }
+    } 
         }
 
 

@@ -5,11 +5,12 @@ import { FiMonitor } from "react-icons/fi";
 import { GoVideo, GoChecklist } from "react-icons/go";
 import { AiFillStar, AiOutlineStar } from "react-icons/ai"
 import { FavorApi } from '../../api/menu';
-
-
+import { useDispatch } from "react-redux";
+import { favor } from "../../utils/Slice";
 export default function MgmtHeader({ title, extraButtonComponents, pageId }) {
-    const [favor, setFavor] = useState(false); // 초기 상태는 false (즐겨찾기 비활성화)로 설정
+    const [favorOn, setFavor] = useState(false); // 초기 상태는 false (즐겨찾기 비활성화)로 설정
 
+    const dispatch = useDispatch();
     // useEffect(() => {
     //     // 컴포넌트가 마운트될 때 즐겨찾기 상태를 불러옴
     //     FavorApi(pageId, 'load').then(response => {
@@ -26,9 +27,11 @@ export default function MgmtHeader({ title, extraButtonComponents, pageId }) {
         if (res.data.data === 1) {
             console.log('즐겨찾기 on')
             setFavor(true);
+            dispatch(favor(pageId+"true"));
         } else if (res.data.data === 0) {
             console.log('즐겨찾기 off')
             setFavor(false);
+            dispatch(favor(pageId+"false"));
         } else {
             console.log('즐겨찾기 에러')
         }
@@ -36,10 +39,10 @@ export default function MgmtHeader({ title, extraButtonComponents, pageId }) {
 
     // 즐겨찾기 추가/삭제 요청
     function handleFavor() {
-        FavorApi(pageId, favor).then(res => {
-            console.log("favor", favor, " -> ", res.data.data);
+        FavorApi(pageId, favorOn).then(res => {
+            console.log("favor", favorOn, " -> ", res.data.data);
             if (res.data.data === 1) {
-                setFavor(!favor);
+                setFavor(!favorOn);
             } else {
                 console.log('즐겨찾기 오류 : 강제 off')
                 setFavor(false);
@@ -64,7 +67,7 @@ export default function MgmtHeader({ title, extraButtonComponents, pageId }) {
                     
                     <Icon>
 
-                        <div onClick={handleFavor}>{favor === true ? <AiFillStar /> : <AiOutlineStar />}</div>
+                        <div onClick={handleFavor}>{favorOn === true ? <AiFillStar /> : <AiOutlineStar />}</div>
 
                     </Icon>
                 </FavArea>

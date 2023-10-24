@@ -90,7 +90,11 @@ export default function MenuEditor({ pageId }){
   };
 
   useEffect(() => {
-    dispatch(favor(favorOn));
+    if(favorOn){
+      dispatch(favor(pageId+"ture"));
+    } else {
+      dispatch(favor(pageId+"false"));
+    }
   }, [favorOn]);
 
   useEffect(() => {
@@ -115,6 +119,18 @@ export default function MenuEditor({ pageId }){
         }}
       ).catch(() => {
         setError({ ...detail, pageOption: true });
+      });
+
+      FavorApi(pageId, "load").then(res => {
+        if (res.data.data === 1) {
+          setFavorOn(true);
+        } else if (res.data.data === 0) {
+          setFavorOn(false);
+        } else {
+          console.log("즐겨찾기 에러");
+        }  
+      }).catch((error) => {
+        throw Promise.reject(error);
       });
     };
     setReRender(false);
@@ -193,7 +209,7 @@ export default function MenuEditor({ pageId }){
                     className={clicked === a["id"] ? "true" : "false"}
                     key={a["name"]+a["id"]}
                   >
-                    {a["name"]}
+                    <div title={`${a['nameTree']}`}>{a["name"]}</div>
                   </SearchItem>
                 ))  
               }           
@@ -337,10 +353,17 @@ min-width: 370px;
 `;
 const SearchResult = styled.div`
 position: relative;
+width: 100%;
 height: 100%;
 overflow: scroll;
 &::-webkit-scrollbar {
   display: none;
+}
+> div:hover {
+  cursor: pointer;
+  white-space: normal;
+  overflow: visible;
+  max-width: none;
 }
 `;
 const Pipe = styled.div`
@@ -359,6 +382,8 @@ const SearchItem = styled.div`
 margin: 10px;
 padding: 10px;
 background-color: #eff1f4;
+display: flex;
+justify-content: space-between;
 box-shadow: inset 1px 1px 1px 0px rgba(255,255,255,.3),
             3px 3px 3px 0px rgba(0,0,0,.1),
             1px 1px 3px 0px rgba(0,0,0,.1);

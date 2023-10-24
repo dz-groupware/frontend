@@ -27,7 +27,7 @@ export default function EmployeeMgmtGroupForm({ pageId }) {
   const [loading, setLoading] = useState(true); // 로딩 상태 추가
 
   const loginCompanyId = useSelector(state => state.employeeMgmt.loginCompanyId);
- 
+
 
   useEffect(() => {
     const fetchCompanies = async () => {
@@ -112,7 +112,7 @@ export default function EmployeeMgmtGroupForm({ pageId }) {
         transferredYn: "",
         edjoinDate: "",
         leftDate: "",
-        empId:"",
+        empId: "",
       };
       setGroupsInfo(updatedGroups);
       return;
@@ -129,7 +129,7 @@ export default function EmployeeMgmtGroupForm({ pageId }) {
         transferredYn: "",
         edjoinDate: "",
         leftDate: "",
-        empId:"",
+        empId: "",
       };
       setGroupsInfo(updatedGroups);
       return;
@@ -168,16 +168,16 @@ export default function EmployeeMgmtGroupForm({ pageId }) {
   };
 
 
-  const fetchDepartmentsForCompany = async (companyId) => {
+  const fetchDepartmentsForCompany = async (loginCompanyId) => {
     console.log("부서체크하니");
 
     try {
       axiosInstance.defaults.headers['menuId'] = pageId;
-      const response = await axiosInstance.get(`/employeemgmt/dep/${companyId}`);
+      const response = await axiosInstance.get(`/employeemgmt/dep/${loginCompanyId}`);
 
       setDepartmentOptions(prevOptions => ({
         ...prevOptions,
-        [companyId]: response.data.data
+        [loginCompanyId]: response.data.data
       }));
 
       console.log("부서값 받아왓니");
@@ -213,39 +213,56 @@ export default function EmployeeMgmtGroupForm({ pageId }) {
     const updatedGroups = [...groupsInfo];
     // 'deletedYn' 플래그를 false로 재설정하여 항목을 복구합니다.
     updatedGroups[index].deletedYn = false;
-    setGroupsInfo(updatedGroups);
-    // 필요한 경우, 서버에 복구 상태를 업데이트하는 로직을 여기에 추가합니다.
+    setGroupsInfo(updatedGroups, () => {
+      // 'setGroupsInfo'가 완료된 후에 디스패치를 실행합니다.
+      dispatch(employeeActions.updateGroupInfo(updatedGroups)); // 수정된 그룹 정보를 사용합니다.
+      // 만약 서버와 동기화하는 로직이 필요하다면, 이 위치에서 수행해야 할 수도 있습니다.
+    });
   };
 
 
   const addNewGroup = () => {
-    previousGroupsInfo.current.push([...groupsInfo]);
+    // 새 그룹을 추가하기 전에 현재의 groupsInfo 상태를 previousGroupsInfo에 저장합니다.
+    // 이렇게 하면 새 그룹이 추가되기 전의 상태를 '스냅샷'으로써 저장하는 것입니다.
+    previousGroupsInfo.current = [...groupsInfo];
+  
     const newGroup = {
       compId: loginCompanyId,
       deletedYn: false,
       new: true,
-
+      temp: true, // 임시 플래그를 사용하여 새로 추가된 그룹임을 표시합니다.
     };
+  
     setGroupsInfo([...groupsInfo, newGroup]);
   };
 
 
   const removeGroup = (index) => {
-    // 그룹 정보를 복사하고
-    const updatedGroups = [...groupsInfo];
-
-    // 삭제될 항목을 찾아서 deletedYn 값을 true로 설정합니다.
-    if (updatedGroups[index].new) {
-      updatedGroups.splice(index, 1);  // 새로운 그룹이면 완전히 제거
-    } else {
-      updatedGroups[index].deletedYn = true;  // 기존 그룹은 '삭제됨' 상태로 표시
-    }
-
-    // 상태를 업데이트합니다.
-    setGroupsInfo(updatedGroups);
-    dispatch(employeeActions.updateGroupInfo(groupsInfo));
-    // 서버에 저장 로직이 있다면 그 부분도 업데이트가 필요합니다.
+    setGroupsInfo((prevGroups) => {
+      let updatedGroups = [...prevGroups]; // 현재 그룹 배열을 복사합니다.
+  
+      const groupToRemove = updatedGroups[index];
+  
+      if (groupToRemove.departmentId) {
+        // departmentId가 있는 경우, deletedYn을 true로 설정합니다.
+        updatedGroups[index] = {
+          ...groupToRemove,
+          deletedYn: true,
+        };
+        dispatch(employeeActions.updateGroupInfo(updatedGroups));
+      } else {
+        // departmentId가 없는 경우, 해당 그룹을 배열에서 완전히 제거합니다.
+        updatedGroups = updatedGroups.filter((_, idx) => idx !== index);
+        dispatch(employeeActions.updateGroupInfo(updatedGroups));
+      }
+  
+      return updatedGroups; // 업데이트된 그룹 배열을 반환합니다.
+    });
   };
+  
+  
+  
+  
 
 
 
@@ -253,7 +270,7 @@ export default function EmployeeMgmtGroupForm({ pageId }) {
     return <p>Loading...</p>;
   }
 
-  console.log("리덕스값 확인",reduxEmployeeGroupInfo);
+  console.log("리덕스값 확인", reduxEmployeeGroupInfo);
 
   return (
 
@@ -276,15 +293,17 @@ export default function EmployeeMgmtGroupForm({ pageId }) {
               {showDeleteButton && (
                 <CloseButton onClick={() => removeGroup(idx)}>x</CloseButton>
               )}
-              {group.deletedYn && (
+              {group.deletedYn  && (
                 <div style={{ display: 'flex', alignItems: 'center' }}>
                   <span style={{ marginRight: '10px' }}>삭제되었습니다.</span>
                   <CloseButton onClick={() => restoreGroup(idx)}>복구하기</CloseButton>
                 </div>
               )}
+
+
               {/* 로그인한 회사의 수정/삭제 제한을 알리는 메시지 표시 여부를 결정합니다. */}
               {showRestrictionMessage && (
-                <p style={{ margin: '5px 0', alignSelf: 'center' , color: 'red'}}>로그인한 회사만 수정 삭제할 수 있습니다.</p>
+                <p style={{ margin: '5px 0', alignSelf: 'center', color: 'red' }}>로그인한 회사만 수정 삭제할 수 있습니다.</p>
               )}
             </div>
             <InputContainer>
@@ -292,10 +311,10 @@ export default function EmployeeMgmtGroupForm({ pageId }) {
 
               <Select
                 name="compId"
-                value={group.compId || ''}
+                value={group.compId || loginCompanyId}
                 onChange={(e) => handleChange(e, idx)}
                 onBlur={handleBlur}
-                disabled={isFormDisabled || group.compId}
+                disabled={isFormDisabled || group.compId || loginCompanyId}
               >
                 <option value="direct">선택</option>
                 {companyOptions && companyOptions.map((company, index) => (
@@ -312,7 +331,7 @@ export default function EmployeeMgmtGroupForm({ pageId }) {
                   value={group.position}
                   onChange={(e) => handleChange(e, idx)}
                   onBlur={handleBlur}
-                  disabled={isFormDisabled || !group.compId}
+                  disabled={isFormDisabled}
                 >
                   <option value="direct">선택</option>
                   {(showCEOOption || group.position === "대표") && <option value="대표">대표</option>}
@@ -331,7 +350,7 @@ export default function EmployeeMgmtGroupForm({ pageId }) {
                   value={group.deptId || ""}
                   onChange={(e) => handleChange(e, idx)}
                   onBlur={handleBlur}
-                  disabled={isFormDisabled || (!group.compId || group.position === "대표")}
+                  disabled={isFormDisabled || (group.position === "대표")}
                 >
                   <option value="direct">선택</option>
                   {departmentOptions[group.compId] && departmentOptions[group.compId].map((department, index) => (
@@ -351,7 +370,7 @@ export default function EmployeeMgmtGroupForm({ pageId }) {
                   checked={group.transferredYn === true}
                   onChange={(e) => handleChange(e, idx)}
                   onBlur={handleBlur}
-                  disabled={isFormDisabled || (!group.compId || group.position === "대표")}
+                  disabled={isFormDisabled || ( group.position === "대표")}
                 />
                 이동
               </label>
@@ -363,7 +382,7 @@ export default function EmployeeMgmtGroupForm({ pageId }) {
                   checked={group.transferredYn === false}
                   onChange={(e) => handleChange(e, idx)}
                   onBlur={handleBlur}
-                  disabled={isFormDisabled || (!group.compId || group.position === "대표")}
+                  disabled={isFormDisabled || (group.position === "대표")}
                 />
                 미이동
               </label>
@@ -377,7 +396,7 @@ export default function EmployeeMgmtGroupForm({ pageId }) {
                 value={group.edjoinDate || ''}
                 onChange={(e) => handleChange(e, idx)}
                 onBlur={handleBlur}
-                disabled={isFormDisabled || (!group.compId || group.position === "대표")}
+                disabled={isFormDisabled || ( group.position === "대표")}
 
               />
               <FormInput
@@ -388,7 +407,7 @@ export default function EmployeeMgmtGroupForm({ pageId }) {
                 onChange={(e) => handleChange(e, idx)}
                 onBlur={handleBlur}
 
-                disabled={isFormDisabled || (!group.compId || group.transferredYn !== true)}
+                disabled={isFormDisabled || ( group.transferredYn !== true)}
               />
             </HalfInputContainer>
 

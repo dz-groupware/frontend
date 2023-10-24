@@ -4,15 +4,20 @@ import { GnbFavorDeleteApi, GnbFavorApi, } from '../../api/layout';
 import { useEffect, useState } from 'react';
 
 import styled from 'styled-components';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
+import { favor } from "../../utils/Slice";
 
-
-export function MenuList({ gnb }) {
+export function MenuList({ gnb, idx, setIdx }) {
   return (
     <>
       {
         gnb.map((a, i) => (
-          <StyledLink key={a['id']+i+'gnb'}>
+          <StyledLink key={'gnb'+i}
+          className={`${idx.hover === i || idx.click === i ? 'hoverOn' : 'hoverOff'}`}
+          onClick={() => {
+            setIdx({ ...idx, click: i});
+          }}
+          >
             <Link to={a['name']}>
               {a["name"]}
             </Link>
@@ -26,19 +31,22 @@ export function MenuList({ gnb }) {
 export function FavList() {
   const loadFavor = useSelector(state => state.favor.favor);
   const [favorList, setFavorList] = useState([]);
+  const dispatch = useDispatch();
 
   useEffect(()=> {
+
       try {
         GnbFavorApi()
         .then((res) => {
           if (Array.isArray(res.data.data)) {
+            console.log(res.data);
             setFavorList(res.data.data) ;
           }}).catch((err) => {
             setFavorList([]);
           });
       } catch (error) {
         setFavorList([]);
-      }
+      };
   }, [loadFavor]);
 
   const handleFavor = (menuId) => {
@@ -63,7 +71,7 @@ export function FavList() {
             <Link to={a['nameTree']}>
               {a["name"]}
             </Link>
-            <span onClick={() => {handleFavor(a['id'])}}>X</span>
+            <div onClick={() => {handleFavor(a['id'])}}>X</div>
           </StyledLink>
         ))
       }
@@ -71,12 +79,17 @@ export function FavList() {
   );
 }
 
-export function IconList({ gnb }) {
+export function IconList({ gnb, idx, setIdx }) {
   return (
     <>
       {
         gnb.map((a, i) => (
-          <StyledLink key={a['name']+i+'icon'}
+          <StyledLink 
+          key={'icon'+i} 
+          className={`${idx.hover === i || idx.click === i ? 'hoverOn' : 'hoverOff'}`}
+          onClick={() => {
+            setIdx({ ...idx, click: i});
+          }}
           >
           <Link to={a['name']}>
             <img src={a['iconUrl']} alt={a['name']} /> 
@@ -95,12 +108,22 @@ display: flex;
 justify-content: center;
 align-items: center;
 height: 60px;
+cursor: pointer;
+&:hover {
+  > a {
+    color: #e5ebfe;
+  }
+}
+&.hoverOn {
+  background-color: #030624;
+}
 > a {
   list-style: none;
   text-decoration: none;
   color:rgb(181,194,200);
   width: calc(100% - 32px);
-
 }
-
+> div {
+  margin: 3px;
+}
 `;

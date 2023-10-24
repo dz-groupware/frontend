@@ -27,6 +27,36 @@ export default function EmployeeMgmtGroupForm({ pageId }) {
   const [loading, setLoading] = useState(true); // 로딩 상태 추가
 
   const loginCompanyId = useSelector(state => state.employeeMgmt.loginCompanyId);
+ 
+  useEffect(() => {
+    if (Array.isArray(reduxEmployeeGroupInfo)) {
+      setGroupsInfo(reduxEmployeeGroupInfo.map(item => ({ ...item })));
+      for (const item of reduxEmployeeGroupInfo) {
+        if (item.compId) {
+          console.log("1번",  item.compId);
+          fetchDepartmentsForCompany(item.compId);
+        }else{
+          fetchDepartmentsForCompany(loginCompanyId);
+        }
+      }
+    } else {
+      setGroupsInfo([reduxEmployeeGroupInfo]);
+      if (reduxEmployeeGroupInfo.compId) {
+        fetchDepartmentsForCompany(reduxEmployeeGroupInfo.compId);
+      }else{
+        fetchDepartmentsForCompany(loginCompanyId);
+      }
+    }
+  }, [reduxEmployeeGroupInfo, isVisible]);
+
+
+console.log("부서정보 확인 DepartmentOptions",departmentOptions);
+  useEffect(() => {
+    if (reduxEmployeeGroupInfo.compId || loginCompanyId) {
+      fetchDepartmentsForCompany(reduxEmployeeGroupInfo.compId || loginCompanyId);
+    }
+  }, [reduxEmployeeGroupInfo, loginCompanyId]); // 의존성 배열에 loginCompanyId 추가
+  
 
 
   useEffect(() => {
@@ -67,27 +97,6 @@ export default function EmployeeMgmtGroupForm({ pageId }) {
   //   }
 
   // }, [groupsInfo.map(item => item.compId).join(",")]);
-
-
-
-
-
-  useEffect(() => {
-    if (Array.isArray(reduxEmployeeGroupInfo)) {
-      setGroupsInfo(reduxEmployeeGroupInfo.map(item => ({ ...item })));
-      for (const item of reduxEmployeeGroupInfo) {
-        if (item.compId) {
-          fetchDepartmentsForCompany(item.compId);
-        }
-      }
-    } else {
-      setGroupsInfo([reduxEmployeeGroupInfo]);
-      if (reduxEmployeeGroupInfo.compId) {
-        fetchDepartmentsForCompany(reduxEmployeeGroupInfo.compId);
-      }
-    }
-  }, [reduxEmployeeGroupInfo, isVisible]);
-
 
   useEffect(() => {
     console.log("showCEOOption changed to", showCEOOption);
@@ -149,7 +158,6 @@ export default function EmployeeMgmtGroupForm({ pageId }) {
       finalValue = value;
     }
 
-
     const updatedGroups = [...groupsInfo];
     updatedGroups[idx] = {
       ...updatedGroups[idx],
@@ -157,30 +165,26 @@ export default function EmployeeMgmtGroupForm({ pageId }) {
     };
     setGroupsInfo(updatedGroups);
 
-
   };
-
-
-
 
   const handleBlur = () => {
     dispatch(employeeActions.updateGroupInfo(groupsInfo));
   };
 
 
-  const fetchDepartmentsForCompany = async (loginCompanyId) => {
+  const fetchDepartmentsForCompany = async (companyId) => {
     console.log("부서체크하니");
 
     try {
       axiosInstance.defaults.headers['menuId'] = pageId;
-      const response = await axiosInstance.get(`/employeemgmt/dep/${loginCompanyId}`);
+      const response = await axiosInstance.get(`/employeemgmt/dep/${companyId}`);
 
       setDepartmentOptions(prevOptions => ({
         ...prevOptions,
-        [loginCompanyId]: response.data.data
+        [companyId]: response.data.data
       }));
 
-      console.log("부서값 받아왓니");
+      console.log("부서값 받아왓니",response.data.data);
     } catch (error) {
       console.error("API Error:", error);
     }

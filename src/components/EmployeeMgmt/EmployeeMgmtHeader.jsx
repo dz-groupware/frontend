@@ -196,10 +196,11 @@ const handleSearch = async () => {
     for (let i = 0; i < selectedEmployees.length; i++) {
       try {
         // 해당 사원의 세부 정보 가져오기
+        
         const employeeDetails = await getEmployeeDetailsById(selectedEmployeeIds[i], pageId);
-  
+        const { masterYn, ...employeeWithoutMasterYn } = employeeDetails[0];
         // 이제 employeeDetails를 사용하여 퇴사 처리를 수행합니다.
-        await deleteEmployeeMgmt(selectedEmployeeIds[i], employeeDetails[0], pageId);
+        await deleteEmployeeMgmt(selectedEmployeeIds[i],employeeWithoutMasterYn, pageId);
   
       } catch (error) {
         console.error("Error deleting employee data for ID:", selectedEmployeeIds[i], error);
